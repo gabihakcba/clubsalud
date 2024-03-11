@@ -13,7 +13,7 @@ export async function POST(req) {
       return NextResponse.json('ok')
     }
     else {
-      // return new Response(JSON.stringify('OK'), {
+      // return new Response(JSON.stringify('NO OK'), {
       //   status: 400
       // })
       return NextResponse.json('no ok')

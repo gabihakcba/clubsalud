@@ -22,6 +22,7 @@ export async function POST(req) {
     if(userMatch !== null && body.username === userMatch.username && body.password === userMatch.password) {
       const token = jwt.sign({
         exp: Math.floor(Date.now() / 1000) + daysToSeconds(DAYS),
+        id: userMatch.id,
         username: userMatch.username,
         password: userMatch.password,
         permissions: userMatch.permissions
