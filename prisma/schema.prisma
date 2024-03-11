@@ -14,7 +14,7 @@ datasource db {
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
-enum AccounPermissions {
+enum AccountPermissions {
   OWN
   ADM
   INS
@@ -70,7 +70,7 @@ model Account {
   id Int @id @default(autoincrement())
   username String @unique
   password String 
-  permissions AccounPermissions
+  permissions AccountPermissions
   // Relations
   notificationSender Notification[] @relation(name: "sender")
   notifiactionReceiver Notification[] @relation(name: "receiver")
