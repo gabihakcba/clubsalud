@@ -7,6 +7,8 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     const cookies: Record<string, string> = parse(`${req.cookies}` || '')
     if(cookies.auth) {
+      console.log(cookies)
+      // const ver = jwt.verify(cookies, 'secret')
       // return new Response(JSON.stringify('OK'), {
       //   status: 200
       // })

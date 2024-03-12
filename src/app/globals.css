@@ -18,16 +18,32 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@layer components {
+  .inputForm {
+    @apply shadow appearance-none border rounded w-full py-2 px-3;
+    @apply text-gray-700 leading-tight focus:outline-none;
+    /* @apply focus:shadow-outline; */
+  }
+
+  .blueButtonForm {
+    @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4;
+    @apply rounded focus:outline-none;
+    /* @apply focus:shadow-outline; */
+  }
+
+  .linkBlueForm {
+    @apply inline-block align-baseline font-bold;
+    @apply text-sm text-blue-500 hover:text-blue-800;
   }
 }

@@ -10,12 +10,12 @@ export async function GET(req: NextRequest): Promise<Response> {
   const start: number = page*APP - APP
   const end: number = page*APP
   try {
-    const cookies: Record<string, string> = parse(`${req.cookies}` || '')
-    if (!cookies.auth) {
-      return new Response(JSON.stringify('Invalid Token'), {
-        status: 498
-      })
-    }
+    // const cookies: Record<string, string> = parse(`${req.cookies}` || '')
+    // if (!cookies.auth) {
+    //   return new Response(JSON.stringify('Invalid Token'), {
+    //     status: 498
+    //   })
+    // }
     const db: PrismaClient = new PrismaClient
 
     /**
