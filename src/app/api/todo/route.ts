@@ -2,10 +2,12 @@ import { PrismaClient, AccountPermissions } from "@prisma/client"
 import { NextRequest, NextResponse } from "next/server"
 import { parse } from 'cookie'
 import { Account } from "@prisma/client"
+import prisma from "utils/prisma"
+
+const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   try {
-    const db: PrismaClient = new PrismaClient
     const res: Account = await db.account.create({
       data: {
         username: "gabi",
