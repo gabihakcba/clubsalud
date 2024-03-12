@@ -1,16 +1,19 @@
 'use client'
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import axios from 'axios'
-import { parse } from "cookie";
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { parse } from "cookie"
+import { signInAccount } from "queries/login"
+import { LogIn } from 'utils/types'
 
 const signIn = async (router, data, setLogginFailed) => {
-  const log = await axios.post('http://localhost:3000/api/login', {
+  const user: LogIn = {
     username: data.username,
     password: data.password
-  })
-  if(log.status === 200) {
+  }
+  const response = await signInAccount(user)
+
+  if(response.status === 200) {
     router.push('/admin')
   }
   else {
@@ -40,6 +43,7 @@ export default function Home() {
       router.push('/admin')
     }
   }, [router])
+
   return (
     <div className="w-full h-full flex justify-center items-center">
       <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max">

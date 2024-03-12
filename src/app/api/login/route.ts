@@ -1,31 +1,35 @@
 import jwt  from "jsonwebtoken"
 import { serialize } from 'cookie'
+import { NextRequest, NextResponse } from "next/server"
+import { PrismaClient, Account } from "@prisma/client"
+import { LogIn } from "utils/types"
 
-import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
+const DAYS: number = 60;
 
-const DAYS = 60;
+const daysToSeconds = (days: number): number => days * 24 * 60 * 60;
 
-const daysToSeconds = (days) => days * 24 * 60 * 60;
-
-export async function POST(req) {
-  const body = await req.json()
-  const db = new PrismaClient()
+export async function POST(req: NextRequest): Promise<Response> {
+  const body: LogIn = await req.json()
+  // console.log(body)
+  const db: PrismaClient = new PrismaClient()
 
   try {
-    const userMatch = await db.account.findFirst({
+    const userMatch: Account = await db.account.findFirst({
       where: {
         username: body.username
       }
     })
 
     if(userMatch !== null && body.username === userMatch.username && body.password === userMatch.password) {
-      const token = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + daysToSeconds(DAYS),
+      const user: Account = {
         id: userMatch.id,
         username: userMatch.username,
         password: userMatch.password,
         permissions: userMatch.permissions
+      }
+      const token: string = jwt.sign({
+        exp: Math.floor(Date.now() / 1000) + daysToSeconds(DAYS),
+        ...user
       }, 'secret')
 
       
@@ -37,11 +41,10 @@ export async function POST(req) {
       //   path: '/'
       // })
       
-      const response = new Response(JSON.stringify({ token }), {
+      return new Response(JSON.stringify({ token }), {
         status: 200,
         headers: { 'Set-Cookie': `auth=${token}; Path=/`},
       })
-      return response
     }
     else {
       return NextResponse.json({code:1})
