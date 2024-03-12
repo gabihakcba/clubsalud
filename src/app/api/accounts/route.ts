@@ -1,8 +1,11 @@
 import { PrismaClient, Account, AccountPermissions } from "@prisma/client"
 import { parse } from 'cookie'
+import prisma from "utils/prisma"
 import { NextRequest } from "next/server"
 import { APP } from 'utils/const'
 import { UpdateAccount } from "utils/types"
+
+const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
@@ -10,14 +13,6 @@ export async function GET(req: NextRequest): Promise<Response> {
   const start: number = page*APP - APP
   const end: number = page*APP
   try {
-    // const cookies: Record<string, string> = parse(`${req.cookies}` || '')
-    // if (!cookies.auth) {
-    //   return new Response(JSON.stringify('Invalid Token'), {
-    //     status: 498
-    //   })
-    // }
-    const db: PrismaClient = new PrismaClient
-
     /**
      * page=-1 returns total pages number
      */
@@ -70,7 +65,6 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const db: PrismaClient = new PrismaClient
     const data: Account = await req.json()
     const res: Account = await db.account.create({
       data: data
@@ -87,7 +81,6 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 export async function DELETE(req: NextRequest): Promise<Response> {
   try {
-    const db: PrismaClient = new PrismaClient
     const data: {id: number} = await req.json()
     const res: Account = await db.account.delete({
       where: {
@@ -106,7 +99,6 @@ export async function DELETE(req: NextRequest): Promise<Response> {
 
 export async function PATCH(req: NextRequest): Promise<Response> {
   try {
-    const db: PrismaClient = new PrismaClient
     const fields: UpdateAccount = await req.json()
     console.log(fields)
     const res: Account = await db.account.update({

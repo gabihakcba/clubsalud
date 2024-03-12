@@ -3,15 +3,16 @@ import { serialize } from 'cookie'
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient, Account } from "@prisma/client"
 import { LogIn } from "utils/types"
+import prisma from "utils/prisma"
 
 const DAYS: number = 60;
+const db: PrismaClient = prisma
 
 const daysToSeconds = (days: number): number => days * 24 * 60 * 60;
 
 export async function POST(req: NextRequest): Promise<Response> {
   const body: LogIn = await req.json()
   // console.log(body)
-  const db: PrismaClient = new PrismaClient()
 
   try {
     const userMatch: Account = await db.account.findFirst({
