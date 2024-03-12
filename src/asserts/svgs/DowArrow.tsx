@@ -1,4 +1,4 @@
-export const DownArrow = (props) => (
+export const DownArrow = (props: object) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={"2rem"}

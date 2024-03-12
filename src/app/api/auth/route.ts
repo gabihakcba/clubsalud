@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { parse } from "cookie"
 
-export async function POST(req) {
+export async function POST(req: NextRequest): Promise<Response> {
 
   try {
-    const cookies = parse(`${req.cookies}` || '')
+    const cookies: Record<string, string> = parse(`${req.cookies}` || '')
     if(cookies.auth) {
       // return new Response(JSON.stringify('OK'), {
       //   status: 200

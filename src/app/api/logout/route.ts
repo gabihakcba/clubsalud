@@ -1,17 +1,16 @@
 import { parse } from "cookie"
+import { NextRequest } from "next/server";
 
-export async function POST(req) {
+export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const cookies = parse(`${req.cookies}` || '')
+    const cookies: Record<string, string> = parse(`${req.cookies}` || '')
     if (cookies.auth) {
-      const response = new Response(null, {
+      return new Response(null, {
         status: 200,
         headers: {
           'Set-Cookie': 'auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/',
         },
       })
-      return response;
-
     }
     else {
       return new Response(JSON.stringify('No user found'), {

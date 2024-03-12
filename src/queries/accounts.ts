@@ -1,31 +1,33 @@
 import axios from "axios"
-import { calculatePages, APP } from "@/utils/const"
+import { NextResponse } from "next/server"
+import { calculatePages, APP } from "utils/const"
+import { QueriesResponse, Account, CreateAccount, UpdateAccount } from "utils/types"
 
-export const getTotalPages = async () => {
+export const getTotalPages = async (): Promise<QueriesResponse> => {
   try {
     const response = await axios.get('http://localhost:3000/api/accounts?page=-1')
     if (response.status === 200) {
       return {
         status: response.status,
-        pages: calculatePages(response.data.total, APP)
+        data: calculatePages(response.data.total, APP)
       }
     }
     else {
       return {
         status: response.status,
-        pages: 0
+        data: 0
       }
     }
   } catch (error) {
     return {
       status: 500,
-      pages: 0,
+      data: 0,
       error: error
     }
   }
 }
 
-export const getAccounts = async (page=0) => {
+export const getAccounts = async (page: number = 0): Promise<QueriesResponse> => {
   try {
     const response = await axios.get(`http://localhost:3000/api/accounts?page=${page}`)
     if (response.status === 200) {
@@ -49,24 +51,41 @@ export const getAccounts = async (page=0) => {
   }
 }
 
-export const createAccount = async (data) => {
+export const createAccount = async (data: CreateAccount): Promise<QueriesResponse> => {
   try {
     const response = await axios.post('http://localhost:3000/api/accounts', {
-      id: data.id,
       username: data.username,
       password: data.password,
       permissions: data.permissions
     })
-    return response.data
+    if (response.status === 200) {
+      return {
+        status: response.status,
+        data: response.data
+      }
+    }
+    else {
+      return {
+        status: response.status,
+        data: {}
+      }
+    }
   } catch (error) {
-    alert('Algun dato es incorrecto')
-    return {}
+    return {
+      status: 500,
+      data: 500,
+      error: error
+    }
   }
 }
 
-export const deleteAccount = async (id) => {
+export const deleteAccount = async (id: number): Promise<QueriesResponse> => {
   try {
-    const response = await axios.delete(`http://localhost:3000/api/accounts`, {data: {id: Number(id)}})
+    const response = await axios.delete(`http://localhost:3000/api/accounts`, {
+      data: {
+        id: id
+      }
+    })
     if (response.status === 200) {
       return {
         status: response.status,
@@ -88,9 +107,10 @@ export const deleteAccount = async (id) => {
   }
 }
 
-export const updateAccount = async (id, data) => {
+export const updateAccount = async (data: UpdateAccount) => {
   try {
-    const response = await axios.patch(`http://localhost:3000/api/accounts`, {id: Number(id), ...data})
+    const response = await axios.patch(`http://localhost:3000/api/accounts`, data)
+
     if (response.status === 200) {
       return {
         status: response.status,
@@ -105,14 +125,14 @@ export const updateAccount = async (id, data) => {
     }
   } catch (error) {
     return {
-      status: response.status,
+      status: 500,
       data: {},
       error: error
     }
   }
 }
 
-export const logOutAccount = async () => {
+export const logOutAccount = async (): Promise<QueriesResponse> => {
   try {
     const response = await axios.post('http://localhost:3000/api/logout')
     if (response.status === 200) {

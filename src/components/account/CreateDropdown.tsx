@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from "react"
-import { createAccount } from "@/queries/accounts"
-import { APP, calculatePages } from "@/utils/const"
+import { ChangeEvent, useState } from "react"
+import { createAccount } from "queries/accounts"
+import { Account, CreateAccount, Permissions } from "utils/types"
+import { calculatePages } from "utils/const"
+import { APP } from "utils/const"
 
-const handleChange = (e, setData) => {
-  setData(data => {
+const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>, setData: Function): void => {
+  setData((data: CreateAccount) => {
     return {
       ...data,
       [e.target.id]: e.target.value
@@ -13,36 +15,35 @@ const handleChange = (e, setData) => {
   })
 }
 
-const create = async (data, setIsOpen, setAccounts, setPages) => {
+const create = async (data: CreateAccount, setIsOpen: Function, setAccounts: Function, setPages: Function): Promise<void> => {
   if (data.password !== data.repeatpassword) {
     alert('Las contraseñas deben coincidir')
   }
-  else if (data.permissions === 'OTHER') {
+  else if (data.permissions === Permissions.OTHER) {
     alert('Selecciones los permisos adecuados')
   }
   else {
-    try {
-      const response = await createAccount(data)
-      if (response.id) {
-        setIsOpen(prev => !prev)
-        setAccounts(prev => {
-          setPages(calculatePages(prev.length+1, APP))
-          return prev.concat(response)
-        })
-      }
-    } catch (error) {
-      alert('Algun dato es incorrecto')
+    const response = await createAccount(data)
+    if (response.status === 200) {
+      setIsOpen((isOpen: boolean) => !isOpen)
+      setAccounts((prevAccounts: Array<Account>) => {
+        setPages(calculatePages(prevAccounts.length+1, APP))
+        return [...prevAccounts, response.data]
+      })
+    }
+    else {
+      console.log('Client: error on createAccount')
     }
   }
 }
 
 export function CreateDropdown({ setAccounts, setPages }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [data, setData] = useState({
+  const [isOpen, setIsOpen] = useState <boolean>(false)
+  const [data, setData] = useState <CreateAccount>({
     username: '',
     password: '',
     repeatpassword: '',
-    permissions: ''
+    permissions: Permissions.OTHER
   })
   return (
     <div className={'flex flex-col w-full mb-5 md:m-2 md:w-max md:mr-5'}>

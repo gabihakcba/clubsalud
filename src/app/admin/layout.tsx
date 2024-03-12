@@ -4,12 +4,14 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { parse } from "cookie"
-import { LeftArrow } from '@/asserts/svgs/LeftArrow'
-import { RightArrow } from "@/asserts/svgs/RightArrow"
-import { logOutAccount } from "@/queries/accounts"
+import { LeftArrow } from 'asserts/svgs/LeftArrow'
+import { RightArrow } from "asserts/svgs/RightArrow"
+import { logOutAccount } from "queries/accounts"
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime"
+import { QueriesResponse } from "utils/types"
 
-const logOut = async (router) => {
-  const response = await logOutAccount()
+const logOut = async (router: AppRouterInstance): Promise<void> => {
+  const response: QueriesResponse = await logOutAccount()
   if (response.status === 200) {
     router.push('/')
   }
@@ -19,12 +21,12 @@ const logOut = async (router) => {
 }
 
 export default function AdminLayout({ children }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [drop, setDrop] = useState(false)
+  const router: AppRouterInstance = useRouter()
+  const pathname: string = usePathname()
+  const [drop, setDrop] = useState <boolean>(true)
 
   useEffect(() => {
-    const cookies = parse(`${document.cookie}` || '')
+    const cookies: Record<string, string> = parse(`${document.cookie}` || '')
     if (!cookies.auth) {
       router.push('/')
     }
@@ -122,5 +124,5 @@ export default function AdminLayout({ children }) {
         {children}
       </div>
     </div>
-  );
+  )
 }
