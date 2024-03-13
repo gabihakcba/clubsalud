@@ -45,10 +45,3 @@ export interface Limits {
   start: number,
   end: number
 }
-
-export interface CreateAccountRef {
-  username: RefObject<HTMLInputElement>,
-  password: RefObject<HTMLInputElement>,
-  repeatpassword: RefObject<HTMLInputElement>,
-  permissions: RefObject<HTMLSelectElement>
-}
