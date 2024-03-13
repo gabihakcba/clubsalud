@@ -32,6 +32,9 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   else if (verifiedCookie && pathname === loginPath) {
     return NextResponse.redirect(new URL('/admin', req.url))
   }
+  else if (!verifiedCookie && pathname === loginPath) {
+    return NextResponse.next()
+  }
   else if (verifiedCookie && pathname !== loginPath) {
     return NextResponse.next()
   }

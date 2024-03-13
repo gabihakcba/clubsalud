@@ -1,18 +1,14 @@
 'use client'
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { parse } from "cookie"
+import { useState } from "react"
 import { signInAccount } from "queries/login"
 import { LogIn } from 'utils/types'
+import { FieldValues, useForm } from "react-hook-form"
 
-const signIn = async (router, data, setLogginFailed) => {
-  const user: LogIn = {
-    username: data.username,
-    password: data.password
-  }
+const logIn = async (data: FieldValues, router, setLogginFailed): Promise<void> => {
+  const user: LogIn = data as LogIn
   const response = await signInAccount(user)
-
   if (response.status === 200) {
     router.push('/admin')
   }
@@ -21,36 +17,19 @@ const signIn = async (router, data, setLogginFailed) => {
   }
 }
 
-const handleChange = (e, setData) => {
-  setData(data => {
-    return {
-      ...data,
-      [e.target.id]: e.target.value
-    }
-  })
-}
-
 export default function Home() {
+
   const router = useRouter()
   const [logginFailed, setLogginFailed] = useState(false)
-  const [data, setData] = useState({
-    username: '',
-    password: ''
-  })
-  
-  /**
-   * Esta comprobacion esta en el middleware
-   */
-  // useEffect(() => {
-  //   const cookie = parse(`${document.cookie}` || '')
-  //   if (cookie.auth) {
-  //     router.push('/admin')
-  //   }
-  // }, [router])
+
+  const { register, handleSubmit, formState: { errors } } = useForm()
 
   return (
     <div className="w-full h-full flex justify-center items-center">
-      <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max">
+      <form
+        id='loginForm'
+        onSubmit={handleSubmit((data) => logIn(data, router, setLogginFailed))}
+        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max">
         <div className="mb-4">
           <label
             className="block text-gray-700 text-base font-bold mb-2"
@@ -58,14 +37,27 @@ export default function Home() {
             Username
           </label>
           <input
-            name="password"
-            onChange={(e) => handleChange(e, setData)}
+            {
+            ...register('username', {
+              required: {
+                value: true,
+                message: 'El nombre es requerido'
+              }
+            })
+            }
+            name="username"
             className="inputForm"
+            form="loginForm"
             id="username"
             type="text"
-            placeholder="Username"
-            autoComplete="off">
+            placeholder="Nombre de usuario"
+            autoComplete="off"
+          >
           </input>
+          {
+            errors?.username &&
+            <span className="inputError">{errors.username.message as string}</span>
+          }
         </div>
         <div className="mb-6">
           <label
@@ -74,20 +66,32 @@ export default function Home() {
             Password
           </label>
           <input
+            {
+            ...register('password', {
+              required: {
+                value: true,
+                message: 'La contraseña es requerida'
+              }
+            })
+            }
             name="password"
-            onChange={(e) => handleChange(e, setData)}
             className="inputForm"
+            form="loginForm"
             id="password"
             type="password"
             placeholder="******************">
           </input>
+          {
+            errors?.password &&
+            <span className="inputError">{errors.password.message as string}</span>
+          }
         </div>
         <div className="flex flex-col">
           <div className="flex items-center justify-between flex-col sm:flex-row">
             <button
-              onClick={() => signIn(router, data, setLogginFailed)}
               className="blueButtonForm"
-              type="button">
+              type="submit"
+              form="loginForm">
               Sign In
             </button>
             <a
@@ -98,11 +102,7 @@ export default function Home() {
           </div>
           {
             logginFailed &&
-            <div className="flex justify-center">
-              <p className="text-red-500 text-sm italic">
-                Wrong password or user name. Try again
-              </p>
-            </div>
+            <span className="inputError">Contraseña y/o usuario incorrecto</span>
           }
         </div>
       </form>

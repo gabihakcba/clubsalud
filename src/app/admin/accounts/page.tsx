@@ -5,7 +5,7 @@ import { UpdateDropdown } from "components/account/UpdateDropdown"
 import AccountsPaginationBar from "components/account/AccountsPaginationBar"
 import { ChangeEvent, useEffect, useState } from "react"
 import { getAccounts, deleteAccount as deleteA, getTotalPages } from "queries/accounts"
-import { APP, calculatePages } from "utils/const"
+import { APP } from "utils/const"
 import { Menu } from "asserts/svgs/Menu"
 import { Account, Limits, Permissions, QueriesResponse } from "utils/types"
 
@@ -27,13 +27,6 @@ const getPages = async (setPages: Function): Promise<void> => {
   else {
     console.log('Client: error on getPages')
   }
-}
-
-const handleFilterName = (e: ChangeEvent<HTMLInputElement>, setFilterName: Function): void => {
-  setFilterName(e.target.value)
-}
-const handleFilterPermissions = (e: ChangeEvent<HTMLSelectElement>, setFilterPermissions: Function): void => {
-  setFilterPermissions(e.target.value)
 }
 
 export default function Accounts() {
@@ -60,12 +53,13 @@ export default function Accounts() {
               <button onClick={() => setAccountsElems(setAccounts)} className="w-full mb-5 md:m-2 md:w-max md:mr-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
                 Actualizar
               </button>
-              <input onChange={(e) => handleFilterName(e, setFilterName)} autoComplete="off" defaultValue={''} name="password" className="w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder={'Nombre de usuario'}></input>
-              <select onChange={(e) => handleFilterPermissions(e, setFilterPermissions)} name="permissions" id="permissions" className="w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <input onChange={(e) => setFilterName(e.target.value)} autoComplete="off" defaultValue={''} name="password" className="w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder={'Nombre de usuario'}></input>
+              <select onChange={(e) => setFilterPermissions(e.target.value as Permissions)} name="permissions" id="permissions" className="w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 <option value={Permissions.OWN}>Propietario</option>
                 <option value={Permissions.ADM}>Administrador</option>
                 <option value={Permissions.INS}>Instructor</option>
                 <option value={Permissions.MEM}>Alumno</option>
+                <option value={Permissions.OTHER}>Otros</option>
                 <option value="" selected>Sin filtro</option>
               </select>
             </div>
@@ -83,7 +77,7 @@ export default function Accounts() {
         }}>
           {
             accounts
-              .filter((account) => account.permissions in Permissions)
+              .filter((account) => account.permissions.includes(filterPermissions))
               .filter((account) => (account.username).toLowerCase().includes((filterName).toLowerCase()))
               .slice(limits.start, limits.end).map((account, index) => (
                 <section key={index} className="" style={{

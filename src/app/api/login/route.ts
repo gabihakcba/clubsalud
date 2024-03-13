@@ -48,10 +48,14 @@ export async function POST(req: NextRequest): Promise<Response> {
       })
     }
     else {
-      return NextResponse.json({code:1})
+      return new Response('error', {
+        status: 400
+      })
     }
   }
   catch {
-    return NextResponse.json({code:-1})
+    return new Response('error', {
+      status: 500
+    })
   }
 }
