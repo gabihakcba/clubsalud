@@ -1,5 +1,3 @@
-import { RefObject } from "react"
-
 export interface QueriesResponse {
   status: number,
   data: any,
@@ -12,6 +10,12 @@ export enum Permissions  {
   'INS' = 'INS',
   'MEM' = 'MEM',
   'OTHER'= 'OTHER'
+}
+
+export enum MemberSate {
+  "ACTIVE" = "ACTIVE",
+  "INACTIVE" = "INACTIVE",
+  "OTHER" = "OTHER"
 }
 
 export interface Account {
@@ -44,4 +48,39 @@ export interface LogIn {
 export interface Limits {
   start: number,
   end: number
+}
+
+export interface Member {
+  id: number,
+  name: string,
+  lastName: string,
+  dni: number,
+  cuit?: number,
+  phoneNumber: number,
+  address: string
+  inscriptionDate: Date,
+  cancelationDate?: Date,
+  cancelationReason?: String,
+  derivedBy: string,
+  afiliateNumber: number,
+  state: MemberSate,
+  remainingClasses?: number
+  accountId: number
+}
+
+export interface CreateMember {
+  name: string,
+  lastName: string,
+  dni: number,
+  cuit?: number,
+  phoneNumber: number,
+  address: string
+  inscriptionDate: Date,
+  cancelationDate?: Date,
+  cancelationReason?: Date,
+  derivedBy: string,
+  afiliateNumber: number,
+  state: MemberSate,
+  remainingClasses?: number
+  accountId: number
 }

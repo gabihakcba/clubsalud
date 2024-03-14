@@ -1,4 +1,4 @@
-import jwt  from "jsonwebtoken"
+import jwt from "jsonwebtoken"
 import { serialize } from 'cookie'
 import { NextRequest, NextResponse } from "next/server"
 import { PrismaClient, Account } from "@prisma/client"
@@ -8,7 +8,7 @@ import prisma from "utils/prisma"
 const DAYS: number = 60;
 const db: PrismaClient = prisma
 
-const daysToSeconds = (days: number): number => days * 24 * 60 * 60;
+const daysToSeconds = (): number => DAYS * 24 * 60 * 60;
 
 export async function POST(req: NextRequest): Promise<Response> {
   const body: LogIn = await req.json()
@@ -21,19 +21,20 @@ export async function POST(req: NextRequest): Promise<Response> {
       }
     })
 
-    if(userMatch !== null && body.username === userMatch.username && body.password === userMatch.password) {
+    if (userMatch !== null && body.username === userMatch.username && body.password === userMatch.password) {
       const user: Account = {
         id: userMatch.id,
         username: userMatch.username,
         password: userMatch.password,
         permissions: userMatch.permissions
       }
-      const token: string = jwt.sign({
-        exp: Math.floor(Date.now() / 1000) + daysToSeconds(DAYS),
-        ...user
-      }, 'secret')
+      const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
+      const token: string = jwt.sign(user, secret, {
+        // expiresIn: Math.floor(new Date().getTime() / 1000) + daysToSeconds(),
+        expiresIn: '60d',
+      })
 
-      
+
       // const serialized = serialize(`${userMatch.username}accesToken`, token, {
       //   httpOnly: true,
       //   secure: false, // true for production
@@ -41,10 +42,10 @@ export async function POST(req: NextRequest): Promise<Response> {
       //   maxAge: 1000 * daysToSeconds(60),
       //   path: '/'
       // })
-      
-      return new Response(JSON.stringify({ token }), {
+
+      return new Response(JSON.stringify(token), {
         status: 200,
-        headers: { 'Set-Cookie': `auth=${token}; Path=/`},
+        headers: { 'Set-Cookie': `auth=${token}; Path=/` },
       })
     }
     else {

@@ -1,13 +1,31 @@
 'use client'
 
-import { JwtPayload, verify } from 'jsonwebtoken'
 import { parse } from 'cookie'
 import { useEffect, useState } from 'react'
 import { Account } from 'utils/types'
 import { Permissions } from 'utils/types'
+import { JWTPayload, JWTVerifyResult, jwtVerify } from 'jose'
+
+const veryToken = async (token: Record<string, string>, setUser: Function): Promise<JWTPayload> => {
+  try {
+    const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
+    const response: JWTVerifyResult<JWTPayload> = await jwtVerify(token.auth, new TextEncoder().encode(secret))
+    const payload = response.payload
+    const account: Account = {
+      id: payload.id as number,
+      username: payload.username as string,
+      password: payload.password as string,
+      permissions: payload.permissions as Permissions
+    }
+    setUser(account)
+  } catch (error) {
+    console.log(error)
+    return {}
+  }
+}
 
 export default function PersonalAccount() {
-  const [user, setUser] = useState <Account>({
+  const [user, setUser] = useState<Account>({
     id: -1,
     username: '',
     password: '',
@@ -16,26 +34,7 @@ export default function PersonalAccount() {
 
   useEffect(() => {
     const token: Record<string, string> = parse(`${document.cookie}` || '')
-    if (token.auth) {
-      try {
-        const auth: string = token.auth
-        const payload: JwtPayload | string = verify(auth, 'secret')
-        if(typeof payload === 'object') {
-          const account: Account = {
-            id: payload.id,
-            username: payload.username,
-            password: payload.password,
-            permissions: payload.permissions
-          }
-          setUser(account)
-        }
-        else {
-          console.log('Client: Payload is not and object or account')
-        }
-      } catch (error) {
-        console.log('Client: Token expired')
-      }
-    }
+    veryToken(token, setUser)
   }, [])
 
   return (

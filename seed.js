@@ -1,5 +1,80 @@
-const { PrismaClient, AccountPermissions } = require('@prisma/client')
+const { PrismaClient, AccountPermissions, MemberState } = require('@prisma/client')
+const faker = require('faker')
+const { convertToObject } = require('typescript')
+
 const db = new PrismaClient()
+
+const godsArray = [
+  'inti', 'pachamama', 'viracocha', 'anteojito', 'elal', 'pehuenche', 'yu_huang', 'guan_yu', 'ma_zu', 'bu_xiu_niang_niang',
+  'fu_xi', 'chenghuang', 'xi_wangmu', 'tu_er_shen', 'xiangyue_shi', 'hou_yi', 'cang_jie', 'lu_dongbin', 'zu_xian', 'shen_nong',
+  'yao', 'quetzalcoatl', 'huitzilopochtli', 'tezcatlipoca', 'tlaloc', 'xipe_totec', 'coyolxauhqui', 'xochiquetzal', 'mictlantecuhtli',
+  'tonatiuh', 'chicomecoatl', 'tlazolteotl', 'xolotl', 'zeus', 'poseidon', 'ares', 'afrodita', 'hera', 'demeter', 'atenea', 'apolo',
+  'artemisa', 'hefesto', 'hermes', 'dionisio', 'hestia', 'hades', 'hecate', 'dagda', 'morrigan', 'lugh', 'brigid', 'cernunnos',
+  'arawn', 'manannan_mac_lir', 'nuada', 'belenos', 'danu', 'epona', 'lir', 'teutates', 'cailleach', 'sucellus', 'anu', 'enlil',
+  'enki', 'inanna', 'nanna', 'utu', 'marduk', 'ashur', 'nergal', 'ereshkigal', 'dumuzi', 'gula', 'ninurta', 'nabu', 'ninhursag',
+  'ra', 'osiris', 'isis', 'horus', 'anubis', 'hathor', 'thoth', 'bastet', 'sobek', 'set', 'maat', 'nut', 'geb', 'ptah', 'anuket',
+  'jupiter', 'juno', 'marte', 'venus', 'mercurio', 'neptuno', 'minerva', 'apolo', 'diana', 'vulcano', 'ceres', 'baco', 'jano',
+  'pluton', 'cupido', 'brahma', 'vishnu', 'shiva', 'lakshmi', 'parvati', 'ganesha', 'hanuman', 'saraswati', 'rama', 'krishna', 'kali',
+  'durga', 'surya', 'indra', 'varuna', 'odin', 'thor', 'frigg', 'loki', 'balder', 'tyr', 'freya', 'freyr', 'heimdall', 'skadi', 'njord',
+  'hel', 'bragi', 'forseti', 'ullr', 'el_ciego', 'los_antiguos', 'el_padre', 'la_madre', 'el_guerrero', 'la_doncella', 'el_forjador',
+  'el_desconocido', 'el_septimo'
+]
+
+const generateMembers = () => {
+
+
+  function generateRandomNumber(length) {
+    return parseInt(Math.random().toString().substr(2, length));
+  }
+
+  function generateRandomDate() {
+    const startDate = new Date(2000, 0, 1);
+    const endDate = new Date(2023, 11, 31);
+    return faker.date.between(startDate, endDate);
+  }
+
+  const jsonObjects = godsArray.map(godName => ({
+    name: godName,
+    lastName: godName.toUpperCase(),
+    dni: generateRandomNumber(8),
+    phoneNumber: generateRandomNumber(7),
+    address: `St. ${godName}`,
+    inscriptionDate: generateRandomDate(),
+    derivedBy: `Dr. ${godName.charAt(0).toUpperCase() + godName.slice(1)}`,
+    affiliateNumber: generateRandomNumber(5),
+    state: MemberState.ACTIVE,
+  }));
+
+  return jsonObjects
+}
+
+const generateMember = (godName) => {
+
+
+  function generateRandomNumber(length) {
+    return parseInt(Math.random().toString().substr(2, length));
+  }
+
+  function generateRandomDate() {
+    const startDate = new Date(2000, 0, 1);
+    const endDate = new Date(2023, 11, 31);
+    return faker.date.between(startDate, endDate);
+  }
+
+  const jsonObject = {
+    name: godName,
+    lastName: godName.toUpperCase(),
+    dni: generateRandomNumber(8),
+    phoneNumber: generateRandomNumber(7),
+    address: `St. ${godName}`,
+    inscriptionDate: generateRandomDate(),
+    derivedBy: `Dr. ${godName.charAt(0).toUpperCase() + godName.slice(1)}`,
+    afiliateNumber: generateRandomNumber(5),
+    state: MemberState.ACTIVE,
+  }
+
+  return jsonObject
+}
 
 const manyAccounts = {
   "OWN": [
@@ -204,9 +279,49 @@ const manyAccounts = {
   ]
 }
 
-const manyMembers = [
-  
-]
+const dAll = async () => {
+  console.log('Deleting all ...')
+  try {
+    const res = await db.account.deleteMany()
+  } catch (error) {
+    console.log('Failed to deleting all :(')
+    console.log(error)
+  }
+}
+
+const cAll = async () => {
+  console.log('Creating all ...')
+  try {
+    for (let typeAccount in manyAccounts) {
+      manyAccounts[typeAccount].forEach(async (account) => {
+        try {
+          await db.account.create({
+            data: account
+          }).then(async (newAccount) => {
+            if (newAccount.permissions === AccountPermissions.MEM) {
+              db.member.create({
+                data: {
+                  ...generateMember(newAccount.username),
+                  account: {
+                    connect: {
+                      id: newAccount.id
+                    }
+                  }
+                }
+              }).then((member) => {
+                // if (member.name === 'el_septimo') throw { break: '' }
+              })
+            }
+          })
+        } catch (error) {
+        }
+      })
+    }
+  } catch (error) {
+    console.log('Failed to creating all :(')
+    console.log(error)
+  }
+}
 
 const cAccounts = async (args) => {
   console.log('Creating accounts ...')
@@ -219,53 +334,46 @@ const cAccounts = async (args) => {
             data: manyAccounts[a]
           })
         }
-        break;
+        break
 
       case '-ins':
         console.log(`Creating INS ...`)
         const ins = await db.account.createMany({
           data: manyAccounts['INS']
         })
-        break;
+        break
 
       case '-adm':
         console.log(`Creating ADM ...`)
         const adm = await db.account.createMany({
           data: manyAccounts['ADM']
         })
-        break;
+        break
 
       case '-own':
         console.log(`Creating OWN ...`)
         const own = await db.account.createMany({
           data: manyAccounts['OWN']
         })
-        break;
+        break
 
       case '-mem':
         console.log(`Creating MEM ...`)
         const mem = await db.account.createMany({
           data: manyAccounts['MEM']
         })
-        break;
+        break
 
       case '-other':
         console.log(`Creating OTHER ...`)
         const other = await db.account.createMany({
           data: manyAccounts['OTHER']
         })
-        break;
+        break
 
       default:
-        const res = await db.account.create({
-          data: {
-            username: 'los_antiguos',
-            password: 'los_antiguos',
-            permissions: AccountPermissions.OTHER
-          },
-        })
-        console.log(res)
-        break;
+        console.log('Wrong args')
+        break
     }
   } catch (error) {
     console.log('Failed to creating accounts :(')
@@ -274,88 +382,98 @@ const cAccounts = async (args) => {
 }
 
 const cMemebers = async (args) => {
-  switch (args[0]) {
-    case '-all':
-      console.log(args)
-      break;
-  
-    default:
-      break;
+  console.log('Creating members ...')
+  try {
+    switch (args[0]) {
+      case '-all':
+
+        break
+
+      default:
+        break
+    }
+  } catch (error) {
+    console.log('Failed to creating members :(')
+    console.log(error)
   }
 }
 
 const createDB = async (args) => {
   switch (args[0]) {
+    case '-all':
+      cAll()
+      break
+
     case '-acc':
       cAccounts(args.slice(1))
-      break;
+      break
+
     case '-mem':
       cMemebers(args.slice(1))
       break
+
+    case '-single':
+      console.log('Creating single own account')
+      const single = await db.account.create({
+        data: {
+          username: 'gabi',
+          password: 'pollo',
+          permissions: AccountPermissions.OWN
+        }
+      })
+      break
+
     default:
-      break;
+      break
   }
 }
 
 const deleteDB = async (args) => {
-  return false
   console.log('Deleting accounts ...')
   try {
-    switch (args) {
+    switch (args[0]) {
       case '-all':
-        for (let a in manyAccounts) {
-          console.log(`Creating ${a} ...`)
-          const all = await db.account.createMany({
-            data: manyAccounts[a]
-          })
-        }
-        break;
+        dAll()
+        break
 
-      case '-ins':
-        console.log(`Creating INS ...`)
-        const ins = await db.account.createMany({
-          data: manyAccounts['INS']
-        })
-        break;
+      // case '-ins':
+      //   console.log(`Creating INS ...`)
+      //   const ins = await db.account.createMany({
+      //     data: manyAccounts['INS']
+      //   })
+      //   break
 
-      case '-adm':
-        console.log(`Creating ADM ...`)
-        const adm = await db.account.createMany({
-          data: manyAccounts['ADM']
-        })
-        break;
+      // case '-adm':
+      //   console.log(`Creating ADM ...`)
+      //   const adm = await db.account.createMany({
+      //     data: manyAccounts['ADM']
+      //   })
+      //   break
 
-      case '-own':
-        console.log(`Creating OWN ...`)
-        const own = await db.account.createMany({
-          data: manyAccounts['OWN']
-        })
-        break;
+      // case '-own':
+      //   console.log(`Creating OWN ...`)
+      //   const own = await db.account.createMany({
+      //     data: manyAccounts['OWN']
+      //   })
+      //   break
 
-      case '-mem':
-        console.log(`Creating MEM ...`)
-        const mem = await db.account.createMany({
-          data: manyAccounts['MEM']
-        })
-        break;
+      // case '-mem':
+      //   console.log(`Creating MEM ...`)
+      //   const mem = await db.account.createMany({
+      //     data: manyAccounts['MEM']
+      //   })
+      //   break
 
-      case '-other':
-        console.log(`Creating OTHER ...`)
-        const other = await db.account.createMany({
-          data: manyAccounts['OTHER']
-        })
-        break;
+      // case '-other':
+      //   console.log(`Creating OTHER ...`)
+      //   const other = await db.account.createMany({
+      //     data: manyAccounts['OTHER']
+      //   })
+      //   break
 
       default:
-        const res = await db.account.create({
-          data: {
-            username: 'los_antiguos',
-            password: 'los_antiguos',
-            permissions: AccountPermissions.OTHER
-          },
-        })
-        console.log(res)
-        break;
+        console.log('Wrong args')
+        break
     }
   } catch (error) {
     console.log('Failed to creating accounts :(')
@@ -367,24 +485,24 @@ const main = async (args) => {
   switch (args[0]) {
     case '-c':
       createDB(args.slice(1))
-      break;
+      break
 
     case '-d':
       deleteDB(args.slice(1))
-      break;
+      break
 
     default:
       console.log('Wrong arguments')
-      break;
+      break
   }
   // switch (args[2]) {
   //   case 'accounts':
   //     accounts(args[3])
-  //     break;
+  //     break
 
   //   default:
   //     console.log(await db.account.findFirst())
-  //     break;
+  //     break
   // }
 }
 
