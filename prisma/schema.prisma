@@ -127,15 +127,15 @@ model Member {
   address String
   inscriptionDate DateTime @default(now())
   cancelationDate DateTime? @default(now())
-  cancelationReason String
+  cancelationReason String?
   derivedBy String
   afiliateNumber Int
   state MemberState
-  remainingClasses Int
+  remainingClasses Int?
   // Foreignkeys
   accountId Int
   medicalRecordId Int? @unique
-  account Account @relation(fields: [accountId], references: [id], name: "memberAccount")
+  account Account @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
   medicalRecord MedicalRecord? @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
   // Relations
   memberAttendance Attendance[] @relation(name: "attendanceMember")

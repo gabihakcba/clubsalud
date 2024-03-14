@@ -1,9 +1,8 @@
 import axios from "axios"
-import { NextResponse } from "next/server"
 import { calculatePages, APP } from "utils/const"
-import { QueriesResponse, Account, CreateAccount, UpdateAccount } from "utils/types"
+import { QueriesResponse, CreateAccount, UpdateAccount, Permissions } from "utils/types"
 
-export const getTotalPages = async (): Promise<QueriesResponse> => {
+export const getTotalPagesA = async (): Promise<QueriesResponse> => {
   try {
     const response = await axios.get('http://localhost:3000/api/accounts?page=-1')
     if (response.status === 200) {
@@ -145,6 +144,30 @@ export const logOutAccount = async (): Promise<QueriesResponse> => {
       return {
         status: response.status,
         data: false
+      }
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      data: false,
+      error: error
+    }
+  }
+}
+
+export const findAccountByUsername = async (username: string): Promise<QueriesResponse> => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/accounts/${username}`)
+    if (response.status === 200) {
+      return {
+        status: response.status,
+        data: response.data
+      }
+    }
+    else {
+      return {
+        status: response.status,
+        data: []
       }
     }
   } catch (error) {

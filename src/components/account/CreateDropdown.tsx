@@ -1,6 +1,6 @@
 'use client'
 
-import { ChangeEvent, useState } from "react"
+import { useState } from "react"
 import { createAccount } from "queries/accounts"
 import { Account, CreateAccount, Permissions } from "utils/types"
 import { calculatePages } from "utils/const"

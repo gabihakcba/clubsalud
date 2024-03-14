@@ -8,6 +8,7 @@ import { getAccounts, deleteAccount as deleteA, getTotalPagesA } from "queries/a
 import { APP } from "utils/const"
 import { Menu } from "asserts/svgs/Menu"
 import { Account, Limits, Permissions, QueriesResponse } from "utils/types"
+import { Info } from "components/info"
 
 const setAccountsElems = async (setAccounts: Function, page: number = 0): Promise<void> => {
   const response: QueriesResponse = await getAccounts(page)
@@ -29,7 +30,7 @@ const getPages = async (setPages: Function): Promise<void> => {
   }
 }
 
-export default function Accounts() {
+export default function People() {
   const [accounts, setAccounts] = useState<Array<Account>>([])
   const [pages, setPages] = useState <number>(1)
   const [drop, setDrop] = useState<boolean>(false)
@@ -93,7 +94,7 @@ export default function Accounts() {
                       <input name="permissions" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="password" placeholder={`${account.permissions}`} disabled></input>
                     </div>
                     <div className="flex flex-row">
-                      <UpdateDropdown account={account} setAccounts={setAccounts} accounts={accounts} setPages={setPages}></UpdateDropdown>
+                      <Info account={account} setAccounts={setAccounts} accounts={accounts} setPages={setPages}></Info>
                     </div>
                   </div>
                 </section>

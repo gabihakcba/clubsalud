@@ -7,7 +7,8 @@ const verifyCookie = async (cookie: RequestCookie): Promise<boolean> => {
   if (typeof cookie === 'undefined') return false
   try {
     const parsed: string = cookie.value
-    const payload = await jwtVerify(parsed, new TextEncoder().encode('secret'))
+    const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
+    const payload = await jwtVerify(parsed, new TextEncoder().encode(secret))
     return true
   } catch (error) {
     return false

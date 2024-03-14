@@ -15,6 +15,7 @@ const deleteAccountB = async (id: number, accounts: Array<Account>, setAccounts:
     const indexF: (e: Account) => boolean = (e: Account): boolean => Number(e.id) === Number(id)
     const index: number = newAccounts.findIndex(indexF)
     const deletedAccount: Array<Account> = newAccounts.splice(index, 1)
+    setIsOpen((prev: boolean) => !prev)
     setAccounts((odlAccunts: Array<Account>) => {
       setPages(calculatePages(odlAccunts.length - 1, APP))
       return newAccounts
@@ -61,9 +62,9 @@ export function UpdateDropdown({ account, setAccounts, accounts, setPages }) {
         <form
           onSubmit={handleSubmit((data) => update(account.id, setIsOpen, setAccounts, data, accounts))}
           id="updateForm"
-          className="w-full sm:w-max bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max absolute left-0 right-0 bottom-auto top-0 ml-auto mr-auto border-2 border-red-500">
+          className="w-full sm:w-max bg-gray-500 shadow-md rounded px-8 pt-6 pb-8 h-max absolute left-0 right-0 bottom-0 top-0 ml-auto mr-auto mb-auto mt-auto">
           <div className="mb-4">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="username">
+            <label className="block text-white text-base font-bold mb-2" htmlFor="username">
               Nombre de Usuario
             </label>
             <input
@@ -87,7 +88,7 @@ export function UpdateDropdown({ account, setAccounts, accounts, setPages }) {
             }
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="password">
+            <label className="block text-white text-base font-bold mb-2" htmlFor="password">
               Contraseña
             </label>
             <input
@@ -111,7 +112,7 @@ export function UpdateDropdown({ account, setAccounts, accounts, setPages }) {
             }
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="repeatpassword">
+            <label className="block text-white text-base font-bold mb-2" htmlFor="repeatpassword">
               Repetir Contraseña
             </label>
             <input
@@ -138,7 +139,7 @@ export function UpdateDropdown({ account, setAccounts, accounts, setPages }) {
             }
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="permisos">
+            <label className="block text-white text-base font-bold mb-2" htmlFor="permisos">
               Permisos
             </label>
             <select
@@ -194,5 +195,3 @@ export function UpdateDropdown({ account, setAccounts, accounts, setPages }) {
     </div>
   )
 }
-
-UpdateDropdown.displayName = 'ChildComponent';
