@@ -79,7 +79,7 @@ export default function Members() {
               .filter((member) => (member.name).toLowerCase().includes((filterName).toLowerCase()))
               .slice(limits.start, limits.end)
               .map((member, index) => (
-                <section key={index} className="" style={{
+                <section key={Math.random()} className="" style={{
                   'justifySelf': 'center',
                   // 'border': '1px solid red'
                 }}>

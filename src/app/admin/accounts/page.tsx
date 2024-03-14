@@ -11,7 +11,7 @@ import { Account, Limits, Permissions, QueriesResponse } from "utils/types"
 
 const setAccountsElems = async (setAccounts: Function, page: number = 0): Promise<void> => {
   const response: QueriesResponse = await getAccounts(page)
-  if(response.status === 200) {
+  if (response.status === 200) {
     setAccounts(response.data)
   }
   else {
@@ -31,11 +31,11 @@ const getPages = async (setPages: Function): Promise<void> => {
 
 export default function Accounts() {
   const [accounts, setAccounts] = useState<Array<Account>>([])
-  const [pages, setPages] = useState <number>(1)
+  const [pages, setPages] = useState<number>(1)
   const [drop, setDrop] = useState<boolean>(false)
   const [filterName, setFilterName] = useState<string>('')
   const [filterPermissions, setFilterPermissions] = useState<Permissions | ''>('')
-  const [limits, setLimits] = useState <Limits>({ start: 0, end: APP })
+  const [limits, setLimits] = useState<Limits>({ start: 0, end: APP })
 
   useEffect(() => {
     setAccountsElems(setAccounts)
@@ -81,7 +81,7 @@ export default function Accounts() {
               .filter((account) => (account.username).toLowerCase().includes((filterName).toLowerCase()))
               .slice(limits.start, limits.end)
               .map((account, index) => (
-                <section key={index} className="" style={{
+                <section key={Math.random()} className="" style={{
                   'justifySelf': 'center',
                   // 'border': '1px solid red'
                 }}>
@@ -93,7 +93,7 @@ export default function Accounts() {
                       <input name="permissions" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" type="password" placeholder={`${account.permissions}`} disabled></input>
                     </div>
                     <div className="flex flex-row">
-                      <UpdateDropdown account={account} setAccounts={setAccounts} accounts={accounts} setPages={setPages}></UpdateDropdown>
+                      <UpdateDropdown account={account} setAccounts={setAccounts} accounts={accounts} setPages={setPages} />
                     </div>
                   </div>
                 </section>

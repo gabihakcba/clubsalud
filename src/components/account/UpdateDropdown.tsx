@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { updateAccount, deleteAccount } from "queries/accounts"
 import { Button } from "components/Buttons"
 import { Account, CreateAccount, Permissions, UpdateAccount } from "utils/types"
@@ -15,11 +15,10 @@ const deleteAccountB = async (id: number, accounts: Array<Account>, setAccounts:
     const indexF: (e: Account) => boolean = (e: Account): boolean => Number(e.id) === Number(id)
     const index: number = newAccounts.findIndex(indexF)
     const deletedAccount: Array<Account> = newAccounts.splice(index, 1)
-    setIsOpen((prev: boolean) => !prev)
     setAccounts((odlAccunts: Array<Account>) => {
       setPages(calculatePages(odlAccunts.length - 1, APP))
       return newAccounts
-    })
+    }).then(()=>setIsOpen((prev: boolean) => !prev))
   }
   else {
     console.log('Client: error on deleteAccount')
