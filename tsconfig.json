@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strictNullChecks": true,
     "baseUrl": "./src",
     "lib": [
       "dom",
@@ -28,7 +29,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "seed.js"  ],
+, "seed.js", "src/app/layout.js", "src/app/layout.js", "src/app/layout.js"  ],
   "exclude": [
     "node_modules"
   ]

@@ -126,7 +126,7 @@ model Member {
   phoneNumber Int
   address String
   inscriptionDate DateTime @default(now())
-  cancelationDate DateTime? @default(now())
+  cancelationDate DateTime?
   cancelationReason String?
   derivedBy String
   afiliateNumber Int

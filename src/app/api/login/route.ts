@@ -1,27 +1,27 @@
-import jwt from "jsonwebtoken"
-import { serialize } from 'cookie'
-import { NextRequest, NextResponse } from "next/server"
-import { PrismaClient, Account } from "@prisma/client"
-import { LogIn } from "utils/types"
-import prisma from "utils/prisma"
+import jwt from 'jsonwebtoken'
+import { type NextRequest } from 'next/server'
+import { type PrismaClient, type Account } from '@prisma/client'
+import { type LogIn } from 'utils/types'
+import prisma from 'utils/prisma'
 
-const DAYS: number = 60;
 const db: PrismaClient = prisma
-
-const daysToSeconds = (): number => DAYS * 24 * 60 * 60;
 
 export async function POST(req: NextRequest): Promise<Response> {
   const body: LogIn = await req.json()
   // console.log(body)
 
   try {
-    const userMatch: Account = await db.account.findFirst({
+    const userMatch: Account | null = await db.account.findFirst({
       where: {
         username: body.username
       }
     })
 
-    if (userMatch !== null && body.username === userMatch.username && body.password === userMatch.password) {
+    if (
+      userMatch !== null &&
+      body.username === userMatch.username &&
+      body.password === userMatch.password
+    ) {
       const user: Account = {
         id: userMatch.id,
         username: userMatch.username,
@@ -31,9 +31,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
       const token: string = jwt.sign(user, secret, {
         // expiresIn: Math.floor(new Date().getTime() / 1000) + daysToSeconds(),
-        expiresIn: '60d',
+        expiresIn: '60d'
       })
-
 
       // const serialized = serialize(`${userMatch.username}accesToken`, token, {
       //   httpOnly: true,
@@ -45,16 +44,14 @@ export async function POST(req: NextRequest): Promise<Response> {
 
       return new Response(JSON.stringify(token), {
         status: 200,
-        headers: { 'Set-Cookie': `auth=${token}; Path=/` },
+        headers: { 'Set-Cookie': `auth=${token}; Path=/` }
       })
-    }
-    else {
+    } else {
       return new Response('error', {
         status: 400
       })
     }
-  }
-  catch {
+  } catch {
     return new Response('error', {
       status: 500
     })

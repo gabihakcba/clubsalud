@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {}
 
 // module.exports = {
 //   async headers() {
 //     return [
-//       { 
+//       {
 //         source: '/:path*{/}?',
 //         headers: [
 //           {
@@ -17,4 +17,4 @@ const nextConfig = {};
 //   },
 // }
 
-export default nextConfig;
+export default nextConfig

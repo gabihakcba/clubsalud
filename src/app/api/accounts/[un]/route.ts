@@ -1,14 +1,17 @@
-import { Account, AccountPermissions, PrismaClient } from "@prisma/client"
-import { NextApiRequest } from "next"
-import prisma from "utils/prisma"
+import { type PrismaClient } from '@prisma/client'
+import { type NextApiRequest } from 'next'
+import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
 
-export async function GET(req: NextApiRequest, context: any): Promise<Response> {
+export async function GET(
+  req: NextApiRequest,
+  context: any
+): Promise<Response> {
   const un: string = context.params.un
 
   try {
-    const acc: {id: number} = await db.account.findFirst({
+    const acc: { id: number } | null = await db.account.findFirstOrThrow({
       select: {
         id: true
       },

@@ -1,20 +1,20 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
 
-let prisma: PrismaClient;
+let prisma: PrismaClient = new PrismaClient()
 
 if (process.env.NODE_ENV === 'production') {
   // In production, use a singleton instance to avoid creating multiple connections
-  prisma = prisma || new PrismaClient();
+  prisma = prisma || new PrismaClient()
 } else {
   // In development, create a new instance for each request
-  prisma = new PrismaClient();
+  prisma = new PrismaClient()
 }
 
-export default prisma;
+export default prisma
 
 // Cleanup function for closing the Prisma Client connection
-export const cleanupPrisma = async () => {
+export const cleanupPrisma = async (): Promise<void> => {
   if (prisma) {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
-};
+}
