@@ -1,115 +1,339 @@
 'use client'
 
-import React, { useState } from "react"
-import { updateMember, deleteMember } from "queries/members"
-import { Button } from "components/Buttons"
-import { CreateMember, Member, QueriesResponse } from "utils/types"
-import { calculatePages, APP } from "utils/const"
-import { FieldValues, useForm } from "react-hook-form"
+import { type ReactElement, useState } from 'react'
+import { deleteMember } from 'queries/members'
+import { Button } from 'components/Buttons'
+import {
+  type CreateMember,
+  type Member,
+  type Setter,
+  type QueriesResponse
+} from 'utils/types'
+import { calculatePages, APP, formatDate } from 'utils/const'
+import { type FieldValues, useForm } from 'react-hook-form'
 
-const deleteMemberB = async (id: number, members: Array<Member>, setMembers: Function, setPages: Function, setIsOpen: Function): Promise<void> => {
+const deleteMemberB = async (
+  id: number,
+  members: Member[],
+  setMembers: Setter,
+  setPages: Setter,
+  setIsOpen: Setter
+): Promise<void> => {
   const response: QueriesResponse = await deleteMember(id)
   if (response.status === 200) {
-    const newMembers: Array<Member> = [...members]
-    const indexF: (e: Member) => boolean = (e: Member): boolean => Number(e.id) === Number(id)
+    const newMembers: Member[] = [...members]
+    const indexF: (e: Member) => boolean = (e: Member): boolean =>
+      Number(e.id) === Number(id)
     const index: number = newMembers.findIndex(indexF)
-    const deletedMember: Array<Member> = newMembers.splice(index, 1)
+    const deletedMember: Member[] = newMembers.splice(index, 1)
     setIsOpen((prev: boolean) => !prev)
-    setMembers((odlMembers: Array<Member>) => {
+    setMembers((odlMembers: Member[]) => {
       setPages(calculatePages(odlMembers.length - 1, APP))
       return newMembers
     })
-  }
-  else {
+    console.log(deletedMember)
+  } else {
     console.log('Client: error on deleteMember')
   }
 }
 
-const update = async (id: number, setIsOpen: Function, setMembers: Function, data: FieldValues, members: Array<Member>): Promise<void> => {
+const update = async (
+  id: number,
+  setIsOpen: Setter,
+  setMembers: Setter,
+  data: FieldValues,
+  members: Member[]
+): Promise<void> => {
+  const dataMember: CreateMember = data as CreateMember
   const newMember: Member = {
-    id: id,
-    ...data as Member
+    id,
+    ...dataMember
   }
-
-  const response: QueriesResponse = await updateMember(newMember)
-  if (response.status === 200) {
-    const newMembers: Array<Member> = members.map(obj => {
-      if (obj.id === response.data.id) {
-        return newMember;
-      }
-      return obj;
-    });
-    setMembers(newMembers)
-    setIsOpen((prev: boolean) => !prev)
-  }
-  else {
-    console.log('Client: error on updateMember: ')
-  }
+  console.log(newMember)
+  // const response: QueriesResponse = await updateMember(newMember)
+  // if (response.status === 200) {
+  //   const newMembers: Array<Member> = members.map(obj => {
+  //     if (obj.id === response.data.id) {
+  //       return newMember;
+  //     }
+  //     return obj;
+  //   });
+  //   setMembers(newMembers)
+  //   setIsOpen((prev: boolean) => !prev)
+  // }
+  // else {
+  //   console.log('Client: error on updateMember: ')
+  // }
 }
 
-export function UpdateDropdown({ member, setMembers, members, setPages }) {
+export function UpdateDropdown({
+  member,
+  setMembers,
+  members,
+  setPages
+}: any): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  const { register, handleSubmit, formState: { errors }, watch } = useForm()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+    // watch
+  } = useForm()
 
   return (
     <div className={'flex flex-col w-full'}>
-      <Button onAction={() => setIsOpen(prev => !prev)} text='Actualizar' hover='hover:bg-yellow-500' bg=''></Button>
-      {
-        isOpen &&
+      <Button
+        onAction={() => {
+          setIsOpen((prev) => !prev)
+        }}
+        text='Actualizar'
+        hover='hover:bg-yellow-500'
+        bg=''
+      ></Button>
+      {isOpen && (
         <form
-          onSubmit={handleSubmit((data) => update(member.id, setIsOpen, setMembers, data, members))}
-          id="updateForm"
-          className="w-full sm:w-max bg-gray-500 shadow-md rounded px-2 pt-2 pb-2 h-max absolute left-0 right-0 bottom-0 top-0 ml-auto mr-auto mb-auto mt-auto">
-          <div className="mb-2">
-            <label className="block text-white text-base font-bold mb-2" htmlFor="name">
-              Nombre de Usuario
+          onSubmit={handleSubmit((data) => {
+            void update(
+              member.id as number,
+              setIsOpen,
+              setMembers as Setter,
+              data,
+              members as Member[]
+            )
+          })}
+          id='updateForm'
+          className='w-full sm:w-max bg-gray-500 shadow-md rounded px-2 pt-2 pb-2 h-max absolute left-0 right-0 bottom-0 top-0 ml-auto mr-auto mb-auto mt-auto'
+        >
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='name'
+            >
+              Nombre
             </label>
             <input
               {...register('name', {
                 required: {
                   value: true,
-                  message: 'Nombre requerido'
+                  message: 'Nombre es requerido'
                 }
               })}
-              form="updateForm"
+              form='updateForm'
               defaultValue={member.name}
-              name="name"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="name"
-              type="text"
-              autoComplete="off"
-              placeholder={member.name}>
-            </input>
-            {
-              errors?.name &&
-              <span className="inputError">{errors.name.message as string}</span>
-            }
+              name='name'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='name'
+              type='text'
+              autoComplete='off'
+              placeholder={member.name}
+            ></input>
+            {errors?.name && (
+              <span className='inputError'>
+                {errors.name.message as string}
+              </span>
+            )}
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-stretch sm:items-center justify-between flex-col sm:flex-row">
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='lastName'
+            >
+              Apellido
+            </label>
+            <input
+              {...register('lastName', {
+                required: {
+                  value: true,
+                  message: 'Apellido es requerido'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.lastName}
+              name='lastName'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='lastName'
+              type='text'
+              autoComplete='off'
+              placeholder={member.lastName}
+            ></input>
+            {errors?.lastName && (
+              <span className='inputError'>
+                {errors.lastName.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='dni'
+            >
+              DNI
+            </label>
+            <input
+              {...register('dni', {
+                required: {
+                  value: true,
+                  message: 'DNI es requerido'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.dni}
+              name='dni'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='dni'
+              type='number'
+              autoComplete='off'
+              placeholder={member.dni}
+            ></input>
+            {errors?.dni && (
+              <span className='inputError'>{errors.dni.message as string}</span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='cuit'
+            >
+              CUIT
+            </label>
+            <input
+              {...register('cuit')}
+              form='updateForm'
+              defaultValue={member.cuit}
+              name='cuit'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='cuit'
+              type='text'
+              autoComplete='off'
+              placeholder={member.cuit}
+            ></input>
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='phoneNumber'
+            >
+              Número de teléfono
+            </label>
+            <input
+              {...register('phoneNumber', {
+                required: {
+                  value: true,
+                  message: 'Número de teléfono es requerido'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.phoneNumber}
+              name='phoneNumber'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='phoneNumber'
+              type='number'
+              autoComplete='off'
+              placeholder={member.phoneNumber}
+            ></input>
+            {errors?.phoneNumber && (
+              <span className='inputError'>
+                {errors.phoneNumber.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='address'
+            >
+              Dirección
+            </label>
+            <input
+              {...register('address', {
+                required: {
+                  value: true,
+                  message: 'Dirección es requerida'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.address}
+              name='address'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='address'
+              type='text'
+              autoComplete='off'
+              placeholder={member.address}
+            ></input>
+            {errors?.address && (
+              <span className='inputError'>
+                {errors.address.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='inscriptionDate'
+            >
+              Fecha de inscripción
+            </label>
+            <input
+              {...register('inscriptionDate', {
+                required: {
+                  value: true,
+                  message: 'Fecha es requerida'
+                }
+              })}
+              form='updateForm'
+              value={formatDate(
+                member.inscriptionDate as string,
+                member.name as string
+              )}
+              name='inscriptionDate'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='inscriptionDate'
+              type='date'
+              autoComplete='off'
+            ></input>
+            {errors?.inscriptionDate && (
+              <span className='inputError'>
+                {errors.inscriptionDate.message as string}
+              </span>
+            )}
+          </div>
+          <div className='flex flex-col'>
+            <div className='flex items-stretch sm:items-center justify-between flex-col sm:flex-row'>
               <button
-                form="updateForm"
-                className="mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="submit">
+                form='updateForm'
+                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                type='submit'
+              >
                 Enviar
               </button>
               <button
-                onClick={() => setIsOpen(prev => !prev)}
-                className="mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                type="button">
+                onClick={() => {
+                  setIsOpen((prev) => !prev)
+                }}
+                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                type='button'
+              >
                 Cancelar
               </button>
             </div>
             <button
-              onClick={() => deleteMemberB(member.id, members, setMembers, setPages, setIsOpen)}
+              onClick={() => {
+                void deleteMemberB(
+                  member.id as number,
+                  members as Member[],
+                  setMembers as Setter,
+                  setPages as Setter,
+                  setIsOpen
+                )
+              }}
               className='hover:bg-red-500 border border-red-500 flex flex-row rounded w-full p-2'
-              type="button">
+              type='button'
+            >
               Eliminar
             </button>
           </div>
         </form>
-      }
+      )}
     </div>
   )
 }

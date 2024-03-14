@@ -1,31 +1,40 @@
-import { PrismaClient, Account, AccountPermissions, Member, MemberState } from "@prisma/client"
-import prisma from "utils/prisma"
-import { NextRequest } from "next/server"
-import { APP } from 'utils/const'
-import { CreateMember, UpdateAccount } from "utils/types"
+import {
+  type PrismaClient,
+  type Account,
+  type AccountPermissions,
+  type Member,
+  MemberState
+} from '@prisma/client'
+import prisma from 'utils/prisma'
+import { type NextRequest } from 'next/server'
+import { type CreateMember, type UpdateAccount } from 'utils/types'
 
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
   const page: number = Number(searchParams.get('page'))
-  const start: number = page * APP - APP
-  const end: number = page * APP
+  // const start: number = page * APP - APP
+  // const end: number = page * APP
   try {
     /**
      * page=-1 returns total pages number
      */
     if (page === -1) {
       const total: number = await db.member.count()
-      return new Response(JSON.stringify({ total: total }), {
+      return new Response(JSON.stringify({ total }), {
         status: 200
       })
-    }
-    /**
-    * page=0 returns all accounts
-    */
-    else if (page === 0) {
-      const members: Array<Member> = await db.member.findMany()
+    } else {
+      /**
+       * page=0 returns all accounts
+       */
+      const members: Member[] = await db.member.findMany()
+      members.forEach((e) => {
+        if (e.name === 'horus') {
+          console.log(e)
+        }
+      })
       return new Response(JSON.stringify(members), {
         status: 200
       })

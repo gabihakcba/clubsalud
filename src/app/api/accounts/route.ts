@@ -1,33 +1,36 @@
-import { PrismaClient, Account, AccountPermissions } from "@prisma/client"
-import prisma from "utils/prisma"
-import { NextRequest } from "next/server"
+import {
+  type PrismaClient,
+  type Account,
+  type AccountPermissions
+} from '@prisma/client'
+import prisma from 'utils/prisma'
+import { type NextRequest } from 'next/server'
 import { APP } from 'utils/const'
-import { CreateAccount, UpdateAccount } from "utils/types"
+import { type CreateAccount, type UpdateAccount } from 'utils/types'
 
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
   const page: number = Number(searchParams.get('page'))
-  const start: number = page*APP - APP
-  const end: number = page*APP
+  const start: number = page * APP - APP
+  const end: number = page * APP
   try {
     /**
      * page=-1 returns total pages number
      */
-    if(page === -1){
+    if (page === -1) {
       const total: number = await db.account.count()
-      return new Response(JSON.stringify({total:total}), {
+      return new Response(JSON.stringify({ total }), {
         status: 200
       })
-    }
-     /**
-     * page=0 returns all accounts
-     */
-    else if(page === 0) {
-      const users: Array<Account> = await db.account.findMany()
-      let usersFilters: Array<Account> = []
-      users.map(user => {
+    } else if (page === 0) {
+      /**
+       * page=0 returns all accounts
+       */
+      const users: Account[] = await db.account.findMany()
+      const usersFilters: Account[] = []
+      users.forEach((user) => {
         usersFilters.push({
           id: user.id,
           username: user.username,
@@ -38,11 +41,10 @@ export async function GET(req: NextRequest): Promise<Response> {
       return new Response(JSON.stringify(usersFilters), {
         status: 200
       })
-    }
-    else {
-      const users: Array<Account> = await db.account.findMany()
-      let usersFilters: Array<Account> = []
-      users.map(user => {
+    } else {
+      const users: Account[] = await db.account.findMany()
+      const usersFilters: Account[] = []
+      users.forEach((user: Account) => {
         usersFilters.push({
           id: user.id,
           username: user.username,
@@ -50,7 +52,7 @@ export async function GET(req: NextRequest): Promise<Response> {
           password: user.password
         })
       })
-      const usersPage: Array<Account> = usersFilters.slice(start, end)
+      const usersPage: Account[] = usersFilters.slice(start, end)
       return new Response(JSON.stringify(usersPage), {
         status: 200
       })
@@ -66,7 +68,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data: CreateAccount = await req.json()
     const res: Account = await db.account.create({
-      data: data
+      data
     })
     return new Response(JSON.stringify(res), {
       status: 200
@@ -80,7 +82,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 export async function DELETE(req: NextRequest): Promise<Response> {
   try {
-    const data: {id: number} = await req.json()
+    const data: { id: number } = await req.json()
     const res: Account = await db.account.delete({
       where: {
         id: data.id

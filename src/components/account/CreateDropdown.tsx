@@ -1,49 +1,77 @@
 'use client'
 
-import { useState } from "react"
-import { createAccount } from "queries/accounts"
-import { Account, CreateAccount, Permissions } from "utils/types"
-import { calculatePages } from "utils/const"
-import { APP } from "utils/const"
-import { FieldValues, useForm } from "react-hook-form"
+import { type ReactElement, useState } from 'react'
+import { createAccount } from 'queries/accounts'
+import {
+  type Account,
+  type CreateAccount,
+  Permissions,
+  type Setter
+} from 'utils/types'
+import { calculatePages, APP } from 'utils/const'
+import { type FieldValues, useForm } from 'react-hook-form'
 
-const create = async (data: FieldValues, setIsOpen: Function, setAccounts: Function, setPages: Function): Promise<void> => {
+const create = async (
+  data: FieldValues,
+  setIsOpen: Setter,
+  setAccounts: Setter,
+  setPages: Setter
+): Promise<void> => {
   const newUser: CreateAccount = data as CreateAccount
 
   const response = await createAccount(newUser)
   if (response.status === 200) {
     setIsOpen((isOpen: boolean) => !isOpen)
-    setAccounts((prevAccounts: Array<Account>) => {
+    setAccounts((prevAccounts: Account[]) => {
       setPages(calculatePages(prevAccounts.length + 1, APP))
       return [...prevAccounts, response.data]
     })
-  }
-  else {
+  } else {
     console.log('Client: error on createAccount')
   }
 }
 
-export function CreateDropdown({ setAccounts, setPages }) {
+export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  const { register, handleSubmit, formState: { errors }, watch } = useForm()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm()
 
   return (
     <div className={'flex flex-col w-full mb-5 md:m-2 md:w-max md:mr-5'}>
-      {
-        !isOpen &&
-        <button onClick={() => setIsOpen(prev => !prev)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+      {!isOpen && (
+        <button
+          onClick={() => {
+            setIsOpen((prev) => !prev)
+          }}
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+          type='button'
+        >
           Crear Cuenta
         </button>
-      }
-      {
-        isOpen &&
+      )}
+      {isOpen && (
         <form
-          onSubmit={handleSubmit((data) => create(data, setIsOpen, setAccounts, setPages))}
-          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max absolute"
-          id='createForm'>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="username">
+          onSubmit={handleSubmit((data) => {
+            void create(
+              data,
+              setIsOpen,
+              setAccounts as Setter,
+              setPages as Setter
+            )
+          })}
+          className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max absolute'
+          id='createForm'
+        >
+          <div className='mb-4'>
+            <label
+              className='block text-gray-700 text-base font-bold mb-2'
+              htmlFor='username'
+            >
               Nombre de Usuario
             </label>
             <input
@@ -53,21 +81,25 @@ export function CreateDropdown({ setAccounts, setPages }) {
                   message: 'El nombre de usuario es requerido'
                 }
               })}
-              name="username"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
-              form="createForm"
-              type="text"
-              autoComplete="off"
-              placeholder="Nombre de usuario">
-            </input>
-            {
-              errors?.username &&
-              <span className="inputError">{errors.username.message as string}</span>
-            }
+              name='username'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='username'
+              form='createForm'
+              type='text'
+              autoComplete='off'
+              placeholder='Nombre de usuario'
+            ></input>
+            {errors?.username && (
+              <span className='inputError'>
+                {errors.username.message as string}
+              </span>
+            )}
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="password">
+          <div className='mb-6'>
+            <label
+              className='block text-gray-700 text-base font-bold mb-2'
+              htmlFor='password'
+            >
               Contraseña
             </label>
             <input
@@ -77,20 +109,24 @@ export function CreateDropdown({ setAccounts, setPages }) {
                   message: 'La contraseña es requerida'
                 }
               })}
-              name="password"
-              id="password"
-              form="createForm"
-              type="password"
-              className="shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="******************">
-            </input>
-            {
-              errors?.password &&
-              <span className="inputError">{errors.password.message as string}</span>
-            }
+              name='password'
+              id='password'
+              form='createForm'
+              type='password'
+              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
+              placeholder='******************'
+            ></input>
+            {errors?.password && (
+              <span className='inputError'>
+                {errors.password.message as string}
+              </span>
+            )}
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="repeatpassword">
+          <div className='mb-6'>
+            <label
+              className='block text-gray-700 text-base font-bold mb-2'
+              htmlFor='repeatpassword'
+            >
               Repetir Contraseña
             </label>
             <input
@@ -100,24 +136,30 @@ export function CreateDropdown({ setAccounts, setPages }) {
                   message: 'Confirmar la contraseña es requerido'
                 },
                 validate: (value) => {
-                  return watch('password') === value ||
+                  return (
+                    watch('password') === value ||
                     'Las contraseñas deben coincidir'
+                  )
                 }
               })}
-              name="repeatpassword"
-              id="repeatpassword"
-              form="createForm"
-              type="password"
-              className="shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="******************">
-            </input>
-            {
-              errors?.repeatpassword &&
-              <span className="inputError">{errors.repeatpassword.message as string}</span>
-            }
+              name='repeatpassword'
+              id='repeatpassword'
+              form='createForm'
+              type='password'
+              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
+              placeholder='******************'
+            ></input>
+            {errors?.repeatpassword && (
+              <span className='inputError'>
+                {errors.repeatpassword.message as string}
+              </span>
+            )}
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 text-base font-bold mb-2" htmlFor="permisos">
+          <div className='mb-6'>
+            <label
+              className='block text-gray-700 text-base font-bold mb-2'
+              htmlFor='permisos'
+            >
               Permisos
             </label>
             <select
@@ -127,43 +169,52 @@ export function CreateDropdown({ setAccounts, setPages }) {
                   message: 'Los permisos son requeridos'
                 },
                 validate: (value) => {
-                  return value !== 'OTHER' || 'Debe seleccionar los permisos adecuados'
+                  return (
+                    value !== 'OTHER' ||
+                    'Debe seleccionar los permisos adecuados'
+                  )
                 }
               })}
-              name="permissions"
-              id="permissions"
-              form="createForm"
+              name='permissions'
+              id='permissions'
+              form='createForm'
               defaultValue={Permissions.OTHER}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+            >
               <option value={Permissions.OWN}>Propietario</option>
               <option value={Permissions.ADM}>Administrador</option>
               <option value={Permissions.INS}>Instructor</option>
               <option value={Permissions.MEM}>Alumno</option>
               <option value={Permissions.OTHER}>Otro</option>
             </select>
-            {
-              errors?.permissions &&
-              <span className="inputError">{errors.permissions.message as string}</span>
-            }
+            {errors?.permissions && (
+              <span className='inputError'>
+                {errors.permissions.message as string}
+              </span>
+            )}
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-stretch justify-between flex-col sm:flex-row sm:items-center">
+          <div className='flex flex-col'>
+            <div className='flex items-stretch justify-between flex-col sm:flex-row sm:items-center'>
               <button
-                form="createForm"
-                className="mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline"
-                type="submit">
+                form='createForm'
+                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+                type='submit'
+              >
                 Crear
               </button>
               <button
-                onClick={() => setIsOpen(prev => !prev)}
-                className="mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline"
-                type="button">
+                onClick={() => {
+                  setIsOpen((prev) => !prev)
+                }}
+                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+                type='button'
+              >
                 Cancelar
               </button>
             </div>
           </div>
         </form>
-      }
+      )}
     </div>
   )
 }
