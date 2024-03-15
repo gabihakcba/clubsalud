@@ -9,9 +9,9 @@ import {
   type Setter
 } from 'utils/types'
 import { getMembers, getTotalPagesM } from 'queries/members'
-import { Menu } from 'asserts/svgs/Menu'
-import { UpdateDropdown } from 'components/members/UpdateDropdown'
-import { CreateDropdown } from 'components/members/CreateDropdown'
+import { Menu } from '../../../../public/svgs/Menu'
+import { UpdateMemberDropdown } from 'components/member/UpdateMemberDropdown'
+import { CreateMemberDropdown } from 'components/member/CreateMemberDropdown'
 import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
 import { APP } from 'utils/const'
 
@@ -19,11 +19,6 @@ const setMembersElems = async (setMembers: Setter): Promise<void> => {
   const response: QueriesResponse = await getMembers()
   if (response.status === 200) {
     setMembers(response.data)
-    response.data.forEach((e: Member) => {
-      if (e.name === 'Gabi') {
-        console.log(e)
-      }
-    })
   } else {
     console.log('Client: error on getMembers')
   }
@@ -69,10 +64,10 @@ export default function Members(): ReactElement {
                 'flex flex-col absolute top-16 left-4 w-max bg-white md:bg-transparent md:top-auto md:left-auto md:relative md:flex-row md:w-full'
               }
             >
-              <CreateDropdown
+              <CreateMemberDropdown
                 setMembers={setMembers}
                 setPages={setPages}
-              ></CreateDropdown>
+              ></CreateMemberDropdown>
               <button
                 onClick={() => {
                   void setMembersElems(setMembers)
@@ -157,12 +152,12 @@ export default function Members(): ReactElement {
                     ></input>
                   </div>
                   <div className='flex flex-row'>
-                    <UpdateDropdown
+                    <UpdateMemberDropdown
                       member={member}
                       setMembers={setMembers}
                       members={members}
                       setPages={setPages}
-                    ></UpdateDropdown>
+                    ></UpdateMemberDropdown>
                   </div>
                 </div>
               </section>

@@ -1,13 +1,7 @@
-import {
-  type PrismaClient,
-  type Account,
-  type AccountPermissions,
-  type Member,
-  MemberState
-} from '@prisma/client'
+import { type PrismaClient, type Member, MemberState } from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
-import { type CreateMember, type UpdateAccount } from 'utils/types'
+import { type CreateMember } from 'utils/types'
 
 const db: PrismaClient = prisma
 
@@ -30,11 +24,6 @@ export async function GET(req: NextRequest): Promise<Response> {
        * page=0 returns all accounts
        */
       const members: Member[] = await db.member.findMany()
-      members.forEach((e) => {
-        if (e.name === 'horus') {
-          console.log(e)
-        }
-      })
       return new Response(JSON.stringify(members), {
         status: 200
       })
@@ -101,17 +90,25 @@ export async function DELETE(req: NextRequest): Promise<Response> {
 
 export async function PATCH(req: NextRequest): Promise<Response> {
   try {
-    const fields: UpdateAccount = await req.json()
-    console.log(fields)
-    const res: Account = await db.account.update({
+    const data: Member = await req.json()
+    const parsed = {
+      name: data.name,
+      lastName: data.lastName,
+      dni: Number(data.dni),
+      cuit: Number(data.cuit),
+      phoneNumber: Number(data.phoneNumber),
+      address: data.address,
+      inscriptionDate: new Date(data.inscriptionDate),
+      derivedBy: data.derivedBy,
+      afiliateNumber: Number(data.afiliateNumber),
+      state: MemberState[data.state]
+    }
+    const id: number = Number(data.id)
+    const res: Member = await db.member.update({
       where: {
-        id: fields.id
+        id
       },
-      data: {
-        username: fields.username,
-        password: fields.password,
-        permissions: fields.permissions as unknown as AccountPermissions
-      }
+      data: parsed
     })
     return new Response(JSON.stringify(res), {
       status: 200

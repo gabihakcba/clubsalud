@@ -64,7 +64,10 @@ const create = async (
   }
 }
 
-export function CreateDropdown({ setMembers, setPages }: any): ReactElement {
+export function CreateMemberDropdown({
+  setMembers,
+  setPages
+}: any): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const {

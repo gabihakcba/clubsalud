@@ -1,76 +1,38 @@
 'use client'
 
 import { type ReactElement, useState } from 'react'
-import { updateAccount, deleteAccount } from 'queries/accounts'
-import { Button } from 'components/Buttons'
+import { createAccount } from 'queries/accounts'
 import {
   type Account,
   type CreateAccount,
-  type Setter,
-  type UpdateAccount,
-  type QueriesResponse
+  Permissions,
+  type Setter
 } from 'utils/types'
-
-import { Permissions } from 'utils/types'
 import { calculatePages, APP } from 'utils/const'
 import { type FieldValues, useForm } from 'react-hook-form'
 
-const deleteAccountB = async (
-  id: number,
-  accounts: Account[],
-  setAccounts: Setter,
-  setPages: Setter,
-  setIsOpen: Setter
-): Promise<void> => {
-  const response: QueriesResponse = await deleteAccount(id)
-  if (response.status === 200) {
-    const newAccounts: Account[] = [...accounts]
-    const indexF: (e: Account) => boolean = (e: Account): boolean =>
-      Number(e.id) === Number(id)
-    const index: number = newAccounts.findIndex(indexF)
-    const deletedAccount: Account[] = newAccounts.splice(index, 1)
-    setIsOpen((prev: boolean) => !prev)
-    setAccounts((odlAccunts: Account[]) => {
-      setPages(calculatePages(odlAccunts.length - 1, APP))
-      return newAccounts
-    })
-    console.log(deletedAccount)
-  } else {
-    console.log('Client: error on deleteAccount')
-  }
-}
-
-const update = async (
-  id: number,
+const create = async (
+  data: FieldValues,
   setIsOpen: Setter,
   setAccounts: Setter,
-  data: FieldValues,
-  accounts: Account[]
+  setPages: Setter
 ): Promise<void> => {
-  const newAccount: UpdateAccount = {
-    id,
-    ...(data as CreateAccount)
-  }
+  const newUser: CreateAccount = data as CreateAccount
 
-  const response: QueriesResponse = await updateAccount(newAccount)
+  const response = await createAccount(newUser)
   if (response.status === 200) {
-    const newAccounts: Account[] = accounts.map((obj) => {
-      if (obj.id === response.data.id) {
-        return newAccount
-      }
-      return obj
+    setIsOpen((isOpen: boolean) => !isOpen)
+    setAccounts((prevAccounts: Account[]) => {
+      setPages(calculatePages(prevAccounts.length + 1, APP))
+      return [...prevAccounts, response.data]
     })
-    setAccounts(newAccounts)
-    setIsOpen((prev: boolean) => !prev)
   } else {
-    console.log('Client: error on updateAccount: ')
+    console.log('Client: error on createAccount')
   }
 }
 
-export function UpdateDropdown({
-  account,
+export function CreateAccountDropdown({
   setAccounts,
-  accounts,
   setPages
 }: any): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -83,32 +45,34 @@ export function UpdateDropdown({
   } = useForm()
 
   return (
-    <div className={'flex flex-col w-full'}>
-      <Button
-        onAction={() => {
-          setIsOpen((prev) => !prev)
-        }}
-        text='Actualizar'
-        hover='hover:bg-yellow-500'
-        bg=''
-      ></Button>
+    <div className={'flex flex-col w-full mb-5 md:m-2 md:w-max md:mr-5'}>
+      {!isOpen && (
+        <button
+          onClick={() => {
+            setIsOpen((prev) => !prev)
+          }}
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+          type='button'
+        >
+          Crear Cuenta
+        </button>
+      )}
       {isOpen && (
         <form
           onSubmit={handleSubmit((data) => {
-            void update(
-              account.id as number,
+            void create(
+              data,
               setIsOpen,
               setAccounts as Setter,
-              data,
-              accounts as Account[]
+              setPages as Setter
             )
           })}
-          id='updateForm'
-          className='w-full sm:w-max bg-gray-500 shadow-md rounded px-8 pt-6 pb-8 h-max absolute left-0 right-0 bottom-0 top-0 ml-auto mr-auto mb-auto mt-auto'
+          className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max absolute'
+          id='createForm'
         >
           <div className='mb-4'>
             <label
-              className='block text-white text-base font-bold mb-2'
+              className='block text-gray-700 text-base font-bold mb-2'
               htmlFor='username'
             >
               Nombre de Usuario
@@ -117,16 +81,16 @@ export function UpdateDropdown({
               {...register('username', {
                 required: {
                   value: true,
-                  message: 'Nombre de usuario requerido'
+                  message: 'El nombre de usuario es requerido'
                 }
               })}
-              form='updateForm'
-              defaultValue={account.username}
               name='username'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               id='username'
+              form='createForm'
               type='text'
-              placeholder={account.username}
+              autoComplete='off'
+              placeholder='Nombre de usuario'
             ></input>
             {errors?.username && (
               <span className='inputError'>
@@ -136,7 +100,7 @@ export function UpdateDropdown({
           </div>
           <div className='mb-6'>
             <label
-              className='block text-white text-base font-bold mb-2'
+              className='block text-gray-700 text-base font-bold mb-2'
               htmlFor='password'
             >
               Contraseña
@@ -145,15 +109,14 @@ export function UpdateDropdown({
               {...register('password', {
                 required: {
                   value: true,
-                  message: 'Contraseña requerida'
+                  message: 'La contraseña es requerida'
                 }
               })}
-              form='updateForm'
-              defaultValue={account.password}
               name='password'
-              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               id='password'
+              form='createForm'
               type='password'
+              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               placeholder='******************'
             ></input>
             {errors?.password && (
@@ -164,7 +127,7 @@ export function UpdateDropdown({
           </div>
           <div className='mb-6'>
             <label
-              className='block text-white text-base font-bold mb-2'
+              className='block text-gray-700 text-base font-bold mb-2'
               htmlFor='repeatpassword'
             >
               Repetir Contraseña
@@ -173,7 +136,7 @@ export function UpdateDropdown({
               {...register('repeatpassword', {
                 required: {
                   value: true,
-                  message: 'Repetir contraseña es requerido'
+                  message: 'Confirmar la contraseña es requerido'
                 },
                 validate: (value) => {
                   return (
@@ -182,12 +145,11 @@ export function UpdateDropdown({
                   )
                 }
               })}
-              form='updateForm'
-              defaultValue={account.password}
               name='repeatpassword'
-              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               id='repeatpassword'
+              form='createForm'
               type='password'
+              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               placeholder='******************'
             ></input>
             {errors?.repeatpassword && (
@@ -198,7 +160,7 @@ export function UpdateDropdown({
           </div>
           <div className='mb-6'>
             <label
-              className='block text-white text-base font-bold mb-2'
+              className='block text-gray-700 text-base font-bold mb-2'
               htmlFor='permisos'
             >
               Permisos
@@ -207,18 +169,18 @@ export function UpdateDropdown({
               {...register('permissions', {
                 required: {
                   value: true,
-                  message: 'Permisos es requerido'
+                  message: 'Los permisos son requeridos'
                 },
                 validate: (value) => {
                   return (
-                    value !== Permissions.OTHER ||
+                    value !== 'OTHER' ||
                     'Debe seleccionar los permisos adecuados'
                   )
                 }
               })}
-              form='updateForm'
               name='permissions'
               id='permissions'
+              form='createForm'
               defaultValue={Permissions.OTHER}
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
             >
@@ -235,39 +197,24 @@ export function UpdateDropdown({
             )}
           </div>
           <div className='flex flex-col'>
-            <div className='flex items-stretch sm:items-center justify-between flex-col sm:flex-row'>
+            <div className='flex items-stretch justify-between flex-col sm:flex-row sm:items-center'>
               <button
-                form='updateForm'
-                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                form='createForm'
+                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
                 type='submit'
               >
-                Enviar
+                Crear
               </button>
               <button
                 onClick={() => {
                   setIsOpen((prev) => !prev)
                 }}
-                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
                 type='button'
               >
                 Cancelar
               </button>
             </div>
-            <button
-              onClick={() => {
-                void deleteAccountB(
-                  account.id as number,
-                  accounts as Account[],
-                  setAccounts as Setter,
-                  setPages as Setter,
-                  setIsOpen
-                )
-              }}
-              className='hover:bg-red-500 border border-red-500 flex flex-row rounded w-full p-2'
-              type='button'
-            >
-              Eliminar
-            </button>
           </div>
         </form>
       )}

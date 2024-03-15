@@ -120,9 +120,7 @@ export const updateMember = async (
 ): Promise<QueriesResponse> => {
   try {
     const response = await axios.patch('http://localhost:3000/api/members', {
-      data: {
-        ...member
-      }
+      ...member
     })
     if (response.status === 200) {
       return {

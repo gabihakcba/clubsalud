@@ -1,12 +1,12 @@
 'use client'
 
-import { CreateDropdown } from 'components/account/CreateDropdown'
-import { UpdateDropdown } from 'components/account/UpdateDropdown'
+import { CreateAccountDropdown } from 'components/account/CreateAccountDropdown'
+import { UpdateAccountDropdown } from 'components/account/UpdateAccountDropdown'
 import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
 import { type ReactElement, useEffect, useState } from 'react'
 import { getAccounts, getTotalPagesA } from 'queries/accounts'
 import { APP } from 'utils/const'
-import { Menu } from 'asserts/svgs/Menu'
+import { Menu } from '../../../../public/svgs/Menu'
 import {
   type QueriesResponse,
   type Account,
@@ -69,10 +69,10 @@ export default function Accounts(): ReactElement {
                 'flex flex-col absolute top-16 left-4 w-max bg-white md:bg-transparent md:top-auto md:left-auto md:relative md:flex-row md:w-full'
               }
             >
-              <CreateDropdown
+              <CreateAccountDropdown
                 setAccounts={setAccounts}
                 setPages={setPages}
-              ></CreateDropdown>
+              ></CreateAccountDropdown>
               <button
                 onClick={() => {
                   void setAccountsElems(setAccounts)
@@ -166,12 +166,12 @@ export default function Accounts(): ReactElement {
                     ></input>
                   </div>
                   <div className='flex flex-row'>
-                    <UpdateDropdown
+                    <UpdateAccountDropdown
                       account={account}
                       setAccounts={setAccounts}
                       accounts={accounts}
                       setPages={setPages}
-                    />
+                    ></UpdateAccountDropdown>
                   </div>
                 </div>
               </section>
