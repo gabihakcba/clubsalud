@@ -101,7 +101,6 @@ export async function DELETE(req: NextRequest): Promise<Response> {
 export async function PATCH(req: NextRequest): Promise<Response> {
   try {
     const fields: UpdateAccount = await req.json()
-    console.log(fields)
     const res: Account = await db.account.update({
       where: {
         id: fields.id
