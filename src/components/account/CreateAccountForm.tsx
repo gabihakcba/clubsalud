@@ -29,7 +29,7 @@ export function CreateAccountForm({
           setPages as Setter
         )
       })}
-      className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
+      className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id='createForm'
     >
       <button
