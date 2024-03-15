@@ -54,27 +54,29 @@ const deleteA = async (
 
 const updateA = async (
   id: number,
-  setIsOpen: Setter,
-  setAccounts: Setter,
   data: FieldValues,
-  accounts: Account[]
+  setIsOpen: Setter,
+  setAccounts: Setter
 ): Promise<void> => {
+  console.log('Edit')
   const newAccount: UpdateAccount = {
     id,
     ...(data as CreateAccount)
   }
-
   const response: QueriesResponse = await updateAccount(newAccount)
   if (response.status === 200) {
-    const newAccounts: Account[] = accounts.map((obj) => {
-      if (obj.id === response.data.id) {
-        return newAccount
-      }
-      return obj
+    setAccounts((old: Account[]) => {
+      const newAccounts: Account[] = old.map((acc: Account) => {
+        if (acc.id === response.data.id) {
+          return newAccount
+        }
+        return acc
+      })
+      return newAccounts
     })
-    setAccounts(newAccounts)
     setIsOpen((prev: boolean) => !prev)
   } else {
+    console.log(response.error)
     console.log('Client: error on updateAccount: ')
   }
 }
@@ -85,6 +87,7 @@ const createA = async (
   setAccounts: Setter,
   setPages: Setter
 ): Promise<void> => {
+  console.log('Create')
   const newUser: CreateAccount = data as CreateAccount
 
   const response = await createAccount(newUser)
@@ -271,9 +274,10 @@ export default function Accounts(): ReactElement {
                       >
                         {(setIsOpen: Setter) => (
                           <CreateAccountForm
+                            data={account}
                             setIsOpen={setIsOpen}
                             setAccounts={setAccounts}
-                            setPages={setPages}
+                            sendForm={updateA}
                           ></CreateAccountForm>
                         )}
                       </DropdownForm>
