@@ -1,19 +1,106 @@
 'use client'
 
-import { CreateAccountDropdown } from 'components/account/CreateAccountDropdown'
-import { UpdateAccountDropdown } from 'components/account/UpdateAccountDropdown'
 import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
 import { type ReactElement, useEffect, useState } from 'react'
-import { getAccounts, getTotalPagesA } from 'queries/accounts'
-import { APP } from 'utils/const'
-import { Menu } from '../../../../public/svgs/Menu'
+import {
+  createAccount,
+  deleteAccount,
+  getAccounts,
+  getTotalPagesA,
+  updateAccount
+} from 'queries/accounts'
+import { APP, calculatePages } from 'utils/const'
 import {
   type QueriesResponse,
   type Account,
   type Limits,
   Permissions,
-  type Setter
+  type Setter,
+  type CreateAccount,
+  type UpdateAccount
 } from 'utils/types'
+import DropdownForm from 'components/DropdownForms'
+import { CreateAccountForm } from 'components/account/CreateAccountForm'
+import Image from 'next/image'
+import create from '../../../../public/createa.svg'
+import update from '../../../../public/update.svg'
+import menu from '../../../../public/menu.svg'
+import edit from '../../../../public/edit.svg'
+import delete_ from '../../../../public/delete_.svg'
+import { type FieldValues } from 'react-hook-form'
+
+const deleteA = async (
+  id: number,
+  accounts: Account[],
+  setAccounts: Setter,
+  setPages: Setter
+): Promise<void> => {
+  const response: QueriesResponse = await deleteAccount(id)
+  if (response.status === 200) {
+    const newAccounts: Account[] = [...accounts]
+    const indexF: (e: Account) => boolean = (e: Account): boolean =>
+      Number(e.id) === Number(id)
+    const index: number = newAccounts.findIndex(indexF)
+    const deletedAccount: Account[] = newAccounts.splice(index, 1)
+    setAccounts((odlAccunts: Account[]) => {
+      setPages(calculatePages(odlAccunts.length - 1, APP))
+      return newAccounts
+    })
+    console.log(deletedAccount)
+  } else {
+    console.log('Client: error on deleteAccount')
+  }
+}
+
+const updateA = async (
+  id: number,
+  data: FieldValues,
+  setIsOpen: Setter,
+  setAccounts: Setter
+): Promise<void> => {
+  console.log('Edit')
+  const newAccount: UpdateAccount = {
+    id,
+    ...(data as CreateAccount)
+  }
+  const response: QueriesResponse = await updateAccount(newAccount)
+  if (response.status === 200) {
+    setAccounts((old: Account[]) => {
+      const newAccounts: Account[] = old.map((acc: Account) => {
+        if (acc.id === response.data.id) {
+          return newAccount
+        }
+        return acc
+      })
+      return newAccounts
+    })
+    setIsOpen((prev: boolean) => !prev)
+  } else {
+    console.log(response.error)
+    console.log('Client: error on updateAccount: ')
+  }
+}
+
+const createA = async (
+  data: FieldValues,
+  setIsOpen: Setter,
+  setAccounts: Setter,
+  setPages: Setter
+): Promise<void> => {
+  console.log('Create')
+  const newUser: CreateAccount = data as CreateAccount
+
+  const response = await createAccount(newUser)
+  if (response.status === 200) {
+    setIsOpen((isOpen: boolean) => !isOpen)
+    setAccounts((prevAccounts: Account[]) => {
+      setPages(calculatePages(prevAccounts.length + 1, APP))
+      return [...prevAccounts, response.data]
+    })
+  } else {
+    console.log('Client: error on createAccount')
+  }
+}
 
 const setAccountsElems = async (
   setAccounts: Setter,
@@ -39,7 +126,6 @@ const getPages = async (setPages: Setter): Promise<void> => {
 export default function Accounts(): ReactElement {
   const [accounts, setAccounts] = useState<Account[]>([])
   const [pages, setPages] = useState<number>(1)
-  const [drop, setDrop] = useState<boolean>(false)
   const [filterName, setFilterName] = useState<string>('')
   const [filterPermissions, setFilterPermissions] = useState<Permissions | ''>(
     ''
@@ -54,68 +140,81 @@ export default function Accounts(): ReactElement {
   return (
     <div className='max-h-dvh h-full w-full flex items-start justify-start flex-row'>
       <main className='mr-5 w-full h-full flex flex-col items-start justify-between'>
-        <div className='flex flex-col bg-white md:bg-transparent md:flex-row w-full m-2  content-center'>
-          <button
-            onClick={() => {
-              setDrop((prev) => !prev)
-            }}
-            className='mx-2 h-auto py-2'
+        <div className='w-full h-max p-2 bg-white border-b-2 border-gray-400'>
+          <DropdownForm
+            position='relative'
+            top='top-8 md:top-0'
+            left='left-1 md:left-10'
+            image={menu}
           >
-            <Menu></Menu>
-          </button>
-          {drop && (
-            <div
-              className={
-                'flex flex-col absolute top-16 left-4 w-max bg-white md:bg-transparent md:top-auto md:left-auto md:relative md:flex-row md:w-full'
-              }
-            >
-              <CreateAccountDropdown
-                setAccounts={setAccounts}
-                setPages={setPages}
-              ></CreateAccountDropdown>
-              <button
-                onClick={() => {
-                  void setAccountsElems(setAccounts)
-                }}
-                className='w-full mb-5 md:m-2 md:w-max md:mr-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
-                type='button'
-              >
-                Actualizar
-              </button>
-              <input
-                onChange={(e) => {
-                  setFilterName(e.target.value)
-                }}
-                autoComplete='off'
-                defaultValue={''}
-                name='password'
-                className='w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-                id='username'
-                type='text'
-                placeholder={'Nombre de usuario'}
-              ></input>
-              <select
-                onChange={(e) => {
-                  setFilterPermissions(e.target.value as Permissions)
-                }}
-                name='permissions'
-                id='permissions'
-                className='w-full mb-5 md:m-2 md:w-max md:mr-5 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-              >
-                <option value={Permissions.OWN}>Propietario</option>
-                <option value={Permissions.ADM}>Administrador</option>
-                <option value={Permissions.INS}>Instructor</option>
-                <option value={Permissions.MEM}>Alumno</option>
-                <option value={Permissions.OTHER}>Otros</option>
-                <option
-                  value=''
-                  selected
+            {(action: Setter) => (
+              <div className='pt-2 flex flex-col md:flex-row md:items-center md:pt-0 gap-4 bg-white md:shadow-none shadow rounded '>
+                <div className='flex gap-5 justify-evenly md:justify-center flex-row'>
+                  <DropdownForm
+                    position='static md:relative'
+                    top='top-0'
+                    left='left-0'
+                    image={create}
+                  >
+                    {(setIsOpen: Setter) => (
+                      <CreateAccountForm
+                        setAccounts={setAccounts}
+                        setPages={setPages}
+                        setIsOpen={setIsOpen}
+                        sendForm={createA}
+                      ></CreateAccountForm>
+                    )}
+                  </DropdownForm>
+                  <button
+                    onClick={() => {
+                      void setAccountsElems(setAccounts)
+                    }}
+                    className=''
+                    type='button'
+                  >
+                    <Image
+                      alt=''
+                      src={update}
+                      width={30}
+                      height={30}
+                    />
+                  </button>
+                </div>
+                <input
+                  onChange={(e) => {
+                    setFilterName(e.target.value)
+                  }}
+                  autoComplete='off'
+                  defaultValue={''}
+                  name='password'
+                  className='p-2 mx-4 shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+                  id='username'
+                  type='text'
+                  placeholder={'Nombre de usuario'}
+                ></input>
+                <select
+                  onChange={(e) => {
+                    setFilterPermissions(e.target.value as Permissions)
+                  }}
+                  name='permissions'
+                  id='permissions'
+                  className='p-2 mx-4 mb-4 md:mb-0 shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
                 >
-                  Sin filtro
-                </option>
-              </select>
-            </div>
-          )}
+                  <option value={Permissions.OWN}>Propietario</option>
+                  <option value={Permissions.ADM}>Administrador</option>
+                  <option value={Permissions.INS}>Instructor</option>
+                  <option value={Permissions.MEM}>Alumno</option>
+                  <option value={Permissions.OTHER}>Otros</option>
+                  <option
+                    value=''
+                    selected
+                  >
+                    Sin filtro
+                  </option>
+                </select>
+              </div>
+            )}
+          </DropdownForm>
         </div>
         <section
           className='mt-5 ml-5 h-full'
@@ -165,13 +264,43 @@ export default function Accounts(): ReactElement {
                       disabled
                     ></input>
                   </div>
-                  <div className='flex flex-row'>
-                    <UpdateAccountDropdown
-                      account={account}
-                      setAccounts={setAccounts}
-                      accounts={accounts}
-                      setPages={setPages}
-                    ></UpdateAccountDropdown>
+                  <div className='flex flex-row w-max gap-2 px-4 justify-evenly items-center'>
+                    <div className='block hover:bg-yellow-600'>
+                      <DropdownForm
+                        position='static'
+                        top='top-0 bottom-0 left-0 right-0'
+                        left='ml-auto mr-auto mb-auto mt-auto'
+                        image={edit}
+                      >
+                        {(setIsOpen: Setter) => (
+                          <CreateAccountForm
+                            data={account}
+                            setIsOpen={setIsOpen}
+                            setAccounts={setAccounts}
+                            sendForm={updateA}
+                          ></CreateAccountForm>
+                        )}
+                      </DropdownForm>
+                    </div>
+                    <div className='block hover:bg-red-600'>
+                      <button
+                        onClick={() => {
+                          void deleteA(
+                            account.id,
+                            accounts,
+                            setAccounts,
+                            setPages
+                          )
+                        }}
+                      >
+                        <Image
+                          src={delete_}
+                          width={35}
+                          height={35}
+                          alt=''
+                        ></Image>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </section>

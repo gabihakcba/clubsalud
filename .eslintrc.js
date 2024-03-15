@@ -38,6 +38,7 @@ module.exports = {
           attributes: false
         }
       }
-    ]
+    ],
+    '@typescript-eslint/member-delimiter-style': 'off'
   }
 }
