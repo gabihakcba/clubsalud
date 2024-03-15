@@ -7,6 +7,7 @@ import Image from 'next/image'
 import close from '../.././../public/close.svg'
 
 export function CreateAccountForm({
+  data,
   setIsOpen,
   setAccounts,
   setPages,
@@ -21,13 +22,17 @@ export function CreateAccountForm({
 
   return (
     <form
-      onSubmit={handleSubmit((data) => {
-        void sendForm(
-          data,
-          setIsOpen,
-          setAccounts as Setter,
-          setPages as Setter
-        )
+      onSubmit={handleSubmit((dataForm) => {
+        if (data?.id) {
+          void sendForm(data.id, dataForm, setIsOpen, setAccounts as Setter)
+        } else {
+          void sendForm(
+            dataForm,
+            setIsOpen,
+            setAccounts as Setter,
+            setPages as Setter
+          )
+        }
       })}
       className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id='createForm'
@@ -65,6 +70,7 @@ export function CreateAccountForm({
           form='createForm'
           type='text'
           autoComplete='off'
+          defaultValue={data?.username}
           placeholder='Nombre de usuario'
         ></input>
         {errors?.username && (
@@ -91,6 +97,7 @@ export function CreateAccountForm({
           id='password'
           form='createForm'
           type='password'
+          defaultValue={data?.password}
           className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
           placeholder='******************'
         ></input>
@@ -123,6 +130,7 @@ export function CreateAccountForm({
           id='repeatpassword'
           form='createForm'
           type='password'
+          defaultValue={data?.password}
           className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
           placeholder='******************'
         ></input>
@@ -154,7 +162,7 @@ export function CreateAccountForm({
           name='permissions'
           id='permissions'
           form='createForm'
-          defaultValue={Permissions.OTHER}
+          defaultValue={Permissions[data?.permissions]}
           className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
         >
           <option value={Permissions.OWN}>Propietario</option>
@@ -175,7 +183,7 @@ export function CreateAccountForm({
           className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
           type='submit'
         >
-          Crear
+          {data?.id ? 'Actualizar' : 'Crear'}
         </button>
       </div>
     </form>
