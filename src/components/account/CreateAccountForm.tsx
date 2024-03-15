@@ -3,6 +3,8 @@
 import { type ReactElement } from 'react'
 import { Permissions, type Setter } from 'utils/types'
 import { useForm } from 'react-hook-form'
+import Image from 'next/image'
+import close from '../.././../public/close.svg'
 
 export function CreateAccountForm({
   setIsOpen,
@@ -27,9 +29,20 @@ export function CreateAccountForm({
           setPages as Setter
         )
       })}
-      className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0'
+      className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id='createForm'
     >
+      <button
+        className='z-10 absolute right-2 top-2'
+        onClick={() => setIsOpen((prev: boolean) => !prev)}
+      >
+        <Image
+          src={close}
+          alt='Imagen'
+          width={25}
+          height={25}
+        />
+      </button>
       <div className='mb-4'>
         <label
           className='block text-gray-700 text-base font-bold mb-2'
@@ -155,24 +168,13 @@ export function CreateAccountForm({
         )}
       </div>
       <div className='flex flex-col'>
-        <div className='flex items-stretch justify-start gap-2 flex-col md:flex-row md:items-center md:gap-10'>
-          <button
-            form='createForm'
-            className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
-            type='submit'
-          >
-            Crear
-          </button>
-          <button
-            onClick={() => {
-              setIsOpen((prev: boolean) => !prev)
-            }}
-            className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
-            type='button'
-          >
-            Cancelar
-          </button>
-        </div>
+        <button
+          form='createForm'
+          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+          type='submit'
+        >
+          Crear
+        </button>
       </div>
     </form>
   )
