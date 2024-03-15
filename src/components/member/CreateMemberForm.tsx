@@ -1,6 +1,8 @@
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Setter } from 'utils/types'
+import Image from 'next/image'
+import close from '../.././../public/close.svg'
 
 export function CreateMemberForm({
   setIsOpen,
@@ -20,9 +22,20 @@ export function CreateMemberForm({
       onSubmit={handleSubmit((data) => {
         void sendForm(data, setIsOpen, setMembers as Setter, setPages as Setter)
       })}
-      className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0'
+      className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id='createForm'
     >
+      <button
+        className='z-10 absolute right-2 top-2'
+        onClick={() => setIsOpen((prev: boolean) => !prev)}
+      >
+        <Image
+          src={close}
+          alt='Imagen'
+          width={25}
+          height={25}
+        />
+      </button>
       <div className='mb-2'>
         <label
           className='block text-gray-700 text-base font-bold mb-2'
@@ -278,24 +291,13 @@ export function CreateMemberForm({
         )}
       </div>
       <div className='flex flex-col'>
-        <div className='flex items-stretch justify-between flex-col sm:flex-row sm:items-center'>
-          <button
-            form='createForm'
-            className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
-            type='submit'
-          >
-            Crear
-          </button>
-          <button
-            onClick={() => {
-              setIsOpen((prev) => !prev)
-            }}
-            className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
-            type='button'
-          >
-            Cancelar
-          </button>
-        </div>
+        <button
+          form='createForm'
+          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+          type='submit'
+        >
+          Crear
+        </button>
       </div>
     </form>
   )
