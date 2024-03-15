@@ -46,8 +46,17 @@ body {
     @apply inline-block align-baseline font-bold;
     @apply text-sm text-blue-500 hover:text-blue-800;
   }
+}
 
-  .inputError {
-    @apply text-red-700 block;
-  }
+.inputError {
+  @apply text-red-700 block;
+}
+
+.scrollHidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.example::-webkit-scrollbar {
+  display: none;
 }
