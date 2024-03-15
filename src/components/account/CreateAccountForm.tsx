@@ -162,7 +162,7 @@ export function CreateAccountForm({
           name='permissions'
           id='permissions'
           form='createForm'
-          defaultValue={Permissions[data?.permissions]}
+          defaultValue={Permissions[data?.permissions || 'OTHER']}
           className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
         >
           <option value={Permissions.OWN}>Propietario</option>
