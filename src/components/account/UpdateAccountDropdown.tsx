@@ -1,37 +1,78 @@
 'use client'
 
 import { type ReactElement, useState } from 'react'
-import { createAccount } from 'queries/accounts'
+import { updateAccount, deleteAccount } from 'queries/accounts'
+import { Button } from 'components/Buttons'
 import {
   type Account,
   type CreateAccount,
-  Permissions,
-  type Setter
+  type Setter,
+  type UpdateAccount,
+  type QueriesResponse
 } from 'utils/types'
+
+import { Permissions } from 'utils/types'
 import { calculatePages, APP } from 'utils/const'
 import { type FieldValues, useForm } from 'react-hook-form'
 
-const create = async (
-  data: FieldValues,
-  setIsOpen: Setter,
+const deleteAccountB = async (
+  id: number,
+  accounts: Account[],
   setAccounts: Setter,
-  setPages: Setter
+  setPages: Setter,
+  setIsOpen: Setter
 ): Promise<void> => {
-  const newUser: CreateAccount = data as CreateAccount
-
-  const response = await createAccount(newUser)
+  const response: QueriesResponse = await deleteAccount(id)
   if (response.status === 200) {
-    setIsOpen((isOpen: boolean) => !isOpen)
-    setAccounts((prevAccounts: Account[]) => {
-      setPages(calculatePages(prevAccounts.length + 1, APP))
-      return [...prevAccounts, response.data]
+    const newAccounts: Account[] = [...accounts]
+    const indexF: (e: Account) => boolean = (e: Account): boolean =>
+      Number(e.id) === Number(id)
+    const index: number = newAccounts.findIndex(indexF)
+    const deletedAccount: Account[] = newAccounts.splice(index, 1)
+    setIsOpen((prev: boolean) => !prev)
+    setAccounts((odlAccunts: Account[]) => {
+      setPages(calculatePages(odlAccunts.length - 1, APP))
+      return newAccounts
     })
+    console.log(deletedAccount)
   } else {
-    console.log('Client: error on createAccount')
+    console.log('Client: error on deleteAccount')
   }
 }
 
-export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
+const update = async (
+  id: number,
+  setIsOpen: Setter,
+  setAccounts: Setter,
+  data: FieldValues,
+  accounts: Account[]
+): Promise<void> => {
+  const newAccount: UpdateAccount = {
+    id,
+    ...(data as CreateAccount)
+  }
+
+  const response: QueriesResponse = await updateAccount(newAccount)
+  if (response.status === 200) {
+    const newAccounts: Account[] = accounts.map((obj) => {
+      if (obj.id === response.data.id) {
+        return newAccount
+      }
+      return obj
+    })
+    setAccounts(newAccounts)
+    setIsOpen((prev: boolean) => !prev)
+  } else {
+    console.log('Client: error on updateAccount: ')
+  }
+}
+
+export function UpdateAccountDropdown({
+  account,
+  setAccounts,
+  accounts,
+  setPages
+}: any): ReactElement {
   const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const {
@@ -42,34 +83,32 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
   } = useForm()
 
   return (
-    <div className={'flex flex-col w-full mb-5 md:m-2 md:w-max md:mr-5'}>
-      {!isOpen && (
-        <button
-          onClick={() => {
-            setIsOpen((prev) => !prev)
-          }}
-          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
-          type='button'
-        >
-          Crear Cuenta
-        </button>
-      )}
+    <div className={'flex flex-col w-full'}>
+      <Button
+        onAction={() => {
+          setIsOpen((prev) => !prev)
+        }}
+        text='Actualizar'
+        hover='hover:bg-yellow-500'
+        bg=''
+      ></Button>
       {isOpen && (
         <form
           onSubmit={handleSubmit((data) => {
-            void create(
-              data,
+            void update(
+              account.id as number,
               setIsOpen,
               setAccounts as Setter,
-              setPages as Setter
+              data,
+              accounts as Account[]
             )
           })}
-          className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max absolute'
-          id='createForm'
+          id='updateForm'
+          className='w-full sm:w-max bg-gray-500 shadow-md rounded px-8 pt-6 pb-8 h-max absolute left-0 right-0 bottom-0 top-0 ml-auto mr-auto mb-auto mt-auto'
         >
           <div className='mb-4'>
             <label
-              className='block text-gray-700 text-base font-bold mb-2'
+              className='block text-white text-base font-bold mb-2'
               htmlFor='username'
             >
               Nombre de Usuario
@@ -78,16 +117,16 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
               {...register('username', {
                 required: {
                   value: true,
-                  message: 'El nombre de usuario es requerido'
+                  message: 'Nombre de usuario requerido'
                 }
               })}
+              form='updateForm'
+              defaultValue={account.username}
               name='username'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               id='username'
-              form='createForm'
               type='text'
-              autoComplete='off'
-              placeholder='Nombre de usuario'
+              placeholder={account.username}
             ></input>
             {errors?.username && (
               <span className='inputError'>
@@ -97,7 +136,7 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
           </div>
           <div className='mb-6'>
             <label
-              className='block text-gray-700 text-base font-bold mb-2'
+              className='block text-white text-base font-bold mb-2'
               htmlFor='password'
             >
               Contraseña
@@ -106,14 +145,15 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
               {...register('password', {
                 required: {
                   value: true,
-                  message: 'La contraseña es requerida'
+                  message: 'Contraseña requerida'
                 }
               })}
+              form='updateForm'
+              defaultValue={account.password}
               name='password'
-              id='password'
-              form='createForm'
-              type='password'
               className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
+              id='password'
+              type='password'
               placeholder='******************'
             ></input>
             {errors?.password && (
@@ -124,7 +164,7 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
           </div>
           <div className='mb-6'>
             <label
-              className='block text-gray-700 text-base font-bold mb-2'
+              className='block text-white text-base font-bold mb-2'
               htmlFor='repeatpassword'
             >
               Repetir Contraseña
@@ -133,7 +173,7 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
               {...register('repeatpassword', {
                 required: {
                   value: true,
-                  message: 'Confirmar la contraseña es requerido'
+                  message: 'Repetir contraseña es requerido'
                 },
                 validate: (value) => {
                   return (
@@ -142,11 +182,12 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
                   )
                 }
               })}
+              form='updateForm'
+              defaultValue={account.password}
               name='repeatpassword'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               id='repeatpassword'
-              form='createForm'
               type='password'
-              className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
               placeholder='******************'
             ></input>
             {errors?.repeatpassword && (
@@ -157,7 +198,7 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
           </div>
           <div className='mb-6'>
             <label
-              className='block text-gray-700 text-base font-bold mb-2'
+              className='block text-white text-base font-bold mb-2'
               htmlFor='permisos'
             >
               Permisos
@@ -166,18 +207,18 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
               {...register('permissions', {
                 required: {
                   value: true,
-                  message: 'Los permisos son requeridos'
+                  message: 'Permisos es requerido'
                 },
                 validate: (value) => {
                   return (
-                    value !== 'OTHER' ||
+                    value !== Permissions.OTHER ||
                     'Debe seleccionar los permisos adecuados'
                   )
                 }
               })}
+              form='updateForm'
               name='permissions'
               id='permissions'
-              form='createForm'
               defaultValue={Permissions.OTHER}
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
             >
@@ -194,24 +235,39 @@ export function CreateDropdown({ setAccounts, setPages }: any): ReactElement {
             )}
           </div>
           <div className='flex flex-col'>
-            <div className='flex items-stretch justify-between flex-col sm:flex-row sm:items-center'>
+            <div className='flex items-stretch sm:items-center justify-between flex-col sm:flex-row'>
               <button
-                form='createForm'
-                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+                form='updateForm'
+                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
                 type='submit'
               >
-                Crear
+                Enviar
               </button>
               <button
                 onClick={() => {
                   setIsOpen((prev) => !prev)
                 }}
-                className='mb-2 sm:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+                className='mb-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
                 type='button'
               >
                 Cancelar
               </button>
             </div>
+            <button
+              onClick={() => {
+                void deleteAccountB(
+                  account.id as number,
+                  accounts as Account[],
+                  setAccounts as Setter,
+                  setPages as Setter,
+                  setIsOpen
+                )
+              }}
+              className='hover:bg-red-500 border border-red-500 flex flex-row rounded w-full p-2'
+              type='button'
+            >
+              Eliminar
+            </button>
           </div>
         </form>
       )}

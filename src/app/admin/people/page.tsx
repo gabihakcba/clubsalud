@@ -1,11 +1,11 @@
 'use client'
 
-import { CreateDropdown } from 'components/account/CreateDropdown'
+import { CreateAccountDropdown } from 'components/account/CreateAccountDropdown'
 import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
 import { type ReactElement, useEffect, useState } from 'react'
 import { getAccounts, getTotalPagesA } from 'queries/accounts'
 import { APP } from 'utils/const'
-import { Menu } from 'asserts/svgs/Menu'
+import { Menu } from '../../../../public/svgs/Menu'
 import {
   type Account,
   type Limits,
@@ -13,7 +13,9 @@ import {
   type QueriesResponse
 } from 'utils/types'
 import { Permissions } from 'utils/types'
-// import { Info } from 'components/info'
+import { Info } from 'components/Info'
+import { UpdateAccountDropdown } from 'components/account/UpdateAccountDropdown'
+import { UpdateMemberDropdown } from 'components/member/UpdateMemberDropdown'
 
 const setAccountsElems = async (
   setAccounts: Setter,
@@ -65,10 +67,10 @@ export default function People(): ReactElement {
           </button>
           {drop && (
             <div className='flex flex-col absolute top-16 left-4 w-max bg-white md:bg-transparent md:top-auto md:left-auto md:relative md:flex-row md:w-full'>
-              <CreateDropdown
+              <CreateAccountDropdown
                 setAccounts={setAccounts}
                 setPages={setPages}
-              ></CreateDropdown>
+              ></CreateAccountDropdown>
               <button
                 onClick={() => {
                   void setAccountsElems(setAccounts)
@@ -162,12 +164,17 @@ export default function People(): ReactElement {
                     ></input>
                   </div>
                   <div className='flex flex-row'>
-                    {/* <Info
-                      account={account}
-                      setAccounts={setAccounts}
-                      accounts={accounts}
-                      setPages={setPages}
-                    ></Info> */}
+                    <Info>
+                      <UpdateAccountDropdown
+                        account={account}
+                        setAccounts={setAccounts}
+                        accounts={accounts}
+                        setPages={setPages}
+                      ></UpdateAccountDropdown>
+                      <UpdateMemberDropdown
+                      // member={}
+                      ></UpdateMemberDropdown>
+                    </Info>
                   </div>
                 </div>
               </section>

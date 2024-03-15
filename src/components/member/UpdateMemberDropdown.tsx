@@ -1,13 +1,14 @@
 'use client'
 
 import { type ReactElement, useState } from 'react'
-import { deleteMember } from 'queries/members'
+import { deleteMember, updateMember } from 'queries/members'
 import { Button } from 'components/Buttons'
 import {
   type CreateMember,
   type Member,
   type Setter,
-  type QueriesResponse
+  type QueriesResponse,
+  MemberSate
 } from 'utils/types'
 import { calculatePages, APP, formatDate } from 'utils/const'
 import { type FieldValues, useForm } from 'react-hook-form'
@@ -49,24 +50,23 @@ const update = async (
     id,
     ...dataMember
   }
-  console.log(newMember)
-  // const response: QueriesResponse = await updateMember(newMember)
-  // if (response.status === 200) {
-  //   const newMembers: Array<Member> = members.map(obj => {
-  //     if (obj.id === response.data.id) {
-  //       return newMember;
-  //     }
-  //     return obj;
-  //   });
-  //   setMembers(newMembers)
-  //   setIsOpen((prev: boolean) => !prev)
-  // }
-  // else {
-  //   console.log('Client: error on updateMember: ')
-  // }
+  const response: QueriesResponse = await updateMember(newMember)
+  if (response.status === 200) {
+    const newMembers: Member[] = members.map((obj) => {
+      if (obj.id === response.data.id) {
+        return newMember
+      }
+      return obj
+    })
+    setMembers(newMembers)
+    setIsOpen((prev: boolean) => !prev)
+  } else {
+    console.log('Client: error on updateMember: ')
+    console.log(response.error)
+  }
 }
 
-export function UpdateDropdown({
+export function UpdateMemberDropdown({
   member,
   setMembers,
   members,
@@ -203,7 +203,7 @@ export function UpdateDropdown({
               name='cuit'
               className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               id='cuit'
-              type='text'
+              type='number'
               autoComplete='off'
               placeholder={member.cuit}
             ></input>
@@ -281,7 +281,7 @@ export function UpdateDropdown({
                 }
               })}
               form='updateForm'
-              value={formatDate(
+              defaultValue={formatDate(
                 member.inscriptionDate as string,
                 member.name as string
               )}
@@ -294,6 +294,93 @@ export function UpdateDropdown({
             {errors?.inscriptionDate && (
               <span className='inputError'>
                 {errors.inscriptionDate.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='derivedBy'
+            >
+              Derivado por
+            </label>
+            <input
+              {...register('derivedBy', {
+                required: {
+                  value: true,
+                  message: 'Derivación es requerida'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.derivedBy}
+              name='derivedBy'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='derivedBy'
+              type='text'
+              autoComplete='off'
+            ></input>
+            {errors?.derivedBy && (
+              <span className='inputError'>
+                {errors.derivedBy.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='afiliateNumber'
+            >
+              Número de afiliado
+            </label>
+            <input
+              {...register('afiliateNumber', {
+                required: {
+                  value: true,
+                  message: 'Numero de afiliado es requerido'
+                }
+              })}
+              form='updateForm'
+              defaultValue={member.afiliateNumber}
+              name='afiliateNumber'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='afiliateNumber'
+              type='number'
+              autoComplete='off'
+            ></input>
+            {errors?.afiliateNumber && (
+              <span className='inputError'>
+                {errors.afiliateNumber.message as string}
+              </span>
+            )}
+          </div>
+          <div className='mb-2'>
+            <label
+              className='block text-white text-base font-bold mb-2'
+              htmlFor='state'
+            >
+              Estado
+            </label>
+            <select
+              {...register('state', {
+                required: {
+                  value: true,
+                  message: 'Estado es requerido'
+                }
+              })}
+              form='updateForm'
+              defaultValue={MemberSate[member.state]}
+              name='state'
+              className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+              id='state'
+              autoComplete='off'
+            >
+              <option value={MemberSate.ACTIVE}>Activo</option>
+              <option value={MemberSate.INACTIVE}>Inactivo</option>
+              <option value={MemberSate.OTHER}>Otro</option>
+            </select>
+            {errors?.state && (
+              <span className='inputError'>
+                {errors.state.message as string}
               </span>
             )}
           </div>
