@@ -7,7 +7,7 @@ export const calculatePages = (
   return Math.ceil(registers / regPerPage)
 }
 
-export const formatDate = (date: string, name: string): string => {
+export const formatDate = (date: string): string => {
   const [YEAR, MONTH, DAY] = date.split('T')[0].split('-')
   const res = `${YEAR}-${MONTH}-${DAY}`
   return res

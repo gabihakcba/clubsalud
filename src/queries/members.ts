@@ -33,6 +33,30 @@ export const getMembers = async (
   }
 }
 
+export const getMemberById = async (id: number): Promise<QueriesResponse> => {
+  try {
+    const response = await axios.get(`http://localhost:3000/api/members/${id}`)
+    if (response.status === 200) {
+      return {
+        status: response.status,
+        data: response.data
+      }
+    } else {
+      return {
+        status: response.status,
+        data: [],
+        error: response.data
+      }
+    }
+  } catch (error) {
+    return {
+      status: 500,
+      error,
+      data: []
+    }
+  }
+}
+
 export const getTotalPagesM = async (): Promise<QueriesResponse> => {
   try {
     const response = await axios.get(
