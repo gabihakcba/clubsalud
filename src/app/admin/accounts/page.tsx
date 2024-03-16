@@ -26,6 +26,7 @@ import create from '../../../../public/createa.svg'
 import update from '../../../../public/update.svg'
 import menu from '../../../../public/menu.svg'
 import edit from '../../../../public/edit.svg'
+import info from '../../../../public/info.svg'
 import delete_ from '../../../../public/delete_.svg'
 import { type FieldValues } from 'react-hook-form'
 import Link from 'next/link'
@@ -218,7 +219,7 @@ export default function Accounts(): ReactElement {
           </DropdownForm>
         </div>
         <section
-          className='mt-5 ml-5 h-full'
+          className='mt-5 ml-5 h-full scrollHidden'
           style={{
             width: '100%',
             height: '100%',
@@ -239,8 +240,7 @@ export default function Accounts(): ReactElement {
             )
             .slice(limits.start, limits.end)
             .map((account, index) => (
-              <Link
-                href={`/admin/accounts/${account.id}`}
+              <div
                 key={Math.random()}
                 className=''
                 style={{
@@ -266,7 +266,7 @@ export default function Accounts(): ReactElement {
                       disabled
                     ></input>
                   </div>
-                  <div className='flex flex-row w-max gap-2 px-4 justify-evenly items-center'>
+                  <div className='flex flex-row w-max gap-0 px-4 justify-evenly items-center'>
                     <div className='block hover:bg-yellow-600'>
                       <DropdownForm
                         position='static'
@@ -297,15 +297,25 @@ export default function Accounts(): ReactElement {
                       >
                         <Image
                           src={delete_}
-                          width={35}
-                          height={35}
+                          width={30}
+                          height={30}
                           alt=''
                         ></Image>
                       </button>
                     </div>
+                    <div className='block'>
+                      <Link href={`/admin/accounts/${account.id}`}>
+                        <Image
+                          src={info}
+                          width={30}
+                          height={30}
+                          alt='I'
+                        ></Image>
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
         </section>
         <nav className='w-full'>
