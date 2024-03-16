@@ -28,6 +28,7 @@ import menu from '../../../../public/menu.svg'
 import edit from '../../../../public/edit.svg'
 import delete_ from '../../../../public/delete_.svg'
 import { type FieldValues } from 'react-hook-form'
+import Link from 'next/link'
 
 const deleteA = async (
   id: number,
@@ -238,7 +239,8 @@ export default function Accounts(): ReactElement {
             )
             .slice(limits.start, limits.end)
             .map((account, index) => (
-              <section
+              <Link
+                href={`/admin/accounts/${account.id}`}
                 key={Math.random()}
                 className=''
                 style={{
@@ -303,7 +305,7 @@ export default function Accounts(): ReactElement {
                     </div>
                   </div>
                 </div>
-              </section>
+              </Link>
             ))}
         </section>
         <nav className='w-full'>
