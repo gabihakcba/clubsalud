@@ -1,61 +1,59 @@
 'use client'
 
-import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
-import { type ReactElement, useEffect, useState } from 'react'
-import { getAccounts, getTotalPagesA } from 'queries/accounts'
+import { type ReactElement, useState } from 'react'
+import { getAccounts } from 'queries/accounts'
 import { APP } from 'utils/const'
-import {
-  type QueriesResponse,
-  type Account,
-  type Limits,
-  type Permissions,
-  type Setter
-} from 'utils/types'
 import AccountCard from 'components/account/AccountCard'
 import AccountTopbar from 'components/account/AccountTopbar'
+import { useQuery } from '@tanstack/react-query'
+import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
+import { type Permissions } from 'utils/types'
 
-const setAccountsElems = async (
-  setAccounts: Setter,
-  page: number = 0
-): Promise<void> => {
-  const response: QueriesResponse = await getAccounts(page)
-  if (response.status === 200) {
-    setAccounts(response.data)
-  } else {
-    console.log('Client: error on getAccounts')
-  }
-}
-
-const getPages = async (setPages: Setter): Promise<void> => {
-  const response: QueriesResponse = await getTotalPagesA()
-  if (response.status === 200) {
-    setPages(response.data)
-  } else {
-    console.log('Client: error on getTotalPagesA')
-  }
+const getAccountsElems = async (info): Promise<any> => {
+  console.log('z: ', info)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, currentPage, elems, filterName, filterPermissions]: [
+    string,
+    number,
+    number,
+    string,
+    Permissions
+  ] = info.queryKey
+  const response = await getAccounts(
+    currentPage,
+    elems,
+    filterName,
+    filterPermissions
+  )
+  console.log('x')
+  return response.data
 }
 
 export default function Accounts(): ReactElement {
-  const [accounts, setAccounts] = useState<Account[]>([])
-  const [pages, setPages] = useState<number>(1)
+  const [currentPage, setCurrentPage] = useState<number>(1)
   const [filterName, setFilterName] = useState<string>('')
   const [filterPermissions, setFilterPermissions] = useState<Permissions | ''>(
     ''
   )
-  const [limits, setLimits] = useState<Limits>({ start: 0, end: APP })
+  const key = ['acc', currentPage, APP, filterName, filterPermissions]
+  const { data } = useQuery({
+    queryKey: key,
+    queryFn: async (info) => {
+      return await getAccountsElems(info)
+    },
+    refetchOnWindowFocus: false,
+    refetchInterval: 1000 * 60 * 5,
+    refetchIntervalInBackground: false,
+    staleTime: 1000 * 60 * 5
+  })
 
-  useEffect(() => {
-    void setAccountsElems(setAccounts)
-    void getPages(setPages)
-  }, [])
+  const accounts = data?.pages ?? []
 
   return (
     <div className='max-h-dvh h-full w-full flex items-start justify-start flex-row'>
       <main className='mr-5 w-full h-full flex flex-col items-start justify-between'>
         <div className='w-full h-max p-2 bg-white border-b-2 border-gray-400'>
           <AccountTopbar
-            setAccounts={setAccounts}
-            setPages={setPages}
             setFilterName={setFilterName}
             setFilterPermissions={setFilterPermissions}
           ></AccountTopbar>
@@ -73,15 +71,8 @@ export default function Accounts(): ReactElement {
             overflow: 'scroll'
           }}
         >
-          {accounts
-            .filter((account) =>
-              account.permissions.includes(filterPermissions)
-            )
-            .filter((account) =>
-              account.username.toLowerCase().includes(filterName.toLowerCase())
-            )
-            .slice(limits.start, limits.end)
-            .map((account, index) => (
+          {accounts.length > 0 &&
+            accounts.map((account) => (
               <div
                 key={Math.random()}
                 className=''
@@ -92,17 +83,16 @@ export default function Accounts(): ReactElement {
               >
                 <AccountCard
                   account={account}
-                  setAccounts={setAccounts}
                   accounts={accounts}
-                  setPages={setPages}
                 ></AccountCard>
               </div>
             ))}
         </section>
-        <nav className='w-full'>
+        <nav className='w-full flex flex-row justify-center'>
           <AccountsPaginationBar
-            pagesNumber={pages}
-            setLimits={setLimits}
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            totalPages={data?.totalPages ?? 1}
           ></AccountsPaginationBar>
         </nav>
       </main>
