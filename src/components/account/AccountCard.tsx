@@ -9,9 +9,10 @@ import { deleteAccount } from 'queries/accounts'
 import { useModal } from 'utils/useModal'
 import Modal from 'components/Modal'
 import InfoButton from 'components/InfoButton'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-const deleteA = async (id: number, accounts: Account[]): Promise<any> => {
-  const response = await deleteAccount(id)
+const deleteA = async (info: { id: number }): Promise<Account> => {
+  const response = await deleteAccount(info.id)
   return response.data
 }
 
@@ -22,6 +23,13 @@ interface params {
 
 function AccountCard({ account, accounts }: params): ReactElement {
   const [editM, openEdit, closeEdit] = useModal(false)
+  const query = useQueryClient()
+  const { mutate: mutateD } = useMutation({
+    mutationFn: deleteA,
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['acc'] })
+    }
+  })
 
   return (
     <div className='bg-white shadow-md rounded p-3 mb-5 h-max w-min'>
@@ -65,7 +73,7 @@ function AccountCard({ account, accounts }: params): ReactElement {
         <div className='block hover:bg-red-600'>
           <button
             onClick={() => {
-              void deleteA(account.id, accounts)
+              mutateD({ id: account.id })
             }}
           >
             <Image
