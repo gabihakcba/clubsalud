@@ -1,6 +1,6 @@
 export interface QueriesResponse {
   status: number
-  data: any
+  data?: any
   error?: object
 }
 
@@ -45,11 +45,6 @@ export interface LogIn {
   password: string
 }
 
-export interface Limits {
-  start: number
-  end: number
-}
-
 export interface Member extends CreateMember {
   id: number
 }
@@ -69,6 +64,19 @@ export interface CreateMember {
   state: MemberSate
   remainingClasses?: number
   accountId: number
+}
+
+export interface Instructor {
+  id: number
+  name: string
+  lastName: string
+  dni: number
+  cuit?: number
+  phoneNumber: number
+  email: string
+  degree: boolean
+  cbu?: number
+  alias?: string
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>

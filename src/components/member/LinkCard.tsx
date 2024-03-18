@@ -1,196 +1,503 @@
-'use client'
-
-import { useEffect, type ReactElement, useState } from 'react'
-import { getMemberById } from 'queries/members'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getMemberById, updateMember } from 'queries/members'
+import { useState, type ReactElement } from 'react'
 import { formatDate } from 'utils/const'
-import { type Member, type Setter } from 'utils/types'
+import { MemberSate, type Member, type CreateMember } from 'utils/types'
+import Image from 'next/image'
+import edit from '../../../public/edit.svg'
+import { MemberState } from '@prisma/client'
+import { type FieldValues, useForm } from 'react-hook-form'
+
+const update = async ({
+  id,
+  data
+}: {
+  id: number
+  data: FieldValues
+}): Promise<Member> => {
+  const dataMember: CreateMember = data as CreateMember
+  const newMember: Member = {
+    id,
+    ...dataMember
+  }
+  const response = await updateMember(newMember)
+  return response.data
+}
+
+const getInfo = async (info): Promise<any> => {
+  console.log('izi')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, id]: [string, number] = info.queryKey
+  const response = await getMemberById(id)
+  return response.data
+}
 
 interface param {
-  params: {
-    id: string
-  }
+  id: number
+  closeModal: () => void
 }
 
-const get = async (setMember: Setter, id: number): Promise<void> => {
-  const response = await getMemberById(id)
-  if (response.status === 200) {
-    console.log(typeof response.data.inscriptionDate)
-    setMember(response.data)
-  } else {
-    console.log(response.error)
-  }
-}
+export default function LinkCard({ id, closeModal }: param): ReactElement {
+  const [editF, setEditF] = useState<boolean>(false)
+  const { data } = useQuery({
+    queryKey: ['mem', id],
+    queryFn: async (info) => {
+      return await getInfo(info)
+    },
+    staleTime: 1000 * 60 * 5
+  })
 
-export default function LinkCard({ params }: param): ReactElement {
-  const [member, setMember] = useState<Member>()
-  useEffect(() => {
-    void get(setMember, Number(params.id))
-  }, [])
+  const member: Member = data
+
+  const query = useQueryClient()
+
+  const { mutate, isError, isSuccess, isPending } = useMutation({
+    mutationFn: update,
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['mem', id] })
+      setTimeout(closeModal, 500)
+    }
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+    // watch
+  } = useForm()
+
   return (
     <div className='w-max p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'>
-      <div className='flex items-center justify-start mb-4 gap-4'>
-        <div className='flex-shrink-0'>
-          <img
-            className='w-8 h-8 rounded-full'
-            src='/docs/images/people/profile-picture-1.jpg'
-            alt='Neil image'
-          />
-        </div>
-        <h5 className='text-xl font-bold leading-none text-gray-900 dark:text-white'>
-          {member?.name} {member?.lastName} {member?.id}
-        </h5>
-        {/* <button
-            // onClick={}
+      <form
+        action=''
+        id={`member${member?.id}`}
+        onSubmit={handleSubmit((data) => {
+          mutate({ id: member.id, data })
+        })}
+      >
+        <div className='flex items-center justify-end mb-2'>
+          <button
+            onClick={() => {
+              setEditF((prev: boolean) => !prev)
+            }}
+            type='button'
             className='text-sm font-medium text-blue-600 hover:underline dark:text-blue-500'
           >
-            Editar
-          </button> */}
-      </div>
-      <div className='flex flex-row w-max gap-28'>
-        <ul
-          role='list'
-          className='divide-y divide-gray-200 dark:divide-gray-700'
-        >
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  DNI
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.dni}
-              </div>
-            </div>
-          </li>
+            <Image
+              src={edit}
+              width={30}
+              height={30}
+              alt='E'
+            ></Image>
+          </button>
+        </div>
+        <div className='flex flex-row w-[60rem] gap-28'>
+          <ul
+            role='list'
+            className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
+          >
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                ID
+              </label>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                {member?.id}
+              </label>
+            </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Nombre
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.name}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='text'
+                    id='name'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.name}
+                    {...register('name', {
+                      required: {
+                        value: true,
+                        message: 'El nombre requerido'
+                      }
+                    })}
+                  />
+                  {errors?.name && (
+                    <span className='inputError'>
+                      {errors.name.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  CUIT
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.cuit}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Apellido
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.lastName}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='text'
+                    id='lastName'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.lastName}
+                    {...register('lastName', {
+                      required: {
+                        value: true,
+                        message: 'Apellido es requerido'
+                      }
+                    })}
+                  />
+                  {errors?.lastName && (
+                    <span className='inputError'>
+                      {errors.lastName.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Número de teléfono
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.phoneNumber}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                DNI
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.dni}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='number'
+                    id='dni'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.dni}
+                    {...register('dni', {
+                      required: {
+                        value: true,
+                        message: 'DNI es requerido'
+                      }
+                    })}
+                  />
+                  {errors?.dni && (
+                    <span className='inputError'>
+                      {errors.dni.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  DNI
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.dni}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                CUIT
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.cuit}
+                </label>
+              )}
+              {editF && (
+                <input
+                  type='number'
+                  id='cuit'
+                  form={`member${member?.id}`}
+                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  defaultValue={member?.cuit}
+                  {...register('cuit')}
+                />
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Direccion
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.address}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Número de teléfono
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.phoneNumber}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='number'
+                    id='phoneNumber'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.phoneNumber}
+                    required
+                    {...register('phoneNumber', {
+                      required: {
+                        value: true,
+                        message: 'Número de teléfono es requerido'
+                      }
+                    })}
+                  />
+                  {errors?.phoneNumber && (
+                    <span className='inputError'>
+                      {errors.phoneNumber.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Fecha de inscripción
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.inscriptionDate
-                  ? formatDate(member?.inscriptionDate.toString())
-                  : ''}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Dirección
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.address}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='text'
+                    id='address'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.address}
+                  />
+                  {errors?.address && (
+                    <span className='inputError'>
+                      {errors.address.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Fecha de cancelación
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.cancelationDate
-                  ? formatDate(member?.cancelationDate?.toString())
-                  : ''}
-              </div>
-            </div>
-          </li>
-        </ul>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Fecha de inscripción
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {formatDate(member?.inscriptionDate.toString())}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='date'
+                    id='inscriptionDate'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={formatDate(
+                      member?.inscriptionDate?.toString()
+                    )}
+                    {...register('inscriptionDate', {
+                      required: {
+                        value: true,
+                        message: 'Fecha es requerida'
+                      }
+                    })}
+                  />
+                  {errors?.inscriptionDate && (
+                    <span className='inputError'>
+                      {errors.inscriptionDate.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+          </ul>
 
-        <ul
-          role='list'
-          className='divide-y divide-gray-200 dark:divide-gray-700'
-        >
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Motivo de cancelación
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.cancelationReason ?? ''}
-              </div>
-            </div>
-          </li>
+          <ul
+            role='list'
+            className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
+          >
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Fecha de cancelación
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.cancelationDate
+                    ? formatDate(member?.cancelationDate?.toString())
+                    : ''}
+                </label>
+              )}
+              {editF && (
+                <input
+                  type='date'
+                  id='cancelationDate'
+                  form={`member${member?.id}`}
+                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  defaultValue={formatDate(member?.cancelationDate?.toString())}
+                  {...register('cancelationDate')}
+                />
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Derivado por
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.derivedBy}
-              </div>
-            </div>
-          </li>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Motivo de cancelación
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.cancelationReason ?? ''}
+                </label>
+              )}
+              {editF && (
+                <input
+                  type='text'
+                  id='cancelationReason'
+                  form={`member${member?.id}`}
+                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  defaultValue={member?.cancelationReason}
+                  {...register('cancelationReason')}
+                />
+              )}
+            </li>
 
-          <li className='py-3 sm:py-4'>
-            <div className='flex items-center justify-between gap-20'>
-              <div className=''>
-                <p className='text-sm font-medium text-gray-900 truncate dark:text-white'>
-                  Número de afiliado
-                </p>
-              </div>
-              <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                {member?.afiliateNumber}
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Derivado por
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.derivedBy}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='text'
+                    id='derivedBy'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.derivedBy}
+                    {...register('derivedBy', {
+                      required: {
+                        value: true,
+                        message: 'Derivación es requerida'
+                      }
+                    })}
+                  />
+                  {errors?.derivedBy && (
+                    <span className='inputError'>
+                      {errors.derivedBy.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Número de afiliado
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.afiliateNumber}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <input
+                    type='number'
+                    id='afiliateNumber'
+                    form={`member${member?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={member?.afiliateNumber}
+                    {...register('afiliateNumber', {
+                      required: {
+                        value: true,
+                        message: 'Numero de afiliado es requerido'
+                      }
+                    })}
+                  />
+                  {errors?.afiliateNumber && (
+                    <span className='inputError'>
+                      {errors.afiliateNumber.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Clases remanentes
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.remainingClasses}
+                </label>
+              )}
+              {editF && (
+                <input
+                  type='number'
+                  id='remainingClasses'
+                  form={`member${member?.id}`}
+                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  defaultValue={member?.remainingClasses}
+                  {...register('remainingClasses')}
+                />
+              )}
+            </li>
+
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                Estado
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {member?.state}
+                </label>
+              )}
+              {editF && (
+                <select
+                  id='state'
+                  form={`member${member?.id}`}
+                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                  defaultValue={MemberState[member?.state]}
+                  {...register('state')}
+                >
+                  <option value={MemberSate.ACTIVE}>Activo</option>
+                  <option value={MemberState.INACTIVE}>Inactivo</option>
+                  <option value={MemberState.OTHER}>Otro</option>
+                </select>
+              )}
+            </li>
+          </ul>
+        </div>
+        {editF && (
+          <div className='w-full flex flex-col items-end'>
+            <button
+              className='blueButtonForm w-max'
+              form={`member${member?.id}`}
+              type='submit'
+            >
+              Enviar
+            </button>
+            {isSuccess && <p className='w-max text-green-400'>OK</p>}
+            {isPending && (
+              <p className='w-max text-yellow-400'>Modificando...</p>
+            )}
+            {isError && <p className='w-max text-red-400'>Failed!</p>}
+          </div>
+        )}
+      </form>
     </div>
   )
 }

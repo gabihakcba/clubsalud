@@ -6,6 +6,11 @@ import {
 import { calculatePages, APP } from 'utils/const'
 import axios from 'axios'
 
+interface GetMemResponse {
+  _: Response
+  data: Member
+}
+
 export const getMembers = async (
   page: number = 0
 ): Promise<QueriesResponse> => {
@@ -33,28 +38,8 @@ export const getMembers = async (
   }
 }
 
-export const getMemberById = async (id: number): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.get(`http://localhost:3000/api/members/${id}`)
-    if (response.status === 200) {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    } else {
-      return {
-        status: response.status,
-        data: [],
-        error: response.data
-      }
-    }
-  } catch (error) {
-    return {
-      status: 500,
-      error,
-      data: []
-    }
-  }
+export const getMemberById = async (id: number): Promise<GetMemResponse> => {
+  return await axios.get(`http://localhost:3000/api/members/${id}`)
 }
 
 export const getTotalPagesM = async (): Promise<QueriesResponse> => {
@@ -139,30 +124,8 @@ export const deleteMember = async (id: number): Promise<QueriesResponse> => {
   }
 }
 
-export const updateMember = async (
-  member: Member
-): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.patch('http://localhost:3000/api/members', {
-      ...member
-    })
-    if (response.status === 200) {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    } else {
-      return {
-        status: response.status,
-        data: {},
-        error: response.data
-      }
-    }
-  } catch (error) {
-    return {
-      status: 500,
-      data: 500,
-      error
-    }
-  }
+export const updateMember = async (member: Member): Promise<GetMemResponse> => {
+  return await axios.patch('http://localhost:3000/api/members', {
+    ...member
+  })
 }
