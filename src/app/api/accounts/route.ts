@@ -1,33 +1,30 @@
 import {
   type PrismaClient,
   type Account,
-  type AccountPermissions
+  AccountPermissions
 } from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
-import { APP } from 'utils/const'
 import { type CreateAccount, type UpdateAccount } from 'utils/types'
 
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
-  const page: number = Number(searchParams.get('page'))
-  const start: number = page * APP - APP
-  const end: number = page * APP
+  const page = Number(searchParams.get('page'))
+  const elems = Number(searchParams.get('elems'))
+  const getPages = Number(searchParams.get('getPages'))
+  const filterName = searchParams.get('filterName')
+  const filterPerm = searchParams.get('filterPerm')
   try {
-    /**
-     * page=-1 returns total pages number
-     */
-    if (page === -1) {
+    if (getPages > 0) {
+      // # elems
       const total: number = await db.account.count()
       return new Response(JSON.stringify({ total }), {
         status: 200
       })
-    } else if (page === 0) {
-      /**
-       * page=0 returns all accounts
-       */
+    } else if (page === null) {
+      // all elems
       const users: Account[] = await db.account.findMany()
       const usersFilters: Account[] = []
       users.forEach((user) => {
@@ -42,7 +39,14 @@ export async function GET(req: NextRequest): Promise<Response> {
         status: 200
       })
     } else {
-      const users: Account[] = await db.account.findMany()
+      // page elems
+      const users: Account[] = await db.account.findMany({
+        where: {
+          username: {
+            contains: filterName ?? ''
+          }
+        }
+      })
       const usersFilters: Account[] = []
       users.forEach((user: Account) => {
         usersFilters.push({
@@ -52,12 +56,35 @@ export async function GET(req: NextRequest): Promise<Response> {
           password: user.password
         })
       })
-      const usersPage: Account[] = usersFilters.slice(start, end)
-      return new Response(JSON.stringify(usersPage), {
-        status: 200
-      })
+      let fil: Account[] = []
+      if (filterPerm !== null && filterPerm in AccountPermissions) {
+        fil = usersFilters.filter(
+          (user) => user.permissions === AccountPermissions[filterPerm]
+        )
+      } else {
+        fil = usersFilters
+      }
+      const start: number = (page - 1) * elems
+      const end: number = page * elems
+      const usersPage: Account[] = fil.slice(start, end)
+      const total: number = fil.length
+      const pages: number = Math.ceil(total / elems)
+      return new Response(
+        JSON.stringify({
+          pages: usersPage,
+          totalPages: pages,
+          previousPage: page > 1 ? page - 1 : undefined,
+          currentPage: page,
+          nextPage: page < pages ? page + 1 : undefined,
+          perPAge: elems
+        }),
+        {
+          status: 200
+        }
+      )
     }
   } catch (error) {
+    console.log(error)
     return new Response(JSON.stringify('Internal Server Error :('), {
       status: 500
     })
@@ -74,6 +101,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log(error)
     return new Response('No se pudo crear el usuario', {
       status: 400
     })

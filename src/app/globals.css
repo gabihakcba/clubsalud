@@ -52,6 +52,18 @@ body {
   @apply text-red-700 block;
 }
 
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .scrollHidden {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -59,4 +71,20 @@ body {
 
 .example::-webkit-scrollbar {
   display: none;
+}
+
+.bb {
+  border: 2px solid blue;
+}
+
+.br {
+  border: 2px solid red;
+}
+
+.bg {
+  border: 2px solid green;
+}
+
+.by {
+  border: 2px solid yellow;
 }

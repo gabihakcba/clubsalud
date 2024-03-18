@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -67,297 +67,297 @@ enum HealthPlanType {
 
 model Account {
   // Fields
-  id Int @id @default(autoincrement())
-  username String @unique
-  password String 
-  permissions AccountPermissions
+  id                   Int                @id @default(autoincrement())
+  username             String             @unique
+  password             String
+  permissions          AccountPermissions
   // Relations
-  notificationSender Notification[] @relation(name: "sender")
-  notifiactionReceiver Notification[] @relation(name: "receiver")
-  instructorAccount Instructor[] @relation(name: "instructorAccount")
-  memberAccount Member[] @relation(name: "memberAccount")
+  notificationSender   Notification[]     @relation(name: "sender")
+  notifiactionReceiver Notification[]     @relation(name: "receiver")
+  instructorAccount    Instructor[]       @relation(name: "instructorAccount")
+  memberAccount        Member[]           @relation(name: "memberAccount")
 }
 
 model Doctor {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  lastName String
-  dni Int
-  cuit Int
-  phoneNumber Int
+  id             Int          @id @default(autoincrement())
+  name           String
+  lastName       String
+  dni            Int
+  cuit           Int
+  phoneNumber    Int
   licenseNumber1 Int
   licenseNumber2 Int?
-  email String
-  isExternal Boolean
+  email          String
+  isExternal     Boolean
   // Relations
-  derivation Derivation[] @relation(name: "derivationDoctor")
+  derivation     Derivation[] @relation(name: "derivationDoctor")
 }
 
 model Instructor {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  lastName String
-  dni Int
-  cuit Int?
-  phoneNumber Int
-  email String
-  degree Boolean
-  cbu Int?
-  alias String?
+  id                 Int                 @id @default(autoincrement())
+  name               String
+  lastName           String
+  dni                Int
+  cuit               Int?
+  phoneNumber        Int
+  email              String
+  degree             Boolean
+  cbu                Int?
+  alias              String?
   // Foreignkeys
-  accountId Int
-  account Account @relation(fields: [accountId], references: [id], name: "instructorAccount")
+  accountId          Int
+  account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount")
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
-  givenClass OpenClass[] @relation(name: "givenClassInstructor")
-  classInChrage Class[] @relation(name: "instructorInCharge")
-  classSubstitute Class[] @relation(name: "instructorSubstitute")
+  givenClass         OpenClass[]         @relation(name: "givenClassInstructor")
+  classInChrage      Class[]             @relation(name: "instructorInCharge")
+  classSubstitute    Class[]             @relation(name: "instructorSubstitute")
 }
 
 model Member {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  lastName String
-  dni Int
-  cuit Int?
-  phoneNumber Int
-  address String
-  inscriptionDate DateTime @default(now())
-  cancelationDate DateTime?
-  cancelationReason String?
-  derivedBy String
-  afiliateNumber Int
-  state MemberState
-  remainingClasses Int?
+  id                 Int                    @id @default(autoincrement())
+  name               String
+  lastName           String
+  dni                Int
+  cuit               Int?
+  phoneNumber        Int
+  address            String
+  inscriptionDate    DateTime               @default(now())
+  cancelationDate    DateTime?
+  cancelationReason  String?
+  derivedBy          String
+  afiliateNumber     Int
+  state              MemberState
+  remainingClasses   Int?
   // Foreignkeys
-  accountId Int
-  medicalRecordId Int? @unique
-  account Account @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
-  medicalRecord MedicalRecord? @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
+  accountId          Int
+  medicalRecordId    Int?                   @unique
+  account            Account                @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
+  medicalRecord      MedicalRecord?         @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
   // Relations
-  memberAttendance Attendance[] @relation(name: "attendanceMember")
-  memberReservation Reservation[] @relation(name: "reservationMember")
-  memberSubscription Subscription[] @relation(name: "subscriptionMember")
-  planSubscribed HealthPlanSubscribed[] @relation(name: "planMember")
-  payment Payment[] @relation(name: "paymentMember")
-  billedConsultation BilledConsultation[] @relation(name: "consultationMember")
-  derivation Derivation[] @relation(name: "derivationMember")
+  memberAttendance   Attendance[]           @relation(name: "attendanceMember")
+  memberReservation  Reservation[]          @relation(name: "reservationMember")
+  memberSubscription Subscription[]         @relation(name: "subscriptionMember")
+  planSubscribed     HealthPlanSubscribed[] @relation(name: "planMember")
+  payment            Payment[]              @relation(name: "paymentMember")
+  billedConsultation BilledConsultation[]   @relation(name: "consultationMember")
+  derivation         Derivation[]           @relation(name: "derivationMember")
 }
 
 model InstructorPayment {
   // Fields
-  id Int @id @default(autoincrement())
-  amount Float
+  id             Int        @id @default(autoincrement())
+  amount         Float
   scheduledHours Float
-  workedHours Float
-  workedMount DateTime @default(now())
-  paymentDate DateTime @default(now())
-  paymentState Boolean @default(false)
-  pricePerHoour Float
+  workedHours    Float
+  workedMount    DateTime   @default(now())
+  paymentDate    DateTime   @default(now())
+  paymentState   Boolean    @default(false)
+  pricePerHoour  Float
   // Foreignkeys
-  instructorId Int
-  instructor Instructor @relation(fields: [instructorId], references: [id], name: "instructorPayment")
+  instructorId   Int
+  instructor     Instructor @relation(fields: [instructorId], references: [id], name: "instructorPayment")
 }
 
 model OpenClass {
   // Fields
-  id Int @id @default(autoincrement())
-  date DateTime @default(now())
-  given Boolean @default(false)
+  id               Int           @id @default(autoincrement())
+  date             DateTime      @default(now())
+  given            Boolean       @default(false)
   // Foreignkeys
-  instructorId Int?
-  classId Int
-  instructor Instructor? @relation(fields: [instructorId], references: [id], name: "givenClassInstructor")
-  class Class @relation(fields: [classId], references: [id], name: "givenClassClass")
+  instructorId     Int?
+  classId          Int
+  instructor       Instructor?   @relation(fields: [instructorId], references: [id], name: "givenClassInstructor")
+  class            Class         @relation(fields: [classId], references: [id], name: "givenClassClass")
   // Relations
-  attendanceClass Attendance[] @relation(name: "attendanceClass")
+  attendanceClass  Attendance[]  @relation(name: "attendanceClass")
   reservationClass Reservation[] @relation(name: "reservationClass")
 }
 
 model Attendance {
   // Fields
-  id Int @id @default(autoincrement())
-  date DateTime @default(now())
+  id       Int       @id @default(autoincrement())
+  date     DateTime  @default(now())
   // Foreignkeys
-  classId Int
+  classId  Int
   memberId Int
-  class OpenClass @relation(fields: [classId], references: [id], name: "attendanceClass")
-  member Member @relation(fields: [memberId], references: [id], name: "attendanceMember")
+  class    OpenClass @relation(fields: [classId], references: [id], name: "attendanceClass")
+  member   Member    @relation(fields: [memberId], references: [id], name: "attendanceMember")
 }
 
 model Class {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  duration Float
-  days Days[]
-  state ClassState
+  id                   Int         @id @default(autoincrement())
+  name                 String
+  duration             Float
+  days                 Days[]
+  state                ClassState
   // Foreignkeys
-  instructorInCharge Int
+  instructorInCharge   Int
   instructorSubstitute Int
-  charge Instructor @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
-  substitute Instructor @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
+  charge               Instructor  @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
+  substitute           Instructor  @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
   // Relations
-  openClass OpenClass[] @relation(name: "givenClassClass")
+  openClass            OpenClass[] @relation(name: "givenClassClass")
 }
 
 model Reservation {
   // Fields
-  id Int @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   // Foreignkeys
   openClassId Int
-  memberId Int
-  openClass OpenClass @relation(fields: [openClassId], references: [id], name: "reservationClass")
-  member Member @relation(fields: [memberId], references: [id], name: "reservationMember")
+  memberId    Int
+  openClass   OpenClass @relation(fields: [openClassId], references: [id], name: "reservationClass")
+  member      Member    @relation(fields: [memberId], references: [id], name: "reservationMember")
 }
 
 model BilledConsultation {
   // Fields
-  id Int @id @default(autoincrement())
-  amount Float
-  date DateTime @default(now())
+  id             Int          @id @default(autoincrement())
+  amount         Float
+  date           DateTime     @default(now())
   // Foreignkeys
-  memberId Int
+  memberId       Int
   subscriptionId Int
-  healthPlanId Int
-  member Member @relation(fields: [memberId], references: [id], name: "consultationMember")
-  subscription Subscription @relation(fields: [subscriptionId], references: [id], name: "consultationSubscription")
-  plan HealthPlan @relation(fields: [healthPlanId], references: [id], name: "consultationPlan")
+  healthPlanId   Int
+  member         Member       @relation(fields: [memberId], references: [id], name: "consultationMember")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], name: "consultationSubscription")
+  plan           HealthPlan   @relation(fields: [healthPlanId], references: [id], name: "consultationPlan")
 }
 
 model Payment {
   // Fields
-  id Int @id @default(autoincrement())
-  amount Float
-  date DateTime @default(now())
+  id             Int          @id @default(autoincrement())
+  amount         Float
+  date           DateTime     @default(now())
   // Foreignkeys
-  memeberId Int
+  memeberId      Int
   subscriptionId Int
-  member Member @relation(fields: [memeberId], references: [id], name: "paymentMember")
-  subscription Subscription @relation(fields: [subscriptionId], references: [id], name: "paymentSubscription")
+  member         Member       @relation(fields: [memeberId], references: [id], name: "paymentMember")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], name: "paymentSubscription")
 }
 
 model Derivation {
   // Fields
-  id Int @id @default(autoincrement())
-  date DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
   diagnosis String
-  guidance String
+  guidance  String
   // Foreingkeys
-  memberId Int
-  doctorId Int
-  member Member @relation(fields: [memberId], references: [id], name: "derivationMember")
-  doctor Doctor @relation(fields: [doctorId], references: [id], name: "derivationDoctor")
+  memberId  Int
+  doctorId  Int
+  member    Member   @relation(fields: [memberId], references: [id], name: "derivationMember")
+  doctor    Doctor   @relation(fields: [doctorId], references: [id], name: "derivationDoctor")
 }
 
 model Notification {
   // Fields
-  id Int @id @default(autoincrement())
-  subject String
-  body String
+  id         Int     @id @default(autoincrement())
+  subject    String
+  body       String
   // Foreignkeys
-  senderId Int
+  senderId   Int
   receiverId Int
-  sender Account @relation(fields: [senderId], references: [id], name: "sender")
-  receiver Account @relation(fields: [receiverId], references: [id], name: "receiver")
+  sender     Account @relation(fields: [senderId], references: [id], name: "sender")
+  receiver   Account @relation(fields: [receiverId], references: [id], name: "receiver")
 }
 
 model Employee {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  lastName String
-  dni Int
-  cuit Int?
-  phoneNumber Int
-  email String
-  position JobPosition
-  contractType ContractType
-  salary Float
-  lastSalaryUpdate DateTime @default(now())
+  id               Int               @id @default(autoincrement())
+  name             String
+  lastName         String
+  dni              Int
+  cuit             Int?
+  phoneNumber      Int
+  email            String
+  position         JobPosition
+  contractType     ContractType
+  salary           Float
+  lastSalaryUpdate DateTime          @default(now())
   // Relations
-  payment EmployeePayment[] @relation(name: "paymentEmployee")
+  payment          EmployeePayment[] @relation(name: "paymentEmployee")
 }
 
 model EmployeePayment {
   // Fields
-  id Int @id @default(autoincrement())
-  hoursWorked Float
-  amount Float
+  id           Int      @id @default(autoincrement())
+  hoursWorked  Float
+  amount       Float
   monthPayment DateTime @default(now())
-  date DateTime @default(now())
-  paid Boolean @default(false)
+  date         DateTime @default(now())
+  paid         Boolean  @default(false)
   // Foreignkeys
-  employeeId Int
-  employee Employee @relation(fields: [employeeId], references: [id], name: "paymentEmployee")
+  employeeId   Int
+  employee     Employee @relation(fields: [employeeId], references: [id], name: "paymentEmployee")
 }
 
 model HealthPlanSubscribed {
   // Fields
-  id Int @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   // Foreignkeys
   memberId Int
-  planId Int
-  member Member @relation(fields: [memberId], references: [id], name: "planMember")
-  plan HealthPlan @relation(fields: [planId], references: [id], name: "planPlan")
+  planId   Int
+  member   Member     @relation(fields: [memberId], references: [id], name: "planMember")
+  plan     HealthPlan @relation(fields: [planId], references: [id], name: "planPlan")
 }
 
 model HealthPlan {
   // Fields
-  id Int @id @default(autoincrement())
-  name String
-  type HealthPlanType?
+  id                     Int                    @id @default(autoincrement())
+  name                   String
+  type                   HealthPlanType?
   paymentPerConsultation Float
   // Relations
-  planSubscription HealthPlanSubscribed[] @relation(name: "planPlan")
-  billedConsultation BilledConsultation[] @relation(name: "consultationPlan")
+  planSubscription       HealthPlanSubscribed[] @relation(name: "planPlan")
+  billedConsultation     BilledConsultation[]   @relation(name: "consultationPlan")
 }
 
 model MedicalRecord {
   // Fields
-  id Int @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   medinttCode Int
   description String
   // Relations
-  member Member? @relation(name: "medicalRecord")
+  member      Member? @relation(name: "medicalRecord")
 }
 
 model Subscription {
   // Fields
-  id Int @id @default(autoincrement())
-  date DateTime @default(now())
-  paid Boolean
-  remaining Float
+  id                 Int                  @id @default(autoincrement())
+  date               DateTime             @default(now())
+  paid               Boolean
+  remaining          Float
   // Foreignkeys
-  promotionId Int
-  memberId Int
-  promotion Promotion @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion")
-  member Member @relation(fields: [memberId], references: [id], name: "subscriptionMember")
+  promotionId        Int
+  memberId           Int
+  promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion")
+  member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember")
   // Relations
-  payment Payment[] @relation(name: "paymentSubscription")
+  payment            Payment[]            @relation(name: "paymentSubscription")
   billedConsultation BilledConsultation[] @relation(name: "consultationSubscription")
 }
 
 model Promotion {
   // Fields
-  id Int @id @default(autoincrement())
-  title String
-  description String
+  id                  Int            @id @default(autoincrement())
+  title               String
+  description         String
   amountWeeklyClasses Int
-  amountPrice Float
-  lastPriceUpdate DateTime @default(now())
+  amountPrice         Float
+  lastPriceUpdate     DateTime       @default(now())
   // Relations
-  subscription Subscription[] @relation(name: "subscriptionPromotion")
+  subscription        Subscription[] @relation(name: "subscriptionPromotion")
 }
 
-model InstructorPrice { //per-hour
+model InstructorPrice {
   // Fields
-  id Int @id @default(autoincrement())
-  degree Boolean
-  amount Int
+  id         Int      @id @default(autoincrement())
+  degree     Boolean
+  amount     Int
   lastUpdate DateTime @default(now())
 }
 
