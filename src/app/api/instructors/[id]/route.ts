@@ -9,22 +9,18 @@ export async function GET(
   req: NextApiRequest,
   context: any
 ): Promise<Response> {
-  const un: string = context.params.un
-
+  const id: number = Number(context.params.id)
   try {
-    const acc: { id: number } | null = await db.account.findFirstOrThrow({
-      select: {
-        id: true
-      },
+    const acc: { id: number } | null = await db.instructor.findFirst({
       where: {
-        username: un
+        accountId: id
       }
     })
     return new Response(JSONbig.stringify(acc), {
       status: 200
     })
   } catch (error) {
-    return new Response(JSONbig.stringify('Internal Server Error :('), {
+    return new Response(JSONbig.stringify(error), {
       status: 500
     })
   }

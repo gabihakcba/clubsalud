@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getMemberById, updateMember } from 'queries/members'
+import {
+  deleteInstructor,
+  getInstructorById,
+  updateInstructor
+} from 'queries/instructors'
 import { useState, type ReactElement } from 'react'
-import { formatDate } from 'utils/const'
-import { MemberSate, type Member, type CreateMember } from 'utils/types'
+import { type Instructor, type CreateInstructor } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
-import { MemberState } from '@prisma/client'
 import { type FieldValues, useForm } from 'react-hook-form'
 
 const update = async ({
@@ -14,22 +16,29 @@ const update = async ({
 }: {
   id: number
   data: FieldValues
-}): Promise<Member> => {
-  const dataMember: CreateMember = data as CreateMember
-  const newMember: Member = {
+}): Promise<Instructor> => {
+  const dataInstructor: CreateInstructor = data as CreateInstructor
+  const newInstructor: Instructor = {
     id,
-    ...dataMember
+    ...dataInstructor
   }
-  const response = await updateMember(newMember)
+  const response = await updateInstructor(newInstructor)
   return response.data
 }
 
+const delete_ = async ({ id }: { id: number }): Promise<any> => {
+  return await deleteInstructor(id)
+}
+
 const getInfo = async (info): Promise<any> => {
-  console.log('izi')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, id]: [string, number] = info.queryKey
-  const response = await getMemberById(id)
-  return response.data
+  const response = await getInstructorById(id)
+  const parsed = {
+    ...response.data,
+    degree: response.data.degree ? 'true' : 'false'
+  }
+  return parsed
 }
 
 interface param {
@@ -37,24 +46,49 @@ interface param {
   closeModal: () => void
 }
 
-export default function LinkCard({ id, closeModal }: param): ReactElement {
+export default function InstructorCard({
+  id,
+  closeModal
+}: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
   const { data } = useQuery({
-    queryKey: ['mem', id],
+    queryKey: ['ins', id],
     queryFn: async (info) => {
       return await getInfo(info)
     },
     staleTime: 1000 * 60 * 5
   })
 
-  const member: Member = data
+  const instructor: Instructor = data
 
   const query = useQueryClient()
 
-  const { mutate, isError, isSuccess, isPending } = useMutation({
+  const {
+    mutate: mutateC,
+    isError: isErrorC,
+    isSuccess: isSuccessC,
+    isPending: isPendingC
+  } = useMutation({
     mutationFn: update,
     onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['mem', id] })
+      await query.refetchQueries({ queryKey: ['ins', id] })
+      setEditF(false)
+      reset()
+      setTimeout(closeModal, 500)
+    }
+  })
+
+  const {
+    mutate: mutateD,
+    isError: isErrorD,
+    isSuccess: isSuccessD,
+    isPending: isPendingD
+  } = useMutation({
+    mutationFn: delete_,
+    onSuccess: async () => {
+      query.setQueryData(['ins', id], null)
+      reset()
+      setEditF(false)
       setTimeout(closeModal, 500)
     }
   })
@@ -62,7 +96,8 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
     // watch
   } = useForm()
 
@@ -70,9 +105,9 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
     <div className='w-max p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'>
       <form
         action=''
-        id={`member${member?.id}`}
+        id={`member${instructor?.id}`}
         onSubmit={handleSubmit((data) => {
-          mutate({ id: member.id, data })
+          mutateC({ id: instructor.id, data })
         })}
       >
         <div className='flex items-center justify-end mb-2'>
@@ -101,7 +136,7 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                 ID
               </label>
               <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                {member?.id}
+                {instructor?.id}
               </label>
             </li>
             <li className='flex flex-row items-center justify-between w-full mb-2'>
@@ -110,7 +145,7 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.name}
+                  {instructor?.name}
                 </label>
               )}
               {editF && (
@@ -118,9 +153,9 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                   <input
                     type='text'
                     id='name'
-                    form={`member${member?.id}`}
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.name}
+                    defaultValue={instructor?.name}
                     {...register('name', {
                       required: {
                         value: true,
@@ -143,7 +178,7 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.lastName}
+                  {instructor?.lastName}
                 </label>
               )}
               {editF && (
@@ -151,9 +186,9 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                   <input
                     type='text'
                     id='lastName'
-                    form={`member${member?.id}`}
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.lastName}
+                    defaultValue={instructor?.lastName}
                     {...register('lastName', {
                       required: {
                         value: true,
@@ -176,7 +211,7 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.dni}
+                  {instructor?.dni.toString()}
                 </label>
               )}
               {editF && (
@@ -184,9 +219,9 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                   <input
                     type='number'
                     id='dni'
-                    form={`member${member?.id}`}
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.dni}
+                    defaultValue={instructor?.dni.toString()}
                     {...register('dni', {
                       required: {
                         value: true,
@@ -209,16 +244,16 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.cuit}
+                  {instructor?.cuit?.toString()}
                 </label>
               )}
               {editF && (
                 <input
                   type='number'
                   id='cuit'
-                  form={`member${member?.id}`}
+                  form={`member${instructor?.id}`}
                   className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  defaultValue={member?.cuit}
+                  defaultValue={instructor?.cuit?.toString()}
                   {...register('cuit')}
                 />
               )}
@@ -230,7 +265,7 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.phoneNumber}
+                  {instructor?.phoneNumber.toString()}
                 </label>
               )}
               {editF && (
@@ -238,9 +273,9 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                   <input
                     type='number'
                     id='phoneNumber'
-                    form={`member${member?.id}`}
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.phoneNumber}
+                    defaultValue={instructor?.phoneNumber.toString()}
                     required
                     {...register('phoneNumber', {
                       required: {
@@ -257,14 +292,19 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                 </div>
               )}
             </li>
+          </ul>
 
+          <ul
+            role='list'
+            className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
+          >
             <li className='flex flex-row items-center justify-between w-full mb-2'>
               <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
                 Dirección
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.address}
+                  {instructor?.address}
                 </label>
               )}
               {editF && (
@@ -272,9 +312,15 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
                   <input
                     type='text'
                     id='address'
-                    form={`member${member?.id}`}
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.address}
+                    defaultValue={instructor?.address}
+                    {...register('address', {
+                      required: {
+                        value: true,
+                        message: 'Dirección es requerida'
+                      }
+                    })}
                   />
                   {errors?.address && (
                     <span className='inputError'>
@@ -287,115 +333,31 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
 
             <li className='flex flex-row items-center justify-between w-full mb-2'>
               <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Fecha de inscripción
+                E-mail
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {formatDate(member?.inscriptionDate.toString())}
+                  {instructor?.email}
                 </label>
               )}
               {editF && (
                 <div>
                   <input
-                    type='date'
-                    id='inscriptionDate'
-                    form={`member${member?.id}`}
+                    type='email'
+                    id='email'
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={formatDate(
-                      member?.inscriptionDate?.toString()
-                    )}
-                    {...register('inscriptionDate', {
+                    defaultValue={instructor?.email}
+                    {...register('email', {
                       required: {
                         value: true,
-                        message: 'Fecha es requerida'
+                        message: 'Dirección de e-mail es requerida'
                       }
                     })}
                   />
-                  {errors?.inscriptionDate && (
+                  {errors?.email && (
                     <span className='inputError'>
-                      {errors.inscriptionDate.message as string}
-                    </span>
-                  )}
-                </div>
-              )}
-            </li>
-          </ul>
-
-          <ul
-            role='list'
-            className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
-          >
-            <li className='flex flex-row items-center justify-between w-full mb-2'>
-              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Fecha de cancelación
-              </label>
-              {!editF && (
-                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.cancelationDate
-                    ? formatDate(member?.cancelationDate?.toString())
-                    : ''}
-                </label>
-              )}
-              {editF && (
-                <input
-                  type='date'
-                  id='cancelationDate'
-                  form={`member${member?.id}`}
-                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  defaultValue={formatDate(member?.cancelationDate?.toString())}
-                  {...register('cancelationDate')}
-                />
-              )}
-            </li>
-
-            <li className='flex flex-row items-center justify-between w-full mb-2'>
-              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Motivo de cancelación
-              </label>
-              {!editF && (
-                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.cancelationReason ?? ''}
-                </label>
-              )}
-              {editF && (
-                <input
-                  type='text'
-                  id='cancelationReason'
-                  form={`member${member?.id}`}
-                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  defaultValue={member?.cancelationReason}
-                  {...register('cancelationReason')}
-                />
-              )}
-            </li>
-
-            <li className='flex flex-row items-center justify-between w-full mb-2'>
-              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Derivado por
-              </label>
-              {!editF && (
-                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.derivedBy}
-                </label>
-              )}
-              {editF && (
-                <div>
-                  <input
-                    type='text'
-                    id='derivedBy'
-                    form={`member${member?.id}`}
-                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.derivedBy}
-                    {...register('derivedBy', {
-                      required: {
-                        value: true,
-                        message: 'Derivación es requerida'
-                      }
-                    })}
-                  />
-                  {errors?.derivedBy && (
-                    <span className='inputError'>
-                      {errors.derivedBy.message as string}
+                      {errors.email.message as string}
                     </span>
                   )}
                 </div>
@@ -404,97 +366,118 @@ export default function LinkCard({ id, closeModal }: param): ReactElement {
 
             <li className='flex flex-row items-center justify-between w-full mb-2'>
               <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Número de afiliado
+                Título
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.afiliateNumber}
+                  {instructor?.degree}
+                </label>
+              )}
+              {editF && (
+                <div>
+                  <select
+                    id='degree'
+                    form={`member${instructor?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={instructor?.degree === 'true' ? 'si' : 'no'}
+                    {...register('degree', {
+                      required: {
+                        value: true,
+                        message: 'Título es requerido'
+                      }
+                    })}
+                  >
+                    <option value={'true'}>Si</option>
+                    <option value={'false'}>No</option>
+                  </select>
+                  {errors?.degree && (
+                    <span className='inputError'>
+                      {errors.degree.message as string}
+                    </span>
+                  )}
+                </div>
+              )}
+            </li>
+
+            <li className='flex flex-row items-center justify-between w-full mb-2'>
+              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                CBU
+              </label>
+              {!editF && (
+                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  {instructor?.cbu?.toString()}
                 </label>
               )}
               {editF && (
                 <div>
                   <input
                     type='number'
-                    id='afiliateNumber'
-                    form={`member${member?.id}`}
+                    id='cbu'
+                    form={`member${instructor?.id}`}
                     className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                    defaultValue={member?.afiliateNumber}
-                    {...register('afiliateNumber', {
-                      required: {
-                        value: true,
-                        message: 'Numero de afiliado es requerido'
-                      }
-                    })}
+                    defaultValue={instructor?.cbu?.toString()}
+                    {...register('cbu')}
                   />
-                  {errors?.afiliateNumber && (
-                    <span className='inputError'>
-                      {errors.afiliateNumber.message as string}
-                    </span>
-                  )}
                 </div>
               )}
             </li>
 
             <li className='flex flex-row items-center justify-between w-full mb-2'>
               <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Clases remanentes
+                Alias
               </label>
               {!editF && (
                 <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.remainingClasses}
+                  {instructor?.alias}
                 </label>
               )}
               {editF && (
-                <input
-                  type='number'
-                  id='remainingClasses'
-                  form={`member${member?.id}`}
-                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  defaultValue={member?.remainingClasses}
-                  {...register('remainingClasses')}
-                />
-              )}
-            </li>
-
-            <li className='flex flex-row items-center justify-between w-full mb-2'>
-              <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                Estado
-              </label>
-              {!editF && (
-                <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                  {member?.state}
-                </label>
-              )}
-              {editF && (
-                <select
-                  id='state'
-                  form={`member${member?.id}`}
-                  className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                  defaultValue={MemberState[member?.state]}
-                  {...register('state')}
-                >
-                  <option value={MemberSate.ACTIVE}>Activo</option>
-                  <option value={MemberState.INACTIVE}>Inactivo</option>
-                  <option value={MemberState.OTHER}>Otro</option>
-                </select>
+                <div>
+                  <input
+                    type='text'
+                    id='alias'
+                    form={`member${instructor?.id}`}
+                    className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                    defaultValue={instructor?.alias ?? ''}
+                    {...register('alias')}
+                  />
+                </div>
               )}
             </li>
           </ul>
         </div>
         {editF && (
-          <div className='w-full flex flex-col items-end'>
-            <button
-              className='blueButtonForm w-max'
-              form={`member${member?.id}`}
-              type='submit'
-            >
-              Enviar
-            </button>
-            {isSuccess && <p className='w-max text-green-400'>OK</p>}
-            {isPending && (
-              <p className='w-max text-yellow-400'>Modificando...</p>
-            )}
-            {isError && <p className='w-max text-red-400'>Failed!</p>}
+          <div className='flex flex-row justify-end w-full gap-4'>
+            <div className='w-max flex flex-col items-end'>
+              <button
+                className='blueButtonForm w-max'
+                form={`member${instructor?.id}`}
+                type='submit'
+              >
+                Enviar
+              </button>
+              {isSuccessC && <p className='w-max text-green-400'>OK</p>}
+              {isPendingC && (
+                <p className='w-max text-yellow-400'>Modificando...</p>
+              )}
+              {isErrorC && <p className='w-max text-red-400'>Failed!</p>}
+            </div>
+            <div className='w-max flex flex-col items-end'>
+              <button
+                className='blueButtonForm w-max bg-red-500 hover:bg-red-600'
+                onClick={async () => {
+                  mutateD({ id: instructor?.id })
+                }}
+                type='button'
+              >
+                Eliminar
+              </button>
+              {isSuccessD && <p className='w-max text-green-400'>OK</p>}
+              {isPendingD && (
+                <p className='w-max text-yellow-400'>Eliminando...</p>
+              )}
+              {isErrorD && <p className='w-max text-red-400'>Failed!</p>}
+            </div>
           </div>
         )}
       </form>

@@ -1,6 +1,7 @@
 import { parse } from 'cookie'
 import { type RequestCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { type NextRequest } from 'next/server'
+import JSONbig from 'json-bigint'
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
@@ -14,12 +15,12 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
       })
     } else {
-      return new Response(JSON.stringify('No user found'), {
+      return new Response(JSONbig.stringify('No user found'), {
         status: 498
       })
     }
   } catch {
-    return new Response(JSON.stringify('Server Error'), {
+    return new Response(JSONbig.stringify('Server Error'), {
       status: 500
     })
   }

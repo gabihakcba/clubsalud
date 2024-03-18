@@ -83,11 +83,11 @@ model Doctor {
   id             Int          @id @default(autoincrement())
   name           String
   lastName       String
-  dni            Int
-  cuit           Int
-  phoneNumber    Int
-  licenseNumber1 Int
-  licenseNumber2 Int?
+  dni            BigInt       @db.BigInt
+  cuit           BigInt?      @db.BigInt
+  phoneNumber    BigInt       @db.BigInt
+  licenseNumber1 BigInt       @db.BigInt
+  licenseNumber2 BigInt?      @db.BigInt
   email          String
   isExternal     Boolean
   // Relations
@@ -99,16 +99,17 @@ model Instructor {
   id                 Int                 @id @default(autoincrement())
   name               String
   lastName           String
-  dni                Int
-  cuit               Int?
-  phoneNumber        Int
+  dni                BigInt              @db.BigInt
+  cuit               BigInt?             @db.BigInt
+  phoneNumber        BigInt              @db.BigInt
+  address            String
   email              String
   degree             Boolean
-  cbu                Int?
+  cbu                BigInt?             @db.BigInt
   alias              String?
   // Foreignkeys
   accountId          Int
-  account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount")
+  account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount", onDelete: Cascade)
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
   givenClass         OpenClass[]         @relation(name: "givenClassInstructor")
@@ -121,17 +122,17 @@ model Member {
   id                 Int                    @id @default(autoincrement())
   name               String
   lastName           String
-  dni                Int
-  cuit               Int?
-  phoneNumber        Int
+  dni                BigInt                 @db.BigInt
+  cuit               BigInt?                @db.BigInt
+  phoneNumber        BigInt                 @db.BigInt
   address            String
   inscriptionDate    DateTime               @default(now())
   cancelationDate    DateTime?
   cancelationReason  String?
   derivedBy          String
-  afiliateNumber     Int
+  afiliateNumber     BigInt                 @db.BigInt
   state              MemberState
-  remainingClasses   Int?
+  remainingClasses   BigInt?                @db.BigInt
   // Foreignkeys
   accountId          Int
   medicalRecordId    Int?                   @unique
@@ -168,7 +169,7 @@ model OpenClass {
   date             DateTime      @default(now())
   given            Boolean       @default(false)
   // Foreignkeys
-  instructorId     Int?
+  instructorId     Int
   classId          Int
   instructor       Instructor?   @relation(fields: [instructorId], references: [id], name: "givenClassInstructor")
   class            Class         @relation(fields: [classId], references: [id], name: "givenClassClass")
@@ -270,9 +271,9 @@ model Employee {
   id               Int               @id @default(autoincrement())
   name             String
   lastName         String
-  dni              Int
-  cuit             Int?
-  phoneNumber      Int
+  dni              BigInt            @db.BigInt
+  cuit             BigInt?           @db.BigInt
+  phoneNumber      BigInt            @db.BigInt
   email            String
   position         JobPosition
   contractType     ContractType
@@ -319,7 +320,7 @@ model HealthPlan {
 model MedicalRecord {
   // Fields
   id          Int     @id @default(autoincrement())
-  medinttCode Int
+  medinttCode BigInt  @db.BigInt
   description String
   // Relations
   member      Member? @relation(name: "medicalRecord")
@@ -346,7 +347,7 @@ model Promotion {
   id                  Int            @id @default(autoincrement())
   title               String
   description         String
-  amountWeeklyClasses Int
+  amountWeeklyClasses BigInt         @db.BigInt
   amountPrice         Float
   lastPriceUpdate     DateTime       @default(now())
   // Relations
@@ -357,7 +358,7 @@ model InstructorPrice {
   // Fields
   id         Int      @id @default(autoincrement())
   degree     Boolean
-  amount     Int
+  amount     BigInt   @db.BigInt
   lastUpdate DateTime @default(now())
 }
 
