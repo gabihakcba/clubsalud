@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "seed.js", "src/app/layout.js", "src/app/layout.js", "src/app/layout.js"  ],
+, "seed.js", "src/app/layout.jsx", "src/app/layout.jsx", "src/app/layout.jsx"  ],
   "exclude": [
     "node_modules"
   ]
