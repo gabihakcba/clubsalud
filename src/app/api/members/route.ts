@@ -95,10 +95,14 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       name: data.name,
       lastName: data.lastName,
       dni: Number(data.dni),
-      cuit: Number(data.cuit),
+      cuit: data?.cuit ? Number(data?.cuit) : null,
       phoneNumber: Number(data.phoneNumber),
       address: data.address,
       inscriptionDate: new Date(data.inscriptionDate),
+      cancelationDate: data?.cancelationDate
+        ? new Date(data?.cancelationDate)
+        : null,
+      cancelationReason: data?.cancelationReason ?? null,
       derivedBy: data.derivedBy,
       afiliateNumber: Number(data.afiliateNumber),
       state: MemberState[data.state]
@@ -114,6 +118,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log(error)
     return new Response('No se pudo crear el usuario', {
       status: 400
     })

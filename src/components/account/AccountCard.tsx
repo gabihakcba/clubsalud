@@ -1,87 +1,28 @@
+'use client'
 import { type ReactElement } from 'react'
 import Image from 'next/image'
 import delete_ from '../../../public/delete_.svg'
 import edit from '../../../public/edit.svg'
-import info from '../../../public/info.svg'
-import {
-  type Account,
-  type QueriesResponse,
-  type UpdateAccount,
-  type Setter,
-  type CreateAccount
-} from 'utils/types'
-import DropdownForm from 'components/DropdownForms'
+import { type Account } from 'utils/types'
 import { CreateAccountForm } from './CreateAccountForm'
-import Link from 'next/link'
-import { APP, calculatePages } from 'utils/const'
-import { deleteAccount, updateAccount } from 'queries/accounts'
-import { type FieldValues } from 'react-hook-form'
+import { deleteAccount } from 'queries/accounts'
+import { useModal } from 'utils/useModal'
+import Modal from 'components/Modal'
+import InfoButton from 'components/InfoButton'
 
-const deleteA = async (
-  id: number,
-  accounts: Account[],
-  setAccounts: Setter,
-  setPages: Setter
-): Promise<void> => {
-  const response: QueriesResponse = await deleteAccount(id)
-  if (response.status === 200) {
-    const newAccounts: Account[] = [...accounts]
-    const indexF: (e: Account) => boolean = (e: Account): boolean =>
-      Number(e.id) === Number(id)
-    const index: number = newAccounts.findIndex(indexF)
-    const deletedAccount: Account[] = newAccounts.splice(index, 1)
-    setAccounts((odlAccunts: Account[]) => {
-      setPages(calculatePages(odlAccunts.length - 1, APP))
-      return newAccounts
-    })
-    console.log(deletedAccount)
-  } else {
-    console.log('Client: error on deleteAccount')
-  }
-}
-
-const updateA = async (
-  id: number,
-  data: FieldValues,
-  setIsOpen: Setter,
-  setAccounts: Setter
-): Promise<void> => {
-  console.log('Edit')
-  const newAccount: UpdateAccount = {
-    id,
-    ...(data as CreateAccount)
-  }
-  const response: QueriesResponse = await updateAccount(newAccount)
-  if (response.status === 200) {
-    setAccounts((old: Account[]) => {
-      const newAccounts: Account[] = old.map((acc: Account) => {
-        if (acc.id === response.data.id) {
-          return newAccount
-        }
-        return acc
-      })
-      return newAccounts
-    })
-    setIsOpen((prev: boolean) => !prev)
-  } else {
-    console.log(response.error)
-    console.log('Client: error on updateAccount: ')
-  }
+const deleteA = async (id: number, accounts: Account[]): Promise<any> => {
+  const response = await deleteAccount(id)
+  return response.data
 }
 
 interface params {
   account: Account
-  setAccounts: Setter
   accounts: Account[]
-  setPages: Setter
 }
 
-export default function AccountCard({
-  account,
-  setAccounts,
-  accounts,
-  setPages
-}: params): ReactElement {
+function AccountCard({ account, accounts }: params): ReactElement {
+  const [editM, openEdit, closeEdit] = useModal(false)
+
   return (
     <div className='bg-white shadow-md rounded p-3 mb-5 h-max w-min'>
       <div className='mb-2'>
@@ -101,28 +42,30 @@ export default function AccountCard({
           disabled
         ></input>
       </div>
-      <div className='flex flex-row w-max gap-0 px-4 justify-evenly items-center'>
+      <div className='flex flex-row w-max gap-2 justify-around items-stretch'>
         <div className='block hover:bg-yellow-600'>
-          <DropdownForm
-            position='static'
-            top='top-0 bottom-0 left-0 right-0'
-            left='ml-auto mr-auto mb-auto mt-auto'
-            image={edit}
+          <button onClick={openEdit}>
+            <Image
+              src={edit}
+              width={30}
+              height={30}
+              alt='E'
+            ></Image>
+          </button>
+          <Modal
+            isOpen={editM}
+            closeModal={closeEdit}
           >
-            {(setIsOpen: Setter) => (
-              <CreateAccountForm
-                data={account}
-                setIsOpen={setIsOpen}
-                setAccounts={setAccounts}
-                sendForm={updateA}
-              ></CreateAccountForm>
-            )}
-          </DropdownForm>
+            <CreateAccountForm
+              data={account}
+              closeModal={closeEdit}
+            ></CreateAccountForm>
+          </Modal>
         </div>
         <div className='block hover:bg-red-600'>
           <button
             onClick={() => {
-              void deleteA(account.id, accounts, setAccounts, setPages)
+              void deleteA(account.id, accounts)
             }}
           >
             <Image
@@ -133,17 +76,12 @@ export default function AccountCard({
             ></Image>
           </button>
         </div>
-        <div className='block'>
-          <Link href={`/admin/accounts/${account.id}`}>
-            <Image
-              src={info}
-              width={30}
-              height={30}
-              alt='I'
-            ></Image>
-          </Link>
-        </div>
+        <InfoButton
+          id={account.id}
+          permissions={account.permissions}
+        ></InfoButton>
       </div>
     </div>
   )
 }
+export default AccountCard

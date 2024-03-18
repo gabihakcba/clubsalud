@@ -11,7 +11,7 @@ export async function GET(
   const id: number = Number(context.params.id)
 
   try {
-    const acc: { id: number } | null = await db.member.findFirstOrThrow({
+    const acc: { id: number } | null = await db.member.findFirst({
       where: {
         accountId: id
       }
