@@ -9,9 +9,9 @@ export default function Modal({
 }: any): ReactElement {
   return (
     <div
-      className={`w-max h-max absolute top-0 right-0 left-0 bottom-0 m-auto ${isOpen ? 'flex' : 'hidden'}`}
+      className={`absolute top-0 right-0 left-0 bottom-0 w-dvw h-dvh bg-[#0000006e] ${isOpen ? 'flex' : 'hidden'} justify-center items-center`}
     >
-      <div className='w-max h-max relative'>
+      <div className='w-max h-max flex flex-col justify-center items-center'>
         <div className='w-full flex flex-row justify-end'>
           <button
             onClick={closeModal}

@@ -1,94 +1,68 @@
-import DropdownForm from 'components/DropdownForms'
-import { type ReactElement } from 'react'
-import {
-  type Account,
-  type CreateAccount,
-  Permissions,
-  type QueriesResponse,
-  type Setter
-} from 'utils/types'
+import { useState, type ReactElement } from 'react'
+import { Permissions, type Setter } from 'utils/types'
 import menu from '../../../public/menu.svg'
-import create from '../../../public/createa.svg'
 import update from '../../../public/update.svg'
+import create_ from '../../../public/createa.svg'
 import Image from 'next/image'
 import { CreateAccountForm } from './CreateAccountForm'
-import { createAccount, getAccounts } from 'queries/accounts'
-import { type FieldValues } from 'react-hook-form'
-import { APP, calculatePages } from 'utils/const'
-
-const createA = async (
-  data: FieldValues,
-  setIsOpen: Setter,
-  setAccounts: Setter,
-  setPages: Setter
-): Promise<void> => {
-  console.log('Create')
-  const newUser: CreateAccount = data as CreateAccount
-
-  const response = await createAccount(newUser)
-  if (response.status === 200) {
-    setIsOpen((isOpen: boolean) => !isOpen)
-    setAccounts((prevAccounts: Account[]) => {
-      setPages(calculatePages(prevAccounts.length + 1, APP))
-      return [...prevAccounts, response.data]
-    })
-  } else {
-    console.log('Client: error on createAccount')
-  }
-}
-
-const setAccountsElems = async (
-  setAccounts: Setter,
-  page: number = 0
-): Promise<void> => {
-  const response: QueriesResponse = await getAccounts(page)
-  if (response.status === 200) {
-    setAccounts(response.data)
-  } else {
-    console.log('Client: error on getAccounts')
-  }
-}
+import { useModal } from 'utils/useModal'
+import Modal from 'components/Modal'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface params {
-  setAccounts: Setter
-  setPages: Setter
   setFilterName: Setter
   setFilterPermissions: Setter
 }
 export default function AccountTopbar({
-  setAccounts,
-  setPages,
   setFilterName,
   setFilterPermissions
 }: params): ReactElement {
+  const [createF, openForm, closeForm] = useModal(false)
+  const [topbar, setTopbar] = useState(false)
+  const query = useQueryClient()
   return (
-    <DropdownForm
-      position='relative'
-      top='top-8 md:top-0'
-      left='left-1 md:left-10'
-      image={menu}
-    >
-      {(action: Setter) => (
+    <div className='flex flex-row gap-2'>
+      <button
+        onClick={() => {
+          setTopbar((prev: boolean) => !prev)
+        }}
+      >
+        <Image
+          width={38}
+          height={38}
+          src={menu}
+          alt='|||'
+        ></Image>
+      </button>
+      {topbar && (
         <div className='pt-2 flex flex-col md:flex-row md:items-center md:pt-0 gap-4 bg-white md:shadow-none shadow rounded '>
           <div className='flex gap-5 justify-evenly md:justify-center flex-row'>
-            <DropdownForm
-              position='static md:relative'
-              top='top-0'
-              left='left-0'
-              image={create}
+            <button onClick={openForm}>
+              <Image
+                src={create_}
+                alt='C'
+                width={30}
+                height={30}
+              ></Image>
+            </button>
+            <Modal
+              isOpen={createF}
+              closeModal={closeForm}
             >
-              {(setIsOpen: Setter) => (
-                <CreateAccountForm
-                  setAccounts={setAccounts}
-                  setPages={setPages}
-                  setIsOpen={setIsOpen}
-                  sendForm={createA}
-                ></CreateAccountForm>
-              )}
-            </DropdownForm>
+              <CreateAccountForm
+                data={null}
+                closeModal={closeForm}
+              ></CreateAccountForm>
+            </Modal>
+
             <button
-              onClick={() => {
-                void setAccountsElems(setAccounts)
+              onClick={async () => {
+                console.log('update', query)
+                // await query.refetchQueries({
+                //   queryKey: ['acc'],
+                //   exact: false,
+                //   stale: true
+                // })
               }}
               className=''
               type='button'
@@ -135,6 +109,6 @@ export default function AccountTopbar({
           </select>
         </div>
       )}
-    </DropdownForm>
+    </div>
   )
 }
