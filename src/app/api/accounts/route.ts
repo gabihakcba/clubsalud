@@ -6,6 +6,7 @@ import {
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
 import { type CreateAccount, type UpdateAccount } from 'utils/types'
+import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     if (getPages > 0) {
       // # elems
       const total: number = await db.account.count()
-      return new Response(JSON.stringify({ total }), {
+      return new Response(JSONbig.stringify({ total }), {
         status: 200
       })
     } else if (page === null) {
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest): Promise<Response> {
           password: user.password
         })
       })
-      return new Response(JSON.stringify(usersFilters), {
+      return new Response(JSONbig.stringify(usersFilters), {
         status: 200
       })
     } else {
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       const total: number = fil.length
       const pages: number = Math.ceil(total / elems)
       return new Response(
-        JSON.stringify({
+        JSONbig.stringify({
           pages: usersPage,
           totalPages: pages,
           previousPage: page > 1 ? page - 1 : undefined,
@@ -85,7 +86,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     }
   } catch (error) {
     console.log(error)
-    return new Response(JSON.stringify('Internal Server Error :('), {
+    return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
     })
   }
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     const res: Account = await db.account.create({
       data
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {
@@ -116,7 +117,7 @@ export async function DELETE(req: NextRequest): Promise<Response> {
         id: data.id
       }
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {
@@ -139,7 +140,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
         permissions: fields.permissions as unknown as AccountPermissions
       }
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {

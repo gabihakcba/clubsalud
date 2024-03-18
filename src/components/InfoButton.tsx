@@ -5,7 +5,12 @@ import Image from 'next/image'
 import Modal from './Modal'
 import info from '../../public/info.svg'
 import { lazy } from 'react'
-const LazyCard = lazy(async () => await import('components/member/LinkCard'))
+const MemberCard = lazy(
+  async () => await import('components/member/MemberCard')
+)
+const InstructorCard = lazy(
+  async () => await import('components/instructor/InstructorCard')
+)
 interface params {
   id: number
   permissions: Permissions
@@ -29,12 +34,17 @@ function InfoButton({ id, permissions }: params): ReactElement {
         closeModal={closeInfo}
       >
         {permissions === Permissions.MEM && (
-          <LazyCard
+          <MemberCard
             id={id}
             closeModal={closeInfo}
-          ></LazyCard>
+          ></MemberCard>
         )}
-        {permissions === Permissions.INS && <p>Instrustor</p>}
+        {permissions === Permissions.INS && (
+          <InstructorCard
+            id={id}
+            closeModal={closeInfo}
+          ></InstructorCard>
+        )}
         {permissions === Permissions.ADM && <p>Administrador</p>}
         {permissions === Permissions.OWN && <p>Propietario</p>}
         {permissions === Permissions.OTHER && <p>Otro</p>}
