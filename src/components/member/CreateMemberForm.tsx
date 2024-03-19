@@ -1,44 +1,79 @@
 import { type ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
-import { type Setter } from 'utils/types'
-import Image from 'next/image'
-import close from '../.././../public/close.svg'
+import { type FieldValues, useForm } from 'react-hook-form'
+import { type CreateMember, type Member, MemberSate } from 'utils/types'
+import { findAccountByUsername } from 'queries/accounts'
+import { createMember } from 'queries/members'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-export function CreateMemberForm({
-  setIsOpen,
-  setMembers,
-  setPages,
-  sendForm
-}: any): ReactElement {
+const idAccount = async (username: string): Promise<number> => {
+  try {
+    const response = await findAccountByUsername(username)
+    return response.data.id
+  } catch (error) {
+    alert('Usuario no encontrado')
+    return -1
+  }
+}
+
+const formToMember = (data: FieldValues, id: number): CreateMember => {
+  return {
+    name: data.name,
+    lastName: data.lastName,
+    dni: data.dni,
+    cuit: data.cuit,
+    phoneNumber: data.phoneNumber,
+    address: data.address,
+    inscriptionDate: data.inscriptionDate,
+    derivedBy: data.derivedBy,
+    afiliateNumber: data.afiliateNumber,
+    state: MemberSate.ACTIVE,
+    accountId: id
+  }
+}
+
+const create = async (data: FieldValues): Promise<Member> => {
+  const id = await idAccount(data.accountName as string)
+  const newMember = formToMember(data, id)
+  const response = await createMember(newMember)
+  return response.data
+}
+
+interface params {
+  closeModal: () => void
+}
+
+export function CreateMemberForm({ closeModal }: params): ReactElement {
+  const query = useQueryClient()
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
     // watch
   } = useForm()
+
+  const {
+    mutate: mutateC,
+    isPending: isPendingC,
+    isSuccess: isSuccessC,
+    isError: isErrorC
+  } = useMutation({
+    mutationFn: create,
+    onSuccess: async () => {
+      await query.resetQueries({ queryKey: ['mem'] })
+      reset()
+      setTimeout(closeModal, 500)
+    }
+  })
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        void sendForm(data, setIsOpen, setMembers as Setter, setPages as Setter)
+        mutateC(data)
       })}
       className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id='createForm'
     >
-      {setIsOpen && (
-        <button
-          className='z-10 absolute right-2 top-2'
-          onClick={() => setIsOpen((prev: boolean) => !prev)}
-        >
-          <Image
-            src={close}
-            alt='Imagen'
-            width={25}
-            height={25}
-          />
-        </button>
-      )}
-
       <div className='mb-2'>
         <label
           className='block text-gray-700 text-base font-bold mb-2'
@@ -301,6 +336,11 @@ export function CreateMemberForm({
         >
           Crear
         </button>
+        <span className='w-full flex flex-row items-center justify-center'>
+          {isPendingC && <p className='w-max text-yellow-400'>Creando...</p>}
+          {isSuccessC && <p className='w-max text-green-400'>OK</p>}
+          {isErrorC && <p className='w-max text-red-400'>Failed!</p>}
+        </span>
       </div>
     </form>
   )
