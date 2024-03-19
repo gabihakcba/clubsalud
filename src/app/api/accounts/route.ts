@@ -24,7 +24,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       return new Response(JSONbig.stringify({ total }), {
         status: 200
       })
-    } else if (page === null) {
+    } else if (page === 0) {
       // all elems
       const users: Account[] = await db.account.findMany()
       const usersFilters: Account[] = []
