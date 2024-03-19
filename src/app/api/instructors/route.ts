@@ -35,6 +35,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify(error), {
       status: 400
     })
@@ -65,13 +66,13 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     const parsed = {
       name: data.name,
       lastName: data.lastName,
-      dni: Number(data.dni),
-      cuit: data?.cuit ? Number(data.cuit) : undefined,
-      phoneNumber: Number(data.phoneNumber),
+      dni: BigInt(data.dni),
+      cuit: data?.cuit ? BigInt(data.cuit) : undefined,
+      phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       email: data.email,
       degree: data.degree === 'true',
-      cbu: data?.cbu ? Number(data.cbu) : null,
+      cbu: data?.cbu ? BigInt(data.cbu) : null,
       alias: data?.alias ? data.alias : null
     }
     const id: number = Number(data.id)
