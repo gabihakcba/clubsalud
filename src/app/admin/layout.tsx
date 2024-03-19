@@ -243,7 +243,7 @@ export default function AdminLayout({ children }: any): ReactElement {
           {children}
         </div>
       </div>
-      <ReactQueryDevtools initialIsOpen={true} />
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
 }

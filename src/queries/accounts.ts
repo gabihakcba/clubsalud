@@ -61,6 +61,6 @@ export const logOutAccount = async (): Promise<Response> => {
 
 export const findAccountByUsername = async (
   username: string
-): Promise<Response> => {
+): Promise<CUAccResponse> => {
   return await axios.get(`http://localhost:3000/api/accounts/${username}`)
 }

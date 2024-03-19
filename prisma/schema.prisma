@@ -48,6 +48,7 @@ enum Days {
 enum JobPosition {
   CLEANING
   MAINTENANCE
+  RECEPTIONIST
   OTHER
 }
 
@@ -76,6 +77,7 @@ model Account {
   notifiactionReceiver Notification[]     @relation(name: "receiver")
   instructorAccount    Instructor[]       @relation(name: "instructorAccount")
   memberAccount        Member[]           @relation(name: "memberAccount")
+  employeeAccount      Employee[]         @relation(name: "employeeAccount")
 }
 
 model Doctor {
@@ -279,6 +281,9 @@ model Employee {
   contractType     ContractType
   salary           Float
   lastSalaryUpdate DateTime          @default(now())
+  // Foreignkeys
+  accountId        Int?
+  account          Account?          @relation(fields: [accountId], references: [id], name: "employeeAccount")
   // Relations
   payment          EmployeePayment[] @relation(name: "paymentEmployee")
 }
