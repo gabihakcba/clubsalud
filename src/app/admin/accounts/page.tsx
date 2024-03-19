@@ -10,7 +10,6 @@ import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
 import { type Permissions } from 'utils/types'
 
 const getAccountsElems = async (info): Promise<any> => {
-  console.log('z: ', info)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, currentPage, elems, filterName, filterPermissions]: [
     string,
@@ -25,7 +24,6 @@ const getAccountsElems = async (info): Promise<any> => {
     filterName,
     filterPermissions
   )
-  console.log('x')
   return response.data
 }
 
