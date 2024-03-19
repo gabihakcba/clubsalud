@@ -50,12 +50,12 @@ export default function Accounts(): ReactElement {
   return (
     <div className='max-h-dvh h-full w-full flex items-start justify-start flex-row'>
       <main className='mr-5 w-full h-full flex flex-col items-start justify-between'>
-        <div className='w-full h-max p-2 bg-white border-b-2 border-gray-400'>
+        <aside className='w-full h-max p-2 bg-white border-b-2 border-gray-400'>
           <AccountTopbar
             setFilterName={setFilterName}
             setFilterPermissions={setFilterPermissions}
           ></AccountTopbar>
-        </div>
+        </aside>
         <section
           className='mt-5 ml-5 h-full scrollHidden'
           style={{
