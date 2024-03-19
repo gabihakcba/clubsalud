@@ -3,7 +3,9 @@ import {
   type Permissions,
   type Account,
   type CreateAccount,
-  type UpdateAccount
+  type UpdateAccount,
+  type Member,
+  type Instructor
 } from 'utils/types'
 
 interface GetAccResponse {
@@ -14,6 +16,22 @@ interface GetAccResponse {
 interface CUAccResponse {
   _: Response
   data: Account
+}
+
+interface GetAccMemResponse {
+  _: Response
+  data: {
+    _: Account
+    memberAccount: Member[]
+  }
+}
+
+interface GetAccInsResponse {
+  _: Response
+  data: {
+    _: Account
+    instructorAccount: Instructor[]
+  }
 }
 
 export const getTotalPagesA = async (elems: number): Promise<Response> => {
@@ -63,4 +81,16 @@ export const findAccountByUsername = async (
   username: string
 ): Promise<CUAccResponse> => {
   return await axios.get(`http://localhost:3000/api/accounts/${username}`)
+}
+
+export const findAccountInstructorsById = async (
+  id: number | string
+): Promise<GetAccInsResponse> => {
+  return await axios.get(`http://localhost:3000/api/accounts/instructors/${id}`)
+}
+
+export const findAccountMembersById = async (
+  id: number | string
+): Promise<GetAccMemResponse> => {
+  return await axios.get(`http://localhost:3000/api/accounts/members/${id}`)
 }
