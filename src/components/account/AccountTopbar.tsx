@@ -2,7 +2,6 @@ import { useState, type ReactElement } from 'react'
 import { Permissions, type Setter } from 'utils/types'
 import menu from '../../../public/menu.svg'
 import update from '../../../public/update.svg'
-// import create_ from '../../../public/createa.svg'
 import Image from 'next/image'
 import { CreateAccountForm } from './CreateAccountForm'
 import { useModal } from 'utils/useModal'
@@ -10,6 +9,7 @@ import Modal from 'components/Modal'
 import { useQueryClient } from '@tanstack/react-query'
 import { ACCOUNTTYPE } from 'utils/const'
 import { CreateMemberForm } from 'components/member/CreateMemberForm'
+import { CreateInstructorForm } from 'components/instructor/CreateInstructorForm'
 
 interface params {
   setFilterName: Setter
@@ -21,7 +21,7 @@ export default function AccountTopbar({
 }: params): ReactElement {
   const [createAcc, openAcc, closeAcc] = useModal(false)
   const [createMem, openMem, closeMem] = useModal(false)
-  // const [createIns, openIns, closeIns] = useModal(false)
+  const [createIns, openIns, closeIns] = useModal(false)
   const [topbar, setTopbar] = useState(false)
   const query = useQueryClient()
   return (
@@ -62,20 +62,16 @@ export default function AccountTopbar({
                   case ACCOUNTTYPE.MEMBER.toString():
                     openMem()
                     break
+                  case ACCOUNTTYPE.INSTRUCTOR.toString():
+                    openIns()
+                    break
                   default:
                     break
                 }
               }}
             >
               <option value='create'>Crear</option>
-              <option
-                value={ACCOUNTTYPE.ACCOUNT}
-                onClick={() => {
-                  openAcc()
-                }}
-              >
-                Cuenta
-              </option>
+              <option value={ACCOUNTTYPE.ACCOUNT}>Cuenta</option>
               <option value={ACCOUNTTYPE.MEMBER}>Alumno</option>
               <option value={ACCOUNTTYPE.INSTRUCTOR}>Instructor</option>
             </select>
@@ -95,6 +91,15 @@ export default function AccountTopbar({
               closeModal={closeMem}
             >
               <CreateMemberForm closeModal={closeMem}></CreateMemberForm>
+            </Modal>
+
+            <Modal
+              isOpen={createIns}
+              closeModal={closeIns}
+            >
+              <CreateInstructorForm
+                closeModal={closeIns}
+              ></CreateInstructorForm>
             </Modal>
 
             <button
