@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "AccountPermissions" AS ENUM ('OWN', 'ADM', 'INS', 'MEM', 'OTHER');
+
+-- CreateEnum
 CREATE TYPE "MemberState" AS ENUM ('ACTIVE', 'INACTIVE', 'OTHER');
 
 -- CreateEnum
@@ -16,19 +19,26 @@ CREATE TYPE "ContractType" AS ENUM ('PERMANENT', 'CASUAL', 'OTHER');
 -- CreateEnum
 CREATE TYPE "HealthPlanType" AS ENUM ('OSDE', 'PAMI', 'APROSS', 'IPROSS', 'OTHER');
 
--- AlterEnum
-ALTER TYPE "AccounPermissions" ADD VALUE 'OTHER';
+-- CreateTable
+CREATE TABLE "Account" (
+    "id" SERIAL NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "permissions" "AccountPermissions" NOT NULL,
+
+    CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Doctor" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "dni" INTEGER NOT NULL,
-    "cuit" INTEGER NOT NULL,
-    "phoneNumber" INTEGER NOT NULL,
-    "licenseNumber1" INTEGER NOT NULL,
-    "licenseNumber2" INTEGER,
+    "dni" BIGINT NOT NULL,
+    "cuit" BIGINT,
+    "phoneNumber" BIGINT NOT NULL,
+    "licenseNumber1" BIGINT NOT NULL,
+    "licenseNumber2" BIGINT,
     "email" TEXT NOT NULL,
     "isExternal" BOOLEAN NOT NULL,
 
@@ -40,12 +50,13 @@ CREATE TABLE "Instructor" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "dni" INTEGER NOT NULL,
-    "cuit" INTEGER,
-    "phoneNumber" INTEGER NOT NULL,
+    "dni" BIGINT NOT NULL,
+    "cuit" BIGINT,
+    "phoneNumber" BIGINT NOT NULL,
+    "address" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "degree" BOOLEAN NOT NULL,
-    "cbu" INTEGER,
+    "cbu" BIGINT,
     "alias" TEXT,
     "accountId" INTEGER NOT NULL,
 
@@ -57,19 +68,19 @@ CREATE TABLE "Member" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "dni" INTEGER NOT NULL,
-    "cuit" INTEGER,
-    "phoneNumber" INTEGER NOT NULL,
+    "dni" BIGINT NOT NULL,
+    "cuit" BIGINT,
+    "phoneNumber" BIGINT NOT NULL,
     "address" TEXT NOT NULL,
     "inscriptionDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "cancelationDate" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
-    "cancelationReason" TEXT NOT NULL,
+    "cancelationDate" TIMESTAMP(3),
+    "cancelationReason" TEXT,
     "derivedBy" TEXT NOT NULL,
-    "afiliateNumber" INTEGER NOT NULL,
+    "afiliateNumber" BIGINT NOT NULL,
     "state" "MemberState" NOT NULL,
-    "remainingClasses" INTEGER NOT NULL,
+    "remainingClasses" BIGINT,
     "accountId" INTEGER NOT NULL,
-    "medicalRecordId" INTEGER,
+    "medicalRecordId" INTEGER NOT NULL,
 
     CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
 );
@@ -94,7 +105,7 @@ CREATE TABLE "OpenClass" (
     "id" SERIAL NOT NULL,
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "given" BOOLEAN NOT NULL DEFAULT false,
-    "instructorId" INTEGER,
+    "instructorId" INTEGER NOT NULL,
     "classId" INTEGER NOT NULL,
 
     CONSTRAINT "OpenClass_pkey" PRIMARY KEY ("id")
@@ -183,9 +194,9 @@ CREATE TABLE "Employee" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "lastName" TEXT NOT NULL,
-    "dni" INTEGER NOT NULL,
-    "cuit" INTEGER,
-    "phoneNumber" INTEGER NOT NULL,
+    "dni" BIGINT NOT NULL,
+    "cuit" BIGINT,
+    "phoneNumber" BIGINT NOT NULL,
     "email" TEXT NOT NULL,
     "position" "JobPosition" NOT NULL,
     "contractType" "ContractType" NOT NULL,
@@ -230,7 +241,7 @@ CREATE TABLE "HealthPlan" (
 -- CreateTable
 CREATE TABLE "MedicalRecord" (
     "id" SERIAL NOT NULL,
-    "medinttCode" INTEGER NOT NULL,
+    "medinttCode" BIGINT NOT NULL,
     "description" TEXT NOT NULL,
 
     CONSTRAINT "MedicalRecord_pkey" PRIMARY KEY ("id")
@@ -253,7 +264,7 @@ CREATE TABLE "Promotion" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "amountWeeklyClasses" INTEGER NOT NULL,
+    "amountWeeklyClasses" BIGINT NOT NULL,
     "amountPrice" DOUBLE PRECISION NOT NULL,
     "lastPriceUpdate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -264,7 +275,7 @@ CREATE TABLE "Promotion" (
 CREATE TABLE "InstructorPrice" (
     "id" SERIAL NOT NULL,
     "degree" BOOLEAN NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "amount" BIGINT NOT NULL,
     "lastUpdate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "InstructorPrice_pkey" PRIMARY KEY ("id")
@@ -292,22 +303,25 @@ CREATE TABLE "FollowUpForm" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Account_username_key" ON "Account"("username");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Member_medicalRecordId_key" ON "Member"("medicalRecordId");
 
 -- AddForeignKey
-ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_medicalRecordId_fkey" FOREIGN KEY ("medicalRecordId") REFERENCES "MedicalRecord"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_medicalRecordId_fkey" FOREIGN KEY ("medicalRecordId") REFERENCES "MedicalRecord"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InstructorPayment" ADD CONSTRAINT "InstructorPayment_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "OpenClass" ADD CONSTRAINT "OpenClass_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "OpenClass" ADD CONSTRAINT "OpenClass_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "OpenClass" ADD CONSTRAINT "OpenClass_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

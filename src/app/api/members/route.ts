@@ -2,6 +2,7 @@ import { type PrismaClient, type Member, MemberState } from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
 import { type CreateMember } from 'utils/types'
+import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest): Promise<Response> {
      */
     if (page === -1) {
       const total: number = await db.member.count()
-      return new Response(JSON.stringify({ total }), {
+      return new Response(JSONbig.stringify({ total }), {
         status: 200
       })
     } else {
@@ -24,12 +25,13 @@ export async function GET(req: NextRequest): Promise<Response> {
        * page=0 returns all accounts
        */
       const members: Member[] = await db.member.findMany()
-      return new Response(JSON.stringify(members), {
+      return new Response(JSONbig.stringify(members), {
         status: 200
       })
     }
   } catch (error) {
-    return new Response(JSON.stringify('Internal Server Error :('), {
+    console.log(error)
+    return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
     })
   }
@@ -60,11 +62,11 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
       }
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {
-    return new Response(JSON.stringify(error), {
+    return new Response(JSONbig.stringify(error), {
       status: 400
     })
   }
@@ -78,7 +80,7 @@ export async function DELETE(req: NextRequest): Promise<Response> {
         id: data.id
       }
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {
@@ -114,7 +116,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       },
       data: parsed
     })
-    return new Response(JSON.stringify(res), {
+    return new Response(JSONbig.stringify(res), {
       status: 200
     })
   } catch (error) {

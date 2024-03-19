@@ -52,31 +52,36 @@ export interface Member extends CreateMember {
 export interface CreateMember {
   name: string
   lastName: string
-  dni: number
-  cuit?: number
-  phoneNumber: number
+  dni: bigint
+  cuit?: bigint | null
+  phoneNumber: bigint
   address: string
   inscriptionDate: Date
-  cancelationDate?: Date
-  cancelationReason?: string
+  cancelationDate?: Date | null
+  cancelationReason?: string | null
   derivedBy: string
-  afiliateNumber: number
+  afiliateNumber: bigint
   state: MemberSate
-  remainingClasses?: number
+  remainingClasses?: bigint | null
   accountId: number
 }
 
-export interface Instructor {
+export interface Instructor extends CreateInstructor {
   id: number
+}
+
+export interface CreateInstructor {
   name: string
   lastName: string
-  dni: number
-  cuit?: number
-  phoneNumber: number
+  dni: bigint
+  cuit?: bigint | null
+  phoneNumber: bigint
+  address: string
   email: string
-  degree: boolean
-  cbu?: number
-  alias?: string
+  degree: string | boolean
+  cbu?: bigint | null
+  alias?: string | null
+  accountId: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>

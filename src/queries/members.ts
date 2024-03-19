@@ -96,32 +96,12 @@ export const createMember = async (
   }
 }
 
-export const deleteMember = async (id: number): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.delete('http://localhost:3000/api/members', {
-      data: {
-        id
-      }
-    })
-    if (response.status === 200) {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    } else {
-      return {
-        status: response.status,
-        data: {},
-        error: response.data
-      }
+export const deleteMember = async (id: number): Promise<GetMemResponse> => {
+  return await axios.delete('http://localhost:3000/api/members', {
+    data: {
+      id
     }
-  } catch (error) {
-    return {
-      status: 500,
-      data: 500,
-      error
-    }
-  }
+  })
 }
 
 export const updateMember = async (member: Member): Promise<GetMemResponse> => {
