@@ -1,5 +1,11 @@
 export const APP = 52
 
+export enum ACCOUNTTYPE {
+  'ACCOUNT',
+  'MEMBER',
+  'INSTRUCTOR'
+}
+
 export const calculatePages = (
   registers: number,
   regPerPage: number

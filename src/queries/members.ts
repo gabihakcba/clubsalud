@@ -3,7 +3,6 @@ import {
   type Member,
   type QueriesResponse
 } from 'utils/types'
-import { calculatePages, APP } from 'utils/const'
 import axios from 'axios'
 
 interface GetMemResponse {
@@ -14,86 +13,23 @@ interface GetMemResponse {
 export const getMembers = async (
   page: number = 0
 ): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/api/members?page=${page}`
-    )
-    if (response.status === 200) {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    } else {
-      return {
-        status: response.status,
-        data: []
-      }
-    }
-  } catch (error) {
-    return {
-      status: 500,
-      error,
-      data: []
-    }
-  }
+  return await axios.get(`http://localhost:3000/api/members?page=${page}`)
 }
 
 export const getMemberById = async (id: number): Promise<GetMemResponse> => {
   return await axios.get(`http://localhost:3000/api/members/${id}`)
 }
 
-export const getTotalPagesM = async (): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.get(
-      'http://localhost:3000/api/members?page=-1'
-    )
-    if (response.status === 200) {
-      const total: number = response.data.total
-      return {
-        status: response.status,
-        data: calculatePages(total, APP)
-      }
-    } else {
-      return {
-        status: response.status,
-        data: 0
-      }
-    }
-  } catch (error) {
-    return {
-      status: 500,
-      data: 0,
-      error
-    }
-  }
+export const getTotalPagesM = async (): Promise<GetMemResponse> => {
+  return await axios.get('http://localhost:3000/api/members?page=-1')
 }
 
 export const createMember = async (
   newMember: CreateMember
-): Promise<QueriesResponse> => {
-  try {
-    const response = await axios.post('http://localhost:3000/api/members', {
-      ...newMember
-    })
-    if (response.status === 200) {
-      return {
-        status: response.status,
-        data: response.data
-      }
-    } else {
-      return {
-        status: response.status,
-        data: {},
-        error: response.data
-      }
-    }
-  } catch (error) {
-    return {
-      status: 500,
-      data: 500,
-      error
-    }
-  }
+): Promise<GetMemResponse> => {
+  return await axios.post('http://localhost:3000/api/members', {
+    ...newMember
+  })
 }
 
 export const deleteMember = async (id: number): Promise<GetMemResponse> => {
