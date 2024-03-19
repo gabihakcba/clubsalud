@@ -3,6 +3,7 @@ import { type NextRequest } from 'next/server'
 import { type PrismaClient, type Account } from '@prisma/client'
 import { type LogIn } from 'utils/types'
 import prisma from 'utils/prisma'
+import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       //   path: '/'
       // })
 
-      return new Response(JSON.stringify(token), {
+      return new Response(JSONbig.stringify(token), {
         status: 200,
         headers: { 'Set-Cookie': `auth=${token}; Path=/` }
       })
