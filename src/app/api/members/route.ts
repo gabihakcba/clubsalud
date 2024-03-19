@@ -1,7 +1,6 @@
 import { type PrismaClient, type Member, MemberState } from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
-import { type CreateMember } from 'utils/types'
 import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
@@ -39,18 +38,18 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data: CreateMember = await req.json()
+    const data: Member = await req.json()
     const parsed = {
       name: data.name,
       lastName: data.lastName,
-      dni: Number(data.dni),
-      cuit: Number(data.cuit),
-      phoneNumber: Number(data.phoneNumber),
+      dni: BigInt(data.dni),
+      cuit: data.cuit ? BigInt(data.cuit) : null,
+      phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       inscriptionDate: new Date(data.inscriptionDate),
       derivedBy: data.derivedBy,
-      afiliateNumber: Number(data.afiliateNumber),
-      state: MemberState[data.state]
+      afiliateNumber: BigInt(data.afiliateNumber),
+      state: MemberState.ACTIVE
     }
     const res: Member = await db.member.create({
       data: {
