@@ -33,18 +33,14 @@ function InfoButton({ id, permissions }: params): ReactElement {
         isOpen={infoM}
         closeModal={closeInfo}
       >
-        {permissions === Permissions.MEM && (
-          <MemberCard
-            id={id}
-            closeModal={closeInfo}
-          ></MemberCard>
-        )}
-        {permissions === Permissions.INS && (
-          <InstructorCard
-            id={id}
-            closeModal={closeInfo}
-          ></InstructorCard>
-        )}
+        <MemberCard
+          id={id}
+          closeModal={closeInfo}
+        ></MemberCard>
+        <InstructorCard
+          id={id}
+          closeModal={closeInfo}
+        ></InstructorCard>
         {permissions === Permissions.ADM && <p>Administrador</p>}
         {permissions === Permissions.OWN && <p>Propietario</p>}
         {permissions === Permissions.OTHER && <p>Otro</p>}
