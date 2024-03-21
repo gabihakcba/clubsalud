@@ -84,4 +84,34 @@ export interface CreateInstructor {
   accountId: number
 }
 
+export enum Days {
+  'MONDAY' = 'MONDAY',
+  'TUESDAY' = 'TUESDAY',
+  'WEDNESDAY' = 'WEDNESDAY',
+  'THURSDAY' = 'THURSDAY',
+  'FRIDAY' = 'FRIDAY',
+  'SATURDAY' = 'SATURDAY',
+  'SUNDAY' = 'SUNDAY'
+}
+
+export enum ClassState {
+  'ACTIVE' = 'ACTIVE',
+  'VACATION' = 'VACATION',
+  'CANCELED' = 'CANCELED',
+  'OTHER' = 'OTHER'
+}
+
+export interface Class extends CreateClass {
+  id: number
+}
+
+export interface CreateClass {
+  name: string
+  duration: number
+  days: Days[]
+  state: ClassState
+  instructorInCharge?: number
+  instructorSubstitute?: number
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>

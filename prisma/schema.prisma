@@ -199,10 +199,10 @@ model Class {
   days                 Days[]
   state                ClassState
   // Foreignkeys
-  instructorInCharge   Int
-  instructorSubstitute Int
-  charge               Instructor  @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
-  substitute           Instructor  @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
+  instructorInCharge   Int?
+  instructorSubstitute Int?
+  charge               Instructor? @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
+  substitute           Instructor? @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
   // Relations
   openClass            OpenClass[] @relation(name: "givenClassClass")
 }
