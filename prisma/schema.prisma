@@ -28,13 +28,6 @@ enum MemberState {
   OTHER
 }
 
-enum ClassState {
-  ACTIVE
-  VACATION
-  CANCELED
-  OTHER
-}
-
 enum Days {
   MONDAY
   TUESDAY
@@ -115,8 +108,8 @@ model Instructor {
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
   givenClass         OpenClass[]         @relation(name: "givenClassInstructor")
-  classInChrage      Class[]             @relation(name: "instructorInCharge")
-  classSubstitute    Class[]             @relation(name: "instructorSubstitute")
+  scheludeInCharge   Schedule[]          @relation(name: "instructorInCharge")
+  scheludeSubstitute Schedule[]          @relation(name: "instructorSubstitute")
 }
 
 model Member {
@@ -191,20 +184,32 @@ model Attendance {
   member   Member    @relation(fields: [memberId], references: [id], name: "attendanceMember")
 }
 
-model Class {
+// Format 24hs each 30 min
+// start: 0830
+// end: 0900
+model Schedule {
   // Fields
   id                   Int         @id @default(autoincrement())
-  name                 String
-  duration             Float
-  days                 Days[]
-  state                ClassState
+  day                  Days
+  start                Int
+  end                  Int
   // Foreignkeys
   instructorInCharge   Int?
   instructorSubstitute Int?
+  classId              Int?
   charge               Instructor? @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
   substitute           Instructor? @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
+  class                Class?      @relation(fields: [classId], references: [id], name: "scheludedClass")
+}
+
+model Class {
+  // Fields
+  id        Int         @id @default(autoincrement())
+  name      String
+  duration  Float
   // Relations
-  openClass            OpenClass[] @relation(name: "givenClassClass")
+  openClass OpenClass[] @relation(name: "givenClassClass")
+  schelude  Schedule[]  @relation(name: "scheludedClass")
 }
 
 model Reservation {

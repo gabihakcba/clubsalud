@@ -94,24 +94,23 @@ export enum Days {
   'SUNDAY' = 'SUNDAY'
 }
 
-export enum ClassState {
-  'ACTIVE' = 'ACTIVE',
-  'VACATION' = 'VACATION',
-  'CANCELED' = 'CANCELED',
-  'OTHER' = 'OTHER'
-}
-
-export interface Class extends CreateClass {
+export interface Class_ extends CreateClass_ {
   id: number
 }
 
-export interface CreateClass {
+export interface CreateClass_ {
   name: string
   duration: number
-  days: Days[]
-  state: ClassState
+}
+
+export interface Schedule {
+  id: number
+  day: Days
+  start: number
+  end: number
   instructorInCharge?: number
   instructorSubstitute?: number
+  classId?: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>
