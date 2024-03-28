@@ -1,9 +1,11 @@
 const {
   PrismaClient,
   AccountPermissions,
-  MemberState
+  MemberState,
+  Days
 } = require('@prisma/client')
 const faker = require('faker')
+const { start } = require('repl')
 const { convertToObject } = require('typescript')
 
 const db = new PrismaClient()
@@ -888,10 +890,66 @@ const manyAccounts = {
   ]
 }
 
+const hours = [
+  800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400,
+  1430, 1500, 1530, 1600, 1630, 1700, 1730
+]
+
+const createSchedules = async () => {
+  for (let day in Days) {
+    hours.forEach(async (hour) => {
+      await db.schedule.create({
+        data: {
+          day: day,
+          start: Number(hour),
+          end: Number(hour) + (Number(hour) % 100 < 30 ? 30 : 70)
+        }
+      })
+    })
+  }
+}
+
+const createClasses = async () => {
+  await db.class.createMany({
+    data: [
+      {
+        name: 'Zumba',
+        duration: 1
+      },
+      {
+        name: 'Strong',
+        duration: 1
+      },
+      {
+        name: 'Gym',
+        duration: 1
+      },
+      {
+        name: 'Crossfit',
+        duration: 1
+      },
+      {
+        name: 'Personalizada',
+        duration: 1
+      },
+      {
+        name: 'Rehabilitacion',
+        duration: 1
+      },
+      {
+        name: 'Tabata',
+        duration: 1
+      }
+    ]
+  })
+}
+
 const dAll = async () => {
   console.log('Deleting all ...')
   try {
-    const res = await db.account.deleteMany()
+    await db.account.deleteMany()
+    await db.class.deleteMany()
+    await db.schedule.deleteMany()
   } catch (error) {
     console.log('Failed to deleting all :(')
     console.log(error)
@@ -900,6 +958,7 @@ const dAll = async () => {
 
 const cAll = async () => {
   console.log('Creating all ...')
+  console.log('Creating accounts, members and instructors ...')
   for (let typeAccount in manyAccounts) {
     manyAccounts[typeAccount].forEach(async (account) => {
       try {
@@ -965,6 +1024,18 @@ const cAll = async () => {
       //   throw new Error(error)
       // }
     })
+  }
+  console.log('Creating schedules ...')
+  try {
+    await createSchedules()
+  } catch (error) {
+    console.log(error)
+  }
+  console.log('Creating classes ...')
+  try {
+    await createClasses()
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -1073,7 +1144,6 @@ const createDB = async (args) => {
 }
 
 const deleteDB = async (args) => {
-  console.log('Deleting accounts ...')
   try {
     switch (args[0]) {
       case '-all':

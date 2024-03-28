@@ -121,25 +121,6 @@ export default function AdminLayout({ children }: any): ReactElement {
                 </li>
                 <li>
                   <Link
-                    href='/admin/members'
-                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/members' ? 'bg-gray-500' : ''}`}
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 18'
-                    >
-                      <path d='M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>
-                      Alumnos
-                    </span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     href='/admin/accounts'
                     className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/accounts' ? 'bg-gray-500' : ''}`}
                   >
@@ -159,8 +140,8 @@ export default function AdminLayout({ children }: any): ReactElement {
                 </li>
                 <li>
                   <Link
-                    href='/admin/people'
-                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/people' ? 'bg-gray-500' : ''}`}
+                    href='/admin/schedule'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/schedule' ? 'bg-gray-500' : ''}`}
                   >
                     <svg
                       className='flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
@@ -169,10 +150,115 @@ export default function AdminLayout({ children }: any): ReactElement {
                       fill='currentColor'
                       viewBox='0 0 20 18'
                     >
-                      <path d='M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z' />
+                      <g
+                        id='SVGRepo_bgCarrier'
+                        stroke-width='0'
+                      ></g>
+                      <g
+                        id='SVGRepo_tracerCarrier'
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke='#fcfcfc'
+                        stroke-width='2.88'
+                      >
+                        {' '}
+                        <title>Calendar-empty</title> <defs> </defs>{' '}
+                        <g
+                          stroke='none'
+                          stroke-width='1'
+                          fill='none'
+                          fill-rule='evenodd'
+                        >
+                          {' '}
+                          <g fill='#919191'>
+                            {' '}
+                            <rect
+                              x='4'
+                              y='0'
+                              width='0.971'
+                              height='1.911'
+                              className='si-glyph-fill'
+                            >
+                              {' '}
+                            </rect>{' '}
+                            <rect
+                              x='11'
+                              y='0'
+                              width='1'
+                              height='1.906'
+                              className='si-glyph-fill'
+                            >
+                              {' '}
+                            </rect>{' '}
+                            <g transform='translate(0.000000, 1.000000)'>
+                              {' '}
+                              <path
+                                d='M15.976,3.959 L15.976,1.456 C15.976,0.685 15.37,0.058 14.622,0.058 L13.032,0.058 L13.032,2.084 L9.968,2.084 L9.968,0.058 L6.034,0.058 L6.034,2.084 L2.938,2.084 L2.938,0.058 L1.401,0.058 C0.653,0.058 0.047,0.685 0.047,1.456 L0.047,3.959 L15.976,3.959 L15.976,3.959 Z'
+                                className='si-glyph-fill'
+                              >
+                                {' '}
+                              </path>{' '}
+                              <path
+                                d='M0.046,5.003 L0.046,13.565 C0.046,14.337 0.652,14.964 1.4,14.964 L14.621,14.964 C15.369,14.964 15.975,14.337 15.975,13.565 L15.975,5.003 L0.046,5.003 L0.046,5.003 Z'
+                                className='si-glyph-fill'
+                              >
+                                {' '}
+                              </path>{' '}
+                            </g>{' '}
+                          </g>{' '}
+                        </g>{' '}
+                      </g>
+                      <g id='SVGRepo_iconCarrier'>
+                        {' '}
+                        <title>Calendar-empty</title> <defs> </defs>{' '}
+                        <g
+                          stroke='none'
+                          stroke-width='1'
+                          fill='none'
+                          fill-rule='evenodd'
+                        >
+                          {' '}
+                          <g fill='#919191'>
+                            {' '}
+                            <rect
+                              x='4'
+                              y='0'
+                              width='0.971'
+                              height='1.911'
+                              className='si-glyph-fill'
+                            >
+                              {' '}
+                            </rect>{' '}
+                            <rect
+                              x='11'
+                              y='0'
+                              width='1'
+                              height='1.906'
+                              className='si-glyph-fill'
+                            >
+                              {' '}
+                            </rect>{' '}
+                            <g transform='translate(0.000000, 1.000000)'>
+                              {' '}
+                              <path
+                                d='M15.976,3.959 L15.976,1.456 C15.976,0.685 15.37,0.058 14.622,0.058 L13.032,0.058 L13.032,2.084 L9.968,2.084 L9.968,0.058 L6.034,0.058 L6.034,2.084 L2.938,2.084 L2.938,0.058 L1.401,0.058 C0.653,0.058 0.047,0.685 0.047,1.456 L0.047,3.959 L15.976,3.959 L15.976,3.959 Z'
+                                className='si-glyph-fill'
+                              >
+                                {' '}
+                              </path>{' '}
+                              <path
+                                d='M0.046,5.003 L0.046,13.565 C0.046,14.337 0.652,14.964 1.4,14.964 L14.621,14.964 C15.369,14.964 15.975,14.337 15.975,13.565 L15.975,5.003 L0.046,5.003 L0.046,5.003 Z'
+                                className='si-glyph-fill'
+                              >
+                                {' '}
+                              </path>{' '}
+                            </g>{' '}
+                          </g>{' '}
+                        </g>{' '}
+                      </g>
                     </svg>
                     <span className='flex-1 ms-3 whitespace-nowrap'>
-                      Personas
+                      Horarios
                     </span>
                   </Link>
                 </li>
