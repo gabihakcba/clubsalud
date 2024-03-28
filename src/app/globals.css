@@ -88,3 +88,20 @@ input[type=number] {
 .by {
   border: 2px solid yellow;
 }
+
+.borderSche {
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+}
+
+@media (min-width: 768px) {
+  .md\:rotateH {
+    transform: rotate(0deg) !important;
+    /* background-color: aqua !important; */
+  }
+}
+
+.rotateV{
+  transform: rotate(90deg);
+  /* background-color: blue; */
+}
