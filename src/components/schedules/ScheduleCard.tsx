@@ -1,13 +1,14 @@
 import change from '../../../public/change.svg'
 import Image from 'next/image'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
 import { getClassById } from 'queries/classes'
-import { assignClass } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
-import { type Schedule } from 'utils/types'
+import { Class_, Instructor, type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
+import { getInstructorById } from 'queries/instructors'
+import InstructorAssign from './InstructorAssign'
+import ClassAssign from './ClassAssign'
 
 const border = (start: number): string => {
   const border = 'border-r-[1px] border-l-[1px] border-black'
@@ -21,49 +22,54 @@ interface params {
 }
 
 export default function ScheduleCard({ schedule }: params): ReactElement {
-  const [sch, setSch] = useState(schedule)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset
-  } = useForm()
-
-  const { data } = useQuery({
-    queryKey: ['class', sch.id],
-    queryFn: async () => {
-      const res = await getClassById(sch.classId)
-      return res
-    }
+  const [class_, setClass_] = useState<Class_>({
+    id: 0,
+    name: '',
+    duration: 0
   })
 
-  const query = useQueryClient()
+  const [instructor, setInstructor] = useState<Instructor>({
+    id: 0,
+    name: '',
+    lastName: '',
+    dni: BigInt(0),
+    phoneNumber: BigInt(0),
+    address: '',
+    email: '',
+    degree: '',
+    accountId: 0
+  })
 
-  const { mutate } = useMutation({
-    mutationFn: assignClass,
-    async onSuccess(data, variables, context) {
-      /**
-       * Arreglar, actulizar los datos sin tener
-       * que refectchear todos los schedulers
-       */
-      await query.resetQueries({ queryKey: ['sch'] })
-      // query.setQueryData(['class', schedule.id], {
-      //   data: { name: variables.className }
-      // })
-      // const old = query.getQueryData(['class', schedule.classId])
-      // console.log(old, 'classId: ', schedule.classId)
-      reset()
-      closeAssign()
-    }
+  const { data } = useQuery({
+    queryKey: ['class', schedule.id],
+    queryFn: async () => {
+      const dataResponse = await getClassById(schedule.classId)
+      const scheduleResponse = await getInstructorById(
+        schedule.instructorInCharge
+      )
+      setInstructor(scheduleResponse.data)
+      setClass_(dataResponse.data)
+      return dataResponse
+    },
+    staleTime: 1000 * 60 * 60 * 8
   })
 
   const [assign, openAssing, closeAssign] = useModal(false)
+
   return (
     <div
-      key={sch.id}
-      className={`flex justify-around text-center ${border(sch.start)}`}
+      key={schedule.id}
+      className={`flex justify-between text-center px-2 ${border(schedule.start)}`}
     >
-      {(sch.classId && data?.data?.name) ?? '----'}
+      <span>{class_.name !== '' ? class_.name : '----'}</span>
+      {instructor.id !== 0 && (
+        <span className='ml-2 text-xs inline-flex items-center font-bold leading-sm uppercase px-1 py-0 rounded-full bg-white text-gray-700 border border-gray-500'>
+          {instructor.name}
+        </span>
+        // <span className='inline-flex items-center justify-center px-1 text-sm font-medium text-gray-800 bg-gray-300 rounded-full'>
+        //   {instructor.name}
+        // </span>
+      )}
       <button onClick={openAssing}>
         <Image
           src={change}
@@ -76,32 +82,17 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
         isOpen={assign}
         closeModal={closeAssign}
       >
-        <div>
-          <label>Clase</label>
-          <form
-            action=''
-            id='assign'
-            onSubmit={handleSubmit((data) => {
-              mutate({ className: data.class, scheduleId: sch.id })
-            })}
-          >
-            <input
-              type='text'
-              form='assign'
-              {...register('class', {
-                required: {
-                  value: true,
-                  message: 'El nombre de la clase es requerido'
-                }
-              })}
-            />
-            {errors?.class && (
-              <span className='inputError'>
-                {errors.class.message as string}
-              </span>
-            )}
-            <button type='submit'>Enviar</button>
-          </form>
+        <div className='flex flex-col gap-3 bg-gray-200 rounded m-2 p-2 items-center'>
+          <ClassAssign
+            closeAssign={closeAssign}
+            setClass_={setClass_}
+            schedule={schedule}
+          ></ClassAssign>
+          <InstructorAssign
+            closeAssign={closeAssign}
+            setInstructor={setInstructor}
+            schedule={schedule}
+          ></InstructorAssign>
         </div>
       </Modal>
     </div>
