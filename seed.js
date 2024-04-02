@@ -939,6 +939,34 @@ const createClasses = async () => {
       {
         name: 'Tabata',
         duration: 1
+      },
+      {
+        name: 'Funcional',
+        duration: 1
+      },
+      {
+        name: 'GAP',
+        duration: 1
+      },
+      {
+        name: 'Cardio',
+        duration: 1
+      },
+      {
+        name: 'TKD',
+        duration: 1
+      },
+      {
+        name: 'Karate-Do',
+        duration: 1
+      },
+      {
+        name: 'Kick',
+        duration: 1
+      },
+      {
+        name: 'Box',
+        duration: 1
       }
     ]
   })
