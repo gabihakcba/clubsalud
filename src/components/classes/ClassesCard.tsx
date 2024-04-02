@@ -9,7 +9,8 @@ export default function ClassesCard(): ReactElement {
   const { data: classes } = useQuery({
     queryKey: ['class'],
     queryFn: async () => {
-      return await getClasses()
+      const response = await getClasses()
+      return response.data
     }
   })
 
@@ -18,7 +19,7 @@ export default function ClassesCard(): ReactElement {
       {classes?.map((class_) => (
         <div
           key={class_.id}
-          className='bg-white border border-gray-200 rounded-lg shadow p-4 dark:bg-gray-800 dark:border-gray-700'
+          className='bg-white border m-0 border-gray-200 rounded-lg shadow p-4 w-max'
         >
           <ClassCard class_={class_}></ClassCard>
         </div>
