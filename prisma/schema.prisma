@@ -357,7 +357,7 @@ model Promotion {
   id                  Int            @id @default(autoincrement())
   title               String
   description         String
-  amountWeeklyClasses BigInt         @db.BigInt
+  amountWeeklyClasses Int
   amountPrice         Float
   lastPriceUpdate     DateTime       @default(now())
   // Relations
