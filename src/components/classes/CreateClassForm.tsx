@@ -4,7 +4,7 @@ import { Class_, CreateClass_ } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClass } from 'queries/classes'
 
-export default function ClassCard({ closeModal }): ReactElement {
+export default function CreateClassForm({ closeModal }): ReactElement {
   const query = useQueryClient()
 
   const { mutate } = useMutation({
