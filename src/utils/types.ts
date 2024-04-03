@@ -113,4 +113,16 @@ export interface Schedule {
   classId?: number
 }
 
+export interface Promotion extends CreatePromotion {
+  id: Number
+}
+
+export interface CreatePromotion {
+  title: string
+  description: string
+  amountWeeklyClasses: number
+  amountPrice: number
+  lastPriceUpdate?: Date
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
