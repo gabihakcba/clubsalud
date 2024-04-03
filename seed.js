@@ -972,12 +972,61 @@ const createClasses = async () => {
   })
 }
 
+const createPromotions = async () => {
+  await db.promotion.createMany({
+    data: [
+      {
+        title: '1 x Semanal',
+        description:
+          '1 clase a elección por semana, 1 mes de duración, $7000 x clase',
+        amountWeeklyClasses: 1,
+        amountPrice: 7000
+      },
+      {
+        title: '2 x semanal',
+        description:
+          '2 clases a elección por semana, 1 mes de duracion, $6500 x clase',
+        amountWeeklyClasses: 2,
+        amountPrice: 13000
+      },
+      {
+        title: '3 x semanal',
+        description:
+          '3 clases a elección por semana, 1 mes de duracion, $6000 x clase',
+        amountWeeklyClasses: 3,
+        amountPrice: 18000
+      },
+      {
+        title: '4 x semanal',
+        description:
+          '4 clases a elección por semana, 1 mes de duracion, $5500 x clase',
+        amountWeeklyClasses: 4,
+        amountPrice: 22000
+      },
+      {
+        title: '5 x semanal',
+        description:
+          '5 clases a elección por semana, 1 mes de duracion, $5000 x clase',
+        amountWeeklyClasses: 0,
+        amountPrice: 25000
+      },
+      {
+        title: 'Pase Libre',
+        description: 'Pase sin limitaciones',
+        amountWeeklyClasses: 99999,
+        amountPrice: 30000
+      }
+    ]
+  })
+}
+
 const dAll = async () => {
   console.log('Deleting all ...')
   try {
     await db.account.deleteMany()
     await db.class.deleteMany()
     await db.schedule.deleteMany()
+    await db.promotion.deleteMany()
   } catch (error) {
     console.log('Failed to deleting all :(')
     console.log(error)
@@ -1062,6 +1111,12 @@ const cAll = async () => {
   console.log('Creating classes ...')
   try {
     await createClasses()
+  } catch (error) {
+    console.log(error)
+  }
+  console.log('Creating promotions ...')
+  try {
+    await createPromotions()
   } catch (error) {
     console.log(error)
   }
