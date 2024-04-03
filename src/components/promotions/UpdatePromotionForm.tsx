@@ -2,7 +2,7 @@ import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { CreatePromotion, Promotion } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createPromotion } from 'queries/promotions'
+import { createPromotion, updatePromotion } from 'queries/promotions'
 
 export default function UpdatePromotionForm({
   closeModal,
@@ -11,13 +11,13 @@ export default function UpdatePromotionForm({
   const query = useQueryClient()
 
   const { mutate } = useMutation({
-    mutationFn: createPromotion,
+    mutationFn: updatePromotion,
     async onSuccess(data) {
       reset()
       closeModal()
       await query.setQueryData(['prom'], (oldData: Promotion[]) => {
         const index = oldData.findIndex((element: Promotion) => {
-          return data.id === element.id
+          return promotion.id === element.id
         })
         const newData = [...oldData]
         newData.splice(index, 1, data)
@@ -40,7 +40,7 @@ export default function UpdatePromotionForm({
         id={'promotion'}
         className='flex flex-col justify-start items-end'
         onSubmit={handleSubmit((data) => {
-          mutate(data as CreatePromotion)
+          mutate({ id: promotion.id, ...(data as CreatePromotion) })
         })}
       >
         <div className='flex flex-row'>
