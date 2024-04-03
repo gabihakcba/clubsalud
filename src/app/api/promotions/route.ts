@@ -74,7 +74,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     })
   } catch (error) {
     console.log(error)
-    return new Response('No se pudo crear el usuario', {
+    return new Response('No se pudo editar la ofer', {
       status: 400
     })
   }
