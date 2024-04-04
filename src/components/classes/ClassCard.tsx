@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Class_ } from 'utils/types'
+import { Class_, Permissions } from 'utils/types'
 import Image from 'next/image'
 import gym from '../../../public/images/gym_image.png'
 import edit from '../../../public/edit.svg'
@@ -9,6 +9,7 @@ import { useModal } from 'utils/useModal'
 import ClassForm from './ClassForm'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteClass } from 'queries/classes'
+import HasRole from 'components/HasRole'
 
 export default function ClassCard2({
   class_
@@ -35,37 +36,39 @@ export default function ClassCard2({
 
   return (
     <div className='w-max flex flex-col'>
-      <div className='self-end'>
-        <button onClick={openModal}>
-          <Image
-            src={edit}
-            width={20}
-            height={20}
-            alt='E'
-          ></Image>
-        </button>
-        <Modal
-          isOpen={isOpen}
-          closeModal={closeModal}
-        >
-          <ClassForm
-            class_={class_}
+      <HasRole required={Permissions.ADM}>
+        <div className='self-end'>
+          <button onClick={openModal}>
+            <Image
+              src={edit}
+              width={20}
+              height={20}
+              alt='E'
+            ></Image>
+          </button>
+          <Modal
+            isOpen={isOpen}
             closeModal={closeModal}
-          ></ClassForm>
-        </Modal>
-        <button
-          onClick={() => {
-            mutate(class_.id)
-          }}
-        >
-          <Image
-            src={delete_}
-            width={20}
-            height={20}
-            alt='E'
-          ></Image>
-        </button>
-      </div>
+          >
+            <ClassForm
+              class_={class_}
+              closeModal={closeModal}
+            ></ClassForm>
+          </Modal>
+          <button
+            onClick={() => {
+              mutate(class_.id)
+            }}
+          >
+            <Image
+              src={delete_}
+              width={20}
+              height={20}
+              alt='E'
+            ></Image>
+          </button>
+        </div>
+      </HasRole>
       <div className=''>
         <Image
           src={gym}

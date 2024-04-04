@@ -4,11 +4,12 @@ import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
 import { getClassById } from 'queries/classes'
 import { useState, type ReactElement } from 'react'
-import { Class_, Instructor, type Schedule } from 'utils/types'
+import { Class_, Instructor, Permissions, type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 import { getInstructorById } from 'queries/instructors'
 import InstructorAssign from './InstructorAssign'
 import ClassAssign from './ClassAssign'
+import HasRole from 'components/HasRole'
 
 const border = (start: number): string => {
   const border = 'border-r-[1px] border-l-[1px] border-black'
@@ -70,31 +71,33 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
         //   {instructor.name}
         // </span>
       )}
-      <button onClick={openAssing}>
-        <Image
-          src={change}
-          alt='c'
-          width={10}
-          height={10}
-        />
-      </button>
-      <Modal
-        isOpen={assign}
-        closeModal={closeAssign}
-      >
-        <div className='flex flex-col gap-3 bg-gray-200 rounded m-2 p-2 items-center'>
-          <ClassAssign
-            closeAssign={closeAssign}
-            setClass_={setClass_}
-            schedule={schedule}
-          ></ClassAssign>
-          <InstructorAssign
-            closeAssign={closeAssign}
-            setInstructor={setInstructor}
-            schedule={schedule}
-          ></InstructorAssign>
-        </div>
-      </Modal>
+      <HasRole required={Permissions.ADM}>
+        <button onClick={openAssing}>
+          <Image
+            src={change}
+            alt='c'
+            width={10}
+            height={10}
+          />
+        </button>
+        <Modal
+          isOpen={assign}
+          closeModal={closeAssign}
+        >
+          <div className='flex flex-col gap-3 bg-gray-200 rounded m-2 p-2 items-center'>
+            <ClassAssign
+              closeAssign={closeAssign}
+              setClass_={setClass_}
+              schedule={schedule}
+            ></ClassAssign>
+            <InstructorAssign
+              closeAssign={closeAssign}
+              setInstructor={setInstructor}
+              schedule={schedule}
+            ></InstructorAssign>
+          </div>
+        </Modal>
+      </HasRole>
     </div>
   )
 }

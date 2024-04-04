@@ -28,7 +28,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         username: userMatch.username,
         password: userMatch.password,
         permissions: userMatch.permissions
-      }
+      } // <-  Solo userId y userName
       const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
       const token: string = jwt.sign(user, secret, {
         // expiresIn: Math.floor(new Date().getTime() / 1000) + daysToSeconds(),
