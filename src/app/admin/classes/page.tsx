@@ -7,6 +7,8 @@ import Modal from 'components/Modal'
 import CreateClassForm from 'components/classes/CreateClassForm'
 import PromotionSection from 'components/promotions/PromotionSection'
 import CreatePromotionForm from 'components/promotions/CreatePromotionForm'
+import HasRole from 'components/HasRole'
+import { Permissions } from 'utils/types'
 
 export default function Classes(): ReactElement {
   const [isOpen, openModal, closeModal] = useModal()
@@ -14,20 +16,22 @@ export default function Classes(): ReactElement {
     <div className='flex flex-col items-start justify-start'>
       <div className='w-max flex items-center'>
         <h2 className='text-2xl font-black m-4'>Clases</h2>
-        <button
-          className='blueButtonForm'
-          onClick={() => {
-            openModal()
-          }}
-        >
-          Crear clase
-        </button>
-        <Modal
-          isOpen={isOpen}
-          closeModal={closeModal}
-        >
-          <CreateClassForm closeModal={closeModal}></CreateClassForm>
-        </Modal>
+        <HasRole required={Permissions.ADM}>
+          <button
+            className='blueButtonForm'
+            onClick={() => {
+              openModal()
+            }}
+          >
+            Crear clase
+          </button>
+          <Modal
+            isOpen={isOpen}
+            closeModal={closeModal}
+          >
+            <CreateClassForm closeModal={closeModal}></CreateClassForm>
+          </Modal>
+        </HasRole>
       </div>
       <section
         className='h-max scrollHidden'
@@ -45,20 +49,22 @@ export default function Classes(): ReactElement {
       </section>
       <div className='w-max flex items-center'>
         <h2 className='text-2xl font-black m-4'>Ofertas</h2>
-        <button
-          className='blueButtonForm'
-          onClick={() => {
-            openModal()
-          }}
-        >
-          Crear oferta
-        </button>
-        <Modal
-          isOpen={isOpen}
-          closeModal={closeModal}
-        >
-          <CreatePromotionForm closeModal={closeModal}></CreatePromotionForm>
-        </Modal>
+        <HasRole required={Permissions.ADM}>
+          <button
+            className='blueButtonForm'
+            onClick={() => {
+              openModal()
+            }}
+          >
+            Crear oferta
+          </button>
+          <Modal
+            isOpen={isOpen}
+            closeModal={closeModal}
+          >
+            <CreatePromotionForm closeModal={closeModal}></CreatePromotionForm>
+          </Modal>
+        </HasRole>
       </div>
       <PromotionSection></PromotionSection>
     </div>
