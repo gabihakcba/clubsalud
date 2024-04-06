@@ -12,6 +12,7 @@ import { Permissions, type QueriesResponse } from 'utils/types'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HasRole from 'components/HasRole'
+import accounting from '../../../public/accounting.svg'
 
 const logOut = async (router: AppRouterInstance): Promise<void> => {
   const response: QueriesResponse = await logOutAccount()
@@ -60,8 +61,8 @@ export default function AdminLayout({ children }: any): ReactElement {
               <ul className='space-y-2 font-medium'>
                 <li>
                   <Link
-                    href='/admin'
-                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin' ? 'bg-gray-500' : ''}`}
+                    href='/admin/payment'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/payment' ? 'bg-gray-500' : ''}`}
                   >
                     <svg
                       className='w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
@@ -314,6 +315,71 @@ export default function AdminLayout({ children }: any): ReactElement {
                       Log Out
                     </span>
                   </button>
+                </li>
+                <li>
+                  <Link
+                    href='/admin/accounting'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/accounting' ? 'bg-gray-500' : ''}`}
+                  >
+                    {/* <svg
+                      className='flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                      aria-hidden='true'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='currentColor'
+                      viewBox='0 0 18 20'
+                    >
+                      <path d='M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z' />
+                    </svg> */}
+                    <svg
+                      width='1.25rem'
+                      height='1.25rem'
+                      viewBox='0 0 91 91'
+                      enable-background='new 0 0 91 91'
+                      id='Layer_1'
+                      // xmlSpace='preserve'
+                      // xmlns='http://www.w3.org/2000/svg'
+                      // xmlns:xlink='http://www.w3.org/1999/xlink'
+                    >
+                      <g>
+                        <g>
+                          <path
+                            d='M5.895,90.438h72.521c3.463,0,6.285-2.82,6.285-6.287v-62.73H5.895V90.438z M37.844,74.739    c1.072,1.074,1.072,2.816,0,3.891c-0.539,0.537-1.242,0.803-1.945,0.803s-1.408-0.266-1.947-0.805l-5.564-5.57l-5.566,5.568    c-0.539,0.537-1.24,0.807-1.945,0.807c-0.703,0-1.408-0.27-1.943-0.807c-1.076-1.072-1.076-2.814,0-3.889l5.568-5.568l-5.568-5.57    c-1.076-1.076-1.076-2.816,0-3.891c1.074-1.074,2.814-1.074,3.889,0l5.566,5.57l5.564-5.568c1.078-1.074,2.816-1.074,3.893,0    c1.072,1.072,1.072,2.814,0,3.889l-5.568,5.57L37.844,74.739z M63.885,79.778h-1.922c-1.52,0-2.752-1.23-2.752-2.75    s1.232-2.75,2.752-2.75h1.922c1.52,0,2.754,1.23,2.754,2.75S65.404,79.778,63.885,79.778z M54.125,37.571h17.588    c1.52,0,2.754,1.23,2.754,2.75s-1.234,2.75-2.754,2.75H54.125c-1.516,0-2.748-1.23-2.748-2.75S52.609,37.571,54.125,37.571z     M66.639,61.286c0,1.52-1.234,2.752-2.754,2.752h-1.922c-1.52,0-2.752-1.232-2.752-2.752c0-1.518,1.232-2.75,2.752-2.75h1.922    C65.404,58.536,66.639,59.769,66.639,61.286z M54.125,66.417h17.588c1.52,0,2.754,1.23,2.754,2.75s-1.234,2.75-2.754,2.75H54.125    c-1.516,0-2.748-1.23-2.748-2.75S52.609,66.417,54.125,66.417z M19.598,37.571h6.037v-6.039c0-1.52,1.232-2.75,2.75-2.75    c1.52,0,2.75,1.23,2.75,2.75v6.039h6.047c1.516,0,2.75,1.23,2.75,2.75s-1.234,2.75-2.75,2.75h-6.047v6.043    c0,1.52-1.23,2.752-2.75,2.752c-1.518,0-2.75-1.232-2.75-2.752v-6.043h-6.037c-1.52,0-2.754-1.23-2.754-2.75    S18.078,37.571,19.598,37.571z'
+                            fill='#647F94'
+                          />
+
+                          <rect
+                            fill='#45596B'
+                            height='14.791'
+                            width='78.807'
+                            x='5.895'
+                            y='1.128'
+                          />
+                        </g>
+                      </g>
+                    </svg>
+                    <span className='flex-1 ms-3 whitespace-nowrap'>
+                      Balances
+                    </span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href='/admin'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin' ? 'bg-gray-500' : ''}`}
+                  >
+                    <svg
+                      className='flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                      aria-hidden='true'
+                      xmlns='http://www.w3.org/2000/svg'
+                      fill='currentColor'
+                      viewBox='0 0 18 20'
+                    >
+                      <path d='M17 5.923A1 1 0 0 0 16 5h-3V4a4 4 0 1 0-8 0v1H2a1 1 0 0 0-1 .923L.086 17.846A2 2 0 0 0 2.08 20h13.84a2 2 0 0 0 1.994-2.153L17 5.923ZM7 9a1 1 0 0 1-2 0V7h2v2Zm0-5a2 2 0 1 1 4 0v1H7V4Zm6 5a1 1 0 1 1-2 0V7h2v2Z' />
+                    </svg>
+                    <span className='flex-1 ms-3 whitespace-nowrap'>
+                      Perfil
+                    </span>
+                  </Link>
                 </li>
                 <button
                   onClick={() => {

@@ -7,7 +7,9 @@ import { CreatePromotion } from 'utils/types'
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
-  const promotions: Promotion[] = await db.promotion.findMany()
+  const promotions: Promotion[] = await db.promotion.findMany({
+    orderBy: { amountPrice: 'asc' }
+  })
   return new Response(JSONbig.stringify(promotions), {
     status: 200
   })

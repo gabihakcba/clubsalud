@@ -7,10 +7,19 @@ const db: PrismaClient = prisma
 
 export async function GET(): Promise<Response> {
   try {
-    const suscriptions = await db.subscription.findMany()
-    return new Response(JSONbig.stringify(suscriptions), {
-      status: 200
+    const suscriptions = await db.member.findMany({
+      include: {
+        memberSubscription: true
+      }
     })
+    return new Response(
+      JSONbig.stringify(
+        suscriptions.filter((member) => member.memberSubscription.length > 0)
+      ),
+      {
+        status: 200
+      }
+    )
   } catch (error) {
     return new Response(JSONbig.stringify(error), {
       status: 500
