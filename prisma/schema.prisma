@@ -342,11 +342,12 @@ model Subscription {
   date               DateTime             @default(now())
   paid               Boolean
   remaining          Float
+  total              Float
   // Foreignkeys
   promotionId        Int
   memberId           Int
-  promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion")
-  member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember")
+  promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion", onDelete: Cascade)
+  member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember", onDelete: Cascade)
   // Relations
   payment            Payment[]            @relation(name: "paymentSubscription")
   billedConsultation BilledConsultation[] @relation(name: "consultationSubscription")

@@ -11,6 +11,7 @@ export const setSubscription = async ({ memberId, promotion }: params) => {
     date: new Date(),
     paid: false,
     remaining: promotion.amountPrice,
+    total: promotion.amountPrice,
     promotionId: promotion.id,
     memberId: memberId
   }

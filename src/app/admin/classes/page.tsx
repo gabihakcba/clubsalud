@@ -77,7 +77,7 @@ export default function Classes(): ReactElement {
             isOpen={isOpenS}
             closeModal={closeModalS}
           >
-            <SubscriptionForm></SubscriptionForm>
+            <SubscriptionForm closeModal={closeModalS}></SubscriptionForm>
           </Modal>
         </HasRole>
       </div>
