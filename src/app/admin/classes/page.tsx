@@ -9,9 +9,12 @@ import PromotionSection from 'components/promotions/PromotionSection'
 import CreatePromotionForm from 'components/promotions/CreatePromotionForm'
 import HasRole from 'components/HasRole'
 import { Permissions } from 'utils/types'
+import SubscriptionForm from 'components/subscriptions/SubscriptionForm'
 
 export default function Classes(): ReactElement {
   const [isOpen, openModal, closeModal] = useModal()
+
+  const [isOpenS, openModalS, closeModalS] = useModal(false)
   return (
     <div className='flex flex-col items-start justify-start'>
       <div className='w-max flex items-center'>
@@ -34,21 +37,20 @@ export default function Classes(): ReactElement {
         </HasRole>
       </div>
       <section
-        className='h-max scrollHidden'
+        className='h-max scrollHidden self-center p-4'
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(15rem,1fr))',
-          gap: '0.5rem',
+          gap: '1rem',
           alignContent: 'flex-start',
           justifyItems: 'center',
-          maxWidth: '98dvw',
-          margin: '1rem'
+          width: '100%'
         }}
       >
         <ClassesCard />
       </section>
-      <div className='w-max flex items-center'>
-        <h2 className='text-2xl font-black m-4'>Ofertas</h2>
+      <div className='w-full flex items-center gap-4'>
+        <h2 className='text-2xl font-black m-4'>Planes</h2>
         <HasRole required={Permissions.ADM}>
           <button
             className='blueButtonForm'
@@ -63,6 +65,19 @@ export default function Classes(): ReactElement {
             closeModal={closeModal}
           >
             <CreatePromotionForm closeModal={closeModal}></CreatePromotionForm>
+          </Modal>
+          <button
+            className='blueButtonForm'
+            type='button'
+            onClick={openModalS}
+          >
+            Inscribir
+          </button>
+          <Modal
+            isOpen={isOpenS}
+            closeModal={closeModalS}
+          >
+            <SubscriptionForm></SubscriptionForm>
           </Modal>
         </HasRole>
       </div>

@@ -3,6 +3,7 @@ import { getPromotions } from 'queries/promotions'
 import { ReactElement } from 'react'
 import PromotionCard from './PromotionCard'
 import { Promotion } from 'utils/types'
+
 export default function PromotionSection(): ReactElement {
   const { data } = useQuery({
     queryKey: ['prom'],
@@ -21,7 +22,7 @@ export default function PromotionSection(): ReactElement {
         gap: '0.5rem',
         alignContent: 'flex-start',
         justifyItems: 'center',
-        maxWidth: '98dvw',
+        width: '100%',
         margin: '1rem'
       }}
     >

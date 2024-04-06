@@ -1,5 +1,5 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { Account, Class_, Permissions, Promotion } from 'utils/types'
+import { ReactElement } from 'react'
+import { Permissions, Promotion, Subscription } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import delete_ from '../../../public/delete_.svg'
@@ -8,26 +8,33 @@ import { useModal } from 'utils/useModal'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deletePromotion } from 'queries/promotions'
 import UpdatePromotionForm from './UpdatePromotionForm'
-import {
-  getUserToken,
-  hasPermission,
-  setNewUser,
-  verifyToken
-} from 'utils/auth'
+import { getUserToken, verifyToken } from 'utils/auth'
 import HasRole from 'components/HasRole'
+import { setSubscription } from 'queries/subscriptions'
+import { getMemberById } from 'queries/members'
+
+const subscribe = async (promotion: Promotion) => {
+  const token = getUserToken()
+  const user = await verifyToken(token)
+  const userId = user?.id
+  const member = await getMemberById(Number(userId))
+  const subs = await setSubscription({
+    memberId: member.data.id,
+    promotion: promotion
+  })
+  if (!subs) {
+    alert('No se pudo adherir a la suscripción')
+  }
+}
 
 export default function PromotionCard({
   promotion
 }: {
   promotion: Promotion
 }): ReactElement {
-  const [user, setUser] = useState<Account>()
+  const [isOpen, openModal, closeModal] = useModal()
 
   const query = useQueryClient()
-
-  useEffect(() => {
-    setNewUser(getUserToken(), setUser)
-  }, [])
 
   const { mutate } = useMutation({
     mutationFn: deletePromotion,
@@ -42,8 +49,6 @@ export default function PromotionCard({
       })
     }
   })
-
-  const [isOpen, openModal, closeModal] = useModal()
 
   return (
     <div className='w-max flex flex-col justify-between border rounded p-4 mb-5'>
@@ -82,7 +87,9 @@ export default function PromotionCard({
           </div>
         </HasRole>
         <div className='mt-4 flex flex-col justify-between items-center'>
-          <span className='text-xl font-semibold'>{promotion.title}</span>
+          <div className='flex'>
+            <span className='text-xl font-semibold'>{promotion.title}</span>
+          </div>
           <p className=' max-w-[7rem] block font-sans text-base font-light leading-relaxed text-inherit antialiased break-words'>
             {promotion.description}
           </p>
@@ -90,14 +97,16 @@ export default function PromotionCard({
       </div>
       <div>
         <div className='self-start mt-2'>${promotion.amountPrice}</div>
-        <button
-          className='mt-2 border rounded'
-          onClick={() => {
-            console.log(user)
-          }}
-        >
-          Inscribirse
-        </button>
+        <HasRole required={Permissions.MEM}>
+          <button
+            className='mt-2 border rounded'
+            onClick={async () => {
+              await subscribe(promotion)
+            }}
+          >
+            Inscribirse
+          </button>
+        </HasRole>
       </div>
     </div>
   )

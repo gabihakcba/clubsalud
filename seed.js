@@ -1027,6 +1027,7 @@ const dAll = async () => {
     await db.class.deleteMany()
     await db.schedule.deleteMany()
     await db.promotion.deleteMany()
+    await db.subscription.deleteMany()
   } catch (error) {
     console.log('Failed to deleting all :(')
     console.log(error)
