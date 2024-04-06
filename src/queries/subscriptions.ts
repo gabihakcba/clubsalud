@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CreateSubscription, Promotion } from 'utils/types'
+import { CreateSubscription, Member, Promotion } from 'utils/types'
 
 interface params {
   memberId: number
@@ -19,5 +19,10 @@ export const setSubscription = async ({ memberId, promotion }: params) => {
     'http://localhost:3000/api/subscriptions',
     parsed
   )
+  return response.data
+}
+
+export const getSubscriptions = async (): Promise<Member[]> => {
+  const response = await axios.get('http://localhost:3000/api/subscriptions')
   return response.data
 }
