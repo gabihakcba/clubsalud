@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Permissions, Promotion, Subscription } from 'utils/types'
+import { Permissions, Promotion } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import delete_ from '../../../public/delete_.svg'

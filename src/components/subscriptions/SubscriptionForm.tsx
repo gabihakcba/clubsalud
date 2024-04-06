@@ -4,9 +4,8 @@ import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
 import { ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Promotion } from 'utils/types'
 
-const subscribe = async (id: string, promotion) => {
+const subscribe = async (id: string, promotion, closeModal) => {
   const memberId = Number(id)
   const subs = await setSubscription({
     memberId,
@@ -15,9 +14,10 @@ const subscribe = async (id: string, promotion) => {
   if (!subs) {
     alert('No se pudo adherir a la suscripción')
   }
+  closeModal()
 }
 
-export default function SubscriptionForm(): ReactElement {
+export default function SubscriptionForm({ closeModal }): ReactElement {
   const { data: members } = useQuery({
     queryKey: ['memS'],
     queryFn: async () => {
@@ -50,7 +50,7 @@ export default function SubscriptionForm(): ReactElement {
           event?.preventDefault()
 
           promotions !== undefined &&
-            subscribe(data.memberId, promotions[data.promotion])
+            subscribe(data.memberId, promotions[data.promotion], closeModal)
         })}
       >
         <div>
@@ -88,7 +88,7 @@ export default function SubscriptionForm(): ReactElement {
             {promotions?.map((promotion, index) => {
               return (
                 <option value={index}>
-                  {index} - {promotion.title} - ${promotion.amountPrice}
+                  {promotion.title} - ${promotion.amountPrice}
                 </option>
               )
             })}

@@ -133,6 +133,7 @@ export interface CreateSubscription {
   date: Date
   paid: boolean
   remaining: number
+  total: number
   promotionId: number
   memberId: number
 }
