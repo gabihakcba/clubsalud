@@ -114,7 +114,7 @@ export interface Schedule {
 }
 
 export interface Promotion extends CreatePromotion {
-  id: Number
+  id: number
 }
 
 export interface CreatePromotion {
@@ -123,6 +123,18 @@ export interface CreatePromotion {
   amountWeeklyClasses: number
   amountPrice: number
   lastPriceUpdate?: Date
+}
+
+export interface Subscription extends CreateSubscription {
+  id: number
+}
+
+export interface CreateSubscription {
+  date: Date
+  paid: boolean
+  remaining: number
+  promotionId: number
+  memberId: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>
