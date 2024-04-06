@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { CreatePromotion, Promotion } from 'utils/types'
 
-export const getPromotions = async () => {
+export const getPromotions = async (): Promise<Promotion[]> => {
   const response = await axios.get('http://localhost:3000/api/promotions')
   return response.data
 }
