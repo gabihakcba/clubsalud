@@ -47,6 +47,7 @@ export interface LogIn {
 
 export interface Member extends CreateMember {
   id: number
+  memberSubscription?: Array<any>
 }
 
 export interface CreateMember {
