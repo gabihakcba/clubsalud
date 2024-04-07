@@ -1,9 +1,10 @@
 import axios from 'axios'
+import { path } from 'utils/path'
 import { type QueriesResponse, type LogIn } from 'utils/types'
 
 export const signInAccount = async (data: LogIn): Promise<QueriesResponse> => {
   try {
-    const response = await axios.post('http://localhost:3000/api/login', {
+    const response = await axios.post(`${path()}/api/login`, {
       ...data
     })
     if (response.status === 200) {
