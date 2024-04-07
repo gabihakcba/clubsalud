@@ -4,6 +4,7 @@ import {
   type QueriesResponse
 } from 'utils/types'
 import axios from 'axios'
+import { path } from 'utils/path'
 
 interface GetMemResponse {
   _: Response
@@ -13,27 +14,27 @@ interface GetMemResponse {
 export const getMembers = async (
   page: number = 0
 ): Promise<QueriesResponse> => {
-  return await axios.get(`http://localhost:3000/api/members?page=${page}`)
+  return await axios.get(`${path()}/api/members?page=${page}`)
 }
 
 export const getMemberById = async (id: number): Promise<GetMemResponse> => {
-  return await axios.get(`http://localhost:3000/api/members/${id}`)
+  return await axios.get(`${path()}/api/members/${id}`)
 }
 
 export const getTotalPagesM = async (): Promise<GetMemResponse> => {
-  return await axios.get('http://localhost:3000/api/members?page=-1')
+  return await axios.get(`${path()}/api/members?page=-1`)
 }
 
 export const createMember = async (
   newMember: CreateMember
 ): Promise<GetMemResponse> => {
-  return await axios.post('http://localhost:3000/api/members', {
+  return await axios.post(`${path()}/api/members`, {
     ...newMember
   })
 }
 
 export const deleteMember = async (id: number): Promise<GetMemResponse> => {
-  return await axios.delete('http://localhost:3000/api/members', {
+  return await axios.delete(`${path()}/api/members`, {
     data: {
       id
     }
@@ -41,7 +42,7 @@ export const deleteMember = async (id: number): Promise<GetMemResponse> => {
 }
 
 export const updateMember = async (member: Member): Promise<GetMemResponse> => {
-  return await axios.patch('http://localhost:3000/api/members', {
+  return await axios.patch(`${path()}/api/members`, {
     ...member
   })
 }

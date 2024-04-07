@@ -46,14 +46,14 @@ export const getAccounts = async (
   filterPerm?: Permissions
 ): Promise<GetAccResponse> => {
   return await axios.get(
-    `http://localhost:3000/api/accounts?page=${currentPage}&elems=${elems}&filterName=${filterName}&filterPerm=${filterPerm}`
+    `${path()}/api/accounts?page=${currentPage}&elems=${elems}&filterName=${filterName}&filterPerm=${filterPerm}`
   )
 }
 
 export const createAccount = async (
   data: CreateAccount
 ): Promise<CUAccResponse> => {
-  return await axios.post('http://localhost:3000/api/accounts', {
+  return await axios.post(`${path()}/api/accounts`, {
     username: data.username,
     password: data.password,
     permissions: data.permissions
@@ -61,7 +61,7 @@ export const createAccount = async (
 }
 
 export const deleteAccount = async (id: number): Promise<CUAccResponse> => {
-  return await axios.delete('http://localhost:3000/api/accounts', {
+  return await axios.delete(`${path()}/api/accounts`, {
     data: {
       id
     }
@@ -71,27 +71,27 @@ export const deleteAccount = async (id: number): Promise<CUAccResponse> => {
 export const updateAccount = async (
   data: UpdateAccount
 ): Promise<CUAccResponse> => {
-  return await axios.patch('http://localhost:3000/api/accounts', data)
+  return await axios.patch(`${path()}/api/accounts`, data)
 }
 
 export const logOutAccount = async (): Promise<Response> => {
-  return await axios.post('http://localhost:3000/api/logout')
+  return await axios.post(`${path()}/api/logout`)
 }
 
 export const findAccountByUsername = async (
   username: string
 ): Promise<CUAccResponse> => {
-  return await axios.get(`http://localhost:3000/api/accounts/${username}`)
+  return await axios.get(`${path()}/api/accounts/${username}`)
 }
 
 export const findAccountInstructorsById = async (
   id: number | string
 ): Promise<GetAccInsResponse> => {
-  return await axios.get(`http://localhost:3000/api/accounts/instructors/${id}`)
+  return await axios.get(`${path()}/api/accounts/instructors/${id}`)
 }
 
 export const findAccountMembersById = async (
   id: number | string
 ): Promise<GetAccMemResponse> => {
-  return await axios.get(`http://localhost:3000/api/accounts/members/${id}`)
+  return await axios.get(`${path()}/api/accounts/members/${id}`)
 }
