@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { path } from 'utils/path'
 import {
   type Permissions,
   type Account,
@@ -35,7 +36,7 @@ interface GetAccInsResponse {
 }
 
 export const getTotalPagesA = async (elems: number): Promise<Response> => {
-  return await axios.get(`http://localhost:3000/api/accounts?getPages=${elems}`)
+  return await axios.get(`${path()}/api/accounts?getPages=${elems}`)
 }
 
 export const getAccounts = async (
