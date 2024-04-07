@@ -1,5 +1,6 @@
 import { type Instructor, type CreateInstructor } from 'utils/types'
 import axios from 'axios'
+import { path } from 'utils/path'
 
 interface GetInsInstructor {
   _: Response | null
@@ -25,13 +26,13 @@ export const getInstructorById = async (
       }
     }
   }
-  return await axios.get(`http://localhost:3000/api/instructors/${id}`)
+  return await axios.get(`${path()}/api/instructors/${id}`)
 }
 
 export const createInstructor = async (
   newInstructor: CreateInstructor
 ): Promise<GetInsInstructor> => {
-  return await axios.post('http://localhost:3000/api/instructors', {
+  return await axios.post(`${path()}/api/instructors`, {
     ...newInstructor
   })
 }
@@ -39,7 +40,7 @@ export const createInstructor = async (
 export const deleteInstructor = async (
   id: number
 ): Promise<GetInsInstructor> => {
-  return await axios.delete('http://localhost:3000/api/instructors', {
+  return await axios.delete(`${path()}/api/instructors`, {
     data: {
       id
     }
@@ -49,7 +50,7 @@ export const deleteInstructor = async (
 export const updateInstructor = async (
   instructor: Instructor
 ): Promise<GetInsInstructor> => {
-  return await axios.patch('http://localhost:3000/api/instructors', {
+  return await axios.patch(`${path()}/api/instructors`, {
     ...instructor
   })
 }
@@ -57,5 +58,5 @@ export const updateInstructor = async (
 export async function getInstructorByName(
   name: string
 ): Promise<GetInsInstructor> {
-  return await axios.get(`http://localhost:3000/api/instructors/${name}`)
+  return await axios.get(`${path()}/api/instructors/${name}`)
 }
