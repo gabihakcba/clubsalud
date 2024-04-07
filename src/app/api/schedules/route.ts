@@ -1,4 +1,4 @@
-import { type Schedule, type PrismaClient } from '@prisma/client'
+import { type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 

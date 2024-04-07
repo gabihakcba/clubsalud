@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
 import CreatePaymentForm from 'components/payments/CreatePaymentForm'
 import { getSubscriptions } from 'queries/subscriptions'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 
 export default function Payment(): ReactElement {
@@ -44,8 +44,8 @@ export default function Payment(): ReactElement {
           overflow: 'scroll'
         }}
       >
-        {data?.map((member) =>
-          member?.memberSubscription?.map((sub) => <p>{sub.id}</p>)
+        {data?.map((member, index) =>
+          member?.memberSubscription?.map((sub) => <p key={index}>{sub.id}</p>)
         )}
       </section>
     </div>

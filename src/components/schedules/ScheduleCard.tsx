@@ -4,7 +4,12 @@ import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
 import { getClassById } from 'queries/classes'
 import { useState, type ReactElement } from 'react'
-import { Class_, Instructor, Permissions, type Schedule } from 'utils/types'
+import {
+  type Class_,
+  type Instructor,
+  Permissions,
+  type Schedule
+} from 'utils/types'
 import { useModal } from 'utils/useModal'
 import { getInstructorById } from 'queries/instructors'
 import InstructorAssign from './InstructorAssign'
@@ -44,6 +49,7 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
   const { data } = useQuery({
     queryKey: ['class', schedule.id],
     queryFn: async () => {
+      console.log(data)
       const dataResponse = await getClassById(schedule.classId)
       const scheduleResponse = await getInstructorById(
         schedule.instructorInCharge

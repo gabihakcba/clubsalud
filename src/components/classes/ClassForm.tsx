@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Class_ } from 'utils/types'
+import { type CreateClass_, type Class_ } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { editClass } from 'queries/classes'
 
@@ -37,7 +37,7 @@ export default function ClassCard({
         id={`classes${class_?.id}`}
         className='flex flex-col justify-start items-end'
         onSubmit={handleSubmit((data) => {
-          mutate({ id: class_.id, ...data } as Class_)
+          mutate({ id: class_.id, ...(data as CreateClass_) })
         })}
       >
         <div className='flex flex-row'>

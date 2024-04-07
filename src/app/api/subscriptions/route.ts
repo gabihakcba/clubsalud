@@ -1,7 +1,7 @@
-import { Subscription, type PrismaClient } from '@prisma/client'
+import { type Subscription, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
-import { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 
 const db: PrismaClient = prisma
 
@@ -29,12 +29,12 @@ export async function GET(): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data = await req.json()
+    const data: Subscription = await req.json()
     const parsed = {
       date: data.date,
       paid: Boolean(data.paid),
-      remaining: parseFloat(data.remaining),
-      total: parseFloat(data.total)
+      remaining: parseFloat(String(data.remaining)),
+      total: parseFloat(String(data.total))
     }
     const res: Subscription = await db.subscription.create({
       data: {

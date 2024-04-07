@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { getPromotions } from 'queries/promotions'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import PromotionCard from './PromotionCard'
-import { Promotion } from 'utils/types'
+import { type Promotion } from 'utils/types'
 
 export default function PromotionSection(): ReactElement {
   const { data } = useQuery({
@@ -26,8 +26,11 @@ export default function PromotionSection(): ReactElement {
         margin: '1rem'
       }}
     >
-      {data?.map((promotion: Promotion) => (
-        <PromotionCard promotion={promotion}></PromotionCard>
+      {data?.map((promotion: Promotion, index: number) => (
+        <PromotionCard
+          promotion={promotion}
+          key={index}
+        ></PromotionCard>
       ))}
     </section>
   )

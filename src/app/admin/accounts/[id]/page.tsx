@@ -13,11 +13,11 @@ interface param {
 
 const get = async (setMember: Setter, id: number): Promise<void> => {
   const response = await getMemberById(id)
-  if (response.status === 200) {
+  if (response._.status === 200) {
     console.log(typeof response.data.inscriptionDate)
     setMember(response.data)
   } else {
-    console.log(response.error)
+    console.log(response)
   }
 }
 
@@ -60,7 +60,7 @@ export default function Account({ params }: param): ReactElement {
                   </p>
                 </div>
                 <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                  {member?.dni}
+                  {/* {member?.dni} */}
                 </div>
               </div>
             </li>
@@ -73,7 +73,7 @@ export default function Account({ params }: param): ReactElement {
                   </p>
                 </div>
                 <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                  {member?.cuit}
+                  {/* {member?.cuit} */}
                 </div>
               </div>
             </li>
@@ -86,7 +86,7 @@ export default function Account({ params }: param): ReactElement {
                   </p>
                 </div>
                 <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                  {member?.phoneNumber}
+                  {/* {member?.phoneNumber} */}
                 </div>
               </div>
             </li>
@@ -99,7 +99,7 @@ export default function Account({ params }: param): ReactElement {
                   </p>
                 </div>
                 <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                  {member?.dni}
+                  {/* {member?.dni} */}
                 </div>
               </div>
             </li>
@@ -186,7 +186,7 @@ export default function Account({ params }: param): ReactElement {
                   </p>
                 </div>
                 <div className='inline-flex items-center text-base font-semibold text-gray-900 dark:text-white'>
-                  {member?.afiliateNumber}
+                  {/* {member?.afiliateNumber} */}
                 </div>
               </div>
             </li>

@@ -1,10 +1,15 @@
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { CreatePromotion, Promotion } from 'utils/types'
+import { type CreatePromotion, type Promotion } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createPromotion } from 'queries/promotions'
 
-export default function CreatePromotionForm({ closeModal }): ReactElement {
+interface params {
+  closeModal: () => void
+}
+export default function CreatePromotionForm({
+  closeModal
+}: params): ReactElement {
   const query = useQueryClient()
 
   const { mutate } = useMutation({
