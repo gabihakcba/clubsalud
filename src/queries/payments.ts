@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { path } from 'utils/path'
 import { type Payment } from 'utils/types'
 
 export const setPayment = async ({
@@ -6,7 +7,7 @@ export const setPayment = async ({
   subscriptionId,
   amount
 }): Promise<Payment> => {
-  const response = await axios.post('http://localhost:3000/api/payments', {
+  const response = await axios.post(`${path()}/api/payments`, {
     memberId: Number(memberId),
     subscriptionId: Number(subscriptionId),
     amount: Number(amount)
