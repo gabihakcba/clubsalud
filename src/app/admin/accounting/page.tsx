@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import SubscriptionSection from 'components/subscriptions/SubscriptionSection'
 import { getPromotions } from 'queries/promotions'
 import { getSubscriptions } from 'queries/subscriptions'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 
 export default function Accounting(): ReactElement {
   const { data: members } = useQuery({

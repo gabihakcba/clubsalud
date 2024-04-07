@@ -1,23 +1,25 @@
-import { JWTPayload, JWTVerifyResult, jwtVerify } from 'jose'
-import { Account } from './types'
-import { Permissions } from './types'
+import { type JWTPayload, type JWTVerifyResult, jwtVerify } from 'jose'
+import { type Account, type Permissions } from './types'
 import { parse } from 'cookie'
 
 export const hasPermission = (
   permissionNeeded: Permissions,
   currentPermission: Permissions
-) => {
+): boolean => {
   return permissionNeeded === currentPermission
 }
 
-export const setNewUser = async (token, setUser) => {
+export const setNewUser = async (
+  token: Record<string, string>,
+  setUser
+): Promise<void> => {
   const newUser = await verifyToken(token)
   if (newUser) {
     setUser(newUser)
   }
 }
 
-export const getUserToken = () => {
+export const getUserToken = (): Record<string, string> => {
   const token: Record<string, string> = parse(document.cookie || '')
   return token
 }

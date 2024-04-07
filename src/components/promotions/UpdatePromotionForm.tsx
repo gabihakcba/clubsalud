@@ -1,18 +1,22 @@
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { CreatePromotion, Promotion } from 'utils/types'
+import { type Promotion, type CreatePromotion } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createPromotion, updatePromotion } from 'queries/promotions'
+import { updatePromotion } from 'queries/promotions'
 
+interface params {
+  closeModal: () => void
+  promotion: Promotion
+}
 export default function UpdatePromotionForm({
   closeModal,
   promotion
-}): ReactElement {
+}: params): ReactElement {
   const query = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: updatePromotion,
-    async onSuccess(data) {
+    async onSuccess(data: Promotion) {
       reset()
       closeModal()
       await query.setQueryData(['prom'], (oldData: Promotion[]) => {

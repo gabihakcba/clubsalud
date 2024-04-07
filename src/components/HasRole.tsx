@@ -1,18 +1,22 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { type ReactElement, useEffect, useState, type ReactNode } from 'react'
 import { getUserToken, verifyToken } from 'utils/auth'
-import { Permissions } from 'utils/types'
+import { type Permissions } from 'utils/types'
 
-const hasRole = async (required, setIsAble) => {
+const hasRole = async (required, setIsAble): Promise<void> => {
   const token = getUserToken()
   const user = await verifyToken(token)
   const role = user?.permissions
   setIsAble(required === role)
 }
 
-export default function HasRole({ required, children }): ReactElement {
+interface params {
+  required: Permissions
+  children: ReactNode
+}
+export default function HasRole({ required, children }: params): ReactElement {
   const [isAble, setIsAble] = useState(false)
   useEffect(() => {
-    hasRole(required, setIsAble)
+    void hasRole(required, setIsAble)
   })
   return <>{isAble && children}</>
 }

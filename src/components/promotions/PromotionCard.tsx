@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
-import { Permissions, Promotion } from 'utils/types'
+import { type ReactElement } from 'react'
+import { Permissions, type Promotion } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import delete_ from '../../../public/delete_.svg'
@@ -13,14 +13,14 @@ import HasRole from 'components/HasRole'
 import { setSubscription } from 'queries/subscriptions'
 import { getMemberById } from 'queries/members'
 
-const subscribe = async (promotion: Promotion) => {
+const subscribe = async (promotion: Promotion): Promise<void> => {
   const token = getUserToken()
   const user = await verifyToken(token)
   const userId = user?.id
   const member = await getMemberById(Number(userId))
   const subs = await setSubscription({
     memberId: member.data.id,
-    promotion: promotion
+    promotion
   })
   if (!subs) {
     alert('No se pudo adherir a la suscripción')
@@ -74,7 +74,7 @@ export default function PromotionCard({
             </Modal>
             <button
               onClick={() => {
-                mutate(promotion.id as number)
+                mutate(promotion.id)
               }}
             >
               <Image

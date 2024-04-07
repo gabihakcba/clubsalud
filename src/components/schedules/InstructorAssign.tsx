@@ -1,13 +1,19 @@
 import { useMutation } from '@tanstack/react-query'
 import { assignInstructor } from 'queries/schedules'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
+import { type Schedule, type Setter } from 'utils/types'
 
+interface params {
+  closeAssign: () => void
+  setInstructor: Setter
+  schedule: Schedule
+}
 export default function InstructorAssign({
   closeAssign,
   setInstructor,
   schedule
-}): ReactElement {
+}: params): ReactElement {
   const {
     register,
     handleSubmit,

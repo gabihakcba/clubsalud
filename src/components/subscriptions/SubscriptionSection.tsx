@@ -1,7 +1,7 @@
-import { ReactElement, useEffect, useState } from 'react'
-import { Member, Promotion } from 'utils/types'
+import { type ReactElement, useEffect, useState } from 'react'
+import { type Member, type Promotion } from 'utils/types'
 
-const getTotalPaid = (members) => {
+const getTotalPaid = (members): number => {
   let total = 0
   members?.forEach((member) => {
     member?.memberSubscription?.forEach((subs) => {
@@ -11,7 +11,7 @@ const getTotalPaid = (members) => {
   return total
 }
 
-const getTotalRemaining = (members) => {
+const getTotalRemaining = (members): number => {
   let total = 0
   members?.forEach((member) => {
     member?.memberSubscription?.forEach((subs) => {
@@ -21,7 +21,7 @@ const getTotalRemaining = (members) => {
   return total
 }
 
-const takePromotion = (promotions, id) => {
+const takePromotion = (promotions, id): string => {
   const prom = promotions?.find((promotion) => promotion.id === id)
   return prom?.title
 }

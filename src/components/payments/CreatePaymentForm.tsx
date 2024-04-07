@@ -2,35 +2,41 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { setPayment } from 'queries/payments'
 import { getPromotions } from 'queries/promotions'
 import { getSubscriptions } from 'queries/subscriptions'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
+import { type Setter, type Subscription } from 'utils/types'
 
-const hasSubs = (member) => {
+const hasSubs = (member): boolean => {
   return member?.memberSubscription.some((subs) => !subs.paid)
 }
 
-const selectMember = (members, id) => {
+const selectMember = (members, id): Subscription[] => {
   const member = members?.find((member) => member.id === id)
   return member?.memberSubscription?.filter((subs) => !subs.paid)
 }
 
-const namePromotion = (promotions, id) => {
+const namePromotion = (promotions, id): string => {
   const prom = promotions?.find((prom) => prom.id === id)
   return prom.title
 }
 
-const getRemaining = (members, sId, mId) => {
+const getRemaining = (members, sId, mId): number => {
   const member = members?.find((member) => member.id === mId)
   const subs = member?.memberSubscription?.find((subs) => subs.id === sId)
   return subs?.remaining
 }
 
-export default function CreatePaymentForm({ closeModal }): ReactElement {
+interface params {
+  closeModal: Setter
+}
+export default function CreatePaymentForm({
+  closeModal
+}: params): ReactElement {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset,
+    // formState: { errors },
+    // reset,
     watch
   } = useForm()
 
@@ -78,8 +84,13 @@ export default function CreatePaymentForm({ closeModal }): ReactElement {
           })}
         >
           <option value=''>Select</option>
-          {members?.map((member) => (
-            <option value={member.id}>{member.name}</option>
+          {members?.map((member, index) => (
+            <option
+              value={member.id}
+              key={index}
+            >
+              {member.name}
+            </option>
           ))}
         </select>
       </div>
@@ -96,11 +107,16 @@ export default function CreatePaymentForm({ closeModal }): ReactElement {
         >
           <option value=''>Select</option>
 
-          {selectMember(members, Number(watch('member')))?.map((subs) => (
-            <option value={subs.id}>
-              {namePromotion(promotions, subs.promotionId)}
-            </option>
-          ))}
+          {selectMember(members, Number(watch('member')))?.map(
+            (subs, index) => (
+              <option
+                value={subs.id}
+                key={index}
+              >
+                {namePromotion(promotions, subs.promotionId)}
+              </option>
+            )
+          )}
         </select>
       </div>
       <div className='flex w-full justify-between gap-2'>

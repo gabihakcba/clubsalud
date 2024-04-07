@@ -1,10 +1,13 @@
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Class_, CreateClass_ } from 'utils/types'
+import { type Class_, type CreateClass_ } from 'utils/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClass } from 'queries/classes'
 
-export default function CreateClassForm({ closeModal }): ReactElement {
+interface params {
+  closeModal: () => void
+}
+export default function CreateClassForm({ closeModal }: params): ReactElement {
   const query = useQueryClient()
 
   const { mutate } = useMutation({
