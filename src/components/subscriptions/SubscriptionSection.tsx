@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { Member } from 'utils/types'
+import { Member, Promotion } from 'utils/types'
 
 const getTotalPaid = (members) => {
   let total = 0
@@ -21,10 +21,19 @@ const getTotalRemaining = (members) => {
   return total
 }
 
+const takePromotion = (promotions, id) => {
+  const prom = promotions?.find((promotion) => promotion.id === id)
+  return prom?.title
+}
+
 interface params {
   members: Member[] | undefined
+  promotions: Promotion[] | undefined
 }
-export default function SubscriptionSection({ members }: params): ReactElement {
+export default function SubscriptionSection({
+  members,
+  promotions
+}: params): ReactElement {
   const [totalRemaining, setTotalRemaining] = useState(0)
   const [totalPaid, setTotalPaid] = useState(0)
 
@@ -76,11 +85,11 @@ export default function SubscriptionSection({ members }: params): ReactElement {
       >
         {members?.map((mem) => (
           <>
-            <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
-              {mem.name}
-            </p>
             {mem.memberSubscription?.map((subs) => (
               <>
+                <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
+                  {mem.name}
+                </p>
                 <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
                   {subs.paid ? 'Pagado' : 'Adeuda'}
                 </p>
@@ -91,7 +100,7 @@ export default function SubscriptionSection({ members }: params): ReactElement {
                   {subs.total}
                 </p>
                 <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
-                  {subs.promotionId}
+                  {takePromotion(promotions, subs.promotionId)}
                 </p>
               </>
             ))}

@@ -139,4 +139,15 @@ export interface CreateSubscription {
   memberId: number
 }
 
+export interface Payment extends CreatePayment {
+  id: number
+}
+
+export interface CreatePayment {
+  amount: number
+  date: Date
+  memberId: number
+  subscriptionId: number
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
