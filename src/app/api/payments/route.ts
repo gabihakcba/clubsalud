@@ -49,6 +49,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         id: Number(data.subscriptionId)
       }
     })
+
     const oldRemaining = subscription?.remaining ?? 0
     const newRemaining = oldRemaining - Number(data.amount)
     const isNotPaid = newRemaining > 0
@@ -62,11 +63,13 @@ export async function POST(req: NextRequest): Promise<Response> {
         paid: !isNotPaid
       }
     })
+
     return new Response(JSONbig.stringify(payment), {
       status: 200
     })
   } catch (error) {
     console.log(error)
+
     return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
     })
