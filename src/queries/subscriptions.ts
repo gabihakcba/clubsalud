@@ -1,19 +1,27 @@
 import axios from 'axios'
-import { CreateSubscription, Member, Promotion } from 'utils/types'
+import {
+  type Subscription,
+  type CreateSubscription,
+  type Member,
+  type Promotion
+} from 'utils/types'
 
 interface params {
   memberId: number
   promotion: Promotion
 }
 
-export const setSubscription = async ({ memberId, promotion }: params) => {
+export const setSubscription = async ({
+  memberId,
+  promotion
+}: params): Promise<Subscription> => {
   const parsed: CreateSubscription = {
     date: new Date(),
     paid: false,
     remaining: promotion.amountPrice,
     total: promotion.amountPrice,
     promotionId: promotion.id,
-    memberId: memberId
+    memberId
   }
   const response = await axios.post(
     'http://localhost:3000/api/subscriptions',

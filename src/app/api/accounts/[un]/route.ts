@@ -1,7 +1,7 @@
 import { type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
-import { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 
 const db: PrismaClient = prisma
 

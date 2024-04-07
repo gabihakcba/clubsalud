@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
-import { Class_, Permissions } from 'utils/types'
+import { type ReactElement } from 'react'
+import { type Class_, Permissions } from 'utils/types'
 import Image from 'next/image'
 import gym from '../../../public/images/gym_image.png'
 import edit from '../../../public/edit.svg'

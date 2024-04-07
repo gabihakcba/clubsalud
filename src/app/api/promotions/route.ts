@@ -2,7 +2,7 @@ import { type PrismaClient, type Promotion } from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
 import JSONbig from 'json-bigint'
-import { CreatePromotion } from 'utils/types'
+import { type CreatePromotion } from 'utils/types'
 
 const db: PrismaClient = prisma
 

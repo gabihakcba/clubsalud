@@ -2,10 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { getMembers } from 'queries/members'
 import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
-import { ReactElement } from 'react'
+import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 
-const subscribe = async (id: string, promotion, closeModal) => {
+const subscribe = async (id: string, promotion, closeModal): Promise<void> => {
   const memberId = Number(id)
   const subs = await setSubscription({
     memberId,
@@ -17,7 +17,10 @@ const subscribe = async (id: string, promotion, closeModal) => {
   closeModal()
 }
 
-export default function SubscriptionForm({ closeModal }): ReactElement {
+interface params {
+  closeModal: () => void
+}
+export default function SubscriptionForm({ closeModal }: params): ReactElement {
   const { data: members } = useQuery({
     queryKey: ['memS'],
     queryFn: async () => {
@@ -35,9 +38,9 @@ export default function SubscriptionForm({ closeModal }): ReactElement {
 
   const {
     register,
-    handleSubmit,
-    formState: { errors },
-    watch
+    handleSubmit
+    // formState: { errors },
+    // watch
   } = useForm()
 
   return (
@@ -49,8 +52,14 @@ export default function SubscriptionForm({ closeModal }): ReactElement {
         onSubmit={handleSubmit((data, event) => {
           event?.preventDefault()
 
-          promotions !== undefined &&
-            subscribe(data.memberId, promotions[data.promotion], closeModal)
+          void (
+            promotions !== undefined &&
+            subscribe(
+              data.memberId as string,
+              promotions[data.promotion],
+              closeModal
+            )
+          )
         })}
       >
         <div>
@@ -65,8 +74,13 @@ export default function SubscriptionForm({ closeModal }): ReactElement {
             className='text-black'
           >
             <option value=''>Select</option>
-            {members?.map((member) => (
-              <option value={member.id}>{member.name}</option>
+            {members?.map((member, index) => (
+              <option
+                value={member.id}
+                key={index}
+              >
+                {member.name}
+              </option>
             ))}
           </select>
           <label
@@ -87,7 +101,10 @@ export default function SubscriptionForm({ closeModal }): ReactElement {
             <option value=''>Select</option>
             {promotions?.map((promotion, index) => {
               return (
-                <option value={index}>
+                <option
+                  value={index}
+                  key={index}
+                >
                   {promotion.title} - ${promotion.amountPrice}
                 </option>
               )

@@ -1,6 +1,10 @@
-import { Payment, PrismaClient, Subscription } from '@prisma/client'
+import {
+  type Payment,
+  type PrismaClient,
+  type Subscription
+} from '@prisma/client'
 import JSONbig from 'json-bigint'
-import { NextRequest } from 'next/server'
+import { type NextRequest } from 'next/server'
 import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
@@ -54,7 +58,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     const newRemaining = oldRemaining - Number(data.amount)
     const isNotPaid = newRemaining > 0
 
-    const newSubscription: Subscription = await db.subscription.update({
+    await db.subscription.update({
       where: {
         id: Number(data.subscriptionId)
       },

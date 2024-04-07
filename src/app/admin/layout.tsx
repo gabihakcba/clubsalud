@@ -12,7 +12,6 @@ import { Permissions, type QueriesResponse } from 'utils/types'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HasRole from 'components/HasRole'
-import accounting from '../../../public/accounting.svg'
 
 const logOut = async (router: AppRouterInstance): Promise<void> => {
   const response: QueriesResponse = await logOutAccount()
@@ -156,22 +155,22 @@ export default function AdminLayout({ children }: any): ReactElement {
                     >
                       <g
                         id='SVGRepo_bgCarrier'
-                        stroke-width='0'
+                        strokeWidth='0'
                       ></g>
                       <g
                         id='SVGRepo_tracerCarrier'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
                         stroke='#fcfcfc'
-                        stroke-width='2.88'
+                        strokeWidth='2.88'
                       >
                         {' '}
                         <title>Calendar-empty</title> <defs> </defs>{' '}
                         <g
                           stroke='none'
-                          stroke-width='1'
+                          strokeWidth='1'
                           fill='none'
-                          fill-rule='evenodd'
+                          fillRule='evenodd'
                         >
                           {' '}
                           <g fill='#919191'>
@@ -217,9 +216,9 @@ export default function AdminLayout({ children }: any): ReactElement {
                         <title>Calendar-empty</title> <defs> </defs>{' '}
                         <g
                           stroke='none'
-                          stroke-width='1'
+                          strokeWidth='1'
                           fill='none'
-                          fill-rule='evenodd'
+                          fillRule='evenodd'
                         >
                           {' '}
                           <g fill='#919191'>
@@ -334,7 +333,7 @@ export default function AdminLayout({ children }: any): ReactElement {
                       width='1.25rem'
                       height='1.25rem'
                       viewBox='0 0 91 91'
-                      enable-background='new 0 0 91 91'
+                      enableBackground='new 0 0 91 91'
                       id='Layer_1'
                       // xmlSpace='preserve'
                       // xmlns='http://www.w3.org/2000/svg'

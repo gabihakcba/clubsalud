@@ -1,8 +1,8 @@
 'use client'
 
 import { type ReactElement, useEffect, useState } from 'react'
-import { type Account, type Setter, Permissions } from 'utils/types'
-import { getUserToken, setNewUser, verifyToken } from 'utils/auth'
+import { type Account, Permissions } from 'utils/types'
+import { getUserToken, setNewUser } from 'utils/auth'
 
 export default function PersonalAccount(): ReactElement {
   const [user, setUser] = useState<Account>({
@@ -13,7 +13,7 @@ export default function PersonalAccount(): ReactElement {
   })
 
   useEffect(() => {
-    setNewUser(getUserToken(), setUser)
+    void setNewUser(getUserToken(), setUser)
   }, [])
 
   return (

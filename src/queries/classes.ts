@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CreateClass_, type Class_ } from 'utils/types'
+import { type CreateClass_, type Class_ } from 'utils/types'
 
 interface GetClasses {
   _: Response
@@ -11,12 +11,12 @@ interface GetClass {
   data: Class_
 }
 
-export async function createClass(class_: CreateClass_) {
+export async function createClass(class_: CreateClass_): Promise<GetClass> {
   return await axios.post('http://localhost:3000/api/classes', class_)
 }
 
-export async function deleteClass(id: number) {
-  return await axios.delete(`http://localhost:3000/api/classes`, {
+export async function deleteClass(id: number): Promise<GetClass> {
+  return await axios.delete('http://localhost:3000/api/classes', {
     data: { id }
   })
 }
