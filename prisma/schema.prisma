@@ -244,8 +244,8 @@ model Payment {
   // Foreignkeys
   memeberId      Int
   subscriptionId Int
-  member         Member       @relation(fields: [memeberId], references: [id], name: "paymentMember")
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id], name: "paymentSubscription")
+  member         Member       @relation(fields: [memeberId], references: [id], name: "paymentMember", onDelete: Cascade)
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], name: "paymentSubscription", onDelete: Cascade)
 }
 
 model Derivation {
