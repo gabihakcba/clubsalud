@@ -8,8 +8,6 @@ const db: PrismaClient = prisma
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
   const page: number = Number(searchParams.get('page'))
-  // const start: number = page * APP - APP
-  // const end: number = page * APP
   try {
     /**
      * page=-1 returns total pages number
