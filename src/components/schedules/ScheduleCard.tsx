@@ -38,8 +38,7 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
         schedule.instructorInCharge
       )
       return scheduleResponse.data
-    },
-    staleTime: 1000 * 5
+    }
   })
 
   const [assign, openAssing, closeAssign] = useModal(false)

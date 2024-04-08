@@ -24,9 +24,8 @@ export default function InstructorAssign({
   const { mutate: mutateInstructor } = useMutation({
     mutationFn: assignInstructor,
     async onSuccess(data) {
-      await query.refetchQueries({ queryKey: ['insSChe', schedule.id] })
       await query.setQueryData(['insSChe', schedule.id], data)
-      await query.resetQueries({ queryKey: ['sch'] })
+      await query.refetchQueries({ queryKey: ['insSChe', schedule.id] })
       reset()
       closeAssign()
     }
