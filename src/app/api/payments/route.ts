@@ -63,7 +63,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         id: Number(data.subscriptionId)
       },
       data: {
-        remaining: newRemaining,
+        remaining: { decrement: Number(data.amount) },
         paid: !isNotPaid
       }
     })
