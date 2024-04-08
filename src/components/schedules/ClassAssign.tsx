@@ -25,7 +25,7 @@ export default function ClassAssign({
     mutationFn: assignClass,
     async onSuccess(data) {
       await query.setQueryData(['classSche', schedule.id], data)
-      await query.refetchQueries({ queryKey: ['classSche', schedule.id] })
+      // await query.refetchQueries({ queryKey: ['classSche', schedule.id] })
       reset()
       closeAssign()
     }
