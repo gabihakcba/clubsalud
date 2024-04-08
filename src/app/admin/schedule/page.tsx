@@ -80,7 +80,10 @@ export default function Schelude(): ReactElement {
               {`${formatHour(schedule.start)} - ${formatHour(schedule.end)}`}
             </div>
           )}
-          <ScheduleCard schedule={schedule}></ScheduleCard>
+          <ScheduleCard
+            schedule={schedule}
+            key={index}
+          ></ScheduleCard>
         </>
       ))}
     </div>
