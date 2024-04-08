@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assignClass } from 'queries/schedules'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
@@ -12,6 +12,8 @@ export default function ClassAssign({
   closeAssign,
   schedule
 }: params): ReactElement {
+  const query = useQueryClient()
+
   const {
     register,
     handleSubmit,
@@ -21,7 +23,8 @@ export default function ClassAssign({
 
   const { mutate: mutateClass_ } = useMutation({
     mutationFn: assignClass,
-    async onSuccess() {
+    async onSuccess(data) {
+      await query.setQueryData(['classSche', schedule.id], data)
       reset()
       closeAssign()
     }
