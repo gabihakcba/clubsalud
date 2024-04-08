@@ -18,13 +18,13 @@ export const assignClass = async ({
 }): Promise<Class_> => {
   const classInfo = await getClassesByName(className)
   const classId = classInfo.data.id
-  const response = await axios.patch(`${path()}/api/schedules/setClass`, {
+  await axios.patch(`${path()}/api/schedules/setClass`, {
     data: {
       classId,
       scheduleId
     }
   })
-  return response.data
+  return classInfo.data
 }
 
 export const assignInstructor = async ({
@@ -36,11 +36,11 @@ export const assignInstructor = async ({
 }): Promise<Instructor> => {
   const instructorInfo = await getInstructorByName(instructorName)
   const instructorId = instructorInfo.data.id
-  const response = await axios.patch(`${path()}/api/schedules/setInstructor`, {
+  await axios.patch(`${path()}/api/schedules/setInstructor`, {
     data: {
       instructorId,
       scheduleId
     }
   })
-  return response.data
+  return instructorInfo.data
 }
