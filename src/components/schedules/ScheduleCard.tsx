@@ -38,7 +38,8 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
         schedule.instructorInCharge
       )
       return scheduleResponse.data
-    }
+    },
+    refetchOnMount: 'always'
   })
 
   const [assign, openAssing, closeAssign] = useModal(false)
