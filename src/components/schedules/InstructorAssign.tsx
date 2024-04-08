@@ -2,16 +2,14 @@ import { useMutation } from '@tanstack/react-query'
 import { assignInstructor } from 'queries/schedules'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Schedule, type Setter } from 'utils/types'
+import { type Schedule } from 'utils/types'
 
 interface params {
   closeAssign: () => void
-  setInstructor: Setter
   schedule: Schedule
 }
 export default function InstructorAssign({
   closeAssign,
-  setInstructor,
   schedule
 }: params): ReactElement {
   const {
@@ -37,8 +35,7 @@ export default function InstructorAssign({
         onSubmit={handleSubmit((data) => {
           mutateInstructor({
             instructorName: data.instructor,
-            scheduleId: schedule.id,
-            setInstructor
+            scheduleId: schedule.id
           })
         })}
       >
