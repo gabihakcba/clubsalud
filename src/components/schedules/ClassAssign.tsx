@@ -24,6 +24,7 @@ export default function ClassAssign({
   const { mutate: mutateClass_ } = useMutation({
     mutationFn: assignClass,
     async onSuccess(data) {
+      await query.refetchQueries({ queryKey: ['classSche', schedule.id] })
       await query.setQueryData(['classSche', schedule.id], data)
       reset()
       closeAssign()
