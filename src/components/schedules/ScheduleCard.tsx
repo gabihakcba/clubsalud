@@ -23,28 +23,9 @@ interface params {
 }
 
 export default function ScheduleCard({ schedule }: params): ReactElement {
-  // const [class_, setClass_] = useState<Class_>({
-  //   id: 0,
-  //   name: '',
-  //   duration: 0
-  // })
-
-  // const [instructor, setInstructor] = useState<Instructor>({
-  //   id: 0,
-  //   name: '',
-  //   lastName: '',
-  //   dni: BigInt(0),
-  //   phoneNumber: BigInt(0),
-  //   address: '',
-  //   email: '',
-  //   degree: '',
-  //   accountId: 0
-  // })
-
   const { data: class_ } = useQuery({
     queryKey: ['classSche', schedule.id],
     queryFn: async () => {
-      // console.log(class_)
       const dataResponse = await getClassById(schedule.classId)
       return dataResponse.data
     }
@@ -53,28 +34,13 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
   const { data: instructor } = useQuery({
     queryKey: ['insSChe', schedule.id],
     queryFn: async () => {
-      // console.log(instructor)
       const scheduleResponse = await getInstructorById(
         schedule.instructorInCharge
       )
       return scheduleResponse.data
-    }
+    },
+    staleTime: 1000 * 5
   })
-
-  // const { data } = useQuery({
-  //   queryKey: ['class', schedule.id],
-  //   queryFn: async () => {
-  //     console.log(data)
-  //     const dataResponse = await getClassById(schedule.classId)
-  //     const scheduleResponse = await getInstructorById(
-  //       schedule.instructorInCharge
-  //     )
-  //     setInstructor(scheduleResponse.data)
-  //     setClass_(dataResponse.data)
-  //     return dataResponse
-  //   },
-  //   staleTime: 1000 * 60 * 60 * 8
-  // })
 
   const [assign, openAssing, closeAssign] = useModal(false)
 

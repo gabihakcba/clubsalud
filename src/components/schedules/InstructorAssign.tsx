@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { assignInstructor } from 'queries/schedules'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
@@ -12,6 +12,8 @@ export default function InstructorAssign({
   closeAssign,
   schedule
 }: params): ReactElement {
+  const query = useQueryClient()
+
   const {
     register,
     handleSubmit,
@@ -21,7 +23,8 @@ export default function InstructorAssign({
 
   const { mutate: mutateInstructor } = useMutation({
     mutationFn: assignInstructor,
-    async onSuccess() {
+    async onSuccess(data) {
+      await query.setQueryData(['insSChe', schedule.id], data)
       reset()
       closeAssign()
     }
