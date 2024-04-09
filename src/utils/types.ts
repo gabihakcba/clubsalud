@@ -47,7 +47,8 @@ export interface LogIn {
 
 export interface Member extends CreateMember {
   id: number
-  memberSubscription?: any[]
+  memberSubscription?: Subscription[]
+  payment?: Payment[]
 }
 
 export interface CreateMember {
@@ -128,6 +129,7 @@ export interface CreatePromotion {
 
 export interface Subscription extends CreateSubscription {
   id: number
+  promotion?: Promotion
 }
 
 export interface CreateSubscription {
@@ -141,6 +143,8 @@ export interface CreateSubscription {
 
 export interface Payment extends CreatePayment {
   id: number
+  member?: Member
+  subscription?: Subscription
 }
 
 export interface CreatePayment {

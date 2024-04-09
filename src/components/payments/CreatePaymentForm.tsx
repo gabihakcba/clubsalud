@@ -1,10 +1,10 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { setPayment } from 'queries/payments'
 import { getPromotions } from 'queries/promotions'
 import { getSubscriptions } from 'queries/subscriptions'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Setter, type Subscription } from 'utils/types'
+import { type Payment, type Subscription } from 'utils/types'
 
 const hasSubs = (member): boolean => {
   return member?.memberSubscription.some((subs) => !subs.paid)
@@ -27,7 +27,7 @@ const getRemaining = (members, sId, mId): number => {
 }
 
 interface params {
-  closeModal: Setter
+  closeModal: () => void
 }
 export default function CreatePaymentForm({
   closeModal
@@ -39,6 +39,8 @@ export default function CreatePaymentForm({
     // reset,
     watch
   } = useForm()
+
+  const query = useQueryClient()
 
   const { data: members } = useQuery({
     queryKey: ['memSus'],
@@ -59,7 +61,13 @@ export default function CreatePaymentForm({
 
   const { mutate } = useMutation({
     mutationFn: setPayment,
-    onSuccess: closeModal
+    onSuccess: async (data: Payment) => {
+      await query.setQueryData(['payments'], (oldData: Payment[]) => [
+        ...oldData,
+        data
+      ])
+      closeModal()
+    }
   })
 
   return (
