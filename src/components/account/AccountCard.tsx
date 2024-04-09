@@ -45,7 +45,7 @@ function AccountCard({ account, accounts }: params): ReactElement {
         <input
           name='permissions'
           className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          type='password'
+          type=''
           placeholder={`${account.permissions}`}
           disabled
         ></input>
