@@ -3,18 +3,17 @@
 import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
 import CreatePaymentForm from 'components/payments/CreatePaymentForm'
-import { getSubscriptions } from 'queries/subscriptions'
+import PaymentCard from 'components/payments/PaymentCard'
+import { getPayments } from 'queries/payments'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 
 export default function Payment(): ReactElement {
   const [isOpen, openModal, closeModal] = useModal(false)
   const { data } = useQuery({
-    queryKey: ['subscriptions'],
+    queryKey: ['payments'],
     queryFn: async () => {
-      return await getSubscriptions()
-      // const subs = members?.map((member) => member.memberSubscription).flat()
-      // return subs
+      return await getPayments()
     }
   })
   return (
@@ -37,16 +36,19 @@ export default function Payment(): ReactElement {
           width: '100%',
           height: '100%',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(9rem,1fr))',
-          gap: '0,5rem',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(12rem,1fr))',
+          gap: '1rem',
           alignContent: 'flex-start',
           maxHeight: '95dvh',
           overflow: 'scroll'
         }}
       >
-        {data?.map((member, index) =>
-          member?.memberSubscription?.map((sub) => <p key={index}>{sub.id}</p>)
-        )}
+        {data?.map((payment, index) => (
+          <PaymentCard
+            payment={payment}
+            key={index}
+          />
+        ))}
       </section>
     </div>
   )

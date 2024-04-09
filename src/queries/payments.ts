@@ -2,6 +2,11 @@ import axios from 'axios'
 import { path } from 'utils/path'
 import { type Payment } from 'utils/types'
 
+export const getPayments = async (): Promise<Payment[]> => {
+  const response = await axios.get(`${path()}/api/payments`)
+  return response.data
+}
+
 export const setPayment = async ({
   memberId,
   subscriptionId,
