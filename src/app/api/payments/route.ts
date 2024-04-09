@@ -11,7 +11,16 @@ const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   try {
-    const payments: Payment[] = await db.payment.findMany()
+    const payments: Payment[] = await db.payment.findMany({
+      include: {
+        member: true,
+        subscription: {
+          include: {
+            promotion: true
+          }
+        }
+      }
+    })
     return new Response(JSONbig.stringify(payments), {
       status: 200
     })
@@ -43,6 +52,14 @@ export async function POST(req: NextRequest): Promise<Response> {
         subscription: {
           connect: {
             id: Number(data.subscriptionId)
+          }
+        }
+      },
+      include: {
+        member: true,
+        subscription: {
+          include: {
+            promotion: true
           }
         }
       }
