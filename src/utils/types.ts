@@ -18,6 +18,14 @@ export enum MemberSate {
   'OTHER' = 'OTHER'
 }
 
+export enum HealthPlanType {
+  'OSDE' = 'OSDE',
+  'PAMI' = 'PAMI',
+  'APROSS' = 'APROSS',
+  'IPROSS' = 'IPROSS',
+  'OTHER' = 'OTHER'
+}
+
 export interface Account {
   id: number
   username: string
@@ -49,6 +57,7 @@ export interface Member extends CreateMember {
   id: number
   memberSubscription?: Subscription[]
   payment?: Payment[]
+  planSubscribed?: HealthPlanSubscribed[]
 }
 
 export interface CreateMember {
@@ -152,6 +161,29 @@ export interface CreatePayment {
   date: Date
   memberId: number
   subscriptionId: number
+}
+
+export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
+  id: number
+  member?: Member
+  plant?: HealthPlan
+}
+
+export interface CreateHealthPlanSubscribed {
+  memberId: number
+  planId: number
+}
+
+export interface HealthPlan extends CreateHealthPlan {
+  id: number
+  planSubscription: HealthPlanSubscribed[]
+}
+
+export interface CreateHealthPlan {
+  name: string
+  description?: string
+  type: HealthPlanType
+  paymentPerConsultation: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>
