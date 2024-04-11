@@ -176,7 +176,7 @@ export interface CreateHealthPlanSubscribed {
 
 export interface HealthPlan extends CreateHealthPlan {
   id: number
-  planSubscription: HealthPlanSubscribed[]
+  planSubscription?: HealthPlanSubscribed[]
 }
 
 export interface CreateHealthPlan {

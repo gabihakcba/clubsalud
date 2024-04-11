@@ -1,8 +1,8 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createHealthPlan } from 'queries/health'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type CreateHealthPlan } from 'utils/types'
+import { type HealthPlan, type CreateHealthPlan } from 'utils/types'
 import { HealthPlanType } from 'utils/types'
 
 const plansOptions = (): ReactElement[] => {
@@ -13,11 +13,26 @@ const plansOptions = (): ReactElement[] => {
   return op
 }
 
-export default function HealthCreateForm(): ReactElement {
-  const { mutate } = useMutation({ mutationFn: createHealthPlan })
+interface params {
+  closeModal: () => void
+}
+export default function HealthCreateForm({ closeModal }: params): ReactElement {
+  const query = useQueryClient()
+  const { mutate } = useMutation({
+    mutationFn: createHealthPlan,
+    onSuccess: async (data) => {
+      query.setQueryData(['health'], (oldData: HealthPlan[]) => [
+        ...oldData,
+        data
+      ])
+      reset()
+      closeModal()
+    }
+  })
   const {
     register,
-    handleSubmit
+    handleSubmit,
+    reset
     // formState: { errors }
   } = useForm()
   return (
