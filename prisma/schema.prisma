@@ -312,14 +312,15 @@ model HealthPlanSubscribed {
   // Foreignkeys
   memberId Int
   planId   Int
-  member   Member     @relation(fields: [memberId], references: [id], name: "planMember")
-  plan     HealthPlan @relation(fields: [planId], references: [id], name: "planPlan")
+  member   Member     @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
+  plan     HealthPlan @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
 }
 
 model HealthPlan {
   // Fields
   id                     Int                    @id @default(autoincrement())
   name                   String
+  description            String?
   type                   HealthPlanType?
   paymentPerConsultation Float
   // Relations

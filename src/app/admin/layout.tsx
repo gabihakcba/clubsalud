@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
+import health from '../../../public/health-plan.svg'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState, type ReactElement } from 'react'
 import { parse } from 'cookie'
@@ -292,6 +294,22 @@ export default function AdminLayout({ children }: any): ReactElement {
                   <span className="flex-1 ms-3 whitespace-nowrap">Sign In</span>
                 </Link>
               </li> */}
+                <li>
+                  <Link
+                    href='/admin/healthPlan'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/healthPlan' ? 'bg-gray-500' : ''}`}
+                  >
+                    <Image
+                      src={health}
+                      alt='+'
+                      width={20}
+                      height={20}
+                    ></Image>
+                    <span className='flex-1 ms-3 whitespace-nowrap'>
+                      Obras Sociales
+                    </span>
+                  </Link>
+                </li>
                 <li>
                   <button
                     onClick={() => {
