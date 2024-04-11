@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getHealthPlans } from 'queries/health'
 import { type ReactElement } from 'react'
 import { type HealthPlan } from 'utils/types'
+import HealthCard from './HealthCard'
 
 export default function PromotionSection(): ReactElement {
   const { data } = useQuery({
@@ -20,15 +21,17 @@ export default function PromotionSection(): ReactElement {
       style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(10rem,1fr))',
-        gap: '0.5rem',
         alignContent: 'flex-start',
-        justifyItems: 'center',
+        gap: '1rem',
         width: '100%',
         margin: '1rem'
       }}
     >
       {data?.map((health: HealthPlan, index: number) => (
-        <div key={index}>{health.name}</div>
+        <HealthCard
+          key={index}
+          plan={health}
+        />
       ))}
     </section>
   )

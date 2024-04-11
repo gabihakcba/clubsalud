@@ -22,7 +22,7 @@ export default function HealthPlan(): ReactElement {
           isOpen={isOpen}
           closeModal={closeModal}
         >
-          <HealthCreateForm></HealthCreateForm>
+          <HealthCreateForm closeModal={closeModal}></HealthCreateForm>
         </Modal>
       </nav>
       <hr />
