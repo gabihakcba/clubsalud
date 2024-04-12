@@ -68,9 +68,9 @@ model Account {
   // Relations
   notificationSender   Notification[]     @relation(name: "sender")
   notifiactionReceiver Notification[]     @relation(name: "receiver")
-  instructorAccount    Instructor[]       @relation(name: "instructorAccount")
-  memberAccount        Member[]           @relation(name: "memberAccount")
-  employeeAccount      Employee[]         @relation(name: "employeeAccount")
+  instructorAccount    Instructor?        @relation(name: "instructorAccount")
+  memberAccount        Member?            @relation(name: "memberAccount")
+  employeeAccount      Employee?          @relation(name: "employeeAccount")
 }
 
 model Doctor {
@@ -103,7 +103,7 @@ model Instructor {
   cbu                BigInt?             @db.BigInt
   alias              String?
   // Foreignkeys
-  accountId          Int
+  accountId          Int                 @unique
   account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount", onDelete: Cascade)
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
@@ -129,7 +129,7 @@ model Member {
   state              MemberState
   remainingClasses   BigInt?                @db.BigInt
   // Foreignkeys
-  accountId          Int
+  accountId          Int                    @unique
   medicalRecordId    Int?                   @unique
   account            Account                @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
   medicalRecord      MedicalRecord?         @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
@@ -287,7 +287,7 @@ model Employee {
   salary           Float
   lastSalaryUpdate DateTime          @default(now())
   // Foreignkeys
-  accountId        Int?
+  accountId        Int?              @unique
   account          Account?          @relation(fields: [accountId], references: [id], name: "employeeAccount")
   // Relations
   payment          EmployeePayment[] @relation(name: "paymentEmployee")

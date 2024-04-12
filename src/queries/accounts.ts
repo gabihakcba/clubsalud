@@ -5,27 +5,8 @@ import {
   type Account,
   type CreateAccount,
   type UpdateAccount,
-  type Member,
   type Instructor
 } from 'utils/types'
-
-interface GetAccResponse {
-  _: Response
-  data: Account[]
-}
-
-interface CUAccResponse {
-  _: Response
-  data: Account
-}
-
-interface GetAccMemResponse {
-  _: Response
-  data: {
-    _: Account
-    memberAccount: Member[]
-  }
-}
 
 interface GetAccInsResponse {
   _: Response
@@ -33,6 +14,14 @@ interface GetAccInsResponse {
     _: Account
     instructorAccount: Instructor[]
   }
+}
+
+interface getAccountsType {
+  pages: Account[]
+  totalPages: number
+  perPage: number
+  nextPage: number
+  currentPage: number
 }
 
 export const getTotalPagesA = async (elems: number): Promise<Response> => {
@@ -44,34 +33,34 @@ export const getAccounts = async (
   elems: number,
   filterName?: string,
   filterPerm?: Permissions
-): Promise<GetAccResponse> => {
-  return await axios.get(
+): Promise<getAccountsType> => {
+  const response = await axios.get(
     `${path()}/api/accounts?page=${currentPage}&elems=${elems}&filterName=${filterName}&filterPerm=${filterPerm}`
   )
+  return response.data
 }
 
-export const createAccount = async (
-  data: CreateAccount
-): Promise<CUAccResponse> => {
-  return await axios.post(`${path()}/api/accounts`, {
+export const createAccount = async (data: CreateAccount): Promise<Account> => {
+  const response = await axios.post(`${path()}/api/accounts`, {
     username: data.username,
     password: data.password,
     permissions: data.permissions
   })
+  return response.data
 }
 
-export const deleteAccount = async (id: number): Promise<CUAccResponse> => {
-  return await axios.delete(`${path()}/api/accounts`, {
+export const deleteAccount = async (id: number): Promise<Account> => {
+  const response = await axios.delete(`${path()}/api/accounts`, {
     data: {
       id
     }
   })
+  return response.data
 }
 
-export const updateAccount = async (
-  data: UpdateAccount
-): Promise<CUAccResponse> => {
-  return await axios.patch(`${path()}/api/accounts`, data)
+export const updateAccount = async (data: UpdateAccount): Promise<Account> => {
+  const response = await axios.patch(`${path()}/api/accounts`, data)
+  return response.data
 }
 
 export const logOutAccount = async (): Promise<Response> => {
@@ -80,8 +69,9 @@ export const logOutAccount = async (): Promise<Response> => {
 
 export const findAccountByUsername = async (
   username: string
-): Promise<CUAccResponse> => {
-  return await axios.get(`${path()}/api/accounts/${username}`)
+): Promise<Account> => {
+  const response = await axios.get(`${path()}/api/accounts/${username}`)
+  return response.data
 }
 
 export const findAccountInstructorsById = async (
@@ -92,6 +82,12 @@ export const findAccountInstructorsById = async (
 
 export const findAccountMembersById = async (
   id: number | string
-): Promise<GetAccMemResponse> => {
-  return await axios.get(`${path()}/api/accounts/members/${id}`)
+): Promise<Account> => {
+  const response = await axios.get(`${path()}/api/accounts/members/${id}`)
+  return response.data
+}
+
+export const getAccountById = async (id: string): Promise<Account> => {
+  const response = await axios.get(`${path()}/api/account/${id}`)
+  return response.data
 }
