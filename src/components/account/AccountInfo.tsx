@@ -82,10 +82,7 @@ export default function AccountInfo({ account }: params): ReactElement {
             </button>
             {member && (
               <div className='w-full'>
-                <MemberCard
-                  id={account.id}
-                  closeModal={() => {}}
-                ></MemberCard>
+                <MemberCard member={account.memberAccount}></MemberCard>
               </div>
             )}
           </div>
