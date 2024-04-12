@@ -1,62 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteInstructor, updateInstructor } from 'queries/instructors'
 import { useState, type ReactElement } from 'react'
 import { type Instructor, type CreateInstructor } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { findAccountInstructorsById } from 'queries/accounts'
-
-const update = async ({
-  id,
-  data
-}: {
-  id: number
-  data: FieldValues
-}): Promise<Instructor> => {
-  const dataInstructor: CreateInstructor = data as CreateInstructor
-  const newInstructor: Instructor = {
-    id,
-    ...dataInstructor
-  }
-  const response = await updateInstructor(newInstructor)
-  return response.data
-}
-
-const delete_ = async ({ id }: { id: number }): Promise<any> => {
-  return await deleteInstructor(id)
-}
-
-const getInfo = async (info): Promise<Instructor[]> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, id]: [string, number] = info.queryKey
-  const response = await findAccountInstructorsById(id)
-  const parsed = response.data.instructorAccount.map((instructor) => ({
-    ...instructor,
-    degree: instructor.degree ? 'true' : 'false'
-  }))
-  return parsed
-}
 
 interface param {
-  id: number
-  closeModal: () => void
+  instructor: Instructor
 }
-
-export default function InstructorCard({
-  id,
-  closeModal
-}: param): ReactElement {
+export default function InstructorCard({ instructor }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
-  const { data } = useQuery({
-    queryKey: ['ins', id],
-    queryFn: async (info) => {
-      return await getInfo(info)
-    },
-    staleTime: 1000 * 60 * 5
-  })
-
-  const instructors: Instructor[] | undefined = data
 
   const query = useQueryClient()
 
@@ -66,12 +20,18 @@ export default function InstructorCard({
     isSuccess: isSuccessC,
     isPending: isPendingC
   } = useMutation({
-    mutationFn: update,
+    mutationFn: async ({ id, data }: { id: number; data: FieldValues }) => {
+      const dataInstructor: CreateInstructor = data as CreateInstructor
+      const newInstructor: Instructor = {
+        id,
+        ...dataInstructor
+      }
+      return await updateInstructor(newInstructor)
+    },
     onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['ins', id] })
+      await query.refetchQueries({ queryKey: ['account'] })
       setEditF(false)
       reset()
-      setTimeout(closeModal, 500)
     }
   })
 
@@ -81,12 +41,13 @@ export default function InstructorCard({
     isSuccess: isSuccessD,
     isPending: isPendingD
   } = useMutation({
-    mutationFn: delete_,
+    mutationFn: async ({ id }: { id: number }) => {
+      return await deleteInstructor(id)
+    },
     onSuccess: async () => {
-      query.setQueryData(['ins', id], null)
+      await query.refetchQueries({ queryKey: ['account'] })
       reset()
       setEditF(false)
-      setTimeout(closeModal, 500)
     }
   })
 
@@ -95,21 +56,20 @@ export default function InstructorCard({
     handleSubmit,
     formState: { errors },
     reset
-    // watch
   } = useForm()
 
   return (
     <>
-      {instructors?.map((instructor) => (
+      {instructor && (
         <div
           key={instructor.id}
-          className='w-max p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
+          className='w-full p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
         >
           <form
             action=''
             id={`member${instructor?.id}`}
             onSubmit={handleSubmit((data) => {
-              mutateC({ id: instructor.id, data })
+              mutateC({ id: Number(instructor.id), data })
             })}
           >
             <div className='flex items-center justify-between mb-2 border-b-2 border-white pb-2'>
@@ -129,7 +89,7 @@ export default function InstructorCard({
                 ></Image>
               </button>
             </div>
-            <div className='flex flex-row w-[60rem] gap-28'>
+            <div className='flex flex-col lg:flex-row gap-10'>
               <ul
                 role='list'
                 className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
@@ -157,7 +117,7 @@ export default function InstructorCard({
                         type='text'
                         id='name'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.name}
                         {...register('name', {
                           required: {
@@ -190,7 +150,7 @@ export default function InstructorCard({
                         type='text'
                         id='lastName'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.lastName}
                         {...register('lastName', {
                           required: {
@@ -223,7 +183,7 @@ export default function InstructorCard({
                         type='number'
                         id='dni'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.dni.toString()}
                         {...register('dni', {
                           required: {
@@ -255,7 +215,7 @@ export default function InstructorCard({
                       type='number'
                       id='cuit'
                       form={`member${instructor?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={instructor?.cuit?.toString()}
                       {...register('cuit')}
                     />
@@ -277,7 +237,7 @@ export default function InstructorCard({
                         type='number'
                         id='phoneNumber'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.phoneNumber.toString()}
                         required
                         {...register('phoneNumber', {
@@ -316,7 +276,7 @@ export default function InstructorCard({
                         type='text'
                         id='address'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.address}
                         {...register('address', {
                           required: {
@@ -349,7 +309,7 @@ export default function InstructorCard({
                         type='email'
                         id='email'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.email}
                         {...register('email', {
                           required: {
@@ -381,7 +341,7 @@ export default function InstructorCard({
                       <select
                         id='degree'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={
                           instructor?.degree === 'true' ? 'si' : 'no'
                         }
@@ -419,7 +379,7 @@ export default function InstructorCard({
                         type='number'
                         id='cbu'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.cbu?.toString()}
                         {...register('cbu')}
                       />
@@ -442,7 +402,7 @@ export default function InstructorCard({
                         type='text'
                         id='alias'
                         form={`member${instructor?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={instructor?.alias ?? ''}
                         {...register('alias')}
                       />
@@ -455,7 +415,7 @@ export default function InstructorCard({
               <div className='flex flex-row justify-end w-full gap-4'>
                 <div className='w-max flex flex-col items-end'>
                   <button
-                    className='blueButtonForm w-max'
+                    className='dark-blue-border-button'
                     form={`member${instructor?.id}`}
                     type='submit'
                   >
@@ -469,7 +429,7 @@ export default function InstructorCard({
                 </div>
                 <div className='w-max flex flex-col items-end'>
                   <button
-                    className='blueButtonForm w-max bg-red-500 hover:bg-red-600'
+                    className='dark-red-border-button'
                     onClick={async () => {
                       mutateD({ id: instructor?.id })
                     }}
@@ -487,7 +447,7 @@ export default function InstructorCard({
             )}
           </form>
         </div>
-      ))}
+      )}
     </>
   )
 }
