@@ -24,6 +24,7 @@ export default function AccountsPaginationBar({
       <p className='w-10 text-center'>{currentPage}</p>
       <button
         onClick={() => {
+          console.log('total:', totalPages)
           setCurrentPage((prev: number) =>
             prev < totalPages ? prev + 1 : prev
           )

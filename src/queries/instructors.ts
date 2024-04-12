@@ -31,10 +31,11 @@ export const getInstructorById = async (
 
 export const createInstructor = async (
   newInstructor: CreateInstructor
-): Promise<GetInsInstructor> => {
-  return await axios.post(`${path()}/api/instructors`, {
+): Promise<Instructor> => {
+  const response = await axios.post(`${path()}/api/instructors`, {
     ...newInstructor
   })
+  return response.data
 }
 
 export const deleteInstructor = async (

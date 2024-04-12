@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 const idAccount = async (username: string): Promise<number> => {
   try {
     const response = await findAccountByUsername(username)
-    return response.data.id
+    return response.id
   } catch (error) {
     alert('Usuario no encontrado')
     return -1
@@ -34,8 +34,7 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
 const create = async (data: FieldValues): Promise<Member> => {
   const id = await idAccount(data.accountName as string)
   const newMember = formToMember(data, id)
-  const response = await createMember(newMember)
-  return response.data
+  return await createMember(newMember)
 }
 
 interface params {
@@ -49,7 +48,6 @@ export function CreateMemberForm({ closeModal }: params): ReactElement {
     handleSubmit,
     formState: { errors },
     reset
-    // watch
   } = useForm()
 
   const {
