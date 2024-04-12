@@ -4,6 +4,29 @@ export interface QueriesResponse {
   error?: object
 }
 
+export enum Days {
+  'MONDAY' = 'MONDAY',
+  'TUESDAY' = 'TUESDAY',
+  'WEDNESDAY' = 'WEDNESDAY',
+  'THURSDAY' = 'THURSDAY',
+  'FRIDAY' = 'FRIDAY',
+  'SATURDAY' = 'SATURDAY',
+  'SUNDAY' = 'SUNDAY'
+}
+
+export enum ContractType {
+  'PERMANENT' = 'PERMANENT',
+  'CASUAL' = 'CASUAL',
+  'OTHER' = 'OTHER'
+}
+
+export enum JobPosition {
+  'CLEANING' = 'CLEANING',
+  'MAINTENANCE' = 'MAINTENANCE',
+  'RECEPTIONIST' = 'RECEPTIONIST',
+  'OTHER' = 'OTHER'
+}
+
 export enum Permissions {
   'OWN' = 'OWN',
   'ADM' = 'ADM',
@@ -31,6 +54,11 @@ export interface Account {
   username: string
   password: string
   permissions: Permissions
+  notificationSender?: Notification[]
+  notifiactionReceiver?: Notification[]
+  instructorAccount?: Instructor
+  memberAccount?: Member
+  employeeAccount?: Employee
 }
 
 export interface CreateAccount {
@@ -93,16 +121,6 @@ export interface CreateInstructor {
   cbu?: bigint | null
   alias?: string | null
   accountId: number
-}
-
-export enum Days {
-  'MONDAY' = 'MONDAY',
-  'TUESDAY' = 'TUESDAY',
-  'WEDNESDAY' = 'WEDNESDAY',
-  'THURSDAY' = 'THURSDAY',
-  'FRIDAY' = 'FRIDAY',
-  'SATURDAY' = 'SATURDAY',
-  'SUNDAY' = 'SUNDAY'
 }
 
 export interface Class_ extends CreateClass_ {
@@ -184,6 +202,52 @@ export interface CreateHealthPlan {
   description?: string
   type: HealthPlanType
   paymentPerConsultation: number
+}
+
+export interface Notification extends CreateNotification {
+  id: number
+  sender: Account
+  receiver: Account
+}
+
+export interface CreateNotification {
+  subject: number
+  body: string
+  senderId: number
+  receiverId: number
+}
+
+export interface Employee {
+  id: number
+  account?: Account
+  payment: EmployeePayment[]
+}
+
+export interface CreateEmployee {
+  name: string
+  lastName: string
+  dni: bigint
+  cuit?: bigint
+  phoneNumber: number
+  email: string
+  position: JobPosition
+  contractType: ContractType
+  salary: number
+  lastSalaryUpdate: Date
+  accountId?: number
+}
+
+export interface EmployeePayment extends CreateEmployeePayment {
+  id: number
+}
+
+export interface CreateEmployeePayment {
+  hoursWorked: number
+  amount: number
+  monthPayment: Date
+  date: Date
+  paid: boolean
+  employeeId: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>
