@@ -2,7 +2,6 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import MemberCard from 'components/member/MemberCard'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { deleteAccount } from 'queries/accounts'
 import { useState, type ReactElement } from 'react'
@@ -10,12 +9,14 @@ import { type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 import { CreateAccountForm } from './CreateAccountForm'
 import Modal from 'components/Modal'
+import InstructorCard from 'components/instructor/InstructorCard'
 
 interface params {
   account: Account | undefined
 }
 export default function AccountInfo({ account }: params): ReactElement {
   const [member, changeMember] = useState(false)
+  const [instructor, changeInstructor] = useState(false)
   const [isOpenEdit, openEdit, closeEdit] = useModal(false)
   const router = useRouter()
   const query = useQueryClient()
@@ -88,12 +89,23 @@ export default function AccountInfo({ account }: params): ReactElement {
           </div>
         )}
         {account?.instructorAccount && (
-          <Link
-            href={`/admin/info/${account.id}?instructor`}
-            className='rounded hover:bg-gray-300 p-2 bg-gray-100'
-          >
-            Profesor: {account.instructorAccount.name}
-          </Link>
+          <div className='flex flex-col gap-2 w-full items-center'>
+            <button
+              className='bg-gray-200 rounded w-full p-2 text-start'
+              onClick={() => {
+                changeInstructor((prev) => !prev)
+              }}
+            >
+              Profesor: {account.instructorAccount.name}
+            </button>
+            {instructor && (
+              <div className='w-full'>
+                <InstructorCard
+                  instructor={account.instructorAccount}
+                ></InstructorCard>
+              </div>
+            )}
+          </div>
         )}
         <hr />
       </div>
