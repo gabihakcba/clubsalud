@@ -72,7 +72,6 @@ export function CreateAccountForm({
       className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
       id={`createForm${account?.id}`}
     >
-      <input type='text' />
       <div className='mb-4'>
         <label
           className='block text-gray-700 text-base font-bold mb-2'
