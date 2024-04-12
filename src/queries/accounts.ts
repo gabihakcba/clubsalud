@@ -4,17 +4,8 @@ import {
   type Permissions,
   type Account,
   type CreateAccount,
-  type UpdateAccount,
-  type Instructor
+  type UpdateAccount
 } from 'utils/types'
-
-interface GetAccInsResponse {
-  _: Response
-  data: {
-    _: Account
-    instructorAccount: Instructor[]
-  }
-}
 
 interface getAccountsType {
   pages: Account[]
@@ -64,7 +55,8 @@ export const updateAccount = async (data: UpdateAccount): Promise<Account> => {
 }
 
 export const logOutAccount = async (): Promise<Response> => {
-  return await axios.post(`${path()}/api/logout`)
+  const response = await axios.post(`${path()}/api/logout`)
+  return response.data
 }
 
 export const findAccountByUsername = async (
@@ -76,8 +68,9 @@ export const findAccountByUsername = async (
 
 export const findAccountInstructorsById = async (
   id: number | string
-): Promise<GetAccInsResponse> => {
-  return await axios.get(`${path()}/api/accounts/instructors/${id}`)
+): Promise<Account> => {
+  const response = await axios.get(`${path()}/api/accounts/instructors/${id}`)
+  return response.data
 }
 
 export const findAccountMembersById = async (

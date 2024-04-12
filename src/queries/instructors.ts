@@ -38,22 +38,22 @@ export const createInstructor = async (
   return response.data
 }
 
-export const deleteInstructor = async (
-  id: number
-): Promise<GetInsInstructor> => {
-  return await axios.delete(`${path()}/api/instructors`, {
+export const deleteInstructor = async (id: number): Promise<Instructor> => {
+  const response = await axios.delete(`${path()}/api/instructors`, {
     data: {
       id
     }
   })
+  return response.data
 }
 
 export const updateInstructor = async (
   instructor: Instructor
-): Promise<GetInsInstructor> => {
-  return await axios.patch(`${path()}/api/instructors`, {
+): Promise<Instructor> => {
+  const response = await axios.patch(`${path()}/api/instructors`, {
     ...instructor
   })
+  return response.data
 }
 
 export async function getInstructorByName(
