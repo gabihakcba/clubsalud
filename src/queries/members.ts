@@ -27,10 +27,11 @@ export const getTotalPagesM = async (): Promise<GetMemResponse> => {
 
 export const createMember = async (
   newMember: CreateMember
-): Promise<GetMemResponse> => {
-  return await axios.post(`${path()}/api/members`, {
+): Promise<Member> => {
+  const response = await axios.post(`${path()}/api/members`, {
     ...newMember
   })
+  return response.data
 }
 
 export const deleteMember = async (id: number): Promise<GetMemResponse> => {

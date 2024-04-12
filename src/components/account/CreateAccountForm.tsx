@@ -1,45 +1,21 @@
 'use client'
 
-import {
-  type CreateAccount,
-  Permissions,
-  type UpdateAccount,
-  type Account
-} from 'utils/types'
+import { type CreateAccount, Permissions, type Account } from 'utils/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { createAccount, updateAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type ReactElement } from 'react'
 
-const updateA = async ({
-  data,
-  id
-}: {
-  data: FieldValues
-  id: number
-}): Promise<any> => {
-  const newAccount: UpdateAccount = {
-    id,
-    ...(data as CreateAccount)
-  }
-  const response = await updateAccount(newAccount)
-  return response.data
-}
-
-const createA = async (data: FieldValues): Promise<any> => {
-  const newUser: CreateAccount = data as CreateAccount
-
-  const response = await createAccount(newUser)
-  return response.data
-}
-
 interface params {
-  data: Account | null
+  account?: Account
   closeModal: () => void
 }
-
-export function CreateAccountForm({ data, closeModal }: params): ReactElement {
+export function CreateAccountForm({
+  account,
+  closeModal
+}: params): ReactElement {
   const query = useQueryClient()
+
   const {
     register,
     handleSubmit,
@@ -49,12 +25,14 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
   } = useForm()
 
   const {
-    mutate: createAccount,
+    mutate: create,
     isSuccess: isSuccessC,
     isPending: isPendingC,
     isError: isErrorC
   } = useMutation({
-    mutationFn: createA,
+    mutationFn: async (data: FieldValues) => {
+      return await createAccount(data as CreateAccount)
+    },
     onSuccess: async () => {
       reset({
         username: '',
@@ -62,35 +40,37 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
         repeatpassword: '',
         permissions: Permissions.OTHER
       })
-      setTimeout(closeModal, 500)
       await query.refetchQueries({ queryKey: ['acc'] })
+      setTimeout(closeModal, 250)
     }
   })
 
   const {
-    mutate: updateAccount,
+    mutate: update,
     isSuccess: isSuccessU,
     isPending: isPendingU,
     isError: isErrorU
   } = useMutation({
-    mutationFn: updateA,
+    mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
+      await updateAccount({ id, ...(data as CreateAccount) })
+    },
     onSuccess: async () => {
-      setTimeout(closeModal, 500)
-      await query.refetchQueries({ queryKey: ['acc'] })
+      await query.refetchQueries({ queryKey: ['account'] })
+      setTimeout(closeModal, 250)
     }
   })
 
   return (
     <form
       onSubmit={handleSubmit((dataForm: FieldValues, e) => {
-        if (data?.id) {
-          updateAccount({ data: dataForm, id: data?.id ?? 0 })
+        if (account?.id) {
+          update({ data: dataForm, id: account?.id ?? 0 })
         } else {
-          createAccount(dataForm)
+          create(dataForm)
         }
       })}
       className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
-      id={`createForm${data?.id}`}
+      id={`createForm${account?.id}`}
     >
       <input type='text' />
       <div className='mb-4'>
@@ -109,11 +89,11 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
           })}
           name='username'
           className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          id={`username${data?.id}`}
+          id={`username${account?.id}`}
           form='createForm'
           type='text'
           autoComplete='off'
-          defaultValue={data?.username}
+          defaultValue={account?.username}
           placeholder='Nombre de usuario'
         ></input>
         {errors?.username && (
@@ -137,10 +117,10 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
             }
           })}
           name='password'
-          id={`password${data?.id}`}
+          id={`password${account?.id}`}
           form='createForm'
           type='password'
-          defaultValue={data?.password}
+          defaultValue={account?.password}
           className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
           placeholder='******************'
         ></input>
@@ -170,10 +150,10 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
             }
           })}
           name='repeatpassword'
-          id={`repeatpassword${data?.id}`}
+          id={`repeatpassword${account?.id}`}
           form='createForm'
           type='password'
-          defaultValue={data?.password}
+          defaultValue={account?.password}
           className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
           placeholder='******************'
         ></input>
@@ -203,9 +183,9 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
             }
           })}
           name='permissions'
-          id={`permissions${data?.id}`}
+          id={`permissions${account?.id}`}
           form='createForm'
-          defaultValue={Permissions[data?.permissions ?? 'OTHER']}
+          defaultValue={Permissions[account?.permissions ?? 'OTHER']}
           className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
         >
           <option value={Permissions.OWN}>Propietario</option>
@@ -222,16 +202,16 @@ export function CreateAccountForm({ data, closeModal }: params): ReactElement {
       </div>
       <div className='flex flex-col'>
         <button
-          form={`createForm${data?.id}`}
+          form={`createForm${account?.id}`}
           className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
           type='submit'
         >
-          {data?.id ? 'Actualizar' : 'Crear'}
+          {account?.id ? 'Actualizar' : 'Crear'}
         </button>
         <span className='w-full flex flex-row items-center justify-center'>
           {(isPendingC || isPendingU) && (
             <p className='w-max text-yellow-400'>
-              {data?.id ? 'Actualizando' : 'Creando'} usuario...
+              {account?.id ? 'Actualizando' : 'Creando'} usuario...
             </p>
           )}
           {(isSuccessC || isSuccessU) && (
