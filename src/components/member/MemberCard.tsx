@@ -29,29 +29,29 @@ const update = async ({
   return response.data
 }
 
-const getInfo = async (info): Promise<Member[]> => {
+const getInfo = async (info): Promise<Member | undefined> => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, id]: [string, number] = info.queryKey
   const response = await findAccountMembersById(id)
-  return response.data?.memberAccount
+  return response.memberAccount
 }
 
 interface param {
   id: number
-  closeModal: () => void
+  closeModal?: () => void
 }
 
 export default function MemberCard({ id, closeModal }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
-  const { data } = useQuery({
+  const { data: member } = useQuery({
     queryKey: ['mem', id],
     queryFn: async (info) => {
-      return await getInfo(info)
+      const response = await getInfo(info)
+      // console.log(response)
+      return response
     },
     staleTime: 1000 * 60 * 5
   })
-
-  const members: Member[] | undefined = data
 
   const query = useQueryClient()
 
@@ -66,7 +66,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
       await query.refetchQueries({ queryKey: ['mem', id] })
       setEditF(false)
       reset()
-      setTimeout(closeModal, 500)
+      closeModal && setTimeout(closeModal, 500)
     }
   })
 
@@ -81,7 +81,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
       await query.refetchQueries({ queryKey: ['mem', id] })
       reset()
       setEditF(false)
-      setTimeout(closeModal, 500)
+      closeModal && setTimeout(closeModal, 500)
     }
   })
 
@@ -95,7 +95,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
 
   return (
     <>
-      {members?.map((member) => (
+      {member && (
         <div
           key={member.id}
           className='w-max p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
@@ -558,7 +558,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
             )}
           </form>
         </div>
-      ))}
+      )}
     </>
   )
 }
