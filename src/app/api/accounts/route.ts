@@ -96,7 +96,14 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data: CreateAccount = await req.json()
     const res: Account = await db.account.create({
-      data
+      data,
+      include: {
+        notificationSender: true,
+        notifiactionReceiver: true,
+        instructorAccount: true,
+        memberAccount: true,
+        employeeAccount: true
+      }
     })
     return new Response(JSONbig.stringify(res), {
       status: 200
@@ -138,6 +145,13 @@ export async function PATCH(req: NextRequest): Promise<Response> {
         username: fields.username,
         password: fields.password,
         permissions: fields.permissions as unknown as AccountPermissions
+      },
+      include: {
+        notificationSender: true,
+        notifiactionReceiver: true,
+        instructorAccount: true,
+        memberAccount: true,
+        employeeAccount: true
       }
     })
     return new Response(JSONbig.stringify(res), {
