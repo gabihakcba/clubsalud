@@ -1,3 +1,5 @@
+'use client'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteMember, updateMember } from 'queries/members'
 import { useState, type ReactElement } from 'react'
@@ -8,10 +10,6 @@ import edit from '../../../public/edit.svg'
 import { MemberState } from '@prisma/client'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { findAccountMembersById } from 'queries/accounts'
-
-const deleteMemberB = async ({ id }: { id: number }): Promise<any> => {
-  return await deleteMember(id)
-}
 
 const update = async ({
   id,
@@ -25,8 +23,7 @@ const update = async ({
     id,
     ...dataMember
   }
-  const response = await updateMember(newMember)
-  return response.data
+  return await updateMember(newMember)
 }
 
 const getInfo = async (info): Promise<Member | undefined> => {
@@ -40,15 +37,12 @@ interface param {
   id: number
   closeModal?: () => void
 }
-
 export default function MemberCard({ id, closeModal }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
   const { data: member } = useQuery({
     queryKey: ['mem', id],
     queryFn: async (info) => {
-      const response = await getInfo(info)
-      // console.log(response)
-      return response
+      return await getInfo(info)
     },
     staleTime: 1000 * 60 * 5
   })
@@ -64,6 +58,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
     mutationFn: update,
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['mem', id] })
+      await query.refetchQueries({ queryKey: ['account'] })
       setEditF(false)
       reset()
       closeModal && setTimeout(closeModal, 500)
@@ -76,7 +71,9 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
     isSuccess: isSuccessD,
     isPending: isPendingD
   } = useMutation({
-    mutationFn: deleteMemberB,
+    mutationFn: async (id: number) => {
+      return await deleteMember(Number(id))
+    },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['mem', id] })
       reset()
@@ -90,7 +87,6 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
     handleSubmit,
     formState: { errors },
     reset
-    // watch
   } = useForm()
 
   return (
@@ -98,7 +94,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
       {member && (
         <div
           key={member.id}
-          className='w-max p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
+          className='w-full p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
         >
           <form
             action=''
@@ -124,7 +120,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                 ></Image>
               </button>
             </div>
-            <div className='flex flex-row w-[60rem] gap-28'>
+            <div className='flex flex-col lg:flex-row gap-10'>
               <ul
                 role='list'
                 className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
@@ -138,7 +134,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                   </label>
                 </li>
                 <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                  <label className='block my-2 text-lg font-medium text-gray-900 dark:text-white'>
                     Nombre
                   </label>
                   {!editF && (
@@ -152,7 +148,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='text'
                         id='name'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 p-1 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.name}
                         {...register('name', {
                           required: {
@@ -185,7 +181,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='text'
                         id='lastName'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.lastName}
                         {...register('lastName', {
                           required: {
@@ -218,7 +214,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='number'
                         id='dni'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.dni.toString()}
                         {...register('dni', {
                           required: {
@@ -250,7 +246,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                       type='number'
                       id='cuit'
                       form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={member?.cuit?.toString()}
                       {...register('cuit')}
                     />
@@ -272,7 +268,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='number'
                         id='phoneNumber'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.phoneNumber.toString()}
                         required
                         {...register('phoneNumber', {
@@ -306,7 +302,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='text'
                         id='address'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.address}
                         {...register('address', {
                           required: {
@@ -339,7 +335,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='date'
                         id='inscriptionDate'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={formatDate(
                           member?.inscriptionDate?.toString()
                         )}
@@ -380,7 +376,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                       type='date'
                       id='cancelationDate'
                       form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={formatDate(
                         member?.cancelationDate?.toString()
                       )}
@@ -403,7 +399,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                       type='text'
                       id='cancelationReason'
                       form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={member?.cancelationReason ?? ''}
                       {...register('cancelationReason')}
                     />
@@ -425,7 +421,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='text'
                         id='derivedBy'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.derivedBy}
                         {...register('derivedBy', {
                           required: {
@@ -458,7 +454,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                         type='number'
                         id='afiliateNumber'
                         form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                         defaultValue={member?.afiliateNumber.toString()}
                         {...register('afiliateNumber', {
                           required: {
@@ -490,7 +486,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                       type='number'
                       id='remainingClasses'
                       form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={member?.remainingClasses?.toString()}
                       {...register('remainingClasses')}
                     />
@@ -510,7 +506,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                     <select
                       id='state'
                       form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
+                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
                       defaultValue={MemberState[member?.state]}
                       {...register('state')}
                     >
@@ -542,7 +538,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                   <button
                     className='blueButtonForm w-max bg-red-500 hover:bg-red-600'
                     onClick={async () => {
-                      mutateD({ id: member?.id })
+                      mutateD(member?.id)
                     }}
                     type='button'
                   >
