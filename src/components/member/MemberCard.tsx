@@ -1,6 +1,6 @@
 'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteMember, updateMember } from 'queries/members'
 import { useState, type ReactElement } from 'react'
 import { formatDate } from 'utils/const'
@@ -9,7 +9,6 @@ import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import { MemberState } from '@prisma/client'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { findAccountMembersById } from 'queries/accounts'
 
 const update = async ({
   id,
@@ -26,26 +25,11 @@ const update = async ({
   return await updateMember(newMember)
 }
 
-const getInfo = async (info): Promise<Member | undefined> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, id]: [string, number] = info.queryKey
-  const response = await findAccountMembersById(id)
-  return response.memberAccount
-}
-
 interface param {
-  id: number
-  closeModal?: () => void
+  member: Member
 }
-export default function MemberCard({ id, closeModal }: param): ReactElement {
+export default function MemberCard({ member }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
-  const { data: member } = useQuery({
-    queryKey: ['mem', id],
-    queryFn: async (info) => {
-      return await getInfo(info)
-    },
-    staleTime: 1000 * 60 * 5
-  })
 
   const query = useQueryClient()
 
@@ -57,11 +41,9 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
   } = useMutation({
     mutationFn: update,
     onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['mem', id] })
       await query.refetchQueries({ queryKey: ['account'] })
       setEditF(false)
       reset()
-      closeModal && setTimeout(closeModal, 500)
     }
   })
 
@@ -75,10 +57,8 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
       return await deleteMember(Number(id))
     },
     onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['mem', id] })
       reset()
       setEditF(false)
-      closeModal && setTimeout(closeModal, 500)
     }
   })
 
@@ -104,7 +84,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
             })}
           >
             <div className='flex items-center justify-between mb-2 border-b-2 border-white pb-2'>
-              <h2 className='text-lg text-white'>Perfil de Alumno</h2>
+              <h2 className='text-xl text-white'>Perfil de Alumno</h2>
               <button
                 onClick={() => {
                   setEditF((prev: boolean) => !prev)
@@ -522,7 +502,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
               <div className='flex flex-row justify-end w-full gap-4'>
                 <div className='w-max flex flex-col items-end'>
                   <button
-                    className='blueButtonForm w-max'
+                    className='dark-blue-border-button'
                     form={`member${member?.id}`}
                     type='submit'
                   >
@@ -536,7 +516,7 @@ export default function MemberCard({ id, closeModal }: param): ReactElement {
                 </div>
                 <div className='w-max flex flex-col items-end'>
                   <button
-                    className='blueButtonForm w-max bg-red-500 hover:bg-red-600'
+                    className='dark-red-border-button'
                     onClick={async () => {
                       mutateD(member?.id)
                     }}
