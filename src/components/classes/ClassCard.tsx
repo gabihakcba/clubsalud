@@ -36,7 +36,7 @@ export default function ClassCard2({
 
   return (
     <div className='w-max flex flex-col'>
-      <HasRole required={Permissions.ADM}>
+      <HasRole required={[Permissions.ADM, Permissions.OWN]}>
         <div className='self-end'>
           <button onClick={openModal}>
             <Image
