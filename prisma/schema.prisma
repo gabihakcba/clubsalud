@@ -61,16 +61,16 @@ enum HealthPlanType {
 
 model Account {
   // Fields
-  id                   Int                @id @default(autoincrement())
-  username             String             @unique
+  id                   Int                  @id @default(autoincrement())
+  username             String               @unique
   password             String
-  permissions          AccountPermissions
+  permissions          AccountPermissions[] @default([OTHER])
   // Relations
-  notificationSender   Notification[]     @relation(name: "sender")
-  notifiactionReceiver Notification[]     @relation(name: "receiver")
-  instructorAccount    Instructor?        @relation(name: "instructorAccount")
-  memberAccount        Member?            @relation(name: "memberAccount")
-  employeeAccount      Employee?          @relation(name: "employeeAccount")
+  notificationSender   Notification[]       @relation(name: "sender")
+  notifiactionReceiver Notification[]       @relation(name: "receiver")
+  instructorAccount    Instructor?          @relation(name: "instructorAccount")
+  memberAccount        Member?              @relation(name: "memberAccount")
+  employeeAccount      Employee?            @relation(name: "employeeAccount")
 }
 
 model Doctor {
