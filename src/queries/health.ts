@@ -13,3 +13,10 @@ export const createHealthPlan = async (
   const response = await axios.post(`${path()}/api/health`, data)
   return response.data
 }
+
+export const updateHealthPlan = async (
+  data: HealthPlan
+): Promise<HealthPlan> => {
+  const response = await axios.patch(`${path()}/api/health`, data)
+  return response.data
+}
