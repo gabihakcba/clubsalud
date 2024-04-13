@@ -8,7 +8,14 @@ import { HealthPlanType } from 'utils/types'
 const plansOptions = (): ReactElement[] => {
   const op: ReactElement[] = []
   for (const plan in HealthPlanType) {
-    op.push(<option value={plan}>{plan}</option>)
+    op.push(
+      <option
+        value={plan}
+        key={plan}
+      >
+        {plan}
+      </option>
+    )
   }
   return op
 }
