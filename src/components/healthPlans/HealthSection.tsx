@@ -20,11 +20,10 @@ export default function PromotionSection(): ReactElement {
       className='h-max scrollHidden'
       style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(10rem,1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(15rem,1fr))',
         alignContent: 'flex-start',
         gap: '1rem',
-        width: '100%',
-        margin: '1rem'
+        width: '100%'
       }}
     >
       {data?.map((health: HealthPlan, index: number) => (
