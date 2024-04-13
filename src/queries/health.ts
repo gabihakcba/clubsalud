@@ -20,3 +20,10 @@ export const updateHealthPlan = async (
   const response = await axios.patch(`${path()}/api/health`, data)
   return response.data
 }
+
+export const deleteHealthPlan = async (
+  id: number | string
+): Promise<HealthPlan> => {
+  const response = await axios.delete(`${path()}/api/health`, { data: { id } })
+  return response.data
+}
