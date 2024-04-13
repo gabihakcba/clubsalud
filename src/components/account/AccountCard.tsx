@@ -23,7 +23,11 @@ function AccountCard({ account }: params): ReactElement {
   return (
     <div className='bg-white shadow-md rounded flex flex-col p-2 items-center'>
       <div className='p-1 px-2'>{account.username}</div>
-      <div className='p-1'>{account.permissions}</div>
+      <div className='p-1 flex gap-2'>
+        {account.permissions.map((permission, index) => (
+          <p key={index}>{permission}</p>
+        ))}
+      </div>
       <div className='flex justify-center items-center gap-2'>
         <button
           className='light-red-border-button'
