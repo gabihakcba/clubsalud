@@ -1,8 +1,4 @@
-import {
-  type CreateMember,
-  type Member,
-  type QueriesResponse
-} from 'utils/types'
+import { type CreateMember, type Member } from 'utils/types'
 import axios from 'axios'
 import { path } from 'utils/path'
 
@@ -11,10 +7,9 @@ interface GetMemResponse {
   data: Member
 }
 
-export const getMembers = async (
-  page: number = 0
-): Promise<QueriesResponse> => {
-  return await axios.get(`${path()}/api/members?page=${page}`)
+export const getMembers = async (page: number = 0): Promise<Member[]> => {
+  const response = await axios.get(`${path()}/api/members?page=${page}`)
+  return response.data
 }
 
 export const getMemberById = async (id: number): Promise<GetMemResponse> => {
