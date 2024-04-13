@@ -26,7 +26,9 @@ export default function HealthPlan(): ReactElement {
         </Modal>
       </nav>
       <hr />
-      <HealthSection></HealthSection>
+      <div className='p-7'>
+        <HealthSection></HealthSection>
+      </div>
     </div>
   )
 }
