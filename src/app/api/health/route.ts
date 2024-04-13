@@ -64,3 +64,22 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     })
   }
 }
+
+export async function DELETE(req: NextRequest): Promise<Response> {
+  try {
+    const data: { id: number } = await req.json()
+    const res: HealthPlan = await db.healthPlan.delete({
+      where: {
+        id: Number(data.id)
+      }
+    })
+    return new Response(JSONbig.stringify(res), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response('No se pudo eliminar la obra social', {
+      status: 400
+    })
+  }
+}
