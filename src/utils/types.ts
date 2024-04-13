@@ -53,7 +53,7 @@ export interface Account {
   id: number
   username: string
   password: string
-  permissions: Permissions
+  permissions: Permissions[]
   notificationSender?: Notification[]
   notifiactionReceiver?: Notification[]
   instructorAccount?: Instructor
@@ -65,7 +65,7 @@ export interface CreateAccount {
   username: string
   password: string
   repeatpassword: string
-  permissions: Permissions
+  permissions: Permissions[]
 }
 
 export interface UpdateAccount {
@@ -73,7 +73,7 @@ export interface UpdateAccount {
   username: string
   password: string
   repeatpassword: string
-  permissions: Permissions
+  permissions: Permissions[]
 }
 
 export interface LogIn {
