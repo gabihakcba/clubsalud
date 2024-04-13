@@ -9,17 +9,24 @@ export default function PersonalAccount(): ReactElement {
     id: -1,
     username: '',
     password: '',
-    permissions: Permissions.OTHER
+    permissions: [Permissions.OTHER]
   })
 
   useEffect(() => {
-    void setNewUser(getUserToken(), setUser)
+    const token = getUserToken()
+    // const tokenParsed = JSON.parse(token)
+    // console.log(token)
+    void setNewUser(token, setUser)
   }, [])
 
   return (
     <div className='h-full w-full flex items-center justify-center flex-col'>
       <p>{user.username}</p>
-      <p>{user.permissions}</p>
+      <p>
+        {user.permissions.map((permission, index) => (
+          <p key={index}>{permission}</p>
+        ))}
+      </p>
     </div>
   )
 }

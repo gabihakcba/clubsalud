@@ -19,7 +19,7 @@ export default function Classes(): ReactElement {
     <div className='flex flex-col items-start justify-start'>
       <div className='w-max flex items-center'>
         <h2 className='text-2xl font-black m-4'>Clases</h2>
-        <HasRole required={Permissions.ADM}>
+        <HasRole required={[Permissions.ADM, Permissions.OWN]}>
           <button
             className='blueButtonForm'
             onClick={() => {
@@ -51,7 +51,7 @@ export default function Classes(): ReactElement {
       </section>
       <div className='w-full flex items-center gap-4'>
         <h2 className='text-2xl font-black m-4'>Planes</h2>
-        <HasRole required={Permissions.ADM}>
+        <HasRole required={[Permissions.ADM, Permissions.OWN]}>
           <button
             className='blueButtonForm'
             onClick={() => {
