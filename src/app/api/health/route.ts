@@ -40,3 +40,27 @@ export async function POST(req: NextRequest): Promise<Response> {
     })
   }
 }
+
+export async function PATCH(req: NextRequest): Promise<Response> {
+  try {
+    const data: HealthPlan = await req.json()
+    const id: number = Number(data.id)
+    const res: HealthPlan = await db.healthPlan.update({
+      where: {
+        id
+      },
+      data: {
+        ...data,
+        paymentPerConsultation: Number(data.paymentPerConsultation)
+      }
+    })
+    return new Response(JSONbig.stringify(res), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response('No se pudo crear el usuario', {
+      status: 400
+    })
+  }
+}
