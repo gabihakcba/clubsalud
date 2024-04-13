@@ -53,7 +53,7 @@ export default function PromotionCard({
   return (
     <div className='w-max flex flex-col justify-between border rounded p-4 mb-5'>
       <div className='flex flex-col'>
-        <HasRole required={Permissions.ADM}>
+        <HasRole required={[Permissions.ADM, Permissions.OWN]}>
           <div className='self-end'>
             <button onClick={openModal}>
               <Image
@@ -97,7 +97,7 @@ export default function PromotionCard({
       </div>
       <div>
         <div className='self-start mt-2'>${promotion.amountPrice}</div>
-        <HasRole required={Permissions.MEM}>
+        <HasRole required={[Permissions.MEM, Permissions.OWN]}>
           <button
             className='mt-2 border rounded'
             onClick={async () => {

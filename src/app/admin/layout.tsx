@@ -10,17 +10,17 @@ import { LeftArrow } from '../../../public/svgs/LeftArrow'
 import { RightArrow } from '../../../public/svgs/RightArrow'
 import { logOutAccount } from 'queries/accounts'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { Permissions, type QueriesResponse } from 'utils/types'
+import { Permissions } from 'utils/types'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HasRole from 'components/HasRole'
 
 const logOut = async (router: AppRouterInstance): Promise<void> => {
-  const response: QueriesResponse = await logOutAccount()
-  if (response.status === 200) {
+  try {
+    await logOutAccount()
     router.push('/')
-  } else {
-    console.log('Client: error on logOutAccount')
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: any): ReactElement {
                     </span>
                   </Link>
                 </li>
-                <HasRole required={Permissions.ADM}>
+                <HasRole required={[Permissions.ADM, Permissions.OWN]}>
                   <li>
                     <Link
                       href='/admin/accounts'

@@ -38,7 +38,7 @@ export function CreateAccountForm({
         username: '',
         password: '',
         repeatpassword: '',
-        permissions: Permissions.OTHER
+        permissions: [Permissions.OTHER]
       })
       await query.refetchQueries({ queryKey: ['acc'] })
       setTimeout(closeModal, 250)
@@ -165,34 +165,68 @@ export function CreateAccountForm({
       <div className='mb-4'>
         <label
           className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='permisos'
+          htmlFor='permissions'
         >
           Permisos
         </label>
-        <select
-          {...register('permissions', {
-            required: {
-              value: true,
-              message: 'Los permisos son requeridos'
-            },
-            validate: (value) => {
-              return (
-                value !== 'OTHER' || 'Debe seleccionar los permisos adecuados'
-              )
-            }
-          })}
-          name='permissions'
-          id={`permissions${account?.id}`}
-          form='createForm'
-          defaultValue={Permissions[account?.permissions ?? 'OTHER']}
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-        >
-          <option value={Permissions.OWN}>Propietario</option>
-          <option value={Permissions.ADM}>Administrador</option>
-          <option value={Permissions.INS}>Instructor</option>
-          <option value={Permissions.MEM}>Alumno</option>
-          <option value={Permissions.OTHER}>Otro</option>
-        </select>
+        <div className='flex flex-col sm:flex-row gap-2 items-center justify-center'>
+          <div className='flex gap-2 border p-1'>
+            <label htmlFor=''>Propietario</label>
+            <input
+              type='checkbox'
+              value={Permissions.OWN}
+              defaultChecked={account?.permissions.includes(Permissions.OWN)}
+              {...register('permissions', {
+                required: {
+                  value: true,
+                  message: 'Al menos un permiso requerido'
+                }
+              })}
+            />
+          </div>
+          <div className='flex gap-2 border p-1'>
+            <label htmlFor=''>Administrador</label>
+            <input
+              type='checkbox'
+              value={Permissions.ADM}
+              defaultChecked={account?.permissions.includes(Permissions.ADM)}
+              {...register('permissions', {
+                required: {
+                  value: true,
+                  message: 'Al menos un permiso requerido'
+                }
+              })}
+            />
+          </div>
+          <div className='flex gap-2 border p-1'>
+            <label htmlFor=''>Profesor</label>
+            <input
+              type='checkbox'
+              value={Permissions.INS}
+              defaultChecked={account?.permissions.includes(Permissions.INS)}
+              {...register('permissions', {
+                required: {
+                  value: true,
+                  message: 'Al menos un permiso requerido'
+                }
+              })}
+            />
+          </div>
+          <div className='flex gap-2 border p-1'>
+            <label htmlFor=''>Alumno</label>
+            <input
+              type='checkbox'
+              value={Permissions.MEM}
+              defaultChecked={account?.permissions.includes(Permissions.MEM)}
+              {...register('permissions', {
+                required: {
+                  value: true,
+                  message: 'Al menos un permiso requerido'
+                }
+              })}
+            />
+          </div>
+        </div>
         {errors?.permissions && (
           <span className='inputError'>
             {errors.permissions.message as string}
