@@ -5,13 +5,10 @@ CREATE TYPE "AccountPermissions" AS ENUM ('OWN', 'ADM', 'INS', 'MEM', 'OTHER');
 CREATE TYPE "MemberState" AS ENUM ('ACTIVE', 'INACTIVE', 'OTHER');
 
 -- CreateEnum
-CREATE TYPE "ClassState" AS ENUM ('ACTIVE', 'VACATION', 'CANCELED', 'OTHER');
-
--- CreateEnum
 CREATE TYPE "Days" AS ENUM ('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY');
 
 -- CreateEnum
-CREATE TYPE "JobPosition" AS ENUM ('CLEANING', 'MAINTENANCE', 'OTHER');
+CREATE TYPE "JobPosition" AS ENUM ('CLEANING', 'MAINTENANCE', 'RECEPTIONIST', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "ContractType" AS ENUM ('PERMANENT', 'CASUAL', 'OTHER');
@@ -24,7 +21,7 @@ CREATE TABLE "Account" (
     "id" SERIAL NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "permissions" "AccountPermissions" NOT NULL,
+    "permissions" "AccountPermissions"[] DEFAULT ARRAY['OTHER']::"AccountPermissions"[],
 
     CONSTRAINT "Account_pkey" PRIMARY KEY ("id")
 );
@@ -80,7 +77,7 @@ CREATE TABLE "Member" (
     "state" "MemberState" NOT NULL,
     "remainingClasses" BIGINT,
     "accountId" INTEGER NOT NULL,
-    "medicalRecordId" INTEGER NOT NULL,
+    "medicalRecordId" INTEGER,
 
     CONSTRAINT "Member_pkey" PRIMARY KEY ("id")
 );
@@ -122,14 +119,23 @@ CREATE TABLE "Attendance" (
 );
 
 -- CreateTable
+CREATE TABLE "Schedule" (
+    "id" SERIAL NOT NULL,
+    "day" "Days" NOT NULL,
+    "start" INTEGER NOT NULL,
+    "end" INTEGER NOT NULL,
+    "instructorInCharge" INTEGER,
+    "instructorSubstitute" INTEGER,
+    "classId" INTEGER,
+
+    CONSTRAINT "Schedule_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Class" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "duration" DOUBLE PRECISION NOT NULL,
-    "days" "Days"[],
-    "state" "ClassState" NOT NULL,
-    "instructorInCharge" INTEGER NOT NULL,
-    "instructorSubstitute" INTEGER NOT NULL,
 
     CONSTRAINT "Class_pkey" PRIMARY KEY ("id")
 );
@@ -202,6 +208,7 @@ CREATE TABLE "Employee" (
     "contractType" "ContractType" NOT NULL,
     "salary" DOUBLE PRECISION NOT NULL,
     "lastSalaryUpdate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "accountId" INTEGER,
 
     CONSTRAINT "Employee_pkey" PRIMARY KEY ("id")
 );
@@ -232,6 +239,7 @@ CREATE TABLE "HealthPlanSubscribed" (
 CREATE TABLE "HealthPlan" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "description" TEXT,
     "type" "HealthPlanType",
     "paymentPerConsultation" DOUBLE PRECISION NOT NULL,
 
@@ -253,6 +261,7 @@ CREATE TABLE "Subscription" (
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "paid" BOOLEAN NOT NULL,
     "remaining" DOUBLE PRECISION NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
     "promotionId" INTEGER NOT NULL,
     "memberId" INTEGER NOT NULL,
 
@@ -264,7 +273,7 @@ CREATE TABLE "Promotion" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "amountWeeklyClasses" BIGINT NOT NULL,
+    "amountWeeklyClasses" INTEGER NOT NULL,
     "amountPrice" DOUBLE PRECISION NOT NULL,
     "lastPriceUpdate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -306,7 +315,16 @@ CREATE TABLE "FollowUpForm" (
 CREATE UNIQUE INDEX "Account_username_key" ON "Account"("username");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Instructor_accountId_key" ON "Instructor"("accountId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Member_accountId_key" ON "Member"("accountId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Member_medicalRecordId_key" ON "Member"("medicalRecordId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Employee_accountId_key" ON "Employee"("accountId");
 
 -- AddForeignKey
 ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -315,7 +333,7 @@ ALTER TABLE "Instructor" ADD CONSTRAINT "Instructor_accountId_fkey" FOREIGN KEY 
 ALTER TABLE "Member" ADD CONSTRAINT "Member_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_medicalRecordId_fkey" FOREIGN KEY ("medicalRecordId") REFERENCES "MedicalRecord"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Member" ADD CONSTRAINT "Member_medicalRecordId_fkey" FOREIGN KEY ("medicalRecordId") REFERENCES "MedicalRecord"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InstructorPayment" ADD CONSTRAINT "InstructorPayment_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -333,10 +351,13 @@ ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_classId_fkey" FOREIGN KEY ("
 ALTER TABLE "Attendance" ADD CONSTRAINT "Attendance_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Class" ADD CONSTRAINT "Class_instructorInCharge_fkey" FOREIGN KEY ("instructorInCharge") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_instructorInCharge_fkey" FOREIGN KEY ("instructorInCharge") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Class" ADD CONSTRAINT "Class_instructorSubstitute_fkey" FOREIGN KEY ("instructorSubstitute") REFERENCES "Instructor"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_instructorSubstitute_fkey" FOREIGN KEY ("instructorSubstitute") REFERENCES "Instructor"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Schedule" ADD CONSTRAINT "Schedule_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Reservation" ADD CONSTRAINT "Reservation_openClassId_fkey" FOREIGN KEY ("openClassId") REFERENCES "OpenClass"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -354,10 +375,10 @@ ALTER TABLE "BilledConsultation" ADD CONSTRAINT "BilledConsultation_subscription
 ALTER TABLE "BilledConsultation" ADD CONSTRAINT "BilledConsultation_healthPlanId_fkey" FOREIGN KEY ("healthPlanId") REFERENCES "HealthPlan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_memeberId_fkey" FOREIGN KEY ("memeberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_memeberId_fkey" FOREIGN KEY ("memeberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Payment" ADD CONSTRAINT "Payment_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Payment" ADD CONSTRAINT "Payment_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Derivation" ADD CONSTRAINT "Derivation_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -372,16 +393,19 @@ ALTER TABLE "Notification" ADD CONSTRAINT "Notification_senderId_fkey" FOREIGN K
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "Account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Employee" ADD CONSTRAINT "Employee_accountId_fkey" FOREIGN KEY ("accountId") REFERENCES "Account"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "EmployeePayment" ADD CONSTRAINT "EmployeePayment_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "HealthPlanSubscribed" ADD CONSTRAINT "HealthPlanSubscribed_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "HealthPlanSubscribed" ADD CONSTRAINT "HealthPlanSubscribed_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "HealthPlanSubscribed" ADD CONSTRAINT "HealthPlanSubscribed_planId_fkey" FOREIGN KEY ("planId") REFERENCES "HealthPlan"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "HealthPlanSubscribed" ADD CONSTRAINT "HealthPlanSubscribed_planId_fkey" FOREIGN KEY ("planId") REFERENCES "HealthPlan"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_promotionId_fkey" FOREIGN KEY ("promotionId") REFERENCES "Promotion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_promotionId_fkey" FOREIGN KEY ("promotionId") REFERENCES "Promotion"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_memberId_fkey" FOREIGN KEY ("memberId") REFERENCES "Member"("id") ON DELETE CASCADE ON UPDATE CASCADE;

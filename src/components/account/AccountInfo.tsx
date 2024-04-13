@@ -66,7 +66,11 @@ export default function AccountInfo({ account }: params): ReactElement {
       </div>
       <div className='flex gap-2'>
         <label className='min-w-[10rem]'>Permisos: </label>
-        <p>{account?.permissions}</p>
+        <div className='p-1 flex gap-2'>
+          {account?.permissions.map((permission, index) => (
+            <p key={index}>{permission}</p>
+          ))}
+        </div>
       </div>
       <div className='flex flex-col gap-2'>
         <hr />
