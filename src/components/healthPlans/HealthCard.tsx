@@ -6,9 +6,10 @@ import {
 } from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
+import delete_ from '../../../public/delete_.svg'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateHealthPlan } from 'queries/health'
+import { deleteHealthPlan, updateHealthPlan } from 'queries/health'
 
 interface params {
   plan: HealthPlan
@@ -36,11 +37,27 @@ export default function HealthCard({ plan }: params): ReactElement {
         ...(data as CreateHealthPlan)
       })
     },
-    onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['health'] })
+    onSuccess: (data) => {
+      query.setQueryData(['health'], (oldData: HealthPlan[]) => {
+        const newData = [...oldData]
+        const index = newData.findIndex((health) => health.id === data.id)
+        newData.splice(index, 1, data)
+        return newData
+      })
       setTimeout(() => {
         setEditPlan(false)
       }, 250)
+    }
+  })
+
+  const { mutate: deleteH } = useMutation({
+    mutationFn: async (id: number | string): Promise<HealthPlan> => {
+      return await deleteHealthPlan(id)
+    },
+    onSuccess: (data) => {
+      query.setQueryData(['health'], (oldData: HealthPlan[]) => {
+        return oldData.filter((health) => Number(health.id) !== Number(data.id))
+      })
     }
   })
 
@@ -52,7 +69,7 @@ export default function HealthCard({ plan }: params): ReactElement {
 
   return (
     <div className='flex flex-col gap-2 border rounded p-4'>
-      <div className='flex justify-end items-center'>
+      <div className='flex justify-end items-center gap-4'>
         <button
           onClick={() => {
             setEditPlan((old) => !old)
@@ -60,6 +77,18 @@ export default function HealthCard({ plan }: params): ReactElement {
         >
           <Image
             src={edit}
+            alt='E'
+            width={20}
+            height={20}
+          ></Image>
+        </button>
+        <button
+          onClick={() => {
+            deleteH(plan.id)
+          }}
+        >
+          <Image
+            src={delete_}
             alt='E'
             width={20}
             height={20}
