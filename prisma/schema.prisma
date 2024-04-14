@@ -139,7 +139,6 @@ model Member {
   memberSubscription Subscription[]         @relation(name: "subscriptionMember")
   planSubscribed     HealthPlanSubscribed[] @relation(name: "planMember")
   payment            Payment[]              @relation(name: "paymentMember")
-  billedConsultation BilledConsultation[]   @relation(name: "consultationMember")
   derivation         Derivation[]           @relation(name: "derivationMember")
 }
 
@@ -222,20 +221,6 @@ model Reservation {
   member      Member    @relation(fields: [memberId], references: [id], name: "reservationMember")
 }
 
-model BilledConsultation {
-  // Fields
-  id             Int          @id @default(autoincrement())
-  amount         Float
-  date           DateTime     @default(now())
-  // Foreignkeys
-  memberId       Int
-  subscriptionId Int
-  healthPlanId   Int
-  member         Member       @relation(fields: [memberId], references: [id], name: "consultationMember")
-  subscription   Subscription @relation(fields: [subscriptionId], references: [id], name: "consultationSubscription")
-  plan           HealthPlan   @relation(fields: [healthPlanId], references: [id], name: "consultationPlan")
-}
-
 model Payment {
   // Fields
   id             Int          @id @default(autoincrement())
@@ -306,14 +291,28 @@ model EmployeePayment {
   employee     Employee @relation(fields: [employeeId], references: [id], name: "paymentEmployee")
 }
 
+model BilledConsultation {
+  // Fields
+  id                     Int                  @id @default(autoincrement())
+  amount                 Float
+  date                   DateTime             @default(now())
+  // Foreignkeys
+  subscriptionId         Int
+  healthSubscribedPlanId Int
+  subscription           Subscription         @relation(fields: [subscriptionId], references: [id], name: "consultationSubscription", onDelete: Cascade)
+  plan                   HealthPlanSubscribed @relation(fields: [healthSubscribedPlanId], references: [id], name: "consultationPlan", onDelete: Cascade)
+}
+
 model HealthPlanSubscribed {
   // Fields
-  id       Int        @id @default(autoincrement())
+  id                 Int                  @id @default(autoincrement())
   // Foreignkeys
-  memberId Int
-  planId   Int
-  member   Member     @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
-  plan     HealthPlan @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
+  memberId           Int
+  planId             Int
+  member             Member               @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
+  plan               HealthPlan           @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
+  //Relations
+  billedConsultation BilledConsultation[] @relation(name: "consultationPlan")
 }
 
 model HealthPlan {
@@ -325,7 +324,6 @@ model HealthPlan {
   paymentPerConsultation Float
   // Relations
   planSubscription       HealthPlanSubscribed[] @relation(name: "planPlan")
-  billedConsultation     BilledConsultation[]   @relation(name: "consultationPlan")
 }
 
 model MedicalRecord {
