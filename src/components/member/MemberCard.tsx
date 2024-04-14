@@ -38,6 +38,7 @@ interface param {
 }
 export default function MemberCard({ member }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
+
   const query = useQueryClient()
 
   const {
@@ -64,8 +65,12 @@ export default function MemberCard({ member }: param): ReactElement {
       return await deleteMember(Number(id))
     },
     onSuccess: async () => {
-      reset()
-      setEditF(false)
+      query.setQueryData(
+        ['account', String(member.accountId)],
+        (oldData: Account) => {
+          return { ...oldData, memberAccount: null }
+        }
+      )
     }
   })
 
