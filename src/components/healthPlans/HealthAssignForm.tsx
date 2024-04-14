@@ -61,7 +61,7 @@ export default function HealthAssignForm(): ReactElement {
         />
         <div>
           <select
-            id=''
+            id='memberId'
             className='rounded p-1'
             {...register('memberId', {
               required: { value: true, message: 'Campo requerido' }
@@ -72,7 +72,7 @@ export default function HealthAssignForm(): ReactElement {
               ?.filter((member) =>
                 member.name
                   .toUpperCase()
-                  .includes((watch('filterMember') as string).toUpperCase())
+                  .includes((watch('filterMember') as string)?.toUpperCase())
               )
               .map((member, index) => (
                 <option
@@ -101,7 +101,7 @@ export default function HealthAssignForm(): ReactElement {
         />
         <div>
           <select
-            id=''
+            id='planId'
             className='rounded p-1'
             {...register('planId', {
               required: { value: true, message: 'Campo requerido' }
@@ -111,7 +111,7 @@ export default function HealthAssignForm(): ReactElement {
             {healthPlans
               ?.filter((health) =>
                 health.name.includes(
-                  (watch('filterPlan') as string).toUpperCase()
+                  (watch('filterPlan') as string)?.toUpperCase()
                 )
               )
               .map((health, index) => (
