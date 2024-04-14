@@ -1,8 +1,4 @@
-import {
-  type CreateMember,
-  type Member,
-  type QueriesResponse
-} from 'utils/types'
+import { type CreateMember, type Member } from 'utils/types'
 import axios from 'axios'
 import { path } from 'utils/path'
 
@@ -11,10 +7,9 @@ interface GetMemResponse {
   data: Member
 }
 
-export const getMembers = async (
-  page: number = 0
-): Promise<QueriesResponse> => {
-  return await axios.get(`${path()}/api/members?page=${page}`)
+export const getMembers = async (page: number = 0): Promise<Member[]> => {
+  const response = await axios.get(`${path()}/api/members?page=${page}`)
+  return response.data
 }
 
 export const getMemberById = async (id: number): Promise<GetMemResponse> => {
@@ -27,22 +22,25 @@ export const getTotalPagesM = async (): Promise<GetMemResponse> => {
 
 export const createMember = async (
   newMember: CreateMember
-): Promise<GetMemResponse> => {
-  return await axios.post(`${path()}/api/members`, {
+): Promise<Member> => {
+  const response = await axios.post(`${path()}/api/members`, {
     ...newMember
   })
+  return response.data
 }
 
-export const deleteMember = async (id: number): Promise<GetMemResponse> => {
-  return await axios.delete(`${path()}/api/members`, {
+export const deleteMember = async (id: number): Promise<Member> => {
+  const response = await axios.delete(`${path()}/api/members`, {
     data: {
       id
     }
   })
+  return response.data
 }
 
-export const updateMember = async (member: Member): Promise<GetMemResponse> => {
-  return await axios.patch(`${path()}/api/members`, {
+export const updateMember = async (member: Member): Promise<Member> => {
+  const response = await axios.patch(`${path()}/api/members`, {
     ...member
   })
+  return response.data
 }

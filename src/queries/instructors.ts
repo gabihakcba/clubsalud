@@ -31,28 +31,29 @@ export const getInstructorById = async (
 
 export const createInstructor = async (
   newInstructor: CreateInstructor
-): Promise<GetInsInstructor> => {
-  return await axios.post(`${path()}/api/instructors`, {
+): Promise<Instructor> => {
+  const response = await axios.post(`${path()}/api/instructors`, {
     ...newInstructor
   })
+  return response.data
 }
 
-export const deleteInstructor = async (
-  id: number
-): Promise<GetInsInstructor> => {
-  return await axios.delete(`${path()}/api/instructors`, {
+export const deleteInstructor = async (id: number): Promise<Instructor> => {
+  const response = await axios.delete(`${path()}/api/instructors`, {
     data: {
       id
     }
   })
+  return response.data
 }
 
 export const updateInstructor = async (
   instructor: Instructor
-): Promise<GetInsInstructor> => {
-  return await axios.patch(`${path()}/api/instructors`, {
+): Promise<Instructor> => {
+  const response = await axios.patch(`${path()}/api/instructors`, {
     ...instructor
   })
+  return response.data
 }
 
 export async function getInstructorByName(

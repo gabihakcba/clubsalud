@@ -24,8 +24,7 @@ export default function SubscriptionForm({ closeModal }: params): ReactElement {
   const { data: members } = useQuery({
     queryKey: ['memS'],
     queryFn: async () => {
-      const response = await getMembers()
-      return response.data
+      return await getMembers()
     }
   })
 

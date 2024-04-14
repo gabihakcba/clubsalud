@@ -56,7 +56,7 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
       {/* <span className='inline-flex items-center justify-center px-1 text-sm font-medium text-gray-800 bg-gray-300 rounded-full'>
            {instructor.name}
          </span> */}
-      <HasRole required={Permissions.ADM}>
+      <HasRole required={[Permissions.ADM, Permissions.OWN]}>
         <button onClick={openAssing}>
           <Image
             src={change}
