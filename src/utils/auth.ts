@@ -4,9 +4,9 @@ import { parse } from 'cookie'
 
 export const hasPermission = (
   permissionNeeded: Permissions,
-  currentPermission: Permissions
+  currentPermission: Permissions[]
 ): boolean => {
-  return permissionNeeded === currentPermission
+  return currentPermission.includes(permissionNeeded)
 }
 
 export const setNewUser = async (
@@ -38,7 +38,7 @@ export const verifyToken = async (
       id: payload.id as number,
       username: payload.username as string,
       password: payload.password as string,
-      permissions: payload.permissions as Permissions
+      permissions: [...(payload.permissions as Permissions[])]
     }
     return account
   } catch (error) {

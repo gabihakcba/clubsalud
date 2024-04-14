@@ -41,14 +41,6 @@ export default function AccountTopbar({
       {topbar && (
         <div className='pt-2 flex flex-col md:flex-row md:items-center md:pt-0 gap-4 bg-white md:shadow-none shadow rounded '>
           <div className='flex gap-5 justify-evenly md:justify-center flex-row'>
-            {/* <button onClick={openForm}>
-              <Image
-                src={create_}
-                alt='C'
-                width={30}
-                height={30}
-              ></Image>
-            </button> */}
             <select
               className='p-2 mx-4 mb-4 md:mb-0 shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               name=''
@@ -80,10 +72,7 @@ export default function AccountTopbar({
               isOpen={createAcc}
               closeModal={closeAcc}
             >
-              <CreateAccountForm
-                data={null}
-                closeModal={closeAcc}
-              ></CreateAccountForm>
+              <CreateAccountForm closeModal={closeAcc}></CreateAccountForm>
             </Modal>
 
             <Modal

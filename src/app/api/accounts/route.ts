@@ -16,7 +16,7 @@ export async function GET(req: NextRequest): Promise<Response> {
   const elems = Number(searchParams.get('elems'))
   const getPages = Number(searchParams.get('getPages'))
   const filterName = searchParams.get('filterName')
-  const filterPerm = searchParams.get('filterPerm')
+  const filterPerm: string | null = searchParams.get('filterPerm')
   try {
     if (getPages > 0) {
       // # elems
@@ -59,8 +59,8 @@ export async function GET(req: NextRequest): Promise<Response> {
       })
       let fil: Account[] = []
       if (filterPerm !== null && filterPerm in AccountPermissions) {
-        fil = usersFilters.filter(
-          (user) => user.permissions === AccountPermissions[filterPerm]
+        fil = usersFilters.filter((user) =>
+          user.permissions.some((permission) => permission === filterPerm)
         )
       } else {
         fil = usersFilters
@@ -96,7 +96,14 @@ export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data: CreateAccount = await req.json()
     const res: Account = await db.account.create({
-      data
+      data,
+      include: {
+        notificationSender: true,
+        notifiactionReceiver: true,
+        instructorAccount: true,
+        memberAccount: true,
+        employeeAccount: true
+      }
     })
     return new Response(JSONbig.stringify(res), {
       status: 200
@@ -137,7 +144,14 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       data: {
         username: fields.username,
         password: fields.password,
-        permissions: fields.permissions as unknown as AccountPermissions
+        permissions: fields.permissions as unknown as AccountPermissions[]
+      },
+      include: {
+        notificationSender: true,
+        notifiactionReceiver: true,
+        instructorAccount: true,
+        memberAccount: true,
+        employeeAccount: true
       }
     })
     return new Response(JSONbig.stringify(res), {

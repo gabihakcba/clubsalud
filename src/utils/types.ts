@@ -4,6 +4,29 @@ export interface QueriesResponse {
   error?: object
 }
 
+export enum Days {
+  'MONDAY' = 'MONDAY',
+  'TUESDAY' = 'TUESDAY',
+  'WEDNESDAY' = 'WEDNESDAY',
+  'THURSDAY' = 'THURSDAY',
+  'FRIDAY' = 'FRIDAY',
+  'SATURDAY' = 'SATURDAY',
+  'SUNDAY' = 'SUNDAY'
+}
+
+export enum ContractType {
+  'PERMANENT' = 'PERMANENT',
+  'CASUAL' = 'CASUAL',
+  'OTHER' = 'OTHER'
+}
+
+export enum JobPosition {
+  'CLEANING' = 'CLEANING',
+  'MAINTENANCE' = 'MAINTENANCE',
+  'RECEPTIONIST' = 'RECEPTIONIST',
+  'OTHER' = 'OTHER'
+}
+
 export enum Permissions {
   'OWN' = 'OWN',
   'ADM' = 'ADM',
@@ -18,18 +41,31 @@ export enum MemberSate {
   'OTHER' = 'OTHER'
 }
 
+export enum HealthPlanType {
+  'OSDE' = 'OSDE',
+  'PAMI' = 'PAMI',
+  'APROSS' = 'APROSS',
+  'IPROSS' = 'IPROSS',
+  'OTHER' = 'OTHER'
+}
+
 export interface Account {
   id: number
   username: string
   password: string
-  permissions: Permissions
+  permissions: Permissions[]
+  notificationSender?: Notification[]
+  notifiactionReceiver?: Notification[]
+  instructorAccount?: Instructor
+  memberAccount?: Member
+  employeeAccount?: Employee
 }
 
 export interface CreateAccount {
   username: string
   password: string
   repeatpassword: string
-  permissions: Permissions
+  permissions: Permissions[]
 }
 
 export interface UpdateAccount {
@@ -37,7 +73,7 @@ export interface UpdateAccount {
   username: string
   password: string
   repeatpassword: string
-  permissions: Permissions
+  permissions: Permissions[]
 }
 
 export interface LogIn {
@@ -49,6 +85,7 @@ export interface Member extends CreateMember {
   id: number
   memberSubscription?: Subscription[]
   payment?: Payment[]
+  planSubscribed?: HealthPlanSubscribed[]
 }
 
 export interface CreateMember {
@@ -84,16 +121,6 @@ export interface CreateInstructor {
   cbu?: bigint | null
   alias?: string | null
   accountId: number
-}
-
-export enum Days {
-  'MONDAY' = 'MONDAY',
-  'TUESDAY' = 'TUESDAY',
-  'WEDNESDAY' = 'WEDNESDAY',
-  'THURSDAY' = 'THURSDAY',
-  'FRIDAY' = 'FRIDAY',
-  'SATURDAY' = 'SATURDAY',
-  'SUNDAY' = 'SUNDAY'
 }
 
 export interface Class_ extends CreateClass_ {
@@ -152,6 +179,88 @@ export interface CreatePayment {
   date: Date
   memberId: number
   subscriptionId: number
+}
+
+export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
+  id: number
+  member?: Member
+  plan?: HealthPlan
+}
+
+export interface CreateHealthPlanSubscribed {
+  memberId: number
+  planId: number
+}
+
+export interface HealthPlan extends CreateHealthPlan {
+  id: number
+  planSubscription?: HealthPlanSubscribed[]
+}
+
+export interface CreateHealthPlan {
+  name: string
+  description?: string
+  type: HealthPlanType
+  paymentPerConsultation: number
+}
+
+export interface Notification extends CreateNotification {
+  id: number
+  sender: Account
+  receiver: Account
+}
+
+export interface CreateNotification {
+  subject: number
+  body: string
+  senderId: number
+  receiverId: number
+}
+
+export interface Employee {
+  id: number
+  account?: Account
+  payment: EmployeePayment[]
+}
+
+export interface CreateEmployee {
+  name: string
+  lastName: string
+  dni: bigint
+  cuit?: bigint
+  phoneNumber: number
+  email: string
+  position: JobPosition
+  contractType: ContractType
+  salary: number
+  lastSalaryUpdate: Date
+  accountId?: number
+}
+
+export interface EmployeePayment extends CreateEmployeePayment {
+  id: number
+}
+
+export interface CreateEmployeePayment {
+  hoursWorked: number
+  amount: number
+  monthPayment: Date
+  date: Date
+  paid: boolean
+  employeeId: number
+}
+
+export interface BilledConsultation extends CreateBilledConsultation {
+  id: number
+  subscription: Subscription
+  plan: HealthPlanSubscribed
+}
+
+export interface CreateBilledConsultation {
+  amount: number
+  date: Date
+  subscriptionId: number
+  healthSubscribedPlanId: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>

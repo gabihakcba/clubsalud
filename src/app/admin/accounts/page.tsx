@@ -7,9 +7,16 @@ import AccountCard from 'components/account/AccountCard'
 import AccountTopbar from 'components/account/AccountTopbar'
 import { useQuery } from '@tanstack/react-query'
 import AccountsPaginationBar from 'components/account/AccountsPaginationBar'
-import { type Permissions } from 'utils/types'
+import { type Account, type Permissions } from 'utils/types'
 
-const getAccountsElems = async (info): Promise<any> => {
+interface getAccountsType {
+  pages: Account[]
+  totalPages: number
+  perPage: number
+  nextPage: number
+  currentPage: number
+}
+const getAccountsElems = async (info): Promise<getAccountsType> => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, currentPage, elems, filterName, filterPermissions]: [
     string,
@@ -18,34 +25,25 @@ const getAccountsElems = async (info): Promise<any> => {
     string,
     Permissions
   ] = info.queryKey
-  const response = await getAccounts(
-    currentPage,
-    elems,
-    filterName,
-    filterPermissions
-  )
-  return response.data
+  return await getAccounts(currentPage, elems, filterName, filterPermissions)
 }
 
 export default function Accounts(): ReactElement {
+  const [totalPages, setTotalPages] = useState(1)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [filterName, setFilterName] = useState<string>('')
   const [filterPermissions, setFilterPermissions] = useState<Permissions | ''>(
     ''
   )
   const key = ['acc', currentPage, APP, filterName, filterPermissions]
-  const { data } = useQuery({
+  const { data: accounts } = useQuery({
     queryKey: key,
     queryFn: async (info) => {
-      return await getAccountsElems(info)
-    },
-    refetchOnWindowFocus: false,
-    refetchInterval: 1000 * 60 * 5,
-    refetchIntervalInBackground: false,
-    staleTime: 1000 * 60 * 5
+      const response = await getAccountsElems(info)
+      setTotalPages(response.totalPages)
+      return response.pages
+    }
   })
-
-  const accounts = data?.pages ?? []
 
   return (
     <div className='max-h-dvh h-full w-full flex items-start justify-start flex-row'>
@@ -62,35 +60,25 @@ export default function Accounts(): ReactElement {
             width: '100%',
             height: '100%',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(9rem,1fr))',
-            gap: '0,5rem',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(10rem,1fr))',
+            gap: '1rem',
             alignContent: 'flex-start',
             maxHeight: '95dvh',
             overflow: 'scroll'
           }}
         >
-          {accounts.length > 0 &&
-            accounts.map((account) => (
-              <div
-                key={Math.random()}
-                className=''
-                style={{
-                  justifySelf: 'center'
-                  // 'border': '1px solid red'
-                }}
-              >
-                <AccountCard
-                  account={account}
-                  accounts={accounts}
-                ></AccountCard>
-              </div>
-            ))}
+          {accounts?.map((account, index) => (
+            <AccountCard
+              account={account}
+              key={index}
+            ></AccountCard>
+          ))}
         </section>
         <nav className='w-full flex flex-row justify-center'>
           <AccountsPaginationBar
             setCurrentPage={setCurrentPage}
             currentPage={currentPage}
-            totalPages={data?.totalPages ?? 1}
+            totalPages={totalPages}
           ></AccountsPaginationBar>
         </nav>
       </main>

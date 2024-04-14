@@ -19,7 +19,8 @@ export async function POST(req: NextRequest): Promise<Response> {
         status: 498
       })
     }
-  } catch {
+  } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify('Server Error'), {
       status: 500
     })
