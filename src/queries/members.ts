@@ -29,12 +29,13 @@ export const createMember = async (
   return response.data
 }
 
-export const deleteMember = async (id: number): Promise<GetMemResponse> => {
-  return await axios.delete(`${path()}/api/members`, {
+export const deleteMember = async (id: number): Promise<Member> => {
+  const response = await axios.delete(`${path()}/api/members`, {
     data: {
       id
     }
   })
+  return response.data
 }
 
 export const updateMember = async (member: Member): Promise<Member> => {
