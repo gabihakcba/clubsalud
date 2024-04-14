@@ -184,7 +184,7 @@ export interface CreatePayment {
 export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
   id: number
   member?: Member
-  plant?: HealthPlan
+  plan?: HealthPlan
 }
 
 export interface CreateHealthPlanSubscribed {
