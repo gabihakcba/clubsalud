@@ -4,11 +4,19 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteMember, updateMember } from 'queries/members'
 import { useState, type ReactElement } from 'react'
 import { formatDate } from 'utils/const'
-import { MemberSate, type Member, type CreateMember } from 'utils/types'
+import {
+  MemberSate,
+  type Member,
+  type CreateMember,
+  type Account,
+  type HealthPlanSubscribed
+} from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
+import delete_ from '../../../public/delete_.svg'
 import { MemberState } from '@prisma/client'
 import { type FieldValues, useForm } from 'react-hook-form'
+import { deleteHealthSubscribed } from 'queries/healthSus'
 
 const update = async ({
   id,
@@ -30,7 +38,6 @@ interface param {
 }
 export default function MemberCard({ member }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
-
   const query = useQueryClient()
 
   const {
@@ -58,6 +65,25 @@ export default function MemberCard({ member }: param): ReactElement {
     },
     onSuccess: async () => {
       reset()
+      setEditF(false)
+    }
+  })
+
+  const { mutate: deleteHealth } = useMutation({
+    mutationFn: async (id: number | string) => {
+      return await deleteHealthSubscribed(id)
+    },
+    onSuccess: (data: HealthPlanSubscribed) => {
+      query.setQueryData(['account', member.accountId], (oldData: Account) => {
+        const newData: Account = { ...oldData }
+        const index = newData.memberAccount?.planSubscribed?.findIndex(
+          (plan) => plan.id === data.id
+        )
+        if (index) {
+          newData.memberAccount?.planSubscribed?.splice(index, 1)
+        }
+        return newData
+      })
       setEditF(false)
     }
   })
@@ -495,6 +521,52 @@ export default function MemberCard({ member }: param): ReactElement {
                       <option value={MemberState.OTHER}>Otro</option>
                     </select>
                   )}
+                </li>
+                <li className='flex flex-row items-center justify-between w-full mb-2'>
+                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
+                    Obras sociales
+                  </label>
+
+                  <label className='flex gap-2 my-2 text-lg font-medium text-gray-900 dark:text-white'>
+                    {member?.planSubscribed?.map((health, index) => (
+                      <div
+                        key={index}
+                        className='flex gap-2 border rounded p-1'
+                      >
+                        <p key={index}>{health.plan?.name}</p>
+                        {editF && (
+                          <button
+                            onClick={() => {
+                              deleteHealth(health.id)
+                            }}
+                          >
+                            <Image
+                              src={delete_}
+                              width={20}
+                              height={20}
+                              alt='D'
+                            ></Image>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    {/* {editF && (
+                      <>
+                        <button
+                          className='dark-blue-border-button'
+                          onClick={openAddHealth}
+                        >
+                          Agregar
+                        </button>
+                        <Modal
+                          isOpen={addHealth}
+                          closeModal={closeAddHealth}
+                        >
+                          <HealthAssignForm></HealthAssignForm>
+                        </Modal>
+                      </>
+                    )} */}
+                  </label>
                 </li>
               </ul>
             </div>
