@@ -17,7 +17,11 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
         notificationSender: true,
         notifiactionReceiver: true,
         instructorAccount: true,
-        memberAccount: true,
+        memberAccount: {
+          include: {
+            planSubscribed: { include: { plan: true } }
+          }
+        },
         employeeAccount: true
       }
     })
