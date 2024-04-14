@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteInstructor, updateInstructor } from 'queries/instructors'
 import { useState, type ReactElement } from 'react'
-import { type Instructor, type CreateInstructor } from 'utils/types'
+import {
+  type Instructor,
+  type CreateInstructor,
+  type Account
+} from 'utils/types'
 import Image from 'next/image'
 import edit from '../../../public/edit.svg'
 import { type FieldValues, useForm } from 'react-hook-form'
@@ -44,10 +48,13 @@ export default function InstructorCard({ instructor }: param): ReactElement {
     mutationFn: async ({ id }: { id: number }) => {
       return await deleteInstructor(id)
     },
-    onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['account'] })
-      reset()
-      setEditF(false)
+    onSuccess: () => {
+      query.setQueryData(
+        ['account', String(instructor.accountId)],
+        (oldData: Account) => {
+          return { ...oldData, instructorAccount: null }
+        }
+      )
     }
   })
 
