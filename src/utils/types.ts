@@ -250,4 +250,17 @@ export interface CreateEmployeePayment {
   employeeId: number
 }
 
+export interface BilledConsultation extends CreateBilledConsultation {
+  id: number
+  subscription: Subscription
+  plan: HealthPlanSubscribed
+}
+
+export interface CreateBilledConsultation {
+  amount: number
+  date: Date
+  subscriptionId: number
+  healthSubscribedPlanId: number
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
