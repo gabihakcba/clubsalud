@@ -14,8 +14,6 @@ export default function PersonalAccount(): ReactElement {
 
   useEffect(() => {
     const token = getUserToken()
-    // const tokenParsed = JSON.parse(token)
-    // console.log(token)
     void setNewUser(token, setUser)
   }, [])
 
