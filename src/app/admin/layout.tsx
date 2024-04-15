@@ -14,6 +14,10 @@ import { Permissions } from 'utils/types'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HasRole from 'components/HasRole'
+import socket from 'utils/websocket'
+import { getUserToken, verifyToken } from 'utils/auth'
+
+const client = new QueryClient()
 
 const logOut = async (router: AppRouterInstance): Promise<void> => {
   try {
@@ -24,7 +28,13 @@ const logOut = async (router: AppRouterInstance): Promise<void> => {
   }
 }
 
-const client = new QueryClient()
+const manageNotification = async (data: string): Promise<void> => {
+  const token = getUserToken()
+  const user = await verifyToken(token)
+  if (JSON.parse(data).id === user?.id) {
+    alert('Nueva notificacion')
+  }
+}
 
 export default function AdminLayout({ children }: any): ReactElement {
   const router: AppRouterInstance = useRouter()
@@ -37,6 +47,12 @@ export default function AdminLayout({ children }: any): ReactElement {
       router.push('/')
     }
   }, [router])
+
+  useEffect(() => {
+    socket.on('notification', (data: string) => {
+      void manageNotification(data)
+    })
+  }, [socket])
 
   return (
     <QueryClientProvider client={client}>
@@ -102,8 +118,8 @@ export default function AdminLayout({ children }: any): ReactElement {
                 </li>
                 <li>
                   <Link
-                    href='#'
-                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/todo' ? 'bg-gray-500' : ''}`}
+                    href='/admin/notifications'
+                    className={`flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group ${pathname === '/admin/notifications' ? 'bg-gray-500' : ''}`}
                   >
                     <svg
                       className='flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
@@ -117,9 +133,9 @@ export default function AdminLayout({ children }: any): ReactElement {
                     <span className='flex-1 ms-3 whitespace-nowrap'>
                       Notificaiones
                     </span>
-                    <span className='inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300'>
-                      3
-                    </span>
+                    {/* <span className='inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300'>
+                      {0}
+                    </span> */}
                   </Link>
                 </li>
                 <HasRole required={[Permissions.ADM, Permissions.OWN]}>
