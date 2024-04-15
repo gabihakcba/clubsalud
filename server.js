@@ -4,9 +4,14 @@ const { Server: SocketIOServer } = require('socket.io')
 const app = express()
 
 const httpServer = http.createServer(app)
+
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'https://clubsalud.vercel.app',
+      'https://www.centromedicomedintt.com'
+    ],
     methods: ['GET', 'POST']
   }
 })
