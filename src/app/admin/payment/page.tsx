@@ -49,7 +49,6 @@ export default function Payment(): ReactElement {
           gridTemplateColumns: 'repeat(auto-fill, minmax(12rem,1fr))',
           gap: '1rem',
           alignContent: 'flex-start'
-          // maxHeight: '95dvh'
         }}
       >
         {payments?.map((payment, index) => (
@@ -71,7 +70,6 @@ export default function Payment(): ReactElement {
           gridTemplateColumns: 'repeat(auto-fill, minmax(12rem,1fr))',
           gap: '1rem',
           alignContent: 'flex-start'
-          // maxHeight: '95dvh'
         }}
       >
         {billed?.map((billed, index) => (
