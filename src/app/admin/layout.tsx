@@ -14,8 +14,8 @@ import { Permissions } from 'utils/types'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import HasRole from 'components/HasRole'
-import socket from 'utils/websocket'
-import { getUserToken, verifyToken } from 'utils/auth'
+// import socket from 'utils/websocket'
+// import { getUserToken, verifyToken } from 'utils/auth'
 
 const client = new QueryClient()
 
@@ -28,13 +28,13 @@ const logOut = async (router: AppRouterInstance): Promise<void> => {
   }
 }
 
-const manageNotification = async (data: string): Promise<void> => {
-  const token = getUserToken()
-  const user = await verifyToken(token)
-  if (JSON.parse(data).id === user?.id) {
-    alert('Nueva notificacion')
-  }
-}
+// const manageNotification = async (data: string): Promise<void> => {
+//   const token = getUserToken()
+//   const user = await verifyToken(token)
+//   if (JSON.parse(data).id === user?.id) {
+//     alert('Nueva notificacion')
+//   }
+// }
 
 export default function AdminLayout({ children }: any): ReactElement {
   const router: AppRouterInstance = useRouter()
@@ -48,11 +48,11 @@ export default function AdminLayout({ children }: any): ReactElement {
     }
   }, [router])
 
-  useEffect(() => {
-    socket.on('notification', (data: string) => {
-      void manageNotification(data)
-    })
-  }, [socket])
+  // useEffect(() => {
+  //   socket.on('notification', (data: string) => {
+  //     void manageNotification(data)
+  //   })
+  // }, [socket])
 
   return (
     <QueryClientProvider client={client}>

@@ -1,3 +1,8 @@
+/**
+ * Add this line on package.json to run server
+ * "dev": "node server.js & next dev",
+ */
+
 const express = require('express')
 const http = require('http')
 const { Server: SocketIOServer } = require('socket.io')
