@@ -5,18 +5,30 @@ import HasRole from 'components/HasRole'
 import Modal from 'components/Modal'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
 import NotificationSection from 'components/notifications/NotificationSection'
-import { getAllNotifications } from 'queries/notifications'
-import { type ReactElement } from 'react'
-import { type Notification, Permissions } from 'utils/types'
+import { getAccountNotifications } from 'queries/notifications'
+import { useState, type ReactElement, useEffect } from 'react'
+import { type Notification, Permissions, type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 export default function NotificationsPage(): ReactElement {
+  const [user, setUser] = useState<Account | null>(null)
   const [create, openCreate, closeCreate] = useModal(false)
 
-  const { data: notifications } = useQuery({
+  useEffect(() => {
+    const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+    setUser(user)
+    void refetch()
+  }, [])
+
+  const { data: notifications, refetch } = useQuery({
     queryKey: ['notificationes'],
     queryFn: async (): Promise<Notification[]> => {
-      return await getAllNotifications()
+      const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+      if (user?.id) {
+        const not = await getAccountNotifications(user.id)
+        return not
+      }
+      return []
     }
   })
 
@@ -41,8 +53,24 @@ export default function NotificationsPage(): ReactElement {
           </Modal>
         </HasRole>
       </div>
+
       <hr className='m-2' />
-      <NotificationSection notifications={notifications}></NotificationSection>
+      <h3>Recibidas</h3>
+      <hr className='m-2' />
+      <NotificationSection
+        notifications={notifications?.filter(
+          (notification) => notification.receiverId === user?.id
+        )}
+      ></NotificationSection>
+
+      <hr className='m-2' />
+      <h3>Enviadas</h3>
+      <hr className='m-2' />
+      <NotificationSection
+        notifications={notifications?.filter(
+          (notification) => notification.senderId === user?.id
+        )}
+      ></NotificationSection>
     </div>
   )
 }

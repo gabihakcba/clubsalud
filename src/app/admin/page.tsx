@@ -20,11 +20,11 @@ export default function PersonalAccount(): ReactElement {
   return (
     <div className='h-full w-full flex items-center justify-center flex-col'>
       <p>{user.username}</p>
-      <p>
+      <div>
         {user.permissions.map((permission, index) => (
           <p key={index}>{permission}</p>
         ))}
-      </p>
+      </div>
     </div>
   )
 }
