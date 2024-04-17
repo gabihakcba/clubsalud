@@ -1,12 +1,12 @@
 'use client'
 
 import { ContractType } from '@prisma/client'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { findAccountByUsername } from 'queries/accounts'
 import { createEmployee } from 'queries/employees'
 import { type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { JobPosition, type CreateEmployee } from 'utils/types'
+import { JobPosition, type CreateEmployee, type Employee } from 'utils/types'
 
 const parseData = async (data: FieldValues): Promise<CreateEmployee | null> => {
   try {
@@ -41,6 +41,7 @@ interface params {
 export default function CreateEmployeeForm({
   closeModal
 }: params): ReactElement {
+  const query = useQueryClient()
   const {
     mutate: create,
     isPending,
@@ -49,6 +50,10 @@ export default function CreateEmployeeForm({
   } = useMutation({
     mutationFn: createEmployee,
     onSuccess: (data) => {
+      query.setQueryData(['employees'], (oldData: Employee[]) => [
+        ...oldData,
+        data
+      ])
       reset()
       setTimeout(closeModal, 250)
     }
@@ -222,43 +227,23 @@ export default function CreateEmployeeForm({
           <label>CBU:</label>
           <input
             type='number'
-            {...register('cbu', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
+            {...register('cbu')}
             className='border px-2 rounded'
             placeholder='cbu'
           />
         </div>
-        {errors?.cbu && (
-          <span className='text-sm text-red-500'>
-            {errors.cbu.message as string}
-          </span>
-        )}
       </div>
 
       <div className='flex flex-col gap-2'>
         <div className='flex gap-2 justify-between items-center'>
-          <label>CBU:</label>
+          <label>Alias:</label>
           <input
             type='text'
-            {...register('alias', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
+            {...register('alias')}
             className='border px-2 rounded'
             placeholder='alias'
           />
         </div>
-        {errors?.alias && (
-          <span className='text-sm text-red-500'>
-            {errors.alias.message as string}
-          </span>
-        )}
       </div>
 
       <div className='flex flex-col gap-2'>

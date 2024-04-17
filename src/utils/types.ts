@@ -220,8 +220,8 @@ export interface CreateNotification {
 export interface Employee extends CreateEmployee {
   id: number
   account?: Account
-  payment: EmployeePayment[]
-  lastSalaryUpdate: Date
+  payment?: EmployeePayment[]
+  lastSalaryUpdate?: Date
 }
 
 export interface CreateEmployee {
