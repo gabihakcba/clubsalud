@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "debug": "NODE_OPTIONS='--inspect' next dev",
-    "dev": "node server.js & next dev",
+    "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",

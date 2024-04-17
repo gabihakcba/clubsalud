@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
   try {
     const notifications = await db.notification.findMany({
       where: {
-        receiverId: id
+        OR: [{ receiverId: id }, { senderId: id }]
       },
       include: {
         sender: true,
