@@ -217,10 +217,11 @@ export interface CreateNotification {
   receiverId: number
 }
 
-export interface Employee {
+export interface Employee extends CreateEmployee {
   id: number
   account?: Account
   payment: EmployeePayment[]
+  lastSalaryUpdate: Date
 }
 
 export interface CreateEmployee {
@@ -228,12 +229,13 @@ export interface CreateEmployee {
   lastName: string
   dni: bigint
   cuit?: bigint
-  phoneNumber: number
+  phoneNumber: bigint
   email: string
   position: JobPosition
   contractType: ContractType
   salary: number
-  lastSalaryUpdate: Date
+  cbu?: bigint
+  alias?: string
   accountId?: number
 }
 
