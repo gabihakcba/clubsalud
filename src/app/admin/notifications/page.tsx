@@ -6,17 +6,24 @@ import Modal from 'components/Modal'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
 import NotificationSection from 'components/notifications/NotificationSection'
 import { getAccountNotifications } from 'queries/notifications'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
 import { type Notification, Permissions, type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 export default function NotificationsPage(): ReactElement {
-  const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+  const [user, setUser] = useState<Account | null>(null)
   const [create, openCreate, closeCreate] = useModal(false)
 
-  const { data: notifications } = useQuery({
+  useEffect(() => {
+    const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+    setUser(user)
+    void refetch()
+  }, [])
+
+  const { data: notifications, refetch } = useQuery({
     queryKey: ['notificationes'],
     queryFn: async (): Promise<Notification[]> => {
+      const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
       if (user?.id) {
         const not = await getAccountNotifications(user.id)
         return not
@@ -52,7 +59,7 @@ export default function NotificationsPage(): ReactElement {
       <hr className='m-2' />
       <NotificationSection
         notifications={notifications?.filter(
-          (notification) => notification.receiverId === user.id
+          (notification) => notification.receiverId === user?.id
         )}
       ></NotificationSection>
 
@@ -61,7 +68,7 @@ export default function NotificationsPage(): ReactElement {
       <hr className='m-2' />
       <NotificationSection
         notifications={notifications?.filter(
-          (notification) => notification.senderId === user.id
+          (notification) => notification.senderId === user?.id
         )}
       ></NotificationSection>
     </div>
