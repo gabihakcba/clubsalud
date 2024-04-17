@@ -270,6 +270,8 @@ model Employee {
   position         JobPosition
   contractType     ContractType
   salary           Float
+  cbu              BigInt?           @db.BigInt
+  alias            String?
   lastSalaryUpdate DateTime          @default(now())
   // Foreignkeys
   accountId        Int?              @unique
