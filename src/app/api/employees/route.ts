@@ -81,18 +81,17 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 export async function PATCH(req: NextRequest): Promise<Response> {
   const data: Employee = await req.json()
-
   const newEmployee = {
     name: data.name,
     lastName: data.lastName,
-    dni: BigInt(Number(data.dni)),
-    cuit: BigInt(Number(data.cuit)) ?? null,
+    dni: data.dni,
+    cuit: data.cuit ? data.cuit : null,
     email: data.email,
-    phoneNumber: BigInt(Number(data.phoneNumber)),
+    phoneNumber: data.phoneNumber,
     position: JobPosition[data.position],
     contractType: ContractType[data.contractType],
-    salary: parseFloat(String(data.salary)),
-    lastSalaryUpdate: new Date(data.lastSalaryUpdate)
+    salary: data.salary,
+    lastSalaryUpdate: data.lastSalaryUpdate
   }
 
   try {
@@ -114,6 +113,26 @@ export async function PATCH(req: NextRequest): Promise<Response> {
   } catch (error) {
     console.log(error)
 
+    return new Response(JSONbig.stringify('Internal Server Error :('), {
+      status: 500
+    })
+  }
+}
+
+export async function DELETE(req: NextRequest): Promise<Response> {
+  const data: number = await req.json()
+  try {
+    const employee: Employee = await db.employee.delete({
+      where: {
+        id: data
+      }
+    })
+
+    return new Response(JSONbig.stringify(employee), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
     })
