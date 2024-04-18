@@ -20,7 +20,12 @@ export default function CreateEmployeePaymentForm({
     }
   })
 
-  const { mutate: create } = useMutation({
+  const {
+    mutate: create,
+    isPending,
+    isSuccess,
+    isError
+  } = useMutation({
     mutationFn: createEmployeePayment,
     onSuccess: (data) => {
       query.setQueryData(['employeePayments'], (oldData: EmployeePayment[]) => [
@@ -144,8 +149,18 @@ export default function CreateEmployeePaymentForm({
           </span>
         )}
       </div>
-      <div className='w-full'>
-        <button className='blueButtonForm p-1 w-full'>Enviar</button>
+      <div className='w-full flex flex-col justify-center items-center'>
+        <button
+          className='blueButtonForm p-1 w-full disabled:bg-black'
+          disabled={isPending}
+        >
+          Enviar
+        </button>
+        {isSuccess && <span className='text-sm text-green-600'>Listo!</span>}
+        {isPending && (
+          <span className='text-sm text-yellow-600'>Creando...</span>
+        )}
+        {isError && <span className='text-sm text-red-600'>Error!</span>}
       </div>
     </form>
   )
