@@ -3,6 +3,7 @@ import { formatDate } from 'utils/const'
 import { type EmployeePayment } from 'utils/types'
 import Image from 'next/image'
 import delete_ from '../../../public/delete_.svg'
+import loading from '../../../public/loading.svg'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteEmployeePayment } from 'queries/employeePayments'
 
@@ -14,7 +15,7 @@ export default function EmployeePaymentCard({
 }: params): ReactElement {
   const query = useQueryClient()
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: deleteEmployeePayment,
     onSuccess: async (data) => {
       query.setQueryData(['employeePayments'], (oldData: EmployeePayment[]) => {
@@ -35,20 +36,31 @@ export default function EmployeePaymentCard({
         <h5 className='font-bold grow text-center'>
           {employeePayment.employee?.name}
         </h5>
-        <button
-          className='absolute w-max right-0 top-auto bottom-auto z-10'
-          onClick={() => {
-            mutate(Number(employeePayment.id))
-          }}
-        >
+        {!isPending && (
+          <button
+            className='absolute w-max right-0 top-auto bottom-auto z-10'
+            onClick={() => {
+              mutate(Number(employeePayment.id))
+            }}
+          >
+            <Image
+              src={delete_}
+              width={20}
+              height={20}
+              alt='Del'
+              className='hover:bg-red-500'
+            ></Image>
+          </button>
+        )}
+        {isPending && (
           <Image
-            src={delete_}
+            src={loading}
             width={20}
             height={20}
-            alt='Del'
-            className='hover:bg-red-500'
+            alt='loading'
+            className='absolute right-0 top-auto bottom-auto z-10 animate-spin'
           ></Image>
-        </button>
+        )}
       </div>
 
       <hr className='m-1 w-full' />
