@@ -241,14 +241,14 @@ export interface CreateEmployee {
 
 export interface EmployeePayment extends CreateEmployeePayment {
   id: number
+  employee?: Employee
 }
 
 export interface CreateEmployeePayment {
-  hoursWorked: number
+  hoursWorked?: number
   amount: number
   monthPayment: Date
   date: Date
-  paid: boolean
   employeeId: number
 }
 
