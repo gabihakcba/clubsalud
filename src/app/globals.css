@@ -42,6 +42,12 @@ body {
     /* @apply focus:shadow-outline; */
   }
 
+  .redButtonForm {
+    @apply bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4;
+    @apply rounded focus:outline-none;
+    /* @apply focus:shadow-outline; */
+  }
+
   .linkBlueForm {
     @apply inline-block align-baseline font-bold;
     @apply text-sm text-blue-500 hover:text-blue-800;

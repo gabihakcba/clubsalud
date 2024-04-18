@@ -15,6 +15,6 @@ export const calculatePages = (
 
 export const formatDate = (date: string = ''): string => {
   const [YEAR, MONTH, DAY] = date.split('T')[0].split('-')
-  const res = `${YEAR}-${MONTH}-${DAY}`
+  const res = `${DAY}-${MONTH}-${YEAR}`
   return res
 }

@@ -2,14 +2,14 @@
 
 import { useQuery } from '@tanstack/react-query'
 import Modal from 'components/Modal'
-import BilledConsultationCard from 'components/payments/BilledConsultationCard'
-import CreatePaymentForm from 'components/payments/CreatePaymentForm'
-import PaymentCard from 'components/payments/PaymentCard'
+import BilledConsultationCard from 'components/bills/BilledConsultationCard'
+import CreatePaymentForm from 'components/bills/CreatePaymentForm'
+import PaymentCard from 'components/bills/PaymentCard'
 import { getBilled, getPayments } from 'queries/payments'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 
-export default function Payment(): ReactElement {
+export default function Page(): ReactElement {
   const [isOpen, openModal, closeModal] = useModal(false)
   const { data: payments } = useQuery({
     queryKey: ['payments'],
@@ -29,7 +29,7 @@ export default function Payment(): ReactElement {
         className='blueButtonForm m-2 w-max'
         onClick={openModal}
       >
-        Generar pago
+        Generar cobro
       </button>
       <Modal
         isOpen={isOpen}
@@ -38,7 +38,7 @@ export default function Payment(): ReactElement {
         <CreatePaymentForm closeModal={closeModal}></CreatePaymentForm>
       </Modal>
       <hr className='m-2' />
-      <h2 className='text-xl font-bold ml-6'>Pagos particulares</h2>
+      <h2 className='text-xl font-bold ml-6'>Cobros particulares</h2>
       <hr className='m-2' />
       <section
         className='mt-5 ml-5 h-full'
