@@ -12,6 +12,14 @@ export default function Page(): ReactElement {
       return await getEmployeePayments()
     }
   })
+
+  const { data: instructorPayments } = useQuery({
+    queryKey: ['insturctorPayments'],
+    queryFn: async () => {
+      return await getEmployeePayments()
+    }
+  })
+
   return (
     <div className='w-full h-full flex flex-col'>
       <EmplooyeePaymentsSection

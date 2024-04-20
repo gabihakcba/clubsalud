@@ -105,8 +105,26 @@ export interface CreateMember {
   accountId: number
 }
 
+export interface InstructorPayment extends CreateInstructorPayment {
+  id: number
+  instuctor: Instructor
+}
+
+export interface CreateInstructorPayment {
+  amount: number
+  scheduledHours: number
+  workedHours: number
+  workedMonth: Date
+  paymentDate: Date
+  pricePerHour: number
+  instructorId: number
+}
+
 export interface Instructor extends CreateInstructor {
   id: number
+  instructorPayment?: InstructorPayment[]
+  scheduleInCharge: Schedule[]
+  scheduleSubstitute: Schedule[]
 }
 
 export interface CreateInstructor {
