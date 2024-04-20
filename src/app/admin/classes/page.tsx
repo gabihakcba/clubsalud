@@ -40,7 +40,7 @@ export default function Classes(): ReactElement {
         className='h-max scrollHidden self-center p-4'
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(15rem,1fr))',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(13rem,1fr))',
           gap: '1rem',
           alignContent: 'flex-start',
           justifyItems: 'center',
