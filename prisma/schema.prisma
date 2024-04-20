@@ -148,9 +148,8 @@ model InstructorPayment {
   amount         Float
   scheduledHours Float
   workedHours    Float
-  workedMount    DateTime   @default(now())
+  workedMonth    DateTime   @default(now())
   paymentDate    DateTime   @default(now())
-  paymentState   Boolean    @default(false)
   pricePerHoour  Float
   // Foreignkeys
   instructorId   Int
