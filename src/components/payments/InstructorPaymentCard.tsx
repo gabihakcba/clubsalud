@@ -1,32 +1,35 @@
 import { type ReactElement } from 'react'
 import { formatDate } from 'utils/const'
-import { type EmployeePayment } from 'utils/types'
+import { type InstructorPayment } from 'utils/types'
 import Image from 'next/image'
 import delete_ from '../../../public/delete_.svg'
 import loading from '../../../public/loading.svg'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteEmployeePayment } from 'queries/employeePayments'
+import { deleteInstructorPayment } from 'queries/instructorPayments'
 
 interface params {
-  employeePayment: EmployeePayment
+  instructorPayment: InstructorPayment
 }
-export default function EmployeePaymentCard({
-  employeePayment
+export default function InstructorPaymentCard({
+  instructorPayment
 }: params): ReactElement {
   const query = useQueryClient()
 
   const { mutate, isPending } = useMutation({
-    mutationFn: deleteEmployeePayment,
+    mutationFn: deleteInstructorPayment,
     onSuccess: async (data) => {
-      query.setQueryData(['employeePayments'], (oldData: EmployeePayment[]) => {
-        const index = oldData.findIndex(
-          (employeePayment: EmployeePayment) =>
-            Number(employeePayment.id) === Number(data.id)
-        )
-        const newData = [...oldData]
-        newData.splice(index, 1)
-        return newData
-      })
+      query.setQueryData(
+        ['instructorPayments'],
+        (oldData: InstructorPayment[]) => {
+          const index = oldData.findIndex(
+            (instructorPayment: InstructorPayment) =>
+              Number(instructorPayment.id) === Number(data.id)
+          )
+          const newData = [...oldData]
+          newData.splice(index, 1)
+          return newData
+        }
+      )
     }
   })
 
@@ -34,13 +37,13 @@ export default function EmployeePaymentCard({
     <div className='flex flex-col gap-2 rounded bg-white border justify-center items-center p-2'>
       <div className='relative flex flex-row w-full px-2'>
         <h5 className='font-bold grow text-center'>
-          {employeePayment.employee?.name}
+          {instructorPayment.instructor?.name}
         </h5>
         {!isPending && (
           <button
             className='absolute w-max right-0 top-auto bottom-auto z-10'
             onClick={() => {
-              mutate(Number(employeePayment.id))
+              mutate(Number(instructorPayment.id))
             }}
           >
             <Image
@@ -64,10 +67,10 @@ export default function EmployeePaymentCard({
       </div>
 
       <hr className='m-1 w-full' />
-      <p>${employeePayment.amount}</p>
-      <p>T: {formatDate(employeePayment.monthPayment.toString() ?? '')}</p>
-      <p>P: {formatDate(employeePayment.date.toString() ?? '')}</p>
-      {employeePayment.hoursWorked && <p>{employeePayment.hoursWorked} hs</p>}
+      <p>${instructorPayment.amount}</p>
+      <p>T: {formatDate(instructorPayment.workedMonth.toString() ?? '')}</p>
+      <p>P: {formatDate(instructorPayment.paymentDate.toString() ?? '')}</p>
+      <p>{instructorPayment.workedHours} hs</p>
     </div>
   )
 }
