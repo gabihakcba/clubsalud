@@ -1,7 +1,7 @@
 import { type InstructorPayment, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
-import { type NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
 
 const db: PrismaClient = prisma
 
@@ -21,7 +21,7 @@ export async function GET(): Promise<Response> {
   }
 }
 
-export async function DELETE(req: NextResponse): Promise<Response> {
+export async function DELETE(req: NextRequest): Promise<Response> {
   const id = await req.json()
   try {
     const instructorPayment: InstructorPayment =
@@ -40,7 +40,7 @@ export async function DELETE(req: NextResponse): Promise<Response> {
   }
 }
 
-export async function POST(req: NextResponse): Promise<Response> {
+export async function POST(req: NextRequest): Promise<Response> {
   const body = await req.json()
   const newInstructorPayment = {
     amount: Number(body.amount),
