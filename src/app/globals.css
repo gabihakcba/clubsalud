@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -33,19 +33,16 @@ body {
   .inputForm {
     @apply shadow appearance-none border rounded w-full py-2 px-3;
     @apply text-gray-700 leading-tight focus:outline-none;
-    /* @apply focus:shadow-outline; */
   }
 
   .blueButtonForm {
     @apply bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4;
     @apply rounded focus:outline-none;
-    /* @apply focus:shadow-outline; */
   }
 
   .redButtonForm {
     @apply bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4;
     @apply rounded focus:outline-none;
-    /* @apply focus:shadow-outline; */
   }
 
   .linkBlueForm {
@@ -82,6 +79,7 @@ body {
     @apply text-red-700 block;
   }
 }
+*/
 
 
 /* Chrome, Safari, Edge, Opera */
