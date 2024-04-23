@@ -37,11 +37,7 @@ const create = async (data: FieldValues): Promise<Instructor> => {
   return await createInstructor(newInstructor)
 }
 
-interface params {
-  closeModal: () => void
-}
-
-export function CreateInstructorForm({ closeModal }: params): ReactElement {
+export function CreateInstructorForm(): ReactElement {
   const query = useQueryClient()
   const {
     register,
@@ -60,7 +56,6 @@ export function CreateInstructorForm({ closeModal }: params): ReactElement {
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['ins'] })
       reset()
-      setTimeout(closeModal, 500)
     },
     onError(error, variables, context) {
       console.log(error)

@@ -37,11 +37,7 @@ const create = async (data: FieldValues): Promise<Member> => {
   return await createMember(newMember)
 }
 
-interface params {
-  closeModal: () => void
-}
-
-export function CreateMemberForm({ closeModal }: params): ReactElement {
+export function CreateMemberForm(): ReactElement {
   const query = useQueryClient()
   const {
     register,
@@ -60,7 +56,6 @@ export function CreateMemberForm({ closeModal }: params): ReactElement {
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['mem'] })
       reset()
-      setTimeout(closeModal, 500)
     }
   })
 
