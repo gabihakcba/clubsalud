@@ -176,10 +176,10 @@ export default function AdminLayout({ children }: any): ReactElement {
   return (
     <QueryClientProvider client={client}>
       <div className='flex flex-row w-full'>
-        <div className='flex-grow-1 h-screen'>{children}</div>
-        <div className='relative'>
+        <div className='flex-grow-1 h-screen z-0'>{children}</div>
+        <div className='md:relative absolute'>
           {drop && (
-            <ScrollPanel className='max-h-screen h-screen bg-primary border-round'>
+            <ScrollPanel className='max-h-screen h-screen border-round'>
               <div className='p-2 rounded flex flex-column'>
                 <Image
                   src={logo}
@@ -197,7 +197,7 @@ export default function AdminLayout({ children }: any): ReactElement {
           )}
           <Button
             icon='pi pi-bars'
-            className='absolute top-0 right-100 m-2'
+            className='fixed md:absolute top-0 right-0 md:right-100 m-2 z-5'
             onClick={() => {
               setDrop((drop) => !drop)
             }}

@@ -11,23 +11,26 @@ import { InputText } from 'primereact/inputtext'
 import Image from 'next/image'
 import logo from '../../public/logos/logo_large.png'
 
-const logIn = async (
-  data: FieldValues,
-  router: AppRouterInstance,
-  setLogginFailed: Setter
-): Promise<void> => {
+interface params {
+  data: FieldValues
+  router: AppRouterInstance
+  setLoading: Setter
+}
+const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const user: LogIn = data as LogIn
+  setLoading('loading')
   const response = await signInAccount(user)
   if (response.status === 200) {
+    setLoading('success')
     router.push('/admin')
   } else {
-    setLogginFailed(true)
+    setLoading('error')
   }
 }
 
 export default function Home(): ReactElement {
   const router = useRouter()
-  const [logginFailed, setLogginFailed] = useState(false)
+  const [loading, setLoading] = useState('false')
 
   const {
     register,
@@ -42,7 +45,7 @@ export default function Home(): ReactElement {
         className='flex flex-column gap-4 align-items-center'
         onSubmit={handleSubmit((data, event) => {
           event?.preventDefault()
-          void logIn(data, router, setLogginFailed)
+          void logIn({ data, router, setLoading })
         })}
       >
         <Image
@@ -86,14 +89,18 @@ export default function Home(): ReactElement {
               label='Entrar'
               form='loginForm'
               type='submit'
+              icon='pi pi-sign-in'
+              size='small'
+              loading={loading === 'loading'}
             ></Button>
             <Button
               label='Olvidé mi contraseña'
-              className='px-2'
+              size='small'
               link
+              className='px-2'
             ></Button>
           </div>
-          {logginFailed && (
+          {loading === 'error' && (
             <span className='text-red-500'>
               Contraseña y/o usuario incorrecto
             </span>
