@@ -8,12 +8,8 @@ import { type ReactElement } from 'react'
 
 interface params {
   account?: Account
-  closeModal: () => void
 }
-export function CreateAccountForm({
-  account,
-  closeModal
-}: params): ReactElement {
+export function CreateAccountForm({ account }: params): ReactElement {
   const query = useQueryClient()
 
   const {
@@ -41,7 +37,6 @@ export function CreateAccountForm({
         permissions: [Permissions.OTHER]
       })
       await query.refetchQueries({ queryKey: ['acc'] })
-      setTimeout(closeModal, 250)
     }
   })
 
@@ -56,7 +51,6 @@ export function CreateAccountForm({
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['account'] })
-      setTimeout(closeModal, 250)
     }
   })
 
