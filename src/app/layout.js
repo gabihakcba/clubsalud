@@ -2,8 +2,9 @@
 import './globals.css'
 import Head from 'next/head'
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api'
-import 'primereact/resources/themes/lara-light-cyan/theme.css'
+import 'primereact/resources/themes/lara-dark-cyan/theme.css'
 import 'primeflex/primeflex.css'
+import 'primeicons/primeicons.css'
 // const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
