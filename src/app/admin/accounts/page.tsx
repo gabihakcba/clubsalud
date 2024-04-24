@@ -2,7 +2,6 @@
 
 import { type ReactElement, useState } from 'react'
 import { deleteAccount, getAccounts } from 'queries/accounts'
-import { APP } from 'utils/const'
 import AccountTopbar from 'components/account/AccountTopbar'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { type Account, type Permissions } from 'utils/types'
@@ -42,7 +41,7 @@ export default function Accounts(): ReactElement {
 
   const query = useQueryClient()
 
-  const key = ['acc', 1, APP, '', '']
+  const key = ['acc']
 
   const { data: accounts } = useQuery({
     queryKey: key,
