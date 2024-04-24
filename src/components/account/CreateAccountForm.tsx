@@ -63,7 +63,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
           create(dataForm)
         }
       })}
-      className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
+      className='relative rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-column gap-0 border-2 border-red-500'
       id={`createForm${account?.id}`}
     >
       <div className='mb-4'>
@@ -230,7 +230,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
       <div className='flex flex-col'>
         <button
           form={`createForm${account?.id}`}
-          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
+          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 font-bold rounded focus:outline-none focus:shadow-outline'
           type='submit'
         >
           {account?.id ? 'Actualizar' : 'Crear'}
