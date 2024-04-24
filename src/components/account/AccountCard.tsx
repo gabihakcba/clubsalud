@@ -3,7 +3,7 @@ import { type ReactElement } from 'react'
 import { type Account } from 'utils/types'
 import { deleteAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { Button } from 'primereact/button'
 
 interface params {
