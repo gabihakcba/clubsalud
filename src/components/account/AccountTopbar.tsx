@@ -38,18 +38,21 @@ export default function AccountTopbar(): ReactElement {
         />
       </ButtonGroup>
       <Dialog
+        header='Crear Cuenta'
         visible={createAcc}
         onHide={closeAcc}
       >
         <CreateAccountForm />
       </Dialog>
       <Dialog
+        header='Crear Perfil Profesor'
         visible={createIns}
         onHide={closeIns}
       >
         <CreateInstructorForm />
       </Dialog>
       <Dialog
+        header='Crear Perfil Alumno'
         visible={createMem}
         onHide={closeMem}
       >
