@@ -54,10 +54,7 @@ export default function AccountInfo({ account }: params): ReactElement {
           isOpen={isOpenEdit}
           closeModal={closeEdit}
         >
-          <CreateAccountForm
-            account={account}
-            closeModal={closeEdit}
-          ></CreateAccountForm>
+          <CreateAccountForm account={account}></CreateAccountForm>
         </Modal>
       </div>
       <div className='flex gap-2'>
