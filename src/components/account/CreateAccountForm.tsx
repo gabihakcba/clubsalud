@@ -172,13 +172,12 @@ export function CreateAccountForm({ account }: params): ReactElement {
       <div className='flex flex-column'>
         <Button
           form={`createForm${account?.id}`}
-          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 font-bold rounded focus:outline-none focus:shadow-outline'
           type='submit'
           label={account?.id ? 'Actualizar' : 'Crear'}
           icon='pi pi-upload'
           iconPos='right'
           loading={isPendingC || isPendingU}
-        ></Button>
+        />
         <small className='w-full flex flex-row items-center justify-center'>
           {(isSuccessC || isSuccessU) && (
             <p className='w-max text-green-400'>Listo!</p>
