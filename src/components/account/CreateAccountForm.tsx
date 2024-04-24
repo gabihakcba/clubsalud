@@ -5,6 +5,7 @@ import { type FieldValues, useForm } from 'react-hook-form'
 import { createAccount, updateAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type ReactElement } from 'react'
+import { InputText } from 'primereact/inputtext'
 
 interface params {
   account?: Account
@@ -63,65 +64,41 @@ export function CreateAccountForm({ account }: params): ReactElement {
           create(dataForm)
         }
       })}
-      className='relative rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-column gap-0 border-2 border-red-500'
+      className='relative rounded h-max w-max flex flex-column gap-4 py-4'
       id={`createForm${account?.id}`}
     >
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='username'
-        >
-          Nombre de Usuario
-        </label>
-        <input
+      <div className='p-float-label'>
+        <InputText
+          id='username'
+          type='text'
           {...register('username', {
             required: {
               value: true,
               message: 'El nombre de usuario es requerido'
             }
           })}
-          name='username'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          id={`username${account?.id}`}
-          form='createForm'
-          type='text'
           autoComplete='off'
-          defaultValue={account?.username}
-          placeholder='Nombre de usuario'
-        ></input>
-        {errors?.username && (
-          <span className='inputError'>
-            {errors.username.message as string}
-          </span>
-        )}
+          form='createForm'
+          invalid={errors?.username !== undefined}
+        ></InputText>
+        <label htmlFor='username'>Nombre de usuario</label>
       </div>
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='password'
-        >
-          Contraseña
-        </label>
-        <input
+
+      <div className='p-float-label'>
+        <InputText
+          id='password'
+          type='password'
           {...register('password', {
             required: {
               value: true,
               message: 'La contraseña es requerida'
             }
           })}
-          name='password'
-          id={`password${account?.id}`}
+          autoComplete='off'
           form='createForm'
-          type='password'
-          defaultValue={account?.password}
-          className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='******************'
-        ></input>
-        {errors?.password && (
-          <span className='inputError'>
-            {errors.password.message as string}
-          </span>
-        )}
+          invalid={errors?.password !== undefined}
+        ></InputText>
+        <label htmlFor='password'>Contraseña</label>
       </div>
       <div className='mb-4'>
         <label
