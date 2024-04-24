@@ -42,7 +42,7 @@ function AccountCard({ account }: params): ReactElement {
           outlined
         ></Button>
         <Button
-          href={`/admin/info/${account.id}`}
+          // href={`/admin/info/${account.id}`}
           link
           severity='info'
           size='small'
