@@ -10,6 +10,7 @@ import { createInstructor } from 'queries/instructors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
 import { Dropdown } from 'primereact/dropdown'
+import { ToggleButton } from 'primereact/togglebutton'
 import { Button } from 'primereact/button'
 
 const idAccount = async (username: string): Promise<number> => {
@@ -27,7 +28,7 @@ const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
     name: data.name,
     lastName: data.lastName,
     dni: data.dni,
-    cuit: data?.cuit ? data.cuit : undefined,
+    cuit: data?.cuit ? data.cuit : null,
     phoneNumber: data.phoneNumber,
     address: data.address,
     email: data.email,
@@ -46,7 +47,7 @@ const create = async (data: FieldValues): Promise<Instructor> => {
 
 export function CreateInstructorForm(): ReactElement {
   const [accounts, setAccounts] = useState<Account[] | null | undefined>([])
-  const [selected, setSelected] = useState<any>(null)
+  const [selectedDegree, setSelectedDegree] = useState<boolean>(false)
   const [accselected, setAccselected] = useState<any>(null)
 
   const query = useQueryClient()
@@ -59,7 +60,8 @@ export function CreateInstructorForm(): ReactElement {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
   const {
@@ -69,7 +71,7 @@ export function CreateInstructorForm(): ReactElement {
     isError: isErrorC
   } = useMutation({
     mutationFn: create,
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       await query.resetQueries({ queryKey: ['ins'] })
       reset()
     }
@@ -83,6 +85,29 @@ export function CreateInstructorForm(): ReactElement {
       className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
       id='createFormIns'
     >
+      <div className='p-float-label'>
+        <Dropdown
+          className='w-full'
+          value={accselected}
+          options={accounts ?? []}
+          {...register('accountName', {
+            required: {
+              value: true,
+              message: 'Nombre de usuario requerido'
+            }
+          })}
+          form='createFormIns'
+          optionLabel='username'
+          invalid={errors?.accountName !== undefined}
+          checkmark={true}
+          onChange={(e) => {
+            setAccselected(e.value)
+          }}
+          filter
+        />
+        <label htmlFor='accountName'>Cuenta asociada</label>
+      </div>
+
       <div className='p-float-label'>
         <InputText
           {...register('name', {
@@ -189,29 +214,29 @@ export function CreateInstructorForm(): ReactElement {
         <label htmlFor='email'>E-mail</label>
       </div>
 
-      <div className='p-float-label'>
-        <Dropdown
-          className='w-full'
-          value={selected}
-          {...register('degree', {
-            required: {
-              value: true,
-              message: 'Título es requerido'
-            }
-          })}
-          options={[
-            { text: 'Si', value: 'true' },
-            { text: 'No', value: 'false' }
-          ]}
-          optionLabel='text'
-          optionValue='value'
-          onChange={(e) => {
-            setSelected(e.value)
-          }}
+      <div className='flex flex-row align-items-center'>
+        <label
+          htmlFor='degree'
+          className='flex-grow-1'
+        >
+          Título
+        </label>
+        <ToggleButton
+          defaultChecked={false}
+          checked={selectedDegree}
+          {...register('degree')}
           form='createFormIns'
+          onLabel='Si'
+          onIcon='pi pi-check'
+          offLabel='No'
+          offIcon='pi pi-times'
+          iconPos='right'
+          onChange={(e) => {
+            setSelectedDegree(e.value)
+            setValue('degree', e.value)
+          }}
           invalid={errors?.degree !== undefined}
         />
-        <label htmlFor='degree'>Título</label>
       </div>
 
       <div className='p-float-label'>
@@ -233,28 +258,6 @@ export function CreateInstructorForm(): ReactElement {
           invalid={errors?.alias !== undefined}
         />
         <label htmlFor='alias'>Alias</label>
-      </div>
-
-      <div className='p-float-label'>
-        <Dropdown
-          className='w-full'
-          value={accselected}
-          options={accounts ?? []}
-          {...register('accountName', {
-            required: {
-              value: true,
-              message: 'Nombre de usuario requerido'
-            }
-          })}
-          form='createFormIns'
-          optionLabel='username'
-          invalid={errors?.accountName !== undefined}
-          checkmark={true}
-          onChange={(e) => {
-            setAccselected(e.value)
-          }}
-        />
-        <label htmlFor='accountName'>Cuenta asociada</label>
       </div>
 
       <div className='flex flex-column'>

@@ -4,16 +4,25 @@ import { type CreateAccount, Permissions, type Account } from 'utils/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { createAccount, updateAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
 import { InputText } from 'primereact/inputtext'
-import { MultiSelect } from 'primereact/multiselect'
 import { Button } from 'primereact/button'
+import { MultiSelect } from 'primereact/multiselect'
 
 interface params {
   account?: Account
 }
 export function CreateAccountForm({ account }: params): ReactElement {
-  const permissions = [
+  const [permissionSelected, setPermissionSelected] = useState<any>([])
+
+  useEffect(() => {
+    if (account?.permissions) {
+      setPermissionSelected(account.permissions)
+      setValue('permissions', account.permissions)
+    }
+  }, [])
+
+  const permissionsList = [
     {
       permission: 'Propietario',
       type: Permissions.OWN
@@ -31,6 +40,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
       type: Permissions.MEM
     }
   ]
+
   const query = useQueryClient()
 
   const {
@@ -38,7 +48,8 @@ export function CreateAccountForm({ account }: params): ReactElement {
     handleSubmit,
     formState: { errors },
     watch,
-    reset
+    reset,
+    setValue
   } = useForm()
 
   const {
@@ -51,13 +62,13 @@ export function CreateAccountForm({ account }: params): ReactElement {
       return await createAccount(data as CreateAccount)
     },
     onSuccess: async () => {
-      reset({
-        username: '',
-        password: '',
-        repeatpassword: '',
-        permissions: [Permissions.OTHER]
-      })
       await query.refetchQueries({ queryKey: ['acc'] })
+      reset({
+        username: null,
+        password: null,
+        repeatPassword: null,
+        permissions: null
+      })
     }
   })
 
@@ -72,6 +83,12 @@ export function CreateAccountForm({ account }: params): ReactElement {
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['account'] })
+      reset({
+        username: null,
+        password: null,
+        repeatPassword: null,
+        permissions: null
+      })
     }
   })
 
@@ -81,17 +98,11 @@ export function CreateAccountForm({ account }: params): ReactElement {
         event?.preventDefault()
         if (account?.id) {
           update({
-            data: {
-              ...dataForm,
-              permissions: dataForm.permissions.map((p) => p.type)
-            },
-            id: account?.id ?? 0
+            data: dataForm,
+            id: account?.id
           })
         } else {
-          create({
-            ...dataForm,
-            permissions: dataForm.permissions.map((p) => p.type)
-          })
+          create(dataForm)
         }
       })}
       className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
@@ -110,6 +121,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.username !== undefined}
+          defaultValue={account?.username}
         ></InputText>
         <label htmlFor='username'>Nombre de usuario</label>
       </div>
@@ -127,6 +139,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.password !== undefined}
+          defaultValue={account?.password}
         ></InputText>
         <label htmlFor='password'>Contraseña</label>
       </div>
@@ -149,24 +162,29 @@ export function CreateAccountForm({ account }: params): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.repeatpassword !== undefined}
+          defaultValue={account?.password}
         ></InputText>
-        <label htmlFor='password'>Repetir Contraseña</label>
+        <label htmlFor='repeatpassword'>Repetir Contraseña</label>
       </div>
 
-      <div className=''>
+      <div className='p-float-label'>
         <MultiSelect
-          value={watch('permissions')}
-          options={permissions}
-          optionLabel='permission'
-          placeholder='Seleccionar Permisos'
+          className='w-full'
           {...register('permissions', {
-            required: {
-              value: true,
-              message: 'Al menos un permiso requerido'
-            }
+            required: true
           })}
+          options={permissionsList}
+          optionLabel='permission'
+          optionValue='type'
+          value={permissionSelected}
+          display='chip'
+          onChange={(e) => {
+            setPermissionSelected(e.value)
+            setValue('permissions', e.value)
+          }}
           invalid={errors?.permissions !== undefined}
         />
+        <label htmlFor='permissions'>Permisos</label>
       </div>
 
       <div className='flex flex-column'>

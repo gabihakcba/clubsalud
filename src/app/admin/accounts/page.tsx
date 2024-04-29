@@ -11,6 +11,7 @@ import { FilterMatchMode } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { Card } from 'primereact/card'
+import { useRouter } from 'next/navigation'
 
 interface getAccountsType {
   pages: Account[]
@@ -32,7 +33,9 @@ const getAccountsElems = async (info): Promise<getAccountsType> => {
 }
 
 export default function Accounts(): ReactElement {
+  const router = useRouter()
   const [selected, setSelected] = useState<any>(null)
+
   const filters = {
     username: { value: null, matchMode: FilterMatchMode.CONTAINS },
     id: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -120,6 +123,7 @@ export default function Accounts(): ReactElement {
                     icon: 'pi pi-info-circle',
                     defaultFocus: 'reject',
                     acceptClassName: 'p-button-danger',
+                    acceptLabel: 'Si',
                     accept: () => {
                       deleteF(Number(account.id))
                     }
@@ -139,9 +143,9 @@ export default function Accounts(): ReactElement {
               iconPos='right'
               size='small'
               onClick={() => {
-                console.log(account)
+                router.push(`/admin/info/${account.id}`)
               }}
-            ></Button>
+            />
           )}
         ></Column>
       </DataTable>

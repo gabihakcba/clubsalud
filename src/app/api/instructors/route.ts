@@ -33,7 +33,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       email: data.email,
-      degree: data.degree === 'true',
+      degree: data.degree,
       cbu: data?.cbu ? BigInt(data.cbu) : null,
       alias: data?.alias ? data.alias : null
     }
@@ -87,7 +87,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       email: data.email,
-      degree: data.degree === 'true',
+      degree: data.degree,
       cbu: data?.cbu ? BigInt(data.cbu) : null,
       alias: data?.alias ? data.alias : null
     }
