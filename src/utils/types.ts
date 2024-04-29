@@ -135,7 +135,7 @@ export interface CreateInstructor {
   phoneNumber: bigint
   address: string
   email: string
-  degree: string | boolean
+  degree: boolean
   cbu?: bigint | null
   alias?: string | null
   accountId: number

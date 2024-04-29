@@ -21,7 +21,7 @@ export const getInstructorById = async (
         phoneNumber: BigInt(0),
         address: '',
         email: '',
-        degree: '',
+        degree: false,
         accountId: 0
       }
     }
