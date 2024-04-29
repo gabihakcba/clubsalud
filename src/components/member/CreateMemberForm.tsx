@@ -81,10 +81,37 @@ export function CreateMemberForm(): ReactElement {
     <form
       onSubmit={handleSubmit((data) => {
         mutateC(data)
+        console.log(data.inscriptionDate)
+        console.log(data.inscriptionDate.toISOString())
       })}
       className='relative rounded h-max w-max flex flex-column pt-4 gap-4'
       id='createForm'
     >
+      <div className='p-float-label'>
+        <Dropdown
+          className='w-full'
+          value={selected}
+          options={accounts ?? []}
+          {...register('accountName', {
+            required: {
+              value: true,
+              message: 'Nombre de usuario requerido'
+            }
+          })}
+          name='accountName'
+          id='accountName'
+          form='createForm'
+          optionLabel='username'
+          invalid={errors?.accountName !== undefined}
+          checkmark={true}
+          onChange={(e) => {
+            setSelected(e.value)
+          }}
+          filter
+        />
+        <label htmlFor='accountName'>Cuenta asociada</label>
+      </div>
+
       <div className='p-float-label'>
         <InputText
           {...register('name', {
@@ -179,6 +206,7 @@ export function CreateMemberForm(): ReactElement {
           })}
           name='inscriptionDate'
           id='inscriptionDate'
+          dateFormat='dd/mm/yy'
           placeholder='Fecha de inscripción'
           invalid={errors?.inscriptionDate !== undefined}
         />
@@ -214,29 +242,7 @@ export function CreateMemberForm(): ReactElement {
         ></InputText>
         <label htmlFor='afiliateNumber'>Número de afiliado</label>
       </div>
-      <div className='p-float-label'>
-        <Dropdown
-          className='w-full'
-          value={selected}
-          options={accounts ?? []}
-          {...register('accountName', {
-            required: {
-              value: true,
-              message: 'Nombre de usuario requerido'
-            }
-          })}
-          name='accountName'
-          id='accountName'
-          form='createForm'
-          optionLabel='username'
-          invalid={errors?.accountName !== undefined}
-          checkmark={true}
-          onChange={(e) => {
-            setSelected(e.value)
-          }}
-        />
-        <label htmlFor='accountName'>Cuenta asociada</label>
-      </div>
+
       <div className='flex flex-column gap-0'>
         <Button
           form='createForm'

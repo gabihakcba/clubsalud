@@ -1,22 +1,25 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import MemberCard from 'components/member/MemberCard'
+// import MemberCard from 'components/member/MemberCard'
 import { useRouter } from 'next/navigation'
 import { deleteAccount } from 'queries/accounts'
-import { useState, type ReactElement } from 'react'
 import { type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 import { CreateAccountForm } from './CreateAccountForm'
-import Modal from 'components/Modal'
 import InstructorCard from 'components/instructor/InstructorCard'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { Button } from 'primereact/button'
+import { Divider } from 'primereact/divider'
+import { Dialog } from 'primereact/dialog'
+import { Accordion, AccordionTab } from 'primereact/accordion'
+import { type ReactElement } from 'react'
+import MemberCard from 'components/member/MemberCard'
 
 interface params {
   account: Account | undefined
 }
 export default function AccountInfo({ account }: params): ReactElement {
-  const [member, changeMember] = useState(false)
-  const [instructor, changeInstructor] = useState(false)
   const [isOpenEdit, openEdit, closeEdit] = useModal(false)
   const router = useRouter()
   const query = useQueryClient()
@@ -31,37 +34,52 @@ export default function AccountInfo({ account }: params): ReactElement {
     }
   })
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex items-center justify-between border-b-2 border-gray-400 p-2'>
+    <div className='flex flex-column gap-2 w-full h-full'>
+      <div className='flex flex-row align-items-center gap-4'>
         <h2 className='text-2xl'>Cuenta</h2>
-        <div className='flex gap-4'>
-          <button
-            className='light-blue-border-button'
-            onClick={openEdit}
-          >
-            Editar
-          </button>
-          <button
-            className='light-red-border-button'
-            onClick={async () => {
-              delete_(Number(account?.id))
-            }}
-          >
-            Eliminar
-          </button>
-        </div>
-        <Modal
-          isOpen={isOpenEdit}
-          closeModal={closeEdit}
+        <Button
+          onClick={openEdit}
+          label='Editar'
+          size='small'
+          outlined
+          icon='pi pi-pen-to-square'
+          iconPos='right'
+        />
+        <Button
+          onClick={() => {
+            confirmDialog({
+              message: 'Confirmación de acción',
+              header: 'Eliminar cuenta',
+              icon: 'pi pi-info-circle',
+              defaultFocus: 'reject',
+              acceptClassName: 'p-button-danger',
+              acceptLabel: 'Si',
+              accept: () => {
+                delete_(Number(account?.id))
+              }
+            })
+          }}
+          label='Eliminar'
+          size='small'
+          outlined
+          icon='pi pi-trash'
+          iconPos='right'
+          severity='danger'
+        />
+        <Dialog
+          header='Editar Cuenta'
+          visible={isOpenEdit}
+          onHide={closeEdit}
         >
           <CreateAccountForm account={account}></CreateAccountForm>
-        </Modal>
+        </Dialog>
+        <ConfirmDialog />
       </div>
-      <div className='flex gap-2'>
+      <div className='flex align-items-center gap-2'>
         <label className='min-w-[10rem]'>Usuario: </label>
         <p>{account?.username}</p>
       </div>
-      <div className='flex gap-2'>
+      <div className='flex align-items-center gap-2'>
         <label className='min-w-[10rem]'>Permisos: </label>
         <div className='p-1 flex gap-2'>
           {account?.permissions.map((permission, index) => (
@@ -69,11 +87,32 @@ export default function AccountInfo({ account }: params): ReactElement {
           ))}
         </div>
       </div>
-      <div className='flex flex-col gap-2'>
-        <hr />
+      <Divider />
+      <h3>Perfiles Asociados</h3>
+      <div className='flex flex-column md:flex-row w-full'>
+        {account?.instructorAccount && (
+          <Accordion className='w-full h-full'>
+            <AccordionTab header='Perfil de Profesor'>
+              <InstructorCard
+                instructor={account.instructorAccount}
+              ></InstructorCard>
+            </AccordionTab>
+          </Accordion>
+        )}
+        {account?.memberAccount && (
+          <Accordion className='w-full h-full'>
+            <AccordionTab header='Perfil de Alumno'>
+              <MemberCard member={account.memberAccount}></MemberCard>
+            </AccordionTab>
+          </Accordion>
+        )}
+      </div>
+
+      {/* <div className='flex flex-column gap-2'>
+        <Divider />
         Perfiles asociados
         {account?.memberAccount && (
-          <div className='flex flex-col gap-2 w-full items-center'>
+          <div className='flex flex-column gap-2 w-full align-items-center'>
             <button
               className='bg-gray-200 rounded w-full p-2 text-start'
               onClick={() => {
@@ -90,15 +129,13 @@ export default function AccountInfo({ account }: params): ReactElement {
           </div>
         )}
         {account?.instructorAccount && (
-          <div className='flex flex-col gap-2 w-full items-center'>
-            <button
-              className='bg-gray-200 rounded w-full p-2 text-start'
+          <div className='flex flex-column gap-2 w-full align-items-center'>
+            <Button
               onClick={() => {
                 changeInstructor((prev) => !prev)
               }}
-            >
-              Profesor: {account.instructorAccount.name}
-            </button>
+              label={`Profesor: ${account.instructorAccount.name}`}
+            />
             {instructor && (
               <div className='w-full'>
                 <InstructorCard
@@ -109,7 +146,7 @@ export default function AccountInfo({ account }: params): ReactElement {
           </div>
         )}
         <hr />
-      </div>
+      </div> */}
     </div>
   )
 }
