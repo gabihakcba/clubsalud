@@ -99,7 +99,7 @@ model Instructor {
   phoneNumber        BigInt              @db.BigInt
   address            String
   email              String
-  degree             Boolean
+  degree             Boolean             @default(false)
   cbu                BigInt?             @db.BigInt
   alias              String?
   // Foreignkeys

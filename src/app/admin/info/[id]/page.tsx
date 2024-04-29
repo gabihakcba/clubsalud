@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import AccountInfo from 'components/account/AccountInfo'
+import { Card } from 'primereact/card'
+import { ScrollPanel } from 'primereact/scrollpanel'
 import { getAccountById } from 'queries/accounts'
 import { type ReactElement } from 'react'
 
@@ -19,12 +21,13 @@ export default function AccountPage({ params }: params): ReactElement {
   })
 
   return (
-    <div className='h-full w-full flex flex-col justify-start items-center'>
-      {account && (
-        <div className='w-full p-6 flex flex-col gap-5'>
-          <AccountInfo account={account}></AccountInfo>
-        </div>
-      )}
-    </div>
+    <ScrollPanel
+      style={{ height: '100dvh' }}
+      className='p-0 m-0'
+    >
+      <Card className='min-h-full w-full'>
+        {account && <AccountInfo account={account}></AccountInfo>}
+      </Card>
+    </ScrollPanel>
   )
 }
