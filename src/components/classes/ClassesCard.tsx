@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { type ReactElement } from 'react'
 import { getClasses } from 'queries/classes'
 import ClassCard from './ClassCard'
+import { Card } from 'primereact/card'
 
 export default function ClassesCard(): ReactElement {
   const { data: classes } = useQuery({
@@ -17,12 +18,9 @@ export default function ClassesCard(): ReactElement {
   return (
     <>
       {classes?.map((class_) => (
-        <div
-          key={class_.id}
-          className='bg-white border m-0 border-gray-200 rounded-lg shadow p-4 w-max'
-        >
+        <Card key={class_.id}>
           <ClassCard class_={class_}></ClassCard>
-        </div>
+        </Card>
       ))}
     </>
   )
