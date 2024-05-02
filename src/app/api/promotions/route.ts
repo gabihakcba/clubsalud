@@ -76,7 +76,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     })
   } catch (error) {
     console.log(error)
-    return new Response('No se pudo editar la ofer', {
+    return new Response('No se pudo editar la oferta', {
       status: 400
     })
   }
