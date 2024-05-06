@@ -1,9 +1,11 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Checkbox } from 'primereact/checkbox'
+import { Dropdown } from 'primereact/dropdown'
 import { getMembers } from 'queries/members'
 import { setParticularPayment, setPlanPayment } from 'queries/payments'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Member, type Payment } from 'utils/types'
 
@@ -30,12 +32,11 @@ const getRemaining = (members, sId, mId): number => {
   return subs?.remaining
 }
 
-interface params {
-  closeModal: () => void
-}
-export default function CreatePaymentForm({
-  closeModal
-}: params): ReactElement {
+export default function CreatePaymentForm(): ReactElement {
+  const [selectedMember, setSelectedMember] = useState<any>(null)
+  const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
+  const [isbyhealth, setIsbyhealth] = useState<boolean>(false)
+
   const query = useQueryClient()
 
   const {
@@ -70,7 +71,6 @@ export default function CreatePaymentForm({
         data
       ])
       reset()
-      closeModal()
     }
   })
 
@@ -85,139 +85,112 @@ export default function CreatePaymentForm({
       await query.refetchQueries({ queryKey: ['members'] })
       query.setQueryData(['billed'], (oldData: Payment[]) => [...oldData, data])
       reset()
-      closeModal()
     }
   })
 
   return (
     <form
       action=''
-      className='flex flex-col bg-gray-600 p-4 rounded gap-4'
+      className='flex flex-column pt-4 gap-4'
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
-        if (data.isbyhealth) {
-          planPayment({
-            amount: data.amountPlan,
-            subscriptionId: data.subscription,
-            healthSubscribedPlanId: data.health
-          })
-        } else {
-          particularPayment({
-            memberId: data.member,
-            subscriptionId: data.subscription,
-            amount: data.amountParticular
-          })
-        }
+        console.log(data)
+        // if (data.isbyhealth) {
+        //   planPayment({
+        //     amount: data.amountPlan,
+        //     subscriptionId: data.subscription,
+        //     healthSubscribedPlanId: data.health
+        //   })
+        // } else {
+        //   particularPayment({
+        //     memberId: data.member,
+        //     subscriptionId: data.subscription,
+        //     amount: data.amountParticular
+        //   })
+        // }
       })}
     >
-      <div className='flex w-full justify-between gap-2'>
-        <label htmlFor=''>Alumno</label>
-        <div>
-          <select
-            id=''
-            {...register('member', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          >
-            <option value=''>Select</option>
-            {members?.map((member, index) => (
-              <option
-                value={member.id}
-                key={index}
-              >
-                {member.name}
-              </option>
-            ))}
-          </select>
-          {errors?.member && (
-            <span className='inputError'>
-              {errors.member.message as string}
-            </span>
-          )}
-        </div>
+      <div className='p-float-label'>
+        <Dropdown
+          options={members}
+          value={selectedMember}
+          optionLabel='name'
+          optionValue='id'
+          {...register('member', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          onChange={(e) => {
+            setSelectedMember(e.value)
+            setValue('memberId', e.value)
+          }}
+          invalid={errors?.member !== undefined}
+        />
+        <label htmlFor='member'>Alumno</label>
       </div>
-      <div className='flex w-full justify-between gap-2'>
-        <label htmlFor=''>Suscripción</label>
-        <div>
-          <select
+      <div className='p-float-label'>
+        <Dropdown
+          options={
+            selectMember(members, Number(watch('memberId')))?.memberSubscription
+          }
+          value={selectedSubscription}
+          optionLabel='promotion.title'
+          optionValue='id'
+          {...register('subscription', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          onChange={(e) => {
+            setSelectedSubscription(e.value)
+            setValue('subscriptionId', e.value)
+          }}
+          invalid={errors?.subscription !== undefined}
+        />
+        <label htmlFor='subscription'>Suscripción</label>
+      </div>
+      <div className='flex gap-4'>
+        <label htmlFor='isbyhealth'>Pago con obra social</label>
+        <Checkbox
+          checked={isbyhealth}
+          {...register('isbyhealth')}
+          onChange={() => {
+            setIsbyhealth((prev) => !prev)
+          }}
+        />
+      </div>
+      {isbyhealth && (
+        <div className='p-float-label'>
+          <Dropdown
             id=''
-            {...register('subscription', {
+            {...register('health', {
               required: {
                 value: true,
                 message: 'Campo requerido'
               }
             })}
-          >
-            <option value=''>Select</option>
-
-            {selectMember(
-              members,
-              Number(watch('member'))
-            )?.memberSubscription?.map((subs, index) => (
+            options={
+              selectMember(members, Number(watch('memberId')))?.planSubscribed
+            }
+            optionLabel='plan.name'
+            optionValue='id'
+            onChange={(e) => {
+              console.log(e)
+              // setValue(
+              //   'amountPlan',
+              //   amountByPlan(members, watch('member'), watch('health'))
+              // )
+            }}
+          />
+          <label htmlFor=''>Obra social</label>
+          {selectMember(members, Number(watch('member')))?.planSubscribed?.map(
+            (planSubs, index) => (
               <option
-                value={subs.id}
+                value={planSubs.id}
                 key={index}
                 className='text-black'
               >
-                {subs.promotion?.title}
+                {planSubs.plan?.name}
               </option>
-            ))}
-          </select>
-          {errors?.subscription && (
-            <span className='inputError'>
-              {errors.subscription.message as string}
-            </span>
+            )
           )}
-        </div>
-      </div>
-      <div className='flex w-full justify-between gap-2'>
-        <label htmlFor=''>Pago con obra social</label>
-        <input
-          type='checkbox'
-          defaultChecked={false}
-          {...register('isbyhealth')}
-        />
-      </div>
-      {watch('isbyhealth') && (
-        <div className='flex w-full justify-between gap-2'>
-          <label htmlFor=''>Obra social</label>
-          <div>
-            <select
-              id=''
-              {...register('health', {
-                required: {
-                  value: true,
-                  message: 'Campo requerido'
-                }
-              })}
-              onClick={() => {
-                setValue(
-                  'amountPlan',
-                  amountByPlan(members, watch('member'), watch('health'))
-                )
-              }}
-            >
-              <option value=''>Select</option>
-
-              {selectMember(
-                members,
-                Number(watch('member'))
-              )?.planSubscribed?.map((planSubs, index) => (
-                <option
-                  value={planSubs.id}
-                  key={index}
-                  className='text-black'
-                >
-                  {planSubs.plan?.name}
-                </option>
-              ))}
-            </select>
-            {errors?.health && (
-              <span className='inputError'>
-                {errors.health.message as string}
-              </span>
-            )}
-          </div>
         </div>
       )}
       <div className='flex w-full justify-between gap-2'>
