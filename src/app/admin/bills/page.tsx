@@ -1,16 +1,18 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import Modal from 'components/Modal'
 import BilledConsultationCard from 'components/bills/BilledConsultationCard'
 import CreatePaymentForm from 'components/bills/CreatePaymentForm'
 import PaymentCard from 'components/bills/PaymentCard'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { getBilled, getPayments } from 'queries/payments'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
+import { Dialog } from 'primereact/dialog'
 
 export default function Page(): ReactElement {
-  const [isOpen, openModal, closeModal] = useModal(false)
+  const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const { data: payments } = useQuery({
     queryKey: ['payments'],
     queryFn: async () => {
@@ -24,19 +26,21 @@ export default function Page(): ReactElement {
     }
   })
   return (
-    <div className='pr-6 pb-6 flex flex-col'>
-      <button
-        className='blueButtonForm m-2 w-max'
-        onClick={openModal}
+    <Card className='flex flex-column h-full'>
+      <Dialog
+        header='Generar Cobro'
+        visible={createBill}
+        onHide={closeCreateBill}
       >
-        Generar cobro
-      </button>
-      <Modal
-        isOpen={isOpen}
-        closeModal={closeModal}
-      >
-        <CreatePaymentForm closeModal={closeModal}></CreatePaymentForm>
-      </Modal>
+        <CreatePaymentForm></CreatePaymentForm>
+      </Dialog>
+      <Button
+        onClick={openCreateBill}
+        size='small'
+        label='Generar Cobro'
+        icon='pi pi-plus'
+        iconPos='right'
+      />
       <hr className='m-2' />
       <h2 className='text-xl font-bold ml-6'>Cobros particulares</h2>
       <hr className='m-2' />
@@ -79,6 +83,6 @@ export default function Page(): ReactElement {
           />
         ))}
       </section>
-    </div>
+    </Card>
   )
 }
