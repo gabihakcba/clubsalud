@@ -71,7 +71,7 @@ export default function HealthAssignForm(): ReactElement {
             setSelectedMember(e.value)
             setValue('memberId', e.value)
           }}
-          invalid={errors?.memberId !== undefined}
+          invalid={errors?.memberName !== undefined}
         />
         <label htmlFor='memberId'>Alumno</label>
       </div>
@@ -91,6 +91,7 @@ export default function HealthAssignForm(): ReactElement {
             setSelectedPlan(e.value)
             setValue('planId', e.value)
           }}
+          invalid={errors?.planName !== undefined}
         />
         <label htmlFor='planId'>Obra social</label>
       </div>
