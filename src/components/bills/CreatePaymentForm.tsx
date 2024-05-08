@@ -1,8 +1,10 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
+import { InputText } from 'primereact/inputtext'
 import { getMembers } from 'queries/members'
 import { setParticularPayment, setPlanPayment } from 'queries/payments'
 import { useState, type ReactElement } from 'react'
@@ -14,7 +16,8 @@ const hasSubs = (member): boolean => {
 }
 
 const selectMember = (members, id: number): Member => {
-  return members?.find((member) => member.id === id)
+  const member = members?.find((member) => member.id === id)
+  return member
 }
 
 const amountByPlan = (members, memberId, planSubsId): number | undefined => {
@@ -34,8 +37,11 @@ const getRemaining = (members, sId, mId): number => {
 
 export default function CreatePaymentForm(): ReactElement {
   const [selectedMember, setSelectedMember] = useState<any>(null)
+  const [plansMemberSelected, setPlansMemberSelected] = useState<any[]>([])
+  const [selectedPlan, setSelectedPlan] = useState<any>(null)
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
-  const [isbyhealth, setIsbyhealth] = useState<boolean>(false)
+  const [ishealth, setIshealth] = useState<boolean>(false)
+  const [amountToPay, setAmountToPay] = useState<number>(0)
 
   const query = useQueryClient()
 
@@ -45,10 +51,11 @@ export default function CreatePaymentForm(): ReactElement {
     formState: { errors },
     reset,
     watch,
-    setValue
+    setValue,
+    getValues
   } = useForm()
 
-  const { data: members } = useQuery({
+  const { data: members, isPending: isPendingMembers } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       const res = await getMembers()
@@ -95,19 +102,19 @@ export default function CreatePaymentForm(): ReactElement {
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
         console.log(data)
-        // if (data.isbyhealth) {
-        //   planPayment({
-        //     amount: data.amountPlan,
-        //     subscriptionId: data.subscription,
-        //     healthSubscribedPlanId: data.health
-        //   })
-        // } else {
-        //   particularPayment({
-        //     memberId: data.member,
-        //     subscriptionId: data.subscription,
-        //     amount: data.amountParticular
-        //   })
-        // }
+        if (ishealth) {
+          planPayment({
+            amount: data.amountPlan,
+            subscriptionId: data.subscriptionId,
+            healthSubscribedPlanId: data.healthId
+          })
+        } else {
+          particularPayment({
+            memberId: data.memberId,
+            subscriptionId: data.subscriptionId,
+            amount: data.amountParticular
+          })
+        }
       })}
     >
       <div className='p-float-label'>
@@ -122,8 +129,14 @@ export default function CreatePaymentForm(): ReactElement {
           onChange={(e) => {
             setSelectedMember(e.value)
             setValue('memberId', e.value)
+            setPlansMemberSelected(
+              selectMember(members, Number(watch('memberId')))
+                ?.planSubscribed ?? []
+            )
           }}
           invalid={errors?.member !== undefined}
+          loading={isPendingMembers}
+          filter
         />
         <label htmlFor='member'>Alumno</label>
       </div>
@@ -149,110 +162,92 @@ export default function CreatePaymentForm(): ReactElement {
       <div className='flex gap-4'>
         <label htmlFor='isbyhealth'>Pago con obra social</label>
         <Checkbox
-          checked={isbyhealth}
+          checked={ishealth}
+          value={ishealth}
           {...register('isbyhealth')}
-          onChange={() => {
-            setIsbyhealth((prev) => !prev)
+          onChange={(e) => {
+            setIshealth(Boolean(e.checked))
           }}
+          onBlur={() => {}} /** Do not remove this line, make no fail Checkbox with {...register} */
         />
       </div>
-      {isbyhealth && (
+      {ishealth && (
         <div className='p-float-label'>
           <Dropdown
-            id=''
+            id='health'
             {...register('health', {
               required: {
                 value: true,
                 message: 'Campo requerido'
               }
             })}
-            options={
-              selectMember(members, Number(watch('memberId')))?.planSubscribed
-            }
+            value={selectedPlan}
+            options={plansMemberSelected}
             optionLabel='plan.name'
             optionValue='id'
             onChange={(e) => {
-              console.log(e)
-              // setValue(
-              //   'amountPlan',
-              //   amountByPlan(members, watch('member'), watch('health'))
-              // )
+              setSelectedPlan(e.value)
+              setValue('healthId', e.value)
+              setValue(
+                'amountPlan',
+                amountByPlan(members, getValues('memberId'), e.value)
+              )
+              setAmountToPay(
+                amountByPlan(members, getValues('memberId'), e.value) ?? 0
+              )
             }}
           />
-          <label htmlFor=''>Obra social</label>
-          {selectMember(members, Number(watch('member')))?.planSubscribed?.map(
-            (planSubs, index) => (
-              <option
-                value={planSubs.id}
-                key={index}
-                className='text-black'
-              >
-                {planSubs.plan?.name}
-              </option>
-            )
-          )}
+          <label htmlFor='health'>Obra social</label>
         </div>
       )}
-      <div className='flex w-full justify-between gap-2'>
+      <div className='p-float-label'>
+        {ishealth && (
+          <InputText
+            type='number'
+            id='amountPlan'
+            {...register('amountPlan')}
+            value={String(amountToPay)}
+            disabled
+            invalid={errors?.amountPlan !== undefined}
+          />
+        )}
+        {!ishealth && (
+          <InputText
+            type='number'
+            id='amountParticular'
+            {...register('amountParticular', {
+              required: {
+                value: ishealth,
+                message: 'Campo requerido particular'
+              }
+            })}
+            invalid={errors?.amountParticular !== undefined}
+          />
+        )}
         <label htmlFor=''>Monto</label>
-        {watch('isbyhealth') && (
-          <div>
-            <input
-              type='number'
-              id=''
-              className='max-w-36 text-right px-2'
-              {...register('amountPlan', {
-                required: {
-                  value: false,
-                  message: 'Campo requerido social'
-                }
-              })}
-              disabled
-            />
-            {errors?.amountPlan && (
-              <span className='inputError'>
-                {errors.amountPlan.message as string}
-              </span>
-            )}
-          </div>
-        )}
-        {!watch('isbyhealth') && (
-          <div>
-            <input
-              type='number'
-              id=''
-              className='max-w-36 text-right px-2'
-              {...register('amountParticular', {
-                required: {
-                  value: !watch('isbyhealth'),
-                  message: 'Campo requerido particular'
-                }
-              })}
-            />
-            {errors?.amountParticular && (
-              <span className='inputError'>
-                {errors.amountParticular.message as string}
-              </span>
-            )}
-          </div>
-        )}
       </div>
-      <div className='flex w-full justify-between gap-2'>
-        <label htmlFor=''>Faltante</label>
-        <p>
-          {getRemaining(
-            members,
-            Number(watch('subscription')),
-            Number(watch('member'))
+      <div className='p-float-label'>
+        <InputText
+          value={String(
+            getRemaining(
+              members,
+              Number(getValues('subscriptionId')),
+              Number(getValues('memberId'))
+            )
           )}
-        </p>
+          disabled
+        />
+
+        <label htmlFor=''>Faltante</label>
       </div>
-      <button
+      <Button
         className='blueButtonForm'
         type='submit'
-      >
-        Generar Pago
-      </button>
+        label='Generar Pago'
+        size='small'
+        icon='pi pi-upload'
+        iconPos='right'
+      />
       {(isPendingP || isPendingB) && (
         <span className='text-yellow-400'>Creando...</span>
       )}
