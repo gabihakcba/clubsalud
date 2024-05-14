@@ -1,10 +1,13 @@
 'use client'
 
 import { ContractType } from '@prisma/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { findAccountByUsername } from 'queries/accounts'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { InputText } from 'primereact/inputtext'
+import { findAccountByUsername, getAccounts } from 'queries/accounts'
 import { createEmployee } from 'queries/employees'
-import { type ReactElement } from 'react'
+import { useEffect, type ReactElement, useState } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { JobPosition, type CreateEmployee, type Employee } from 'utils/types'
 
@@ -35,13 +38,13 @@ const parseData = async (data: FieldValues): Promise<CreateEmployee | null> => {
   }
 }
 
-interface params {
-  closeModal: () => void
-}
-export default function CreateEmployeeForm({
-  closeModal
-}: params): ReactElement {
+export default function CreateEmployeeForm(): ReactElement {
+  const [selectedAccount, setSelectedAccount] = useState<any>(null)
+  const [selectedJobPosition, setSelectedJobPosition] = useState<any>(null)
+  const [selectedContractType, setSelectedContractType] = useState<any>(null)
+
   const query = useQueryClient()
+
   const {
     mutate: create,
     isPending,
@@ -55,9 +58,19 @@ export default function CreateEmployeeForm({
         data
       ])
       reset()
-      setTimeout(closeModal, 250)
     }
   })
+
+  const { data: accounts, isPending: isPendingAccounts } = useQuery({
+    queryKey: ['accounts'],
+    queryFn: async () => {
+      return await getAccounts(0, 0)
+    }
+  })
+
+  useEffect(() => {
+    void query.refetchQueries({ queryKey: ['acc'] })
+  }, [])
 
   const {
     register,
@@ -65,263 +78,209 @@ export default function CreateEmployeeForm({
     formState: { errors },
     reset
   } = useForm()
+
   return (
     <form
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
+        console.log(data)
         const newEmployee = await parseData(data)
+        console.log(newEmployee)
         if (newEmployee) {
           create(newEmployee)
         }
       })}
-      className='flex flex-col gap-2 bg-white rounded p-2'
+      className='flex flex-column gap-4 pt-4'
     >
-      <h3 className='text-xl font-bold'>Crear Empleado</h3>
-      <hr className='m-1' />
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Nombre:</label>
-          <input
-            type='text'
-            {...register('name', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='nombre'
-          />
-        </div>
-        {errors?.name && (
-          <span className='text-sm text-red-500'>
-            {errors.name.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='text'
+          {...register('name', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.name !== undefined}
+        />
+        <label htmlFor='name'>Nombre</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Apellido:</label>
-          <input
-            type='text'
-            {...register('lastName', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='apellido'
-          />
-        </div>
-        {errors?.lastName && (
-          <span className='text-sm text-red-500'>
-            {errors.lastName.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='text'
+          {...register('lastName', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.lastName !== undefined}
+        />
+        <label htmlFor='lastName'>Apellido</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>DNI:</label>
-          <input
-            type='number'
-            {...register('dni', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='dni'
-          />
-        </div>
-        {errors?.dni && (
-          <span className='text-sm text-red-500'>
-            {errors.dni.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('dni', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.dni !== undefined}
+        />
+        <label>DNI</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>CUIT:</label>
-          <input
-            type='number'
-            {...register('cuit')}
-            className='border px-2 rounded'
-            placeholder='cuit'
-          />
-        </div>
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('cuit')}
+        />
+        <label>CUIT</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Teléfono:</label>
-          <input
-            type='number'
-            {...register('phoneNumber', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='número de teléfono/celular'
-          />
-        </div>
-        {errors?.phoneNumber && (
-          <span className='text-sm text-red-500'>
-            {errors.phoneNumber.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('phoneNumber', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.phoneNumber !== undefined}
+        />
+        <label>Teléfono</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>E-mail:</label>
-          <input
-            type='email'
-            {...register('email', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='example@example.com'
-          />
-        </div>
-        {errors?.email && (
-          <span className='text-sm text-red-500'>
-            {errors.email.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='email'
+          {...register('email', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.email !== undefined}
+        />
+        <label>E-mail</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Salario:</label>
-          <input
-            type='number'
-            {...register('salary', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-            placeholder='salario'
-          />
-        </div>
-        {errors?.salary && (
-          <span className='text-sm text-red-500'>
-            {errors.salary.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('salary', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.salary !== undefined}
+        />
+        <label>Salario</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>CBU:</label>
-          <input
-            type='number'
-            {...register('cbu')}
-            className='border px-2 rounded'
-            placeholder='cbu'
-          />
-        </div>
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('cbu')}
+        />
+        <label>CBU:</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Alias:</label>
-          <input
-            type='text'
-            {...register('alias')}
-            className='border px-2 rounded'
-            placeholder='alias'
-          />
-        </div>
+      <div className='p-float-label'>
+        <InputText
+          type='text'
+          {...register('alias')}
+        />
+        <label>Alias</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Cuenta asociada:</label>
-          <input
-            type='text'
-            {...register('accountName')}
-            className='border px-2 rounded'
-            placeholder='nombre de usuario'
-          />
-        </div>
+      <div className='p-float-label'>
+        <Dropdown
+          options={accounts?.pages}
+          loading={isPendingAccounts}
+          optionLabel='username'
+          optionValue='id'
+          value={selectedAccount}
+          className='w-full'
+          {...register('accountName', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          onChange={(e) => {
+            setSelectedAccount(e.value)
+          }}
+          invalid={errors?.accountName !== undefined}
+          filter
+        />
+        <label>Cuenta asociada</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Posición:</label>
-          <select
-            {...register('position', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-          >
-            <option value=''>Select</option>
-            <option value={JobPosition.CLEANING}>Limpieza</option>
-            <option value={JobPosition.MAINTENANCE}>Mantenimiento</option>
-            <option value={JobPosition.RECEPTIONIST}>Recepcionista</option>
-            <option value={JobPosition.OTHER}>Otro</option>
-          </select>
-        </div>
-        {errors?.position && (
-          <span className='text-sm text-red-500'>
-            {errors.position.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <Dropdown
+          options={Object.keys(JobPosition).map((key) => ({
+            label: key,
+            value: key.toLocaleLowerCase()
+          }))}
+          optionLabel='label'
+          optionValue='label'
+          value={selectedJobPosition}
+          {...register('position', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          onChange={(e) => {
+            setSelectedJobPosition(e.value)
+          }}
+          className='w-full'
+          invalid={errors?.position !== undefined}
+        />
+        <label>Posición</label>
       </div>
 
-      <div className='flex flex-col gap-2'>
-        <div className='flex gap-2 justify-between items-center'>
-          <label>Tipo de contrato:</label>
-          <select
-            {...register('contractType', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='border px-2 rounded'
-          >
-            <option value=''>Select</option>
-            <option value={ContractType.PERMANENT}>Permanente</option>
-            <option value={ContractType.CASUAL}>Casual</option>
-            <option value={ContractType.OTHER}>Otro</option>
-          </select>
-        </div>
-        {errors?.contractType && (
-          <span className='text-sm text-red-500'>
-            {errors.contractType.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <Dropdown
+          options={Object.keys(ContractType).map((key) => ({
+            label: key,
+            value: key.toLocaleLowerCase()
+          }))}
+          optionLabel='label'
+          optionValue='label'
+          value={selectedContractType}
+          {...register('contractType', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          className='w-full'
+          onChange={(e) => {
+            setSelectedContractType(e.value)
+          }}
+          invalid={errors?.contractType !== undefined}
+        />
+        <label>Tipo de contrato</label>
       </div>
 
-      <div className='flex flex-col p-2 justify-center'>
-        <button
-          type='submit'
-          className='blueButtonForm p-1'
-        >
-          Crear
-        </button>
-        {isPending && (
-          <span className='text-sm text-yellow-500'>Creando...</span>
-        )}
-        {isSuccess && <span className='text-sm text-green-500'>Listo!</span>}
-        {isError && <span className='text-sm text-red-500'>Error!</span>}
-      </div>
+      <Button
+        type='submit'
+        label='Crear'
+        icon='pi pi-upload'
+        iconPos='right'
+        size='small'
+        loading={isPending}
+      />
+      {isPending && (
+        <small className='text-sm text-yellow-500'>Creando...</small>
+      )}
+      {isSuccess && <small className='text-sm text-green-500'>Listo!</small>}
+      {isError && <small className='text-sm text-red-500'>Error!</small>}
     </form>
   )
 }
