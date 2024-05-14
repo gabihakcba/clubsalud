@@ -1,23 +1,33 @@
 import { type Member } from '@prisma/client'
-import { useMutation } from '@tanstack/react-query'
-import { findAccountByUsername } from 'queries/accounts'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
+import { InputText } from 'primereact/inputtext'
+import { getAccounts } from 'queries/accounts'
 import { createNotification } from 'queries/notifications'
 import { type ReactElement, useEffect, useState } from 'react'
 import { useForm, type FieldValues } from 'react-hook-form'
 import { getUserToken, setNewUser } from 'utils/auth'
 
-interface params {
-  closeModal: () => void
-}
-export default function CreateNotificationForm({
-  closeModal
-}: params): ReactElement {
+export default function CreateNotificationForm(): ReactElement {
   const [user, setUser] = useState<Member | undefined>(undefined)
+  const [selectedAccount, setSelectedAccount] = useState<any>(null)
+
+  const query = useQueryClient()
 
   useEffect(() => {
     const token = getUserToken()
     void setNewUser(token, setUser)
   }, [])
+
+  const { data: accounts, isPending: loadingAccounts } = useQuery({
+    queryKey: ['acc'],
+    queryFn: async () => {
+      const response = await getAccounts(0, 0)
+      return response.pages
+    }
+  })
 
   const {
     mutate: create,
@@ -28,7 +38,11 @@ export default function CreateNotificationForm({
     mutationFn: createNotification,
     onSuccess: (data) => {
       reset()
-      setTimeout(closeModal, 250)
+      console.log(data)
+      query.setQueriesData(
+        { queryKey: ['notifications'] },
+        (oldNot: Notification[]) => [...oldNot, data]
+      )
     }
   })
 
@@ -36,20 +50,18 @@ export default function CreateNotificationForm({
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
   return (
     <form
       action=''
-      className='flex flex-col gap-4 bg-white p-2 rounded'
+      className='flex flex-column gap-4 pt-4'
       onSubmit={handleSubmit(async (data: FieldValues, event) => {
         event?.preventDefault()
-        const account = await findAccountByUsername(
-          data.receiverUsername as string
-        )
         const newNotification = {
-          receiverId: Number(account.id),
+          receiverId: data.receiverId,
           senderId: Number(user?.id),
           subject: data.subject,
           body: data.body
@@ -57,38 +69,50 @@ export default function CreateNotificationForm({
         create(newNotification)
       })}
     >
-      <h2>Crear notifiaciones</h2>
-      <div className='flex justify-between gap-2'>
-        <label htmlFor=''>Para: </label>
-        <input
-          type='text'
-          placeholder='Nombre de usuario'
-          className={`border px-1 rounded ${errors?.receiverUsername && 'focus:border-red-500 focus:outline-none'}`}
+      <FloatLabel>
+        <Dropdown
+          options={accounts}
+          loading={loadingAccounts}
+          value={selectedAccount}
+          optionLabel='username'
+          optionValue='id'
           {...register('receiverUsername', { required: true })}
+          onChange={(e) => {
+            setSelectedAccount(e.value)
+            setValue('receiverId', e.value)
+          }}
+          invalid={errors?.receiverUsername !== undefined}
+          className='w-full'
+          filter
         />
-      </div>
-      <div className='flex justify-between gap-2'>
-        <label htmlFor=''>Asunto: </label>
-        <input
+        <label htmlFor=''>Para</label>
+      </FloatLabel>
+      <FloatLabel>
+        <InputText
           type='text'
-          placeholder='Asunto'
-          className={`border px-1 rounded ${errors?.subject && 'focus:border-red-500 focus:outline-none'}`}
           {...register('subject', { required: true })}
+          invalid={errors?.subject !== undefined}
         />
-      </div>
-      <div className='flex justify-between gap-2'>
-        <label htmlFor=''>Mensaje: </label>
-        <input
+        <label htmlFor=''>Asunto</label>
+      </FloatLabel>
+      <FloatLabel>
+        <InputText
           type='text'
-          placeholder='mensaje'
-          className={`border px-1 rounded ${errors?.body && 'focus:border-red-500 focus:outline-none'}`}
           {...register('body', { required: true })}
+          invalid={errors?.body !== undefined}
         />
-      </div>
-      <button className='blueButtonForm p-1'>Send</button>
-      {isPending && <span className='text-yellow-400'>Creando...</span>}
-      {isSuccess && <span className='text-green-400'>Listo!</span>}
-      {isError && <span className='text-yellow-400'>Error</span>}
+        <label htmlFor=''>Mensaje</label>
+      </FloatLabel>
+      <Button
+        label='Enviar'
+        icon='pi pi-upload'
+        iconPos='right'
+        size='small'
+        loading={isPending}
+      />
+      {isPending && <small className='text-yellow-400'>Creando...</small>}
+      {isSuccess && <small className='text-green-400'>Listo!</small>}
+      {isError && <small className='text-yellow-400'>Error</small>}
     </form>
   )
 }
