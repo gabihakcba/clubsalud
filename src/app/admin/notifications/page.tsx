@@ -1,13 +1,15 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import HasRole from 'components/HasRole'
-import Modal from 'components/Modal'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
-import NotificationSection from 'components/notifications/NotificationSection'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { Dialog } from 'primereact/dialog'
 import { getAccountNotifications } from 'queries/notifications'
 import { useState, type ReactElement, useEffect } from 'react'
-import { type Notification, Permissions, type Account } from 'utils/types'
+import { type Notification, type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 export default function NotificationsPage(): ReactElement {
@@ -21,7 +23,7 @@ export default function NotificationsPage(): ReactElement {
   }, [])
 
   const { data: notifications, refetch } = useQuery({
-    queryKey: ['notificationes'],
+    queryKey: ['notifications'],
     queryFn: async (): Promise<Notification[]> => {
       const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
       if (user?.id) {
@@ -33,44 +35,80 @@ export default function NotificationsPage(): ReactElement {
   })
 
   return (
-    <div className='flex flex-col'>
-      <div className='flex gap-2 items-center'>
-        <h2 className='text-2xl font-bold m-2'>Notificaciones</h2>
-        <HasRole required={[Permissions.ADM, Permissions.OWN]}>
-          <button
-            className='blueButtonForm w-max h-max p-1'
-            onClick={openCreate}
-          >
-            Crear notificacion
-          </button>
-          <Modal
-            isOpen={create}
-            closeModal={closeCreate}
-          >
-            <CreateNotificationForm
-              closeModal={closeCreate}
-            ></CreateNotificationForm>
-          </Modal>
-        </HasRole>
-      </div>
+    <Card className='flex flex-column h-full'>
+      <nav className='flex gap-4 align-items-center'>
+        <h2>Notificaciones</h2>
+        <Button
+          label='Crear Notificación'
+          onClick={openCreate}
+          size='small'
+          icon='pi pi-plus'
+          iconPos='right'
+        />
+        <Dialog
+          visible={create}
+          onHide={closeCreate}
+          header='Crear Notificación'
+        >
+          <CreateNotificationForm />
+        </Dialog>
+      </nav>
 
-      <hr className='m-2' />
-      <h3>Recibidas</h3>
-      <hr className='m-2' />
-      <NotificationSection
-        notifications={notifications?.filter(
+      <DataTable
+        value={notifications?.filter(
           (notification) => notification.receiverId === user?.id
         )}
-      ></NotificationSection>
+        header='Recibidas'
+      >
+        <Column
+          field='id'
+          header='ID'
+        />
+        <Column
+          field='receiver.username'
+          header='De'
+        />
+        <Column
+          field='sender.username'
+          header='Para'
+        />
+        <Column
+          field='subject'
+          header='Encabezado'
+        />
+        <Column
+          field='body'
+          header='Mensaje'
+        />
+      </DataTable>
 
-      <hr className='m-2' />
-      <h3>Enviadas</h3>
-      <hr className='m-2' />
-      <NotificationSection
-        notifications={notifications?.filter(
+      <DataTable
+        value={notifications?.filter(
           (notification) => notification.senderId === user?.id
         )}
-      ></NotificationSection>
-    </div>
+        header='Enviadas'
+      >
+        <Column
+          field='id'
+          header='ID'
+        />
+        <Column
+          field='receiver.username'
+          header='De'
+        />
+        <Column
+          field='sender.username'
+          header='Para'
+        />
+        <Column
+          field='subject'
+          header='Encabezado'
+        />
+        <Column
+          field='body'
+          header='Mensaje'
+        />
+      </DataTable>
+    </Card>
   )
 }
