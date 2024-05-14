@@ -1,19 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Calendar } from 'primereact/calendar'
+import { Dropdown } from 'primereact/dropdown'
+import { InputText } from 'primereact/inputtext'
 import { createInstructorPayment } from 'queries/instructorPayments'
 import { getInstructors } from 'queries/instructors'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   type CreateInstructorPayment,
   type InstructorPayment
 } from 'utils/types'
 
-interface params {
-  closeModal: () => void
-}
-export default function CreateInstructorPaymentForm({
-  closeModal
-}: params): ReactElement {
+export default function CreateInstructorPaymentForm(): ReactElement {
+  const [selectedInstructor, setSelectedInstructor] = useState<any>(null)
+
   const query = useQueryClient()
 
   const { data: instructors } = useQuery({
@@ -37,7 +38,6 @@ export default function CreateInstructorPaymentForm({
         (oldData: InstructorPayment[]) => [...oldData, data]
       )
       reset()
-      setTimeout(closeModal, 250)
     }
   })
 
@@ -45,12 +45,13 @@ export default function CreateInstructorPaymentForm({
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
   return (
     <form
-      className='flex flex-col bg-white rounded p-4 gap-2'
+      className='flex flex-column gap-4 pt-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         const parsed: CreateInstructorPayment = {
@@ -63,115 +64,81 @@ export default function CreateInstructorPaymentForm({
         create(parsed)
       })}
     >
-      <h3 className='text-xl font-bold text-center'>Generar Pago</h3>
-      <hr className='m-2' />
-      <div className='flex flex-col gap-1'>
-        <div className='flex gap-4 justify-between items-center'>
-          <label htmlFor=''>Cantidad</label>
-          <input
-            type='number'
-            className='border-2 rounded text-end'
-            {...register('amount', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          />
-        </div>
-        {errors?.amount && (
-          <span className='text-sm text-red-600'>
-            {errors?.amount.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('amount', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.amount !== undefined}
+        />
+        <label htmlFor=''>Cantidad</label>
       </div>
-      <div className='flex flex-col gap-1'>
-        <div className='flex gap-4 justify-between items-center'>
-          <label htmlFor=''>Mes trabajado</label>
-          <input
-            type='date'
-            className='border-2 rounded'
-            {...register('workedMonth', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          />
-        </div>
-        {errors?.workedMonth && (
-          <span className='text-sm text-red-600'>
-            {errors?.workedMonth.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <Calendar
+          {...register('workedMonth', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.workedMonth !== undefined}
+        />
+        <label htmlFor=''>Mes trabajado</label>
       </div>
-      <div className='flex flex-col gap-1'>
-        <div className='flex gap-4 justify-between items-center'>
-          <label htmlFor=''>Horas trabajadas</label>
-          <input
-            type='number'
-            className='border-2 rounded text-end'
-            {...register('workedHours', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-          />
-        </div>
+      <div className='p-float-label'>
+        <InputText
+          type='number'
+          {...register('workedHours', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.workedHours !== undefined}
+        />
+        <label htmlFor=''>Horas trabajadas</label>
       </div>
-      <div className='flex flex-col gap-1'>
-        <div className='flex gap-4 justify-between items-center'>
-          <label htmlFor=''>Fecha de pago</label>
-          <input
-            type='date'
-            className='border-2 rounded'
-            {...register('paymentDate', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-          />
-        </div>
-        {errors?.paymentDate && (
-          <span className='text-sm text-red-600'>
-            {errors?.paymentDate.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <Calendar
+          {...register('paymentDate', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.paymentDate !== undefined}
+        />
+        <label htmlFor=''>Fecha de pago</label>
       </div>
-      <div className='flex flex-col gap-1'>
-        <div className='flex gap-4 justify-between items-center'>
-          <label htmlFor=''>Profesor</label>
-          <select
-            className='border-2 rounded'
-            {...register('instructorId', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          >
-            {instructors?.map((instructor, index) => (
-              <option
-                key={index}
-                value={instructor.id}
-              >
-                {instructor.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {errors?.instructorId && (
-          <span className='text-sm text-red-600'>
-            {errors?.instructorId.message as string}
-          </span>
-        )}
+      <div className='p-float-label'>
+        <Dropdown
+          options={instructors}
+          value={selectedInstructor}
+          optionLabel='name'
+          optionValue='id'
+          {...register('instructor', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          filter
+          invalid={errors?.instructorId !== undefined}
+          onChange={(e) => {
+            setSelectedInstructor(e.value)
+            setValue('instructorId', e.value)
+          }}
+          className='w-full'
+        />
+        <label htmlFor=''>Profesor</label>
       </div>
-      <div className='w-full flex flex-col justify-center items-center'>
-        <button
-          className='blueButtonForm p-1 w-full disabled:bg-black'
-          disabled={isPending}
-        >
-          Enviar
-        </button>
-        {isSuccess && <span className='text-sm text-green-600'>Listo!</span>}
-        {isPending && (
-          <span className='text-sm text-yellow-600'>Creando...</span>
-        )}
-        {isError && <span className='text-sm text-red-600'>Error!</span>}
-      </div>
+      <Button
+        loading={isPending}
+        label='Enviar'
+        icon='pi pi-upload'
+        iconPos='right'
+        size='small'
+      />
+      {isSuccess && <small className='text-sm text-green-600'>Listo!</small>}
+      {isPending && (
+        <small className='text-sm text-yellow-600'>Creando...</small>
+      )}
+      {isError && <small className='text-sm text-red-600'>Error!</small>}
     </form>
   )
 }
