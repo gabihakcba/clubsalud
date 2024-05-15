@@ -1,91 +1,193 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import ScheduleCard from 'components/schedules/ScheduleCard'
+import ClassAssign from 'components/schedules/ClassAssign'
+import InstructorAssign from 'components/schedules/InstructorAssign'
+import { Card } from 'primereact/card'
+import { Chip } from 'primereact/chip'
+import { Column } from 'primereact/column'
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import { DataTable } from 'primereact/datatable'
+import { Dialog } from 'primereact/dialog'
+import { Tag } from 'primereact/tag'
 import { getSchedules } from 'queries/schedules'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { type Schedule } from 'utils/types'
-
-// const horarios = [
-//   '8:00',
-//   '8:30',
-//   '9:00',
-//   '9:30',
-//   '10:00',
-//   '10:30',
-//   '11:00',
-//   '11:30',
-//   '12:00',
-//   '12:30',
-//   '13:00',
-//   '13:30',
-//   '14:00',
-//   '14:30',
-//   '15:00',
-//   '15:30',
-//   '16:00',
-//   '16:30',
-//   '17:00',
-//   '17:30'
-// ]
+import { useModal } from 'utils/useModal'
 
 const formatHour = (hour: number): string => {
   return `${Math.floor(hour / 100)}:${hour % 100 > 0 ? hour % 100 : '00'}`
 }
 
-const border = (start: number): string => {
-  const border = 'border-r-[1px] border-l-[1px] border-black'
-  return start % 100 !== 0
-    ? `${border} mb-2 border-b-[1px]`
-    : `${border} border-t-[1px]`
+interface scheduleType {
+  start: number
+  end: number
+  classes: Schedule[]
+}
+const formatScheduler = (schedules: Schedule[]): any[] => {
+  const schedule: scheduleType[] = [
+    { start: 800, end: 830, classes: [] },
+    { start: 830, end: 900, classes: [] },
+    { start: 900, end: 930, classes: [] },
+    { start: 930, end: 1000, classes: [] },
+    { start: 1000, end: 1030, classes: [] },
+    { start: 1030, end: 1100, classes: [] },
+    { start: 1100, end: 1130, classes: [] },
+    { start: 1130, end: 1200, classes: [] },
+    { start: 1200, end: 1230, classes: [] },
+    { start: 1230, end: 1300, classes: [] },
+    { start: 1300, end: 1330, classes: [] },
+    { start: 1330, end: 1400, classes: [] },
+    { start: 1400, end: 1430, classes: [] },
+    { start: 1430, end: 1500, classes: [] },
+    { start: 1500, end: 1630, classes: [] },
+    { start: 1630, end: 1700, classes: [] },
+    { start: 1700, end: 1730, classes: [] },
+    { start: 1730, end: 1800, classes: [] }
+  ]
+  schedule.forEach((sch) => {
+    schedules.forEach((sch2) => {
+      if (sch.start === sch2.start) {
+        sch.classes.push(sch2)
+      }
+    })
+  })
+  return schedule
 }
 
 export default function Schelude(): ReactElement {
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(null)
+  const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
+  const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
+    useModal(false)
   const { data } = useQuery({
     queryKey: ['sch'],
     queryFn: async () => {
       const res = await getSchedules()
+      console.log(res)
       return res
     }
   })
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'minmax(7rem,7rem) repeat(7, minmax(8rem,1fr))',
-        gridTemplateRows:
-          'minmax(max-content,max-content) repeat(20, minmax(2rem,1fr))',
-        columnGap: '1rem',
-        maxHeight: '95dvh',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}
-      className='max-w-[97vw] scrollHidden m-2'
-    >
-      <div className='text-center mb-2'>Dias\Horarios</div>
-      <div className='text-center mb-2'>Lunes</div>
-      <div className='text-center mb-2'>Martes</div>
-      <div className='text-center mb-2'>Miercoles</div>
-      <div className='text-center mb-2'>Jueves</div>
-      <div className='text-center mb-2'>Viernes</div>
-      <div className='text-center mb-2'>Sabado</div>
-      <div className='text-center mb-2'>Domingo</div>
 
-      {data?.map((schedule: Schedule, index: number) => (
-        <>
-          {data[index - 1]?.start !== schedule.start && (
-            <div className={`text-center ${border(schedule.start)}`}>
-              {`${formatHour(schedule.start)} - ${formatHour(schedule.end)}`}
+  return (
+    <Card className='h-full'>
+      <Dialog
+        visible={assignClass}
+        onHide={closeAssignClass}
+        header='Asignar Clase'
+      >
+        <ClassAssign schedule={selectedSchedule} />
+      </Dialog>
+      <Dialog
+        visible={assignInstructor}
+        onHide={closeAssignInstructor}
+        header='Asignar Profesor'
+      >
+        <InstructorAssign schedule={selectedSchedule} />
+      </Dialog>
+      <ConfirmDialog />
+      <DataTable
+        value={formatScheduler(data ?? [])}
+        scrollable
+        scrollHeight='80vh'
+        cellSelection
+        selectionMode='single'
+        onSelectionChange={(e) => {
+          setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
+          confirmDialog({
+            header: 'Asignar ...',
+            message: 'Seleccione que desea asignar',
+            acceptLabel: 'Clase',
+            rejectLabel: 'Profesor',
+            accept() {
+              openAssingClass()
+            },
+            reject() {
+              openAssignInstructor()
+            }
+          })
+        }}
+        header={() => <h2>Horarios</h2>}
+      >
+        <Column
+          body={(e) => (
+            <div className='flex gap-4'>
+              <Tag
+                value={formatHour(e.start as number)}
+                severity='warning'
+              />
+              <Tag
+                value={formatHour(e.end as number)}
+                severity='warning'
+              />
             </div>
           )}
-          <ScheduleCard
-            schedule={schedule}
-            key={index}
-          ></ScheduleCard>
-        </>
-      ))}
-    </div>
+          header='Horario'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
+              <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Lunes'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[1]?.class?.name ?? sch.classes[1]?.day}</p>
+              <Chip label={sch.classes[1]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Martes'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[2]?.class?.name ?? sch.classes[2]?.day}</p>
+              <Chip label={sch.classes[2]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Miércoles'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[3]?.class?.name ?? sch.classes[3]?.day}</p>
+              <Chip label={sch.classes[3]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Jueves'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[4]?.class?.name ?? sch.classes[4]?.day}</p>
+              <Chip label={sch.classes[4]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Viernes'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[5]?.class?.name ?? sch.classes[5]?.day}</p>
+              <Chip label={sch.classes[5]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Sábado'
+        />
+        <Column
+          body={(sch) => (
+            <div className='flex align-items-center gap-2'>
+              <p>{sch.classes[6]?.class?.name ?? sch.classes[6]?.day}</p>
+              <Chip label={sch.classes[6]?.charge?.name ?? 'Profesor'} />
+            </div>
+          )}
+          header='Domingo'
+        />
+      </DataTable>
+    </Card>
   )
 }

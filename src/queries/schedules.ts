@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { type Class_, type Schedule, type Instructor } from 'utils/types'
 import { getClassesByName } from './classes'
-import { getInstructorByName } from './instructors'
 import { path } from 'utils/path'
 
 export const getSchedules = async (): Promise<Schedule[]> => {
@@ -28,19 +27,17 @@ export const assignClass = async ({
 }
 
 export const assignInstructor = async ({
-  instructorName,
+  instructorId,
   scheduleId
 }: {
-  instructorName: string
+  instructorId: number
   scheduleId: number
 }): Promise<Instructor> => {
-  const instructorInfo = await getInstructorByName(instructorName)
-  const instructorId = instructorInfo.data.id
-  await axios.patch(`${path()}/api/schedules/setInstructor`, {
+  const response = await axios.patch(`${path()}/api/schedules/setInstructor`, {
     data: {
       instructorId,
       scheduleId
     }
   })
-  return instructorInfo.data
+  return response.data
 }

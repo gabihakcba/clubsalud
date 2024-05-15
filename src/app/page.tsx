@@ -6,24 +6,31 @@ import { signInAccount } from 'queries/login'
 import { type Setter, type LogIn } from 'utils/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import Image from 'next/image'
+import logo from '../../public/logos/logo_large.png'
 
-const logIn = async (
-  data: FieldValues,
-  router: AppRouterInstance,
-  setLogginFailed: Setter
-): Promise<void> => {
+interface params {
+  data: FieldValues
+  router: AppRouterInstance
+  setLoading: Setter
+}
+const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const user: LogIn = data as LogIn
+  setLoading('loading')
   const response = await signInAccount(user)
   if (response.status === 200) {
+    setLoading('success')
     router.push('/admin')
   } else {
-    setLogginFailed(true)
+    setLoading('error')
   }
 }
 
 export default function Home(): ReactElement {
   const router = useRouter()
-  const [logginFailed, setLogginFailed] = useState(false)
+  const [loading, setLoading] = useState('false')
 
   const {
     register,
@@ -32,87 +39,69 @@ export default function Home(): ReactElement {
   } = useForm()
 
   return (
-    <div className='w-full h-full flex justify-center items-center'>
+    <div className='flex w-full h-screen justify-content-center align-items-center'>
       <form
         id='loginForm'
-        onSubmit={handleSubmit((data) => {
-          void logIn(data, router, setLogginFailed)
+        className='flex flex-column gap-4 align-items-center'
+        onSubmit={handleSubmit((data, event) => {
+          event?.preventDefault()
+          void logIn({ data, router, setLoading })
         })}
-        className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max'
       >
-        <div className='mb-4'>
-          <label
-            className='block text-gray-700 text-base font-bold mb-2'
-            htmlFor='username'
-          >
-            Username
-          </label>
-          <input
+        <Image
+          src={logo}
+          height={70}
+          alt='Club Salud'
+          className='m-2'
+        ></Image>
+        <div className='p-float-label'>
+          <InputText
+            id='username'
+            invalid={errors?.username !== undefined}
             {...register('username', {
               required: {
                 value: true,
                 message: 'El nombre es requerido'
               }
             })}
-            name='username'
-            className='inputForm'
-            form='loginForm'
-            id='username'
-            type='text'
-            placeholder='Nombre de usuario'
-            autoComplete='off'
-          ></input>
-          {errors?.username && (
-            <span className='inputError'>
-              {errors.username.message as string}
-            </span>
-          )}
+          ></InputText>
+          <label htmlFor='username'>Username</label>
         </div>
-        <div className='mb-6'>
-          <label
-            className='block text-gray-700 text-base font-bold mb-2'
-            htmlFor='password'
-          >
-            Password
-          </label>
-          <input
+        <div className='p-float-label'>
+          <InputText
+            id='password'
+            type='password'
             {...register('password', {
               required: {
                 value: true,
                 message: 'La contraseña es requerida'
               }
             })}
-            name='password'
-            className='inputForm'
-            form='loginForm'
-            id='password'
-            type='password'
-            placeholder='******************'
-          ></input>
-          {errors?.password && (
-            <span className='inputError'>
-              {errors.password.message as string}
-            </span>
-          )}
+            autoComplete='off'
+            invalid={errors?.password !== undefined}
+          ></InputText>
+          <label htmlFor='password'>Password</label>
         </div>
-        <div className='flex flex-col'>
-          <div className='flex items-center justify-between flex-col sm:flex-row'>
-            <button
-              className='blueButtonForm'
-              type='submit'
+
+        <div className='flex flex-column gap-2'>
+          <div className=''>
+            <Button
+              label='Entrar'
               form='loginForm'
-            >
-              Sign In
-            </button>
-            <a
-              className='linkBlueForm'
-              href='#'
-            >
-              Forgot Password?
-            </a>
+              type='submit'
+              icon='pi pi-sign-in'
+              size='small'
+              loading={loading === 'loading'}
+            ></Button>
+            <Button
+              label='Olvidé mi contraseña'
+              size='small'
+              link
+              className='px-2'
+            ></Button>
           </div>
-          {logginFailed && (
-            <span className='inputError'>
+          {loading === 'error' && (
+            <span className='text-red-500'>
               Contraseña y/o usuario incorrecto
             </span>
           )}

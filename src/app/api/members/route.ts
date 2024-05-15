@@ -49,7 +49,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       cuit: data.cuit ? BigInt(data.cuit) : null,
       phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
-      inscriptionDate: new Date(data.inscriptionDate),
+      inscriptionDate: data.inscriptionDate,
       derivedBy: data.derivedBy,
       afiliateNumber: BigInt(data.afiliateNumber),
       state: MemberState.ACTIVE
@@ -102,10 +102,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       cuit: data?.cuit ? Number(data?.cuit) : null,
       phoneNumber: Number(data.phoneNumber),
       address: data.address,
-      inscriptionDate: new Date(data.inscriptionDate),
-      cancelationDate: data?.cancelationDate
-        ? new Date(data?.cancelationDate)
-        : null,
+      inscriptionDate: data.inscriptionDate,
+      cancelationDate: data?.cancelationDate ? data?.cancelationDate : null,
       cancelationReason: data?.cancelationReason ?? null,
       derivedBy: data.derivedBy,
       afiliateNumber: Number(data.afiliateNumber),

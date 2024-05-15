@@ -3,7 +3,6 @@ import { path } from 'utils/path'
 import {
   type Subscription,
   type CreateSubscription,
-  type Member,
   type Promotion
 } from 'utils/types'
 
@@ -28,7 +27,7 @@ export const setSubscription = async ({
   return response.data
 }
 
-export const getSubscriptions = async (): Promise<Member[]> => {
+export const getSubscriptions = async (): Promise<Subscription[]> => {
   const response = await axios.get(`${path()}/api/subscriptions`)
   return response.data
 }

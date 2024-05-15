@@ -1,49 +1,53 @@
 'use client'
 
-import Modal from 'components/Modal'
 import HealthAssignForm from 'components/healthPlans/HealthAssignForm'
 import HealthCreateForm from 'components/healthPlans/HealthCreateForm'
 import HealthSection from 'components/healthPlans/HealthSection'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
+import { Dialog } from 'primereact/dialog'
 
 export default function HealthPlan(): ReactElement {
   const [isCreate, openCreate, closeCreate] = useModal(false)
   const [isAssign, openAssign, closeAssign] = useModal(false)
 
   return (
-    <div className='flex flex-col gap-2 mt-1'>
-      <nav className='flex flex-col sm:flex-row gap-4 px-4 items-center'>
-        <h2 className='text-2xl font-bold'>Obras sociles</h2>
-        <button
-          className='blueButtonForm p-1 px-2'
+    <Card className='flex flex-column gap-2 h-full'>
+      <Dialog
+        header='Crear Obra Social'
+        visible={isCreate}
+        onHide={closeCreate}
+      >
+        <HealthCreateForm />
+      </Dialog>
+      <Dialog
+        header='Asignar Obra Social'
+        visible={isAssign}
+        onHide={closeAssign}
+      >
+        <HealthAssignForm />
+      </Dialog>
+      <nav className='flex flex-column sm:flex-row gap-4 align-items-center'>
+        <h2 className=''>Obras Sociales</h2>
+        <Button
           onClick={openCreate}
-        >
-          Crear obra social
-        </button>
-        <Modal
-          isOpen={isCreate}
-          closeModal={closeCreate}
-        >
-          <HealthCreateForm closeModal={closeCreate}></HealthCreateForm>
-        </Modal>
-        <button
-          className='blueButtonForm p-1 px-2'
+          label='Crear Obra Social'
+          size='small'
+          icon='pi pi-plus'
+          iconPos='right'
+        />
+        <Button
           onClick={openAssign}
-        >
-          Asignar obra social
-        </button>
-        <Modal
-          isOpen={isAssign}
-          closeModal={closeAssign}
-        >
-          <HealthAssignForm></HealthAssignForm>
-        </Modal>
+          label='Asignar Obra Social'
+          size='small'
+          icon='pi pi-plus'
+          iconPos='right'
+        />
       </nav>
       <hr />
-      <div className='p-7'>
-        <HealthSection></HealthSection>
-      </div>
-    </div>
+      <HealthSection></HealthSection>
+    </Card>
   )
 }
