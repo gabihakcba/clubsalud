@@ -10,8 +10,7 @@ export default function ClassesCard(): ReactElement {
   const { data: classes } = useQuery({
     queryKey: ['class'],
     queryFn: async () => {
-      const response = await getClasses()
-      return response.data
+      return await getClasses()
     }
   })
 
