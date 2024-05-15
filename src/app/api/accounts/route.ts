@@ -36,9 +36,19 @@ export async function GET(req: NextRequest): Promise<Response> {
           password: user.password
         })
       })
-      return new Response(JSONbig.stringify(usersFilters), {
-        status: 200
-      })
+      return new Response(
+        JSONbig.stringify({
+          pages: users,
+          totalPages: 0,
+          previousPage: 0,
+          currentPage: 0,
+          nextPage: 0,
+          perPAge: 0
+        }),
+        {
+          status: 200
+        }
+      )
     } else {
       // page elems
       const users: Account[] = await db.account.findMany({

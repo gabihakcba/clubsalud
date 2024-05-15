@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
 import { getMembers } from 'queries/members'
 import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 
-const subscribe = async (id: string, promotion, closeModal): Promise<void> => {
+const subscribe = async (id: string, promotion): Promise<void> => {
   const memberId = Number(id)
   const subs = await setSubscription({
     memberId,
@@ -14,13 +16,12 @@ const subscribe = async (id: string, promotion, closeModal): Promise<void> => {
   if (!subs) {
     alert('No se pudo adherir a la suscripción')
   }
-  closeModal()
 }
 
-interface params {
-  closeModal: () => void
-}
-export default function SubscriptionForm({ closeModal }: params): ReactElement {
+export default function SubscriptionForm(): ReactElement {
+  const [selectedMember, setSelectedMember] = useState<any>(0)
+  const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
+
   const { data: members } = useQuery({
     queryKey: ['memS'],
     queryFn: async () => {
@@ -37,86 +38,68 @@ export default function SubscriptionForm({ closeModal }: params): ReactElement {
 
   const {
     register,
-    handleSubmit
+    handleSubmit,
+    setValue
     // formState: { errors },
     // watch
   } = useForm()
 
   return (
-    <div className='text-white rounded bg-gray-800 p-4'>
-      <h2>Crear subscription</h2>
-      <form
-        action=''
-        id='subs'
-        onSubmit={handleSubmit((data, event) => {
-          event?.preventDefault()
+    <form
+      action=''
+      id='subs'
+      className='flex flex-column gap-4 pt-4'
+      onSubmit={handleSubmit((data, event) => {
+        event?.preventDefault()
+        void subscribe(data.memberId as string, data.promotion)
+      })}
+    >
+      <li className='p-float-label'>
+        <Dropdown
+          options={members}
+          value={selectedMember ?? null}
+          optionLabel='name'
+          optionValue='id'
+          filter
+          {...register('memberName', {
+            required: {
+              value: true,
+              message: 'Este campo es requerido'
+            }
+          })}
+          onChange={(e) => {
+            setSelectedMember(e.value)
+            setValue('memberId', e.value)
+          }}
+        />
+        <label htmlFor='name'>Alumno</label>
+      </li>
 
-          void (
-            promotions !== undefined &&
-            subscribe(
-              data.memberId as string,
-              promotions[data.promotion],
-              closeModal
-            )
-          )
-        })}
-      >
-        <div>
-          <label htmlFor=''>Alumno</label>
-          <select
-            {...register('memberId', {
-              required: {
-                value: true,
-                message: 'Este campo es requerido'
-              }
-            })}
-            className='text-black'
-          >
-            <option value=''>Select</option>
-            {members?.map((member, index) => (
-              <option
-                value={member.id}
-                key={index}
-              >
-                {member.name}
-              </option>
-            ))}
-          </select>
-          <label
-            htmlFor=''
-            className='ml-2'
-          >
-            Plan{' '}
-          </label>
-          <select
-            {...register('promotion', {
-              required: {
-                value: true,
-                message: 'Este campo es requerido'
-              }
-            })}
-            className='text-black'
-          >
-            <option value=''>Select</option>
-            {promotions?.map((promotion, index) => {
-              return (
-                <option
-                  value={index}
-                  key={index}
-                >
-                  {promotion.title} - ${promotion.amountPrice}
-                </option>
-              )
-            })}
-          </select>
-          <button
-            type='submit'
-            className='blueButtonForm p-1 ml-1'
-          >
-            Enviar
-          </button>
-        </div>
-      </form>
-    </div>
+      <li className='p-float-label'>
+        <Dropdown
+          options={promotions}
+          value={selectedPromotion}
+          optionLabel='title'
+          {...register('promotionName', {
+            required: {
+              value: true,
+              message: 'Este campo es requerido'
+            }
+          })}
+          onChange={(e) => {
+            setSelectedPromotion(e.value)
+            setValue('promotion', e.value)
+          }}
+        />
+        <label htmlFor='promotionName'>Plan </label>
+      </li>
+      <Button
+        type='submit'
+        label='Enviar'
+        className='w-full'
+        icon='pi pi-upload'
+        iconPos='right'
+      />
+    </form>
   )
 }

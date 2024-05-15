@@ -83,10 +83,10 @@ export default function SubscriptionSection({
           width: '100%'
         }}
       >
-        {members?.map((mem) => (
-          <>
-            {mem.memberSubscription?.map((subs) => (
-              <>
+        {members?.map((mem, index) => (
+          <div key={index}>
+            {mem.memberSubscription?.map((subs, index) => (
+              <div key={index}>
                 <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
                   {mem.name}
                 </p>
@@ -102,9 +102,9 @@ export default function SubscriptionSection({
                 <p className='border-l-2 border-b-2 w-full h-full text-center p-2'>
                   {takePromotion(promotions, subs.promotionId)}
                 </p>
-              </>
+              </div>
             ))}
-          </>
+          </div>
         ))}
       </section>
     </div>

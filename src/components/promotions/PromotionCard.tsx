@@ -67,10 +67,7 @@ export default function PromotionCard({
               isOpen={isOpen}
               closeModal={closeModal}
             >
-              <UpdatePromotionForm
-                promotion={promotion}
-                closeModal={closeModal}
-              ></UpdatePromotionForm>
+              <UpdatePromotionForm promotion={promotion}></UpdatePromotionForm>
             </Modal>
             <button
               onClick={() => {

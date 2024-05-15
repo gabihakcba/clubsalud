@@ -1,16 +1,18 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import Modal from 'components/Modal'
-import BilledConsultationCard from 'components/bills/BilledConsultationCard'
 import CreatePaymentForm from 'components/bills/CreatePaymentForm'
-import PaymentCard from 'components/bills/PaymentCard'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { getBilled, getPayments } from 'queries/payments'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
+import { Dialog } from 'primereact/dialog'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
 
 export default function Page(): ReactElement {
-  const [isOpen, openModal, closeModal] = useModal(false)
+  const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const { data: payments } = useQuery({
     queryKey: ['payments'],
     queryFn: async () => {
@@ -24,61 +26,95 @@ export default function Page(): ReactElement {
     }
   })
   return (
-    <div className='pr-6 pb-6 flex flex-col'>
-      <button
-        className='blueButtonForm m-2 w-max'
-        onClick={openModal}
+    <Card className='flex flex-column h-full'>
+      <Dialog
+        header='Generar Cobro'
+        visible={createBill}
+        onHide={closeCreateBill}
       >
-        Generar cobro
-      </button>
-      <Modal
-        isOpen={isOpen}
-        closeModal={closeModal}
+        <CreatePaymentForm></CreatePaymentForm>
+      </Dialog>
+      <Button
+        onClick={openCreateBill}
+        size='small'
+        label='Generar Cobro'
+        icon='pi pi-plus'
+        iconPos='right'
+      />
+      <DataTable
+        value={payments}
+        header={() => <h2>Cobros Particulares</h2>}
       >
-        <CreatePaymentForm closeModal={closeModal}></CreatePaymentForm>
-      </Modal>
-      <hr className='m-2' />
-      <h2 className='text-xl font-bold ml-6'>Cobros particulares</h2>
-      <hr className='m-2' />
-      <section
-        className='mt-5 ml-5 h-full'
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(12rem,1fr))',
-          gap: '1rem',
-          alignContent: 'flex-start'
-        }}
+        <Column
+          field='id'
+          header='ID'
+        />
+        <Column
+          field='member.name'
+          header='Alumno'
+        />
+        <Column
+          field='date'
+          header='Fecha de pago'
+        />
+        <Column
+          field='amount'
+          header='Cantidad'
+        />
+        <Column
+          field='subscription.paid'
+          header='Pagado'
+        />
+        <Column
+          field='subscription.remaining'
+          header='Faltante'
+        />
+        <Column
+          field='subscription.total'
+          header='Total'
+        />
+        <Column
+          field='subscription.promotion.title'
+          header='Promoción'
+        />
+      </DataTable>
+      <DataTable
+        value={billed}
+        header={() => <h2>Consultas cobradas</h2>}
       >
-        {payments?.map((payment, index) => (
-          <PaymentCard
-            payment={payment}
-            key={index}
-          />
-        ))}
-      </section>
-      <hr className='m-2' />
-      <h2 className='text-xl font-bold ml-6'>Consultas cobradas</h2>
-      <hr className='m-2' />
-      <section
-        className='mt-5 ml-5 h-full'
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(12rem,1fr))',
-          gap: '1rem',
-          alignContent: 'flex-start'
-        }}
-      >
-        {billed?.map((billed, index) => (
-          <BilledConsultationCard
-            billed={billed}
-            key={index}
-          />
-        ))}
-      </section>
-    </div>
+        <Column
+          field='id'
+          header='ID'
+        />
+        <Column
+          field='subscription.member.name'
+          header='Alumno'
+        />
+        <Column
+          field='date'
+          header='Fecha de pago'
+        />
+        <Column
+          field='amount'
+          header='Cantidad'
+        />
+        <Column
+          field='subscription.paid'
+          header='Pagado'
+        />
+        <Column
+          field='subscription.remaining'
+          header='Faltante'
+        />
+        <Column
+          field='subscription.total'
+          header='Total'
+        />
+        <Column
+          field='subscription.promotion.title'
+          header='Promoción'
+        />
+      </DataTable>
+    </Card>
   )
 }

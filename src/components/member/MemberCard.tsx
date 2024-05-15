@@ -2,21 +2,22 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteMember, updateMember } from 'queries/members'
-import { useState, type ReactElement } from 'react'
-import { formatDate } from 'utils/const'
+import { useState, type ReactElement, useEffect } from 'react'
 import {
   MemberSate,
   type Member,
   type CreateMember,
-  type Account,
-  type HealthPlanSubscribed
+  type Account
+  // type HealthPlanSubscribed
 } from 'utils/types'
-import Image from 'next/image'
-import edit from '../../../public/edit.svg'
-import delete_ from '../../../public/delete_.svg'
-import { MemberState } from '@prisma/client'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { deleteHealthSubscribed } from 'queries/healthSus'
+// import { deleteHealthSubscribed } from 'queries/healthSus'
+import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
+import { Calendar } from 'primereact/calendar'
+import { Dropdown } from 'primereact/dropdown'
+import { MultiSelect } from 'primereact/multiselect'
+import { confirmDialog } from 'primereact/confirmdialog'
 
 const update = async ({
   id,
@@ -38,6 +39,27 @@ interface param {
 }
 export default function MemberCard({ member }: param): ReactElement {
   const [editF, setEditF] = useState<boolean>(false)
+  const [selected, setSelected] = useState<MemberSate | null>(null)
+  useEffect(() => {
+    setValue('id', member.id)
+    setValue('name', member.name)
+    setValue('lastName', member.lastName)
+    setValue('dni', member.dni)
+    setValue('cuit', member.cuit ?? null)
+    setValue('phoneNumber', member.phoneNumber)
+    setValue('address', member.address)
+    setValue('inscriptionDate', new Date(member.inscriptionDate))
+    setValue(
+      'cancelationDate',
+      member.cancelationDate ? new Date(member.cancelationDate) : null
+    )
+    setValue('cancelationReason', member.cancelationReason ?? null)
+    setValue('derivedBy', member.derivedBy)
+    setValue('afiliateNumber', member.afiliateNumber)
+    setValue('state', MemberSate[member.state])
+    setSelected(MemberSate[member.state])
+    setValue('remainingClasses', member.remainingClasses ?? null)
+  }, [])
 
   const query = useQueryClient()
 
@@ -74,543 +96,379 @@ export default function MemberCard({ member }: param): ReactElement {
     }
   })
 
-  const { mutate: deleteHealth } = useMutation({
-    mutationFn: async (id: number | string) => {
-      return await deleteHealthSubscribed(id)
-    },
-    onSuccess: (data: HealthPlanSubscribed) => {
-      query.setQueryData(['account', member.accountId], (oldData: Account) => {
-        const newData: Account = { ...oldData }
-        const index = newData.memberAccount?.planSubscribed?.findIndex(
-          (plan) => plan.id === data.id
-        )
-        if (index) {
-          newData.memberAccount?.planSubscribed?.splice(index, 1)
-        }
-        return newData
-      })
-      setEditF(false)
-    }
-  })
+  // const { mutate: deleteHealth } = useMutation({
+  //   mutationFn: async (id: number | string) => {
+  //     return await deleteHealthSubscribed(id)
+  //   },
+  //   onSuccess: (data: HealthPlanSubscribed) => {
+  //     query.setQueryData(['account', member.accountId], (oldData: Account) => {
+  //       const newData: Account = { ...oldData }
+  //       const index = newData.memberAccount?.planSubscribed?.findIndex(
+  //         (plan) => plan.id === data.id
+  //       )
+  //       if (index) {
+  //         newData.memberAccount?.planSubscribed?.splice(index, 1)
+  //       }
+  //       return newData
+  //     })
+  //     setEditF(false)
+  //   }
+  // })
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue,
+    watch
   } = useForm()
 
   return (
     <>
       {member && (
-        <div
-          key={member.id}
-          className='w-full p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700'
+        <form
+          action=''
+          id={`member${member?.id}`}
+          onSubmit={handleSubmit((data) => {
+            mutateU({ id: member.id, data })
+          })}
+          className='flex flex-column max-w-max'
         >
-          <form
-            action=''
-            id={`member${member?.id}`}
-            onSubmit={handleSubmit((data) => {
-              mutateU({ id: member.id, data })
-            })}
-          >
-            <div className='flex items-center justify-between mb-2 border-b-2 border-white pb-2'>
-              <h2 className='text-xl text-white'>Perfil de Alumno</h2>
-              <button
-                onClick={() => {
-                  setEditF((prev: boolean) => !prev)
-                }}
-                type='button'
-                className='text-sm font-medium text-blue-600 hover:underline dark:text-blue-500'
-              >
-                <Image
-                  src={edit}
-                  width={30}
-                  height={30}
-                  alt='E'
-                ></Image>
-              </button>
-            </div>
-            <div className='flex flex-col lg:flex-row gap-10'>
-              <ul
-                role='list'
-                className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
-              >
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    ID
-                  </label>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    {member?.id}
-                  </label>
-                </li>
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block my-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Nombre
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.name}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='text'
-                        id='name'
-                        form={`member${member?.id}`}
-                        className='w-36 p-1 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.name}
-                        {...register('name', {
-                          required: {
-                            value: true,
-                            message: 'El nombre requerido'
-                          }
-                        })}
-                      />
-                      {errors?.name && (
-                        <span className='inputError'>
-                          {errors.name.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+          <Button
+            onClick={() => {
+              setEditF((prev: boolean) => !prev)
+            }}
+            type='button'
+            size='small'
+            icon='pi pi-pen-to-square'
+            className='align-self-end'
+          />
+          <div className='flex flex-column lg:flex-row pt-4'>
+            <ul
+              role='list'
+              className='flex flex-column gap-4'
+            >
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  value={String(member.id)}
+                  className='font-semibold'
+                  disabled
+                />
+                <label className='font-semibold'>ID</label>
+              </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  id='name'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.name}
+                  {...register('name', {
+                    required: {
+                      value: true,
+                      message: 'El nombre requerido'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.name !== undefined}
+                />
+                <label className='font-semibold'>Nombre</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Apellido
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.lastName}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='text'
-                        id='lastName'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.lastName}
-                        {...register('lastName', {
-                          required: {
-                            value: true,
-                            message: 'Apellido es requerido'
-                          }
-                        })}
-                      />
-                      {errors?.lastName && (
-                        <span className='inputError'>
-                          {errors.lastName.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  id='lastName'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.lastName}
+                  {...register('lastName', {
+                    required: {
+                      value: true,
+                      message: 'Apellido es requerido'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.lastName !== undefined}
+                />
+                <label className='font-semibold'>Apellido</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    DNI
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.dni.toString()}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='number'
-                        id='dni'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.dni.toString()}
-                        {...register('dni', {
-                          required: {
-                            value: true,
-                            message: 'DNI es requerido'
-                          }
-                        })}
-                      />
-                      {errors?.dni && (
-                        <span className='inputError'>
-                          {errors.dni.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='number'
+                  id='dni'
+                  form={`member${member?.id}`}
+                  defaultValue={Number(member?.dni)}
+                  {...register('dni', {
+                    required: {
+                      value: true,
+                      message: 'DNI es requerido'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.dni !== undefined}
+                />
+                <label className='font-semibold'>DNI</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    CUIT
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.cuit?.toString()}
-                    </label>
-                  )}
-                  {editF && (
-                    <input
-                      type='number'
-                      id='cuit'
-                      form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      defaultValue={member?.cuit?.toString()}
-                      {...register('cuit')}
-                    />
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='number'
+                  id='cuit'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.cuit?.toString()}
+                  {...register('cuit')}
+                  disabled={!editF}
+                  invalid={errors?.cuit !== undefined}
+                />
+                <label className='font-semibold'>CUIT</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Número de teléfono
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.phoneNumber.toString()}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='number'
-                        id='phoneNumber'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.phoneNumber.toString()}
-                        required
-                        {...register('phoneNumber', {
-                          required: {
-                            value: true,
-                            message: 'Número de teléfono es requerido'
-                          }
-                        })}
-                      />
-                      {errors?.phoneNumber && (
-                        <span className='inputError'>
-                          {errors.phoneNumber.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='number'
+                  id='phoneNumber'
+                  form={`member${member?.id}`}
+                  defaultValue={Number(member?.phoneNumber)}
+                  required
+                  {...register('phoneNumber', {
+                    required: {
+                      value: true,
+                      message: 'Número de teléfono es requerido'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.phoneNumber !== undefined}
+                />
+                <label className='font-semibold'>Número de teléfono</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Dirección
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.address}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='text'
-                        id='address'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.address}
-                        {...register('address', {
-                          required: {
-                            value: true,
-                            message: 'Dirección es requerida'
-                          }
-                        })}
-                      />
-                      {errors?.address && (
-                        <span className='inputError'>
-                          {errors.address.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  id='address'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.address}
+                  {...register('address', {
+                    required: {
+                      value: true,
+                      message: 'Dirección es requerida'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.address !== undefined}
+                />
+                <label className='font-semibold'>Dirección</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Fecha de inscripción
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {formatDate(member?.inscriptionDate.toString())}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='date'
-                        id='inscriptionDate'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={formatDate(
-                          member?.inscriptionDate?.toString()
-                        )}
-                        {...register('inscriptionDate', {
-                          required: {
-                            value: true,
-                            message: 'Fecha es requerida'
-                          }
-                        })}
-                      />
-                      {errors?.inscriptionDate && (
-                        <span className='inputError'>
-                          {errors.inscriptionDate.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
-              </ul>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <Calendar
+                  id='inscriptionDate'
+                  // form={`member${member.id}`}
+                  value={
+                    watch('inscriptionDate') ?? new Date(member.inscriptionDate)
+                  }
+                  {...register('inscriptionDate', {
+                    required: {
+                      value: true,
+                      message: 'Fecha es requerida'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.inscriptionDate !== undefined}
+                  dateFormat='dd/mm/yy'
+                />
+                <label className='font-semibold'>Fecha de inscripción</label>
+              </li>
+            </ul>
 
-              <ul
-                role='list'
-                className='divide-y divide-gray-200 dark:divide-gray-700 w-full'
-              >
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Fecha de cancelación
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.cancelationDate
-                        ? formatDate(member?.cancelationDate?.toString())
-                        : ''}
-                    </label>
-                  )}
-                  {editF && (
-                    <input
-                      type='date'
-                      id='cancelationDate'
-                      form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      defaultValue={formatDate(
-                        member?.cancelationDate?.toString()
-                      )}
-                      {...register('cancelationDate')}
-                    />
-                  )}
-                </li>
+            <ul
+              role='list'
+              className='flex flex-column gap-4'
+            >
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <Calendar
+                  id='cancelationDate'
+                  value={
+                    watch('cancelationDate') ??
+                    (member.cancelationDate &&
+                      new Date(member.cancelationDate)) ??
+                    null
+                  }
+                  {...register('cancelationDate')}
+                  disabled={!editF}
+                  invalid={errors?.cancelationDate !== undefined}
+                  dateFormat='dd/mm/yy'
+                />
+                <label className='font-semibold'>Fecha de cancelación</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Motivo de cancelación
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.cancelationReason ?? ''}
-                    </label>
-                  )}
-                  {editF && (
-                    <input
-                      type='text'
-                      id='cancelationReason'
-                      form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      defaultValue={member?.cancelationReason ?? ''}
-                      {...register('cancelationReason')}
-                    />
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  id='cancelationReason'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.cancelationReason ?? ''}
+                  {...register('cancelationReason')}
+                  disabled={!editF}
+                  invalid={errors?.cancelationReason !== undefined}
+                />
+                <label className='font-semibold'>Motivo de cancelación</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Derivado por
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.derivedBy}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='text'
-                        id='derivedBy'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.derivedBy}
-                        {...register('derivedBy', {
-                          required: {
-                            value: true,
-                            message: 'Derivación es requerida'
-                          }
-                        })}
-                      />
-                      {errors?.derivedBy && (
-                        <span className='inputError'>
-                          {errors.derivedBy.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='text'
+                  id='derivedBy'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.derivedBy}
+                  {...register('derivedBy', {
+                    required: {
+                      value: true,
+                      message: 'Derivación es requerida'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.derivedBy !== undefined}
+                />
+                <label className='font-semibold'>Derivado por</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Número de afiliado
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.afiliateNumber.toString()}
-                    </label>
-                  )}
-                  {editF && (
-                    <div>
-                      <input
-                        type='number'
-                        id='afiliateNumber'
-                        form={`member${member?.id}`}
-                        className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                        defaultValue={member?.afiliateNumber.toString()}
-                        {...register('afiliateNumber', {
-                          required: {
-                            value: true,
-                            message: 'Numero de afiliado es requerido'
-                          }
-                        })}
-                      />
-                      {errors?.afiliateNumber && (
-                        <span className='inputError'>
-                          {errors.afiliateNumber.message as string}
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='number'
+                  id='afiliateNumber'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.afiliateNumber.toString()}
+                  {...register('afiliateNumber', {
+                    required: {
+                      value: true,
+                      message: 'Numero de afiliado es requerido'
+                    }
+                  })}
+                  disabled={!editF}
+                  invalid={errors?.afiliateNumber !== undefined}
+                />
+                <label className='font-semibold'>Número de afiliado</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Clases remanentes
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.remainingClasses?.toString()}
-                    </label>
-                  )}
-                  {editF && (
-                    <input
-                      type='number'
-                      id='remainingClasses'
-                      form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      defaultValue={member?.remainingClasses?.toString()}
-                      {...register('remainingClasses')}
-                    />
-                  )}
-                </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <InputText
+                  type='number'
+                  id='remainingClasses'
+                  form={`member${member?.id}`}
+                  defaultValue={member?.remainingClasses?.toString()}
+                  {...register('remainingClasses')}
+                  disabled={!editF}
+                  invalid={errors?.remainingClasses !== undefined}
+                />
+                <label className='font-semibold'>Clases remanentes</label>
+              </li>
 
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Estado
-                  </label>
-                  {!editF && (
-                    <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                      {member?.state}
-                    </label>
-                  )}
-                  {editF && (
-                    <select
-                      id='state'
-                      form={`member${member?.id}`}
-                      className='w-36 bg-gray-50 border text-right border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-                      defaultValue={MemberState[member?.state]}
-                      {...register('state')}
-                    >
-                      <option value={MemberSate.ACTIVE}>Activo</option>
-                      <option value={MemberState.INACTIVE}>Inactivo</option>
-                      <option value={MemberState.OTHER}>Otro</option>
-                    </select>
-                  )}
-                </li>
-                <li className='flex flex-row items-center justify-between w-full mb-2'>
-                  <label className='block mb-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    Obras sociales
-                  </label>
+              <li className='p-float-label justify-content-between mb-2'>
+                <Dropdown
+                  id='state'
+                  form={`member${member?.id}`}
+                  value={selected}
+                  options={[
+                    { text: 'Activo', value: MemberSate.ACTIVE },
+                    { text: 'Inactivo', value: MemberSate.INACTIVE },
+                    { text: 'Otro', value: MemberSate.OTHER }
+                  ]}
+                  optionLabel='text'
+                  optionValue='value'
+                  {...register('state')}
+                  onChange={(e) => {
+                    setValue('state', e.value)
+                    setSelected(e.value as MemberSate)
+                  }}
+                  disabled={!editF}
+                  invalid={errors?.state !== undefined}
+                />
+                <label className='font-semibold'>Estado</label>
+              </li>
+              <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+                <label className='font-semibold'>Obras sociales</label>
 
-                  <label className='flex gap-2 my-2 text-lg font-medium text-gray-900 dark:text-white'>
-                    {member?.planSubscribed?.map((health, index) => (
-                      <div
-                        key={index}
-                        className='flex gap-2 border rounded p-1'
+                <MultiSelect
+                  className='flex gap-2 my-2 text-lg font-medium text-gray-900 dark:text-white'
+                  options={member?.planSubscribed}
+                  optionLabel='name'
+                  optionValue='id'
+                  value={member?.planSubscribed}
+                  disabled
+                />
+                {/* {member?.planSubscribed?.map((health, index) => (
+                  <div
+                    key={index}
+                    className='flex gap-2 border rounded p-1'
+                  >
+                    <p key={index}>{health.plan?.name}</p>
+                    {editF && (
+                      <button
+                        onClick={() => {
+                          deleteHealth(health.id)
+                        }}
                       >
-                        <p key={index}>{health.plan?.name}</p>
-                        {editF && (
-                          <button
-                            onClick={() => {
-                              deleteHealth(health.id)
-                            }}
-                          >
-                            <Image
-                              src={delete_}
-                              width={20}
-                              height={20}
-                              alt='D'
-                            ></Image>
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    {/* {editF && (
-                      <>
-                        <button
-                          className='dark-blue-border-button'
-                          onClick={openAddHealth}
-                        >
-                          Agregar
-                        </button>
-                        <Modal
-                          isOpen={addHealth}
-                          closeModal={closeAddHealth}
-                        >
-                          <HealthAssignForm></HealthAssignForm>
-                        </Modal>
-                      </>
-                    )} */}
-                  </label>
-                </li>
-              </ul>
-            </div>
-            {editF && (
-              <div className='flex flex-row justify-end w-full gap-4'>
-                <div className='w-max flex flex-col items-end'>
-                  <button
-                    className='dark-blue-border-button'
-                    form={`member${member?.id}`}
-                    type='submit'
-                  >
-                    Enviar
-                  </button>
-                  {isSuccessU && <p className='w-max text-green-400'>OK</p>}
-                  {isPendingU && (
-                    <p className='w-max text-yellow-400'>Modificando...</p>
-                  )}
-                  {isErrorU && <p className='w-max text-red-400'>Failed!</p>}
-                </div>
-                <div className='w-max flex flex-col items-end'>
-                  <button
-                    className='dark-red-border-button'
-                    onClick={async () => {
-                      mutateD(member?.id)
-                    }}
-                    type='button'
-                  >
-                    Eliminar
-                  </button>
-                  {isSuccessD && <p className='w-max text-green-400'>OK</p>}
-                  {isPendingD && (
-                    <p className='w-max text-yellow-400'>Eliminando...</p>
-                  )}
-                  {isErrorD && <p className='w-max text-red-400'>Failed!</p>}
-                </div>
+                        <Image
+                          src={delete_}
+                          width={20}
+                          height={20}
+                          alt='D'
+                        ></Image>
+                      </button>
+                    )}
+                  </div>
+                ))} */}
+              </li>
+            </ul>
+          </div>
+          {editF && (
+            <div className='flex flex-row justify-content-end w-full gap-4'>
+              <div className='w-max flex flex-column align-items-end'>
+                <Button
+                  className='dark-blue-border-button'
+                  form={`member${member?.id}`}
+                  type='submit'
+                  label='Enviar'
+                  icon='pi pi-upload'
+                  iconPos='right'
+                  size='small'
+                  loading={isPendingU}
+                />
+                {isSuccessU && <p className='w-max text-green-400'>Listo!</p>}
+                {isErrorU && <p className='w-max text-red-400'>Error!</p>}
               </div>
-            )}
-          </form>
-        </div>
+              <div className='w-max flex flex-col items-end'>
+                <Button
+                  type='button'
+                  label='Eliminar'
+                  icon='pi pi-trash'
+                  iconPos='right'
+                  size='small'
+                  severity='danger'
+                  loading={isPendingD}
+                  onClick={async () => {
+                    confirmDialog({
+                      message: 'Confirmación de acción',
+                      header: 'Eliminar perfil de alumno',
+                      icon: 'pi pi-info-circle',
+                      defaultFocus: 'reject',
+                      acceptClassName: 'p-button-danger',
+                      acceptLabel: 'Si',
+                      accept: () => {
+                        mutateD(member?.id)
+                      }
+                    })
+                  }}
+                />
+                {isSuccessD && <p className='w-max text-green-400'>OK</p>}
+                {isErrorD && <p className='w-max text-red-400'>Failed!</p>}
+              </div>
+            </div>
+          )}
+        </form>
       )}
     </>
   )
