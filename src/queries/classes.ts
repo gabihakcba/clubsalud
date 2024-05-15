@@ -2,11 +2,6 @@ import axios from 'axios'
 import { path } from 'utils/path'
 import { type CreateClass_, type Class_ } from 'utils/types'
 
-interface GetClasses {
-  _: Response
-  data: Class_[]
-}
-
 interface GetClass {
   _: Response | null
   data: Class_
@@ -22,8 +17,9 @@ export async function deleteClass(id: number): Promise<GetClass> {
   })
 }
 
-export async function getClasses(): Promise<GetClasses> {
-  return await axios.get(`${path()}/api/classes`)
+export async function getClasses(): Promise<Class_[]> {
+  const response = await axios.get(`${path()}/api/classes`)
+  return response.data
 }
 
 export async function getClassesByName(name: string): Promise<GetClass> {

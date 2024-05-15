@@ -3,7 +3,7 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { createHealthPlan } from 'queries/health'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type HealthPlan, type CreateHealthPlan } from 'utils/types'
 import { HealthPlanType } from 'utils/types'
@@ -11,13 +11,16 @@ import { HealthPlanType } from 'utils/types'
 const plansOptions = (): any[] => {
   const op: any[] = []
   for (const plan in HealthPlanType) {
-    op.push(plan)
+    op.push({ label: plan })
   }
   return op
 }
 
 export default function HealthCreateForm(): ReactElement {
+  const [selectedHealthPlan, setSelectedHealthPlan] = useState<any>(null)
+
   const query = useQueryClient()
+
   const { mutate, isPending } = useMutation({
     mutationFn: createHealthPlan,
     onSuccess: async (data) => {
@@ -28,13 +31,14 @@ export default function HealthCreateForm(): ReactElement {
       reset()
     }
   })
+
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
-    watch
+    formState: { errors }
   } = useForm()
+
   return (
     <form
       action=''
@@ -68,13 +72,19 @@ export default function HealthCreateForm(): ReactElement {
       </div>
       <div className='p-float-label'>
         <Dropdown
-          value={watch('type')}
+          value={selectedHealthPlan}
           {...register('type', {
             required: {
               value: true,
               message: 'Campo requerido'
             }
           })}
+          optionLabel='label'
+          optionValue='label'
+          onChange={(e) => {
+            setSelectedHealthPlan(e.value)
+          }}
+          className='w-full'
           options={plansOptions()}
         />
         <label htmlFor='type'>Tipo</label>

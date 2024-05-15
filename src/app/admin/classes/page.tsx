@@ -34,8 +34,7 @@ export default function Classes(): ReactElement {
   const { data: classes } = useQuery({
     queryKey: ['classes'],
     queryFn: async () => {
-      const response = await getClasses()
-      return response.data
+      return await getClasses()
     }
   })
 

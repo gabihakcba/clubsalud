@@ -17,7 +17,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
 
   const query = useQueryClient()
 
-  const { data: instructors } = useQuery({
+  const { data: instructors, isPending: isLoadingInstructors } = useQuery({
     queryKey: ['instructors'],
     queryFn: async () => {
       return await getInstructors()
@@ -123,6 +123,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
             setSelectedInstructor(e.value)
             setValue('instructorId', e.value)
           }}
+          loading={isLoadingInstructors}
           className='w-full'
         />
         <label htmlFor=''>Profesor</label>

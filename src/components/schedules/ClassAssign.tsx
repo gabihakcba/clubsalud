@@ -1,70 +1,88 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
+import { getClasses } from 'queries/classes'
 import { assignClass } from 'queries/schedules'
-import { type ReactElement } from 'react'
+import { type ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Schedule } from 'utils/types'
 
 interface params {
-  closeAssign: () => void
   schedule: Schedule
 }
-export default function ClassAssign({
-  closeAssign,
-  schedule
-}: params): ReactElement {
+export default function ClassAssign({ schedule }: params): ReactElement {
+  const [selectedClass, setSelectedClass] = useState<any>(null)
+
   const query = useQueryClient()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
-  const { mutate: mutateClass_ } = useMutation({
+  const { mutate: mutateClass_, isPending: isPendingAssign } = useMutation({
     mutationFn: assignClass,
     async onSuccess(data) {
-      await query.setQueryData(['classSche', schedule.id], data)
-      // await query.refetchQueries({ queryKey: ['classSche', schedule.id] })
+      await query.refetchQueries({ queryKey: ['sch'] })
       reset()
-      closeAssign()
+    }
+  })
+
+  const { data: classes, isPending: isPendingClasses } = useQuery({
+    queryKey: ['classes'],
+    queryFn: async () => {
+      return await getClasses()
     }
   })
 
   return (
-    <div className='flex flex-row gap-3 justify-around bg-transparent items-center'>
-      <form
-        action=''
-        id='assignClass'
-        onSubmit={handleSubmit((data) => {
-          mutateClass_({
-            className: data.class,
-            scheduleId: schedule.id
-          })
-        })}
-      >
-        <label>Clase</label>
-        <input
-          className='rounded-[7px] border border-gray-400 bg-transparent px-1 py-1 font-sans text-sm font-normal text-gray-700 focus:outline-none focus:border-2 focus:border-pink-500'
-          type='text'
+    <form
+      action=''
+      id='assignClass'
+      className='flex flex-column gap-4 pt-4'
+      onSubmit={handleSubmit((data) => {
+        mutateClass_({
+          className: data.classId,
+          scheduleId: schedule.id
+        })
+      })}
+    >
+      <FloatLabel>
+        <Dropdown
+          options={classes}
+          loading={isPendingClasses}
+          optionLabel='name'
+          optionValue='id'
+          value={selectedClass}
           form='assign'
+          className='w-full'
+          filter
           {...register('class', {
             required: {
               value: true,
               message: 'El nombre de la clase es requerido'
             }
           })}
+          onChange={(e) => {
+            setSelectedClass(e.value)
+            setValue('classId', e.value)
+          }}
+          invalid={errors?.class !== undefined}
         />
-        {errors?.class && (
-          <span className='inputError'>{errors.class.message as string}</span>
-        )}
-        <button
-          type='submit'
-          className='bg-blue-500 hover:bg-blue-700 text-white p-1 rounded focus:outline-none'
-        >
-          Enviar
-        </button>
-      </form>
-    </div>
+        <label>Clase</label>
+      </FloatLabel>
+      <Button
+        type='submit'
+        label='Enviar'
+        size='small'
+        icon='pi pi-upload'
+        iconPos='right'
+        loading={isPendingAssign}
+      />
+    </form>
   )
 }

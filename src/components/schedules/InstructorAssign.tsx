@@ -1,72 +1,89 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
+import { getInstructors } from 'queries/instructors'
 import { assignInstructor } from 'queries/schedules'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Schedule } from 'utils/types'
 
 interface params {
-  closeAssign: () => void
   schedule: Schedule
 }
-export default function InstructorAssign({
-  closeAssign,
-  schedule
-}: params): ReactElement {
+export default function InstructorAssign({ schedule }: params): ReactElement {
+  const [selectedInstructor, setSelectedInstructor] = useState<any>(null)
+
   const query = useQueryClient()
+
+  const { data: instructors, isPending: loadingInstructors } = useQuery({
+    queryKey: ['instructors'],
+    queryFn: async () => {
+      return await getInstructors()
+    }
+  })
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
-  const { mutate: mutateInstructor } = useMutation({
-    mutationFn: assignInstructor,
-    async onSuccess(data) {
-      await query.setQueryData(['insSChe', schedule.id], data)
-      // await query.refetchQueries({ queryKey: ['insSChe', schedule.id] })
-      reset()
-      closeAssign()
-    }
-  })
+  const { mutate: mutateInstructor, isPending: isPendingInstructor } =
+    useMutation({
+      mutationFn: assignInstructor,
+      async onSuccess(data) {
+        await query.refetchQueries({ queryKey: ['sch'] })
+        reset()
+      }
+    })
 
   return (
-    <div className='flex flex-row gap-3 justify-around bg-transparent items-center'>
-      <form
-        action=''
-        id='assignInstructor'
-        onSubmit={handleSubmit((data) => {
-          mutateInstructor({
-            instructorName: data.instructor,
-            scheduleId: schedule.id
-          })
-        })}
-      >
-        <label>Profesor</label>
-        <input
-          className='rounded-[7px] border border-gray-400 bg-transparent px-1 py-1 font-sans text-sm font-normal text-gray-700 focus:outline-none focus:border-2 focus:border-pink-500'
-          type='text'
+    <form
+      action=''
+      id='assignInstructor'
+      onSubmit={handleSubmit((data) => {
+        mutateInstructor({
+          instructorId: data.instructorId,
+          scheduleId: schedule.id
+        })
+      })}
+      className='flex flex-column pt-4 gap-4'
+    >
+      <FloatLabel>
+        <Dropdown
           form='assign'
+          options={instructors}
+          optionLabel='name'
+          optionValue='id'
+          value={selectedInstructor}
           {...register('instructor', {
             required: {
               value: true,
               message: 'El nombre del profesor es requerido'
             }
           })}
+          onChange={(e) => {
+            setSelectedInstructor(e.value)
+            setValue('instructorId', e.value)
+          }}
+          className='w-full'
+          loading={loadingInstructors}
+          invalid={errors?.instructor !== undefined}
         />
-        {errors?.instructor && (
-          <span className='inputError'>
-            {errors.instructor.message as string}
-          </span>
-        )}
-        <button
-          type='submit'
-          className='bg-blue-500 hover:bg-blue-700 text-white p-1 rounded focus:outline-none'
-        >
-          Enviar
-        </button>
-      </form>
-    </div>
+
+        <label>Profesor</label>
+      </FloatLabel>
+      <Button
+        type='submit'
+        label='Enviar'
+        size='small'
+        icon='pi pi-upload'
+        iconPos='right'
+        loading={isPendingInstructor}
+      />
+    </form>
   )
 }
