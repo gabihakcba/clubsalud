@@ -1,24 +1,30 @@
 'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+import { getHealthPlans } from 'queries/health'
 import { createHealthSubscribed } from 'queries/healthSus'
 import { getMembers } from 'queries/members'
 import { useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { type HealthPlanSubscribed, type HealthPlan } from 'utils/types'
+import { type HealthPlanSubscribed } from 'utils/types'
 
 export default function HealthAssignForm(): ReactElement {
   const [selectedMember, setSelectedMember] = useState<any>(null)
   const [selectedPlan, setSelectedPlan] = useState<any>(null)
 
-  const query = useQueryClient()
-
-  const { data: members } = useQuery({
+  const { data: members, isPending: isLoadingMembers } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       return await getMembers()
+    }
+  })
+
+  const { data: healthPlans, isPending: isLoadingHealthPlans } = useQuery({
+    queryKey: ['healthplans'],
+    queryFn: async () => {
+      return await getHealthPlans()
     }
   })
 
@@ -35,8 +41,6 @@ export default function HealthAssignForm(): ReactElement {
       })
     }
   })
-
-  const healthPlans: HealthPlan[] | undefined = query.getQueryData(['health'])
 
   const {
     register,
@@ -62,7 +66,7 @@ export default function HealthAssignForm(): ReactElement {
           optionValue='id'
           filter
           id='memberId'
-          className='rounded p-1'
+          className='w-full'
           value={selectedMember}
           {...register('memberName', {
             required: { value: true, message: 'Campo requerido' }
@@ -71,6 +75,7 @@ export default function HealthAssignForm(): ReactElement {
             setSelectedMember(e.value)
             setValue('memberId', e.value)
           }}
+          loading={isLoadingMembers}
           invalid={errors?.memberName !== undefined}
         />
         <label htmlFor='memberId'>Alumno</label>
@@ -82,7 +87,7 @@ export default function HealthAssignForm(): ReactElement {
           optionValue='id'
           id='planId'
           filter
-          className='rounded p-1'
+          className='w-full'
           value={selectedPlan}
           {...register('planName', {
             required: { value: true, message: 'Campo requerido' }
@@ -91,6 +96,7 @@ export default function HealthAssignForm(): ReactElement {
             setSelectedPlan(e.value)
             setValue('planId', e.value)
           }}
+          loading={isLoadingHealthPlans}
           invalid={errors?.planName !== undefined}
         />
         <label htmlFor='planId'>Obra social</label>
