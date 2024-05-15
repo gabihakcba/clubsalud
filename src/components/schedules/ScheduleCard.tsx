@@ -70,10 +70,7 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
           closeModal={closeAssign}
         >
           <div className='flex flex-col gap-3 bg-gray-200 rounded m-2 p-2 items-center'>
-            <ClassAssign
-              closeAssign={closeAssign}
-              schedule={schedule}
-            ></ClassAssign>
+            <ClassAssign schedule={schedule}></ClassAssign>
             <InstructorAssign
               closeAssign={closeAssign}
               schedule={schedule}

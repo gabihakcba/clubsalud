@@ -104,7 +104,7 @@ export default function PromotionSection(): ReactElement {
         />
       </DataTable>
       <Dialog
-        header='Generar Cobro'
+        header='Editar Plan'
         visible={editPlan}
         onHide={closeEditPlan}
       >

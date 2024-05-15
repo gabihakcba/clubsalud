@@ -1,4 +1,4 @@
-import { type PrismaClient } from '@prisma/client'
+import { type Schedule, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 
@@ -6,7 +6,7 @@ const db: PrismaClient = prisma
 
 export async function GET(): Promise<Response> {
   try {
-    const schedules = await db.schedule.findMany({
+    const schedules: Schedule[] = await db.schedule.findMany({
       orderBy: [
         {
           start: 'asc'
@@ -14,7 +14,11 @@ export async function GET(): Promise<Response> {
         {
           day: 'asc'
         }
-      ]
+      ],
+      include: {
+        class: true,
+        charge: true
+      }
     })
     return new Response(JSONbig.stringify(schedules), {
       status: 200
