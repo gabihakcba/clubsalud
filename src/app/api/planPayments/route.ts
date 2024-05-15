@@ -16,7 +16,8 @@ export async function GET(req: NextRequest): Promise<Response> {
         include: {
           subscription: {
             include: {
-              promotion: true
+              promotion: true,
+              member: true
             }
           },
           plan: {

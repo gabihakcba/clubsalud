@@ -3,6 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { EmplooyeePaymentsSection } from 'components/payments/EmployeePaymentsSection'
 import { InstructorPaymentsSection } from 'components/payments/InstructorPaymentSection'
+import { Card } from 'primereact/card'
+import { ConfirmDialog } from 'primereact/confirmdialog'
 import { getEmployeePayments } from 'queries/employeePayments'
 import { getInstructorPayments } from 'queries/instructorPayments'
 import { type ReactElement } from 'react'
@@ -23,13 +25,10 @@ export default function Page(): ReactElement {
   })
 
   return (
-    <div className='w-full h-full flex flex-col gap-4'>
-      <EmplooyeePaymentsSection
-        employeePayments={employeePayments}
-      ></EmplooyeePaymentsSection>
-      <InstructorPaymentsSection
-        instructorPayments={instructorPayments}
-      ></InstructorPaymentsSection>
-    </div>
+    <Card className='w-full h-full flex flex-column gap-4'>
+      <ConfirmDialog />
+      <EmplooyeePaymentsSection employeePayments={employeePayments} />
+      <InstructorPaymentsSection instructorPayments={instructorPayments} />
+    </Card>
   )
 }

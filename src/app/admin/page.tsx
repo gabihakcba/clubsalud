@@ -3,6 +3,7 @@
 import { type ReactElement, useEffect, useState } from 'react'
 import { type Account, Permissions } from 'utils/types'
 import { getUserToken, setNewUser } from 'utils/auth'
+import { Card } from 'primereact/card'
 
 export default function PersonalAccount(): ReactElement {
   const [user, setUser] = useState<Account>({
@@ -18,13 +19,13 @@ export default function PersonalAccount(): ReactElement {
   }, [])
 
   return (
-    <div className='h-full w-full flex items-center justify-center flex-col'>
+    <Card className='h-full w-full flex flex-column align-items-center justify-content-center'>
       <p>{user.username}</p>
       <div>
         {user.permissions.map((permission, index) => (
           <p key={index}>{permission}</p>
         ))}
       </div>
-    </div>
+    </Card>
   )
 }
