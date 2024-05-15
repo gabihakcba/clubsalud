@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import {
   HealthPlanType,
   type HealthPlan,
@@ -15,10 +15,12 @@ interface params {
   plan: HealthPlan
 }
 export default function HealthCard({ plan }: params): ReactElement {
+  const [selectedHealthPlan, setSelectedHealthPlan] = useState<any>(null)
+
   const plansOptions = (): any[] => {
     const op: any[] = []
     for (const plan in HealthPlanType) {
-      op.push(plan)
+      op.push({ label: plan })
     }
     return op
   }
@@ -51,8 +53,7 @@ export default function HealthCard({ plan }: params): ReactElement {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    watch
+    formState: { errors }
   } = useForm()
 
   return (
@@ -90,14 +91,20 @@ export default function HealthCard({ plan }: params): ReactElement {
       </div>
       <div className='p-float-label'>
         <Dropdown
-          value={watch('type')}
+          value={selectedHealthPlan}
           {...register('type', {
             required: {
               value: true,
               message: 'Campo requerido'
             }
           })}
+          className='w-full'
           options={plansOptions()}
+          optionLabel='label'
+          optionValue='label'
+          onChange={(e) => {
+            setSelectedHealthPlan(e.value)
+          }}
           defaultValue={plan.type}
         />
         <label htmlFor='type'>Tipo</label>

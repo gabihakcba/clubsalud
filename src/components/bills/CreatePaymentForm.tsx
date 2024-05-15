@@ -134,6 +134,7 @@ export default function CreatePaymentForm(): ReactElement {
                 ?.planSubscribed ?? []
             )
           }}
+          className='w-full'
           invalid={errors?.member !== undefined}
           loading={isPendingMembers}
           filter
@@ -155,6 +156,8 @@ export default function CreatePaymentForm(): ReactElement {
             setSelectedSubscription(e.value)
             setValue('subscriptionId', e.value)
           }}
+          loading={selectedMember === null}
+          className='w-full'
           invalid={errors?.subscription !== undefined}
         />
         <label htmlFor='subscription'>Suscripción</label>
