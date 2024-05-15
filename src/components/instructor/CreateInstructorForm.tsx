@@ -1,9 +1,17 @@
-import { type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { type CreateInstructor, type Instructor } from 'utils/types'
+import {
+  type Account,
+  type CreateInstructor,
+  type Instructor
+} from 'utils/types'
 import { findAccountByUsername } from 'queries/accounts'
 import { createInstructor } from 'queries/instructors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { InputText } from 'primereact/inputtext'
+import { Dropdown } from 'primereact/dropdown'
+import { ToggleButton } from 'primereact/togglebutton'
+import { Button } from 'primereact/button'
 
 const idAccount = async (username: string): Promise<number> => {
   try {
@@ -20,7 +28,7 @@ const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
     name: data.name,
     lastName: data.lastName,
     dni: data.dni,
-    cuit: data?.cuit ? data.cuit : undefined,
+    cuit: data?.cuit ? data.cuit : null,
     phoneNumber: data.phoneNumber,
     address: data.address,
     email: data.email,
@@ -37,17 +45,23 @@ const create = async (data: FieldValues): Promise<Instructor> => {
   return await createInstructor(newInstructor)
 }
 
-interface params {
-  closeModal: () => void
-}
+export function CreateInstructorForm(): ReactElement {
+  const [accounts, setAccounts] = useState<Account[] | null | undefined>([])
+  const [selectedDegree, setSelectedDegree] = useState<boolean>(false)
+  const [accselected, setAccselected] = useState<any>(null)
 
-export function CreateInstructorForm({ closeModal }: params): ReactElement {
   const query = useQueryClient()
+
+  useEffect(() => {
+    setAccounts(query.getQueryData(['acc']))
+  }, [])
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
+    setValue
   } = useForm()
 
   const {
@@ -57,13 +71,9 @@ export function CreateInstructorForm({ closeModal }: params): ReactElement {
     isError: isErrorC
   } = useMutation({
     mutationFn: create,
-    onSuccess: async () => {
+    onSuccess: async (data) => {
       await query.resetQueries({ queryKey: ['ins'] })
       reset()
-      setTimeout(closeModal, 500)
-    },
-    onError(error, variables, context) {
-      console.log(error)
     }
   })
 
@@ -72,282 +82,197 @@ export function CreateInstructorForm({ closeModal }: params): ReactElement {
       onSubmit={handleSubmit((data) => {
         mutateC(data)
       })}
-      className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
+      className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
       id='createFormIns'
     >
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='name'
-        >
-          Nombre
-        </label>
-        <input
-          {...register('name', {
-            required: {
-              value: true,
-              message: 'El nombre es requerido'
-            }
-          })}
-          name='name'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          id='name'
-          form='createFormIns'
-          type='text'
-          autoComplete='off'
-          placeholder='Nombre'
-        ></input>
-        {errors?.name && (
-          <span className='inputError'>{errors.name.message as string}</span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='lastName'
-        >
-          Apellido
-        </label>
-        <input
-          {...register('lastName', {
-            required: {
-              value: true,
-              message: 'El apellido es requerido'
-            }
-          })}
-          name='lastName'
-          id='lastName'
-          form='createFormIns'
-          type='text'
-          className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='Apellido'
-        ></input>
-        {errors?.lastName && (
-          <span className='inputError'>
-            {errors.lastName.message as string}
-          </span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='dni'
-        >
-          DNI
-        </label>
-        <input
-          {...register('dni', {
-            required: {
-              value: true,
-              message: 'DNI es requerido'
-            }
-          })}
-          name='dni'
-          id='dni'
-          form='createFormIns'
-          type='number'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='XX.XXX.XXX'
-        ></input>
-        {errors?.dni && (
-          <span className='inputError'>{errors.dni.message as string}</span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='cuit'
-        >
-          CUIT
-        </label>
-        <input
-          {...register('cuit')}
-          name='cuit'
-          id='cuit'
-          form='createFormIns'
-          type='number'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='XX.XXX.XXX'
-        ></input>
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='phoneNumber'
-        >
-          Número de teléfono
-        </label>
-        <input
-          {...register('phoneNumber', {
-            required: {
-              value: true,
-              message: 'Número de telefono es requerido'
-            }
-          })}
-          name='phoneNumber'
-          id='phoneNumber'
-          form='createFormIns'
-          type='number'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='XXX XXXXXXX'
-        ></input>
-        {errors?.phoneNumber && (
-          <span className='inputError'>
-            {errors.phoneNumber.message as string}
-          </span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='address'
-        >
-          Dirección
-        </label>
-        <input
-          {...register('address', {
-            required: {
-              value: true,
-              message: 'Dirección es requerida'
-            }
-          })}
-          name='address'
-          id='address'
-          form='createFormIns'
-          type='text'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='Dirección'
-        ></input>
-        {errors?.address && (
-          <span className='inputError'>{errors.address.message as string}</span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='inscriptionDate'
-        >
-          E-mail
-        </label>
-        <input
-          {...register('email', {
-            required: {
-              value: true,
-              message: 'Dirección de e-mail es requerida'
-            }
-          })}
-          name='email'
-          id='email'
-          form='createFormIns'
-          type='email'
-          placeholder='example@example.com'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-        ></input>
-        {errors?.email && (
-          <span className='inputError'>{errors.email.message as string}</span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='derivedBy'
-        >
-          Título
-        </label>
-        <select
-          {...register('degree', {
-            required: {
-              value: true,
-              message: 'Título es requerido'
-            }
-          })}
-          defaultValue=''
-          name='degree'
-          id='degree'
-          form='createFormIns'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-        >
-          <option value={'true'}>Si</option>
-          <option value={'false'}>No</option>
-        </select>
-        {errors?.degree && (
-          <span className='inputError'>{errors.degree.message as string}</span>
-        )}
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='afiliateNumber'
-        >
-          CBU
-        </label>
-        <input
-          {...register('cbu')}
-          name='afiliateNumber'
-          id='afiliateNumber'
-          form='createFormIns'
-          type='number'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder=''
-        ></input>
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='afiliateNumber'
-        >
-          Alias
-        </label>
-        <input
-          {...register('alias')}
-          name='alias'
-          id='alias'
-          form='createFormIns'
-          type='text'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder=''
-        ></input>
-      </div>
-      <div className='mb-2'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='accountName'
-        >
-          Cuenta asociada
-        </label>
-        <input
+      <div className='p-float-label'>
+        <Dropdown
+          className='w-full'
+          value={accselected}
+          options={accounts ?? []}
           {...register('accountName', {
             required: {
               value: true,
               message: 'Nombre de usuario requerido'
             }
           })}
-          name='accountName'
-          id='accountName'
+          form='createFormIns'
+          optionLabel='username'
+          invalid={errors?.accountName !== undefined}
+          checkmark={true}
+          onChange={(e) => {
+            setAccselected(e.value)
+          }}
+          filter
+        />
+        <label htmlFor='accountName'>Cuenta asociada</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('name', {
+            required: {
+              value: true,
+              message: 'El nombre es requerido'
+            }
+          })}
           form='createFormIns'
           type='text'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='Nombre de usuario de la cuenta'
-        ></input>
-        {errors?.accountName && (
-          <span className='inputError'>
-            {errors.accountName.message as string}
-          </span>
-        )}
+          autoComplete='off'
+          invalid={errors?.name !== undefined}
+        />
+        <label htmlFor='name'>Nombre</label>
       </div>
-      <div className='flex flex-col'>
-        <button
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('lastName', {
+            required: {
+              value: true,
+              message: 'El apellido es requerido'
+            }
+          })}
           form='createFormIns'
-          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
-          type='submit'
+          type='text'
+          autoComplete='off'
+          invalid={errors?.lastName !== undefined}
+        />
+        <label htmlFor='lastName'>Apellido</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('dni', {
+            required: {
+              value: true,
+              message: 'DNI es requerido'
+            }
+          })}
+          form='createFormIns'
+          type='number'
+          autoComplete='off'
+          invalid={errors?.dni !== undefined}
+        />
+        <label htmlFor='dni'>DNI</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('cuit')}
+          form='createFormIns'
+          type='number'
+          autoComplete='off'
+          invalid={errors?.cuit !== undefined}
+        />
+        <label htmlFor='cuit'>CUIT</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('phoneNumber', {
+            required: {
+              value: true,
+              message: 'Número de telefono es requerido'
+            }
+          })}
+          form='createFormIns'
+          type='number'
+          autoComplete='off'
+          invalid={errors?.phoneNumber !== undefined}
+        />
+        <label htmlFor='phoneNumber'>Número de teléfono</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('address', {
+            required: {
+              value: true,
+              message: 'Dirección es requerida'
+            }
+          })}
+          form='createFormIns'
+          type='text'
+          autoComplete='off'
+          invalid={errors?.address !== undefined}
+        />
+        <label htmlFor='address'>Dirección</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('email', {
+            required: {
+              value: true,
+              message: 'Dirección de e-mail es requerida'
+            }
+          })}
+          form='createFormIns'
+          type='email'
+          invalid={errors?.email !== undefined}
+        />
+        <label htmlFor='email'>E-mail</label>
+      </div>
+
+      <div className='flex flex-row align-items-center'>
+        <label
+          htmlFor='degree'
+          className='flex-grow-1'
         >
-          Crear
-        </button>
-        <span className='w-full flex flex-row items-center justify-center'>
-          {isPendingC && <p className='w-max text-yellow-400'>Creando...</p>}
-          {isSuccessC && <p className='w-max text-green-400'>OK</p>}
-          {isErrorC && <p className='w-max text-red-400'>Failed!</p>}
-        </span>
+          Título
+        </label>
+        <ToggleButton
+          defaultChecked={false}
+          checked={selectedDegree}
+          {...register('degree')}
+          form='createFormIns'
+          onLabel='Si'
+          onIcon='pi pi-check'
+          offLabel='No'
+          offIcon='pi pi-times'
+          iconPos='right'
+          onChange={(e) => {
+            setSelectedDegree(e.value)
+            setValue('degree', e.value)
+          }}
+          invalid={errors?.degree !== undefined}
+        />
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('cbu')}
+          form='createFormIns'
+          type='number'
+          invalid={errors?.cbu !== undefined}
+        />
+        <label htmlFor='cbu'>CBU</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('alias')}
+          form='createFormIns'
+          type='text'
+          autoComplete='off'
+          invalid={errors?.alias !== undefined}
+        />
+        <label htmlFor='alias'>Alias</label>
+      </div>
+
+      <div className='flex flex-column'>
+        <Button
+          form='createFormIns'
+          type='submit'
+          label='Crear'
+          icon='pi pi-upload'
+          iconPos='right'
+          loading={isPendingC}
+        />
+        <small className='w-full flex flex-row align-items-center justify-content-center'>
+          {isSuccessC && <p className='w-max text-green-400'>LIsto!</p>}
+          {isErrorC && <p className='w-max text-red-400'>Error!</p>}
+        </small>
       </div>
     </form>
   )

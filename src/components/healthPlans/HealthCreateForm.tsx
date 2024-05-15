@@ -1,31 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { InputText } from 'primereact/inputtext'
 import { createHealthPlan } from 'queries/health'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type HealthPlan, type CreateHealthPlan } from 'utils/types'
 import { HealthPlanType } from 'utils/types'
 
-const plansOptions = (): ReactElement[] => {
-  const op: ReactElement[] = []
+const plansOptions = (): any[] => {
+  const op: any[] = []
   for (const plan in HealthPlanType) {
-    op.push(
-      <option
-        value={plan}
-        key={plan}
-      >
-        {plan}
-      </option>
-    )
+    op.push({ label: plan })
   }
   return op
 }
 
-interface params {
-  closeModal: () => void
-}
-export default function HealthCreateForm({ closeModal }: params): ReactElement {
+export default function HealthCreateForm(): ReactElement {
+  const [selectedHealthPlan, setSelectedHealthPlan] = useState<any>(null)
+
   const query = useQueryClient()
-  const { mutate } = useMutation({
+
+  const { mutate, isPending } = useMutation({
     mutationFn: createHealthPlan,
     onSuccess: async (data) => {
       query.setQueryData(['health'], (oldData: HealthPlan[]) => [
@@ -33,72 +29,69 @@ export default function HealthCreateForm({ closeModal }: params): ReactElement {
         data
       ])
       reset()
-      closeModal()
     }
   })
+
   const {
     register,
     handleSubmit,
-    reset
-    // formState: { errors }
+    reset,
+    formState: { errors }
   } = useForm()
+
   return (
     <form
       action=''
-      className='w-full h-full bg-white p-2 rounded gap-2 flex flex-col'
+      className='w-full h-full gap-4 pt-4 flex flex-column'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         mutate(data as CreateHealthPlan)
       })}
     >
-      <h2 className='self-center mt-2'>Crear Obra Social</h2>
-      <hr className='my-2' />
-      <div className='flex gap-2 justify-between'>
-        <label htmlFor=''>Nombre</label>
-        <input
+      <div className='p-float-label'>
+        <InputText
           type='text'
-          className='border rounded border-black pl-2'
           {...register('name', {
             required: {
               value: true,
               message: 'Campo requerido'
             }
           })}
+          invalid={errors?.name !== undefined}
+          autoComplete='off'
         />
+        <label htmlFor='name'>Nombre</label>
       </div>
-      <div className='flex gap-2 justify-between'>
-        <label htmlFor=''>Descripción</label>
-        <input
+      <div className='p-float-label'>
+        <InputText
           type='text'
-          className='border rounded border-black pl-2'
           {...register('description')}
+          autoComplete='off'
         />
+        <label htmlFor='description'>Descripción</label>
       </div>
-      <div className='flex gap-2 justify-between'>
-        <label
-          htmlFor=''
-          className='grow'
-        >
-          Tipo
-        </label>
-        <select
-          id=''
-          className='grow'
+      <div className='p-float-label'>
+        <Dropdown
+          value={selectedHealthPlan}
           {...register('type', {
             required: {
               value: true,
               message: 'Campo requerido'
             }
           })}
-        >
-          {plansOptions()}
-        </select>
+          optionLabel='label'
+          optionValue='label'
+          onChange={(e) => {
+            setSelectedHealthPlan(e.value)
+          }}
+          className='w-full'
+          options={plansOptions()}
+        />
+        <label htmlFor='type'>Tipo</label>
       </div>
-      <div className='flex gap-2 justify-between'>
-        <label htmlFor=''>Pago por consulta</label>
-        <input
+      <div className='p-float-label'>
+        <InputText
           type='number'
-          className='border rounded border-black pl-2'
           {...register('paymentPerConsultation', {
             required: {
               value: true,
@@ -106,8 +99,14 @@ export default function HealthCreateForm({ closeModal }: params): ReactElement {
             }
           })}
         />
+        <label htmlFor='paymentPerConsultation'>Pago por consulta</label>
       </div>
-      <button className='blueButtonForm'>Enviar</button>
+      <Button
+        label='Enviar'
+        icon='pi pi-upload'
+        iconPos='right'
+        loading={isPending}
+      />
     </form>
   )
 }
