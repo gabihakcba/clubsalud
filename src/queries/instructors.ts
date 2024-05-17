@@ -21,7 +21,7 @@ export const getInstructorById = async (
         phoneNumber: BigInt(0),
         address: '',
         email: '',
-        degree: '',
+        degree: false,
         accountId: 0
       }
     }
@@ -56,8 +56,13 @@ export const updateInstructor = async (
   return response.data
 }
 
-export async function getInstructorByName(
+export const getInstructorByName = async (
   name: string
-): Promise<GetInsInstructor> {
+): Promise<GetInsInstructor> => {
   return await axios.get(`${path()}/api/instructors/${name}`)
+}
+
+export const getInstructors = async (): Promise<Instructor[]> => {
+  const response = await axios.get(`${path()}/api/instructors`)
+  return response.data
 }

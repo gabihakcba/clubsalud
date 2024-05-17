@@ -99,7 +99,7 @@ model Instructor {
   phoneNumber        BigInt              @db.BigInt
   address            String
   email              String
-  degree             Boolean
+  degree             Boolean             @default(false)
   cbu                BigInt?             @db.BigInt
   alias              String?
   // Foreignkeys
@@ -148,9 +148,8 @@ model InstructorPayment {
   amount         Float
   scheduledHours Float
   workedHours    Float
-  workedMount    DateTime   @default(now())
+  workedMonth    DateTime   @default(now())
   paymentDate    DateTime   @default(now())
-  paymentState   Boolean    @default(false)
   pricePerHoour  Float
   // Foreignkeys
   instructorId   Int
@@ -270,6 +269,8 @@ model Employee {
   position         JobPosition
   contractType     ContractType
   salary           Float
+  cbu              BigInt?           @db.BigInt
+  alias            String?
   lastSalaryUpdate DateTime          @default(now())
   // Foreignkeys
   accountId        Int?              @unique
@@ -281,11 +282,10 @@ model Employee {
 model EmployeePayment {
   // Fields
   id           Int      @id @default(autoincrement())
-  hoursWorked  Float
+  hoursWorked  Float?
   amount       Float
   monthPayment DateTime @default(now())
   date         DateTime @default(now())
-  paid         Boolean  @default(false)
   // Foreignkeys
   employeeId   Int
   employee     Employee @relation(fields: [employeeId], references: [id], name: "paymentEmployee")

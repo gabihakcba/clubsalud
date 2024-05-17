@@ -4,16 +4,43 @@ import { type CreateAccount, Permissions, type Account } from 'utils/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { createAccount, updateAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
+import { InputText } from 'primereact/inputtext'
+import { Button } from 'primereact/button'
+import { MultiSelect } from 'primereact/multiselect'
 
 interface params {
   account?: Account
-  closeModal: () => void
 }
-export function CreateAccountForm({
-  account,
-  closeModal
-}: params): ReactElement {
+export function CreateAccountForm({ account }: params): ReactElement {
+  const [permissionSelected, setPermissionSelected] = useState<any>([])
+
+  useEffect(() => {
+    if (account?.permissions) {
+      setPermissionSelected(account.permissions)
+      setValue('permissions', account.permissions)
+    }
+  }, [])
+
+  const permissionsList = [
+    {
+      permission: 'Propietario',
+      type: Permissions.OWN
+    },
+    {
+      permission: 'Administrador',
+      type: Permissions.ADM
+    },
+    {
+      permission: 'Profesor',
+      type: Permissions.INS
+    },
+    {
+      permission: 'Alumno',
+      type: Permissions.MEM
+    }
+  ]
+
   const query = useQueryClient()
 
   const {
@@ -21,7 +48,8 @@ export function CreateAccountForm({
     handleSubmit,
     formState: { errors },
     watch,
-    reset
+    reset,
+    setValue
   } = useForm()
 
   const {
@@ -34,14 +62,13 @@ export function CreateAccountForm({
       return await createAccount(data as CreateAccount)
     },
     onSuccess: async () => {
-      reset({
-        username: '',
-        password: '',
-        repeatpassword: '',
-        permissions: [Permissions.OTHER]
-      })
       await query.refetchQueries({ queryKey: ['acc'] })
-      setTimeout(closeModal, 250)
+      reset({
+        username: null,
+        password: null,
+        repeatPassword: null,
+        permissions: null
+      })
     }
   })
 
@@ -56,87 +83,71 @@ export function CreateAccountForm({
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['account'] })
-      setTimeout(closeModal, 250)
+      reset({
+        username: null,
+        password: null,
+        repeatPassword: null,
+        permissions: null
+      })
     }
   })
 
   return (
     <form
-      onSubmit={handleSubmit((dataForm: FieldValues, e) => {
+      onSubmit={handleSubmit((dataForm: FieldValues, event) => {
+        event?.preventDefault()
         if (account?.id) {
-          update({ data: dataForm, id: account?.id ?? 0 })
+          update({
+            data: dataForm,
+            id: account?.id
+          })
         } else {
           create(dataForm)
         }
       })}
-      className='bg-white relative shadow-md rounded px-8 pt-6 pb-8 mb-4 h-max w-max flex flex-col gap-0 border-2 border-red-500'
+      className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
       id={`createForm${account?.id}`}
     >
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='username'
-        >
-          Nombre de Usuario
-        </label>
-        <input
+      <div className='p-float-label'>
+        <InputText
+          id='username'
+          type='text'
           {...register('username', {
             required: {
               value: true,
               message: 'El nombre de usuario es requerido'
             }
           })}
-          name='username'
-          className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-          id={`username${account?.id}`}
-          form='createForm'
-          type='text'
           autoComplete='off'
+          form='createForm'
+          invalid={errors?.username !== undefined}
           defaultValue={account?.username}
-          placeholder='Nombre de usuario'
-        ></input>
-        {errors?.username && (
-          <span className='inputError'>
-            {errors.username.message as string}
-          </span>
-        )}
+        ></InputText>
+        <label htmlFor='username'>Nombre de usuario</label>
       </div>
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='password'
-        >
-          Contraseña
-        </label>
-        <input
+
+      <div className='p-float-label'>
+        <InputText
+          id='password'
+          type='password'
           {...register('password', {
             required: {
               value: true,
               message: 'La contraseña es requerida'
             }
           })}
-          name='password'
-          id={`password${account?.id}`}
+          autoComplete='off'
           form='createForm'
-          type='password'
+          invalid={errors?.password !== undefined}
           defaultValue={account?.password}
-          className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='******************'
-        ></input>
-        {errors?.password && (
-          <span className='inputError'>
-            {errors.password.message as string}
-          </span>
-        )}
+        ></InputText>
+        <label htmlFor='password'>Contraseña</label>
       </div>
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='repeatpassword'
-        >
-          Repetir Contraseña
-        </label>
-        <input
+
+      <div className='p-float-label'>
+        <InputText
+          id='repeatpassword'
+          type='password'
           {...register('repeatpassword', {
             required: {
               value: true,
@@ -148,112 +159,51 @@ export function CreateAccountForm({
               )
             }
           })}
-          name='repeatpassword'
-          id={`repeatpassword${account?.id}`}
+          autoComplete='off'
           form='createForm'
-          type='password'
+          invalid={errors?.repeatpassword !== undefined}
           defaultValue={account?.password}
-          className='shadow appearance-none border  rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline'
-          placeholder='******************'
-        ></input>
-        {errors?.repeatpassword && (
-          <span className='inputError'>
-            {errors.repeatpassword.message as string}
-          </span>
-        )}
+        ></InputText>
+        <label htmlFor='repeatpassword'>Repetir Contraseña</label>
       </div>
-      <div className='mb-4'>
-        <label
-          className='block text-gray-700 text-base font-bold mb-2'
-          htmlFor='permissions'
-        >
-          Permisos
-        </label>
-        <div className='flex flex-col sm:flex-row gap-2 items-center justify-center'>
-          <div className='flex gap-2 border p-1'>
-            <label htmlFor=''>Propietario</label>
-            <input
-              type='checkbox'
-              value={Permissions.OWN}
-              defaultChecked={account?.permissions.includes(Permissions.OWN)}
-              {...register('permissions', {
-                required: {
-                  value: true,
-                  message: 'Al menos un permiso requerido'
-                }
-              })}
-            />
-          </div>
-          <div className='flex gap-2 border p-1'>
-            <label htmlFor=''>Administrador</label>
-            <input
-              type='checkbox'
-              value={Permissions.ADM}
-              defaultChecked={account?.permissions.includes(Permissions.ADM)}
-              {...register('permissions', {
-                required: {
-                  value: true,
-                  message: 'Al menos un permiso requerido'
-                }
-              })}
-            />
-          </div>
-          <div className='flex gap-2 border p-1'>
-            <label htmlFor=''>Profesor</label>
-            <input
-              type='checkbox'
-              value={Permissions.INS}
-              defaultChecked={account?.permissions.includes(Permissions.INS)}
-              {...register('permissions', {
-                required: {
-                  value: true,
-                  message: 'Al menos un permiso requerido'
-                }
-              })}
-            />
-          </div>
-          <div className='flex gap-2 border p-1'>
-            <label htmlFor=''>Alumno</label>
-            <input
-              type='checkbox'
-              value={Permissions.MEM}
-              defaultChecked={account?.permissions.includes(Permissions.MEM)}
-              {...register('permissions', {
-                required: {
-                  value: true,
-                  message: 'Al menos un permiso requerido'
-                }
-              })}
-            />
-          </div>
-        </div>
-        {errors?.permissions && (
-          <span className='inputError'>
-            {errors.permissions.message as string}
-          </span>
-        )}
+
+      <div className='p-float-label'>
+        <MultiSelect
+          className='w-full'
+          {...register('permissions', {
+            required: true
+          })}
+          options={permissionsList}
+          optionLabel='permission'
+          optionValue='type'
+          value={permissionSelected}
+          display='chip'
+          onChange={(e) => {
+            setPermissionSelected(e.value)
+            setValue('permissions', e.value)
+          }}
+          invalid={errors?.permissions !== undefined}
+        />
+        <label htmlFor='permissions'>Permisos</label>
       </div>
-      <div className='flex flex-col'>
-        <button
+
+      <div className='flex flex-column'>
+        <Button
           form={`createForm${account?.id}`}
-          className='mb-2 md:mb-auto py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded focus:outline-none focus:shadow-outline'
           type='submit'
-        >
-          {account?.id ? 'Actualizar' : 'Crear'}
-        </button>
-        <span className='w-full flex flex-row items-center justify-center'>
-          {(isPendingC || isPendingU) && (
-            <p className='w-max text-yellow-400'>
-              {account?.id ? 'Actualizando' : 'Creando'} usuario...
-            </p>
-          )}
+          label={account?.id ? 'Actualizar' : 'Crear'}
+          icon='pi pi-upload'
+          iconPos='right'
+          loading={isPendingC || isPendingU}
+        />
+        <small className='w-full flex flex-row items-center justify-center'>
           {(isSuccessC || isSuccessU) && (
-            <p className='w-max text-green-400'>OK</p>
+            <p className='w-max text-green-400'>Listo!</p>
           )}
           {(isErrorC || isErrorU) && (
-            <p className='w-max text-red-400'>Failed!</p>
+            <p className='w-max text-red-400'>Error!</p>
           )}
-        </span>
+        </small>
       </div>
     </form>
   )

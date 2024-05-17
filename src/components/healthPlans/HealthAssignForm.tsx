@@ -1,19 +1,30 @@
 'use client'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { Button } from 'primereact/button'
+import { Dropdown } from 'primereact/dropdown'
+import { getHealthPlans } from 'queries/health'
 import { createHealthSubscribed } from 'queries/healthSus'
 import { getMembers } from 'queries/members'
-import { type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { type HealthPlanSubscribed, type HealthPlan } from 'utils/types'
+import { type HealthPlanSubscribed } from 'utils/types'
 
 export default function HealthAssignForm(): ReactElement {
-  const query = useQueryClient()
+  const [selectedMember, setSelectedMember] = useState<any>(null)
+  const [selectedPlan, setSelectedPlan] = useState<any>(null)
 
-  const { data: members } = useQuery({
+  const { data: members, isPending: isLoadingMembers } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       return await getMembers()
+    }
+  })
+
+  const { data: healthPlans, isPending: isLoadingHealthPlans } = useQuery({
+    queryKey: ['healthplans'],
+    queryFn: async () => {
+      return await getHealthPlans()
     }
   })
 
@@ -31,116 +42,76 @@ export default function HealthAssignForm(): ReactElement {
     }
   })
 
-  const healthPlans: HealthPlan[] | undefined = query.getQueryData(['health'])
-
   const {
     register,
     handleSubmit,
-    watch,
-    formState: { errors }
+    formState: { errors },
+    setValue
   } = useForm()
 
   return (
     <form
       action=''
-      className='bg-white p-2 rounded flex flex-col'
+      className='flex flex-column pt-4 gap-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        create(data)
+        console.log(data)
+        create({ memberId: data.memberId, planId: data.planId })
       })}
     >
-      <h2 className='text-xl font-bold'>Asignar suscripcion</h2>
-      <hr className='m-2' />
-      <div className='flex flex-col sm:flex-row gap-4 items-center'>
-        <label htmlFor=''>Alumno</label>
-        <input
-          type='text'
-          placeholder='Filtrar por nombre'
-          className='border p-1'
-          {...register('filterMember')}
+      <div className='p-float-label'>
+        <Dropdown
+          options={members}
+          optionLabel='name'
+          optionValue='id'
+          filter
+          id='memberId'
+          className='w-full'
+          value={selectedMember}
+          {...register('memberName', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          onChange={(e) => {
+            setSelectedMember(e.value)
+            setValue('memberId', e.value)
+          }}
+          loading={isLoadingMembers}
+          invalid={errors?.memberName !== undefined}
         />
-        <div>
-          <select
-            id='memberId'
-            className='rounded p-1'
-            {...register('memberId', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          >
-            <option value=''>Select</option>
-            {members
-              ?.filter((member) =>
-                member.name
-                  .toUpperCase()
-                  .includes((watch('filterMember') as string)?.toUpperCase())
-              )
-              .map((member, index) => (
-                <option
-                  value={member.id}
-                  key={index}
-                >
-                  {member.name}
-                </option>
-              ))}
-          </select>
-          {errors?.memberId && (
-            <span className='inputError text-sm'>
-              {errors.memberId.message as string}
-            </span>
-          )}
-        </div>
+        <label htmlFor='memberId'>Alumno</label>
       </div>
-      <hr className='m-2' />
-      <div className='flex flex-col sm:flex-row gap-4 items-center'>
-        <label htmlFor=''>Obra social</label>
-        <input
-          type='text'
-          placeholder='Filtrar por nombre'
-          className='border p-1'
-          {...register('filterPlan')}
+      <div className='p-float-label'>
+        <Dropdown
+          options={healthPlans}
+          optionLabel='name'
+          optionValue='id'
+          id='planId'
+          filter
+          className='w-full'
+          value={selectedPlan}
+          {...register('planName', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          onChange={(e) => {
+            setSelectedPlan(e.value)
+            setValue('planId', e.value)
+          }}
+          loading={isLoadingHealthPlans}
+          invalid={errors?.planName !== undefined}
         />
-        <div>
-          <select
-            id='planId'
-            className='rounded p-1'
-            {...register('planId', {
-              required: { value: true, message: 'Campo requerido' }
-            })}
-          >
-            <option value=''>Select</option>
-            {healthPlans
-              ?.filter((health) =>
-                health.name.includes(
-                  (watch('filterPlan') as string)?.toUpperCase()
-                )
-              )
-              .map((health, index) => (
-                <option
-                  value={health.id}
-                  key={index}
-                >
-                  {health.name}
-                </option>
-              ))}
-          </select>
-          {errors?.planId && (
-            <span className='inputError text-sm'>
-              {errors.planId.message as string}
-            </span>
-          )}
-        </div>
+        <label htmlFor='planId'>Obra social</label>
       </div>
-      <div className='w-full flex flex-col justify-center items-center'>
-        <button
-          className='blueButtonForm p-1 mt-4 w-full'
-          type='submit'
-        >
-          Enviar
-        </button>
-        {isPending && <span className='text-yellow-500'>Creando...</span>}
-        {isSuccess && <span className='text-green-500'>Listo!</span>}
-        {isError && <span className='text-yellow-500'>Error!</span>}
-      </div>
+      <Button
+        type='submit'
+        label='Enviar'
+        icon='pi pi-upload'
+        iconPos='right'
+        size='small'
+        loading={isPending}
+      />
+      {isPending && <span className='text-yellow-500'>Creando...</span>}
+      {isSuccess && <span className='text-green-500'>Listo!</span>}
+      {isError && <span className='text-yellow-500'>Error!</span>}
     </form>
   )
 }
