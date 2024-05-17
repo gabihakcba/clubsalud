@@ -58,6 +58,7 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
           options={instructors}
           optionLabel='name'
           optionValue='id'
+          filter
           value={selectedInstructor}
           {...register('instructor', {
             required: {
