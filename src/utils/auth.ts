@@ -40,6 +40,7 @@ export const verifyToken = async (
       password: payload.password as string,
       permissions: [...(payload.permissions as Permissions[])]
     }
+    localStorage.setItem('user', JSON.stringify(account))
     return account
   } catch (error) {
     return null

@@ -6,6 +6,22 @@ import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
+export async function GET(): Promise<Response> {
+  try {
+    const instructors = await db.instructor.findMany({
+      include: { instructorPayments: true }
+    })
+    return new Response(JSONbig.stringify(instructors), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response(JSONbig.stringify(error), {
+      status: 400
+    })
+  }
+}
+
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data: CreateInstructor = await req.json()
@@ -17,7 +33,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       email: data.email,
-      degree: data.degree === 'true',
+      degree: data.degree,
       cbu: data?.cbu ? BigInt(data.cbu) : null,
       alias: data?.alias ? data.alias : null
     }
@@ -71,7 +87,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       phoneNumber: BigInt(data.phoneNumber),
       address: data.address,
       email: data.email,
-      degree: data.degree === 'true',
+      degree: data.degree,
       cbu: data?.cbu ? BigInt(data.cbu) : null,
       alias: data?.alias ? data.alias : null
     }

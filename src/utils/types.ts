@@ -105,8 +105,26 @@ export interface CreateMember {
   accountId: number
 }
 
+export interface InstructorPayment extends CreateInstructorPayment {
+  id: number
+  instructor?: Instructor
+}
+
+export interface CreateInstructorPayment {
+  amount: number
+  scheduledHours?: number
+  workedHours: number
+  workedMonth: Date
+  paymentDate: Date
+  pricePerHour?: number
+  instructorId: number
+}
+
 export interface Instructor extends CreateInstructor {
   id: number
+  instructorPayment?: InstructorPayment[]
+  scheduleInCharge?: Schedule[]
+  scheduleSubstitute?: Schedule[]
 }
 
 export interface CreateInstructor {
@@ -117,7 +135,7 @@ export interface CreateInstructor {
   phoneNumber: bigint
   address: string
   email: string
-  degree: string | boolean
+  degree: boolean
   cbu?: bigint | null
   alias?: string | null
   accountId: number
@@ -217,10 +235,11 @@ export interface CreateNotification {
   receiverId: number
 }
 
-export interface Employee {
+export interface Employee extends CreateEmployee {
   id: number
   account?: Account
-  payment: EmployeePayment[]
+  payment?: EmployeePayment[]
+  lastSalaryUpdate?: Date
 }
 
 export interface CreateEmployee {
@@ -228,25 +247,26 @@ export interface CreateEmployee {
   lastName: string
   dni: bigint
   cuit?: bigint
-  phoneNumber: number
+  phoneNumber: bigint
   email: string
   position: JobPosition
   contractType: ContractType
   salary: number
-  lastSalaryUpdate: Date
+  cbu?: bigint
+  alias?: string
   accountId?: number
 }
 
 export interface EmployeePayment extends CreateEmployeePayment {
   id: number
+  employee?: Employee
 }
 
 export interface CreateEmployeePayment {
-  hoursWorked: number
+  hoursWorked?: number
   amount: number
   monthPayment: Date
   date: Date
-  paid: boolean
   employeeId: number
 }
 

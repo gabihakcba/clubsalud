@@ -3,7 +3,8 @@ import { type ReactElement } from 'react'
 import { type Account } from 'utils/types'
 import { deleteAccount } from 'queries/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
+// import Link from 'next/link'
+import { Button } from 'primereact/button'
 
 interface params {
   account: Account
@@ -21,28 +22,33 @@ function AccountCard({ account }: params): ReactElement {
   })
 
   return (
-    <div className='bg-white shadow-md rounded flex flex-col p-2 items-center'>
+    <div className='w-full flex flex-row p-2 align-items-center justify-content-between border-solid'>
       <div className='p-1 px-2'>{account.username}</div>
-      <div className='p-1 flex gap-2'>
-        {account.permissions.map((permission, index) => (
-          <p key={index}>{permission}</p>
-        ))}
-      </div>
-      <div className='flex justify-center items-center gap-2'>
-        <button
-          className='light-red-border-button'
+      <div className='flex justify-content-center align-items-center'>
+        <div className='p-1 flex gap-2 px-2'>
+          {account.permissions.map((permission, index) => (
+            <p key={index}>{permission}</p>
+          ))}
+        </div>
+        <Button
           onClick={() => {
             deleteF(Number(account.id))
           }}
-        >
-          Eliminar
-        </button>
-        <Link
-          href={`/admin/info/${account.id}`}
-          className='light-blue-border-button'
+          label='Eliminar'
+          size='small'
+          icon='pi pi-trash'
+          severity='danger'
+          className='p-1'
+          outlined
+        ></Button>
+        <Button
+          // href={`/admin/info/${account.id}`}
+          link
+          severity='info'
+          size='small'
         >
           Info
-        </Link>
+        </Button>
       </div>
     </div>
   )
