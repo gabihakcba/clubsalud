@@ -39,7 +39,8 @@ export default function Accounts(): ReactElement {
   const filters = {
     username: { value: null, matchMode: FilterMatchMode.CONTAINS },
     id: { value: null, matchMode: FilterMatchMode.EQUALS },
-    permissions: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    permissions: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
 
   const query = useQueryClient()
@@ -67,9 +68,16 @@ export default function Accounts(): ReactElement {
     <Card className='h-screen'>
       <ConfirmDialog />
       <DataTable
-        value={accounts}
+        value={accounts?.map((acc: Account) => ({
+          ...acc,
+          dni:
+            acc.memberAccount?.dni ??
+            acc.instructorAccount?.dni ??
+            acc.employeeAccount?.dni ??
+            0
+        }))}
         tableStyle={{ minWidth: '5rem' }}
-        header={() => <AccountTopbar></AccountTopbar>}
+        header={() => <AccountTopbar />}
         scrollable
         scrollHeight='85dvh'
         showGridlines
@@ -90,49 +98,54 @@ export default function Accounts(): ReactElement {
           sortable
           filter
           filterPlaceholder='Buscar por ID'
-        ></Column>
+        />
+        <Column
+          field='dni'
+          header='DNI'
+          sortable
+          filter
+          filterPlaceholder='Buscar por DNI'
+        />
         <Column
           field='username'
           header='Nombre de usuario'
           sortable
           filter
           filterPlaceholder='Buscar por nombre de usuario'
-        ></Column>
+        />
         <Column
           field='permissions'
           header='Permisos'
           filter
           filterPlaceholder='Buscar por permissos'
-        ></Column>
+        />
         <Column
           body={(account) => (
-            <>
-              <Button
-                label='Eliminar'
-                severity='danger'
-                outlined
-                icon='pi pi-trash'
-                iconPos='right'
-                size='small'
-                loading={isPending && selected?.id === account.id}
-                onClick={() => {
-                  setSelected({ id: Number(account.id) })
-                  confirmDialog({
-                    message: 'Confirmación de acción',
-                    header: 'Eliminar cuenta',
-                    icon: 'pi pi-info-circle',
-                    defaultFocus: 'reject',
-                    acceptClassName: 'p-button-danger',
-                    acceptLabel: 'Si',
-                    accept: () => {
-                      deleteF(Number(account.id))
-                    }
-                  })
-                }}
-              ></Button>
-            </>
+            <Button
+              label='Eliminar'
+              severity='danger'
+              outlined
+              icon='pi pi-trash'
+              iconPos='right'
+              size='small'
+              loading={isPending && selected?.id === account.id}
+              onClick={() => {
+                setSelected({ id: Number(account.id) })
+                confirmDialog({
+                  message: 'Confirmación de acción',
+                  header: 'Eliminar cuenta',
+                  icon: 'pi pi-info-circle',
+                  defaultFocus: 'reject',
+                  acceptClassName: 'p-button-danger',
+                  acceptLabel: 'Si',
+                  accept: () => {
+                    deleteF(Number(account.id))
+                  }
+                })
+              }}
+            />
           )}
-        ></Column>
+        />
         <Column
           body={(account) => (
             <Button
@@ -147,7 +160,7 @@ export default function Accounts(): ReactElement {
               }}
             />
           )}
-        ></Column>
+        />
       </DataTable>
     </Card>
   )
