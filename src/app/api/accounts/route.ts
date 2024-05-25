@@ -26,14 +26,19 @@ export async function GET(req: NextRequest): Promise<Response> {
       })
     } else if (page === 0) {
       // all elems
-      const users: Account[] = await db.account.findMany()
-      const usersFilters: Account[] = []
-      users.forEach((user) => {
+      const users: Account[] = await db.account.findMany({
+        include: {
+          memberAccount: true,
+          instructorAccount: true,
+          employeeAccount: true
+        }
+      })
+      const usersFilters: Array<Omit<Account, 'password'>> = []
+      users.forEach((user: Account) => {
         usersFilters.push({
           id: user.id,
           username: user.username,
-          permissions: user.permissions,
-          password: user.password
+          permissions: user.permissions
         })
       })
       return new Response(
