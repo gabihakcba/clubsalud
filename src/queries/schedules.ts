@@ -39,5 +39,6 @@ export const assignInstructor = async ({
       scheduleId
     }
   })
+  console.log('from service: ', response.data)
   return response.data
 }

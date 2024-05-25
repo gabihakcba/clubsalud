@@ -20,6 +20,7 @@ export async function GET(): Promise<Response> {
         charge: true
       }
     })
+    console.log(schedules)
     return new Response(JSONbig.stringify(schedules), {
       status: 200
     })
