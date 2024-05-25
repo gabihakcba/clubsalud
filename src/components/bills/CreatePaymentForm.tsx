@@ -184,6 +184,7 @@ export default function CreatePaymentForm(): ReactElement {
                 message: 'Campo requerido'
               }
             })}
+            className='w-full'
             value={selectedPlan}
             options={plansMemberSelected}
             optionLabel='plan.name'
@@ -250,6 +251,7 @@ export default function CreatePaymentForm(): ReactElement {
         size='small'
         icon='pi pi-upload'
         iconPos='right'
+        loading={isPendingP}
       />
       {(isPendingP || isPendingB) && (
         <span className='text-yellow-400'>Creando...</span>
