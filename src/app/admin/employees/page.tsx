@@ -11,12 +11,16 @@ import { Dialog } from 'primereact/dialog'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import UpdateEmployeeForm from 'components/employees/UpdateEmployeeForm'
+import { FilterMatchMode } from 'primereact/api'
 
 export default function Employees(): ReactElement {
   const [createEmployee, openCreateEmployee, closeCreateEmployee] =
     useModal(false)
   const [editEmployee, openEditEmployee, closeEditEmployee] = useModal(false)
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null)
+  const filters = {
+    dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+  }
 
   const query = useQueryClient()
 
@@ -54,6 +58,8 @@ export default function Employees(): ReactElement {
       </Dialog>
       <DataTable
         value={employees}
+        scrollable
+        scrollHeight='80dvh'
         header={() => (
           <nav className='flex gap-2 align-items-center'>
             <h2>Empleados</h2>
@@ -70,34 +76,50 @@ export default function Employees(): ReactElement {
         onSelectionChange={(e) => {
           setSelectedEmployee(e.value)
         }}
+        filters={filters}
+        filterDisplay='menu'
       >
         <Column
           field='id'
           header='ID'
+          sortable
         />
         <Column
           field='name'
           header='Nombre'
+          sortable
+        />
+        <Column
+          field='dni'
+          header='DNI'
+          sortable
+          filter
+          filterPlaceholder='DNI'
         />
         <Column
           field='lastName'
           header='Apellido'
+          sortable
         />
         <Column
           field='salary'
           header='Sueldo'
+          sortable
         />
         <Column
           field='lastSalaryUpdate'
           header='Actualización de sueldo'
+          sortable
         />
         <Column
           field='alias'
           header='Alias'
+          sortable
         />
         <Column
           field='cbu'
           header='CBU'
+          sortable
         />
         <Column
           body={(employee) => (
