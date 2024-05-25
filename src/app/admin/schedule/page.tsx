@@ -45,6 +45,7 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
     { start: 1700, end: 1730, classes: [] },
     { start: 1730, end: 1800, classes: [] }
   ]
+
   schedule.forEach((sch) => {
     schedules.forEach((sch2) => {
       if (sch.start === sch2.start) {
@@ -60,6 +61,7 @@ export default function Schelude(): ReactElement {
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
+
   const { data } = useQuery({
     queryKey: ['sch'],
     queryFn: async () => {
@@ -125,12 +127,15 @@ export default function Schelude(): ReactElement {
           header='Horario'
         />
         <Column
-          body={(sch) => (
-            <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
-              <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
-            </div>
-          )}
+          body={(sch) => {
+            console.log(sch.classes[0])
+            return (
+              <div className='flex align-items-center gap-2'>
+                <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
+                <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
+              </div>
+            )
+          }}
           header='Lunes'
         />
         <Column
