@@ -1,47 +1,55 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { getMembers } from 'queries/members'
 import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
 import { useState, type ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
-
-const subscribe = async (id: string, promotion): Promise<void> => {
-  const memberId = Number(id)
-  const subs = await setSubscription({
-    memberId,
-    promotion
-  })
-  if (!subs) {
-    alert('No se pudo adherir a la suscripción')
-  }
-}
+import { type FieldValues, useForm } from 'react-hook-form'
+import { type Promotion } from 'utils/types'
 
 export default function SubscriptionForm(): ReactElement {
-  const [selectedMember, setSelectedMember] = useState<any>(0)
+  const [selectedMember, setSelectedMember] = useState<any>(null)
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
 
-  const { data: members } = useQuery({
+  const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['memS'],
     queryFn: async () => {
       return await getMembers()
     }
   })
 
-  const { data: promotions } = useQuery({
+  const { data: promotions, isPending: loadingPromotions } = useQuery({
     queryKey: ['promS'],
     queryFn: async () => {
       return await getPromotions()
     }
   })
 
+  const { mutate: subscribe, isPending } = useMutation({
+    mutationFn: async ({
+      id,
+      promotion
+    }: {
+      id: string
+      promotion: FieldValues
+    }) => {
+      const memberId = Number(id)
+      const subs = await setSubscription({
+        memberId,
+        promotion: promotion as Promotion
+      })
+      if (!subs) {
+        alert('No se pudo adherir a la suscripción')
+      }
+    }
+  })
+
   const {
     register,
     handleSubmit,
-    setValue
-    // formState: { errors },
-    // watch
+    setValue,
+    formState: { errors }
   } = useForm()
 
   return (
@@ -51,13 +59,16 @@ export default function SubscriptionForm(): ReactElement {
       className='flex flex-column gap-4 pt-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        void subscribe(data.memberId as string, data.promotion)
+        subscribe({
+          id: data.memberId as string,
+          promotion: data.promotion
+        })
       })}
     >
       <li className='p-float-label'>
         <Dropdown
           options={members}
-          value={selectedMember ?? null}
+          value={selectedMember}
           optionLabel='name'
           optionValue='id'
           filter
@@ -67,6 +78,9 @@ export default function SubscriptionForm(): ReactElement {
               message: 'Este campo es requerido'
             }
           })}
+          loading={loadingMembers}
+          invalid={errors?.name !== undefined}
+          className='w-full'
           onChange={(e) => {
             setSelectedMember(e.value)
             setValue('memberId', e.value)
@@ -90,6 +104,9 @@ export default function SubscriptionForm(): ReactElement {
             setSelectedPromotion(e.value)
             setValue('promotion', e.value)
           }}
+          loading={loadingPromotions}
+          className='w-full'
+          invalid={errors?.title !== undefined}
         />
         <label htmlFor='promotionName'>Plan </label>
       </li>
@@ -99,6 +116,7 @@ export default function SubscriptionForm(): ReactElement {
         className='w-full'
         icon='pi pi-upload'
         iconPos='right'
+        loading={isPending}
       />
     </form>
   )

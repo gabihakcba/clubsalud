@@ -50,7 +50,7 @@ export default function Accounting(): ReactElement {
               severity='info'
             />
             <Tag
-              value={`Pagado ${totalPaid(subscriptions ?? [])}`}
+              value={`Pagado: ${totalPaid(subscriptions ?? [])}`}
               severity='success'
             />
             <Tag
@@ -60,6 +60,8 @@ export default function Accounting(): ReactElement {
           </div>
         )}
         value={subscriptions}
+        scrollable
+        scrollHeight='81dvh'
         stripedRows
       >
         <Column

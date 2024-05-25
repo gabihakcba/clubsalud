@@ -9,6 +9,7 @@ import { Column } from 'primereact/column'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteInstructorPayment } from 'queries/instructorPayments'
+import { FilterMatchMode } from 'primereact/api'
 
 interface params {
   instructorPayments: InstructorPayment[] | undefined
@@ -18,6 +19,9 @@ export function InstructorPaymentsSection({
 }: params): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
+  const filters = {
+    'instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+  }
 
   const query = useQueryClient()
 
@@ -65,6 +69,8 @@ export function InstructorPaymentsSection({
             />
           </nav>
         )}
+        filters={filters}
+        filterDisplay='menu'
       >
         <Column
           field='id'
@@ -73,6 +79,12 @@ export function InstructorPaymentsSection({
         <Column
           field='instructor.name'
           header='Profesor'
+        />
+        <Column
+          field='instructor.dni'
+          header='DNI'
+          filter
+          filterPlaceholder='DNI'
         />
         <Column
           field='amount'
