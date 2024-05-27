@@ -5,6 +5,7 @@ import { path } from 'utils/path'
 
 export const getSchedules = async (): Promise<Schedule[]> => {
   const response = await axios.get(`${path()}/api/schedules`)
+  console.log('from service: ', response.data)
   return response.data
 }
 
@@ -39,6 +40,5 @@ export const assignInstructor = async ({
       scheduleId
     }
   })
-  console.log('from service: ', response.data)
   return response.data
 }
