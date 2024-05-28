@@ -38,7 +38,6 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   } else if (!verifiedCookie && pathname === loginPath) {
     return NextResponse.next()
   } else if (verifiedCookie && pathname !== loginPath) {
-    console.log(NextResponse)
     return NextResponse.next()
   }
 
