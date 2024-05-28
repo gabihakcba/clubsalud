@@ -27,7 +27,6 @@ export default function ClassAssign({ schedule }: params): ReactElement {
   const { mutate: mutateClass_, isPending: isPendingAssign } = useMutation({
     mutationFn: assignClass,
     async onSuccess(data) {
-      await query.invalidateQueries({ queryKey: ['sch'] })
       await query.refetchQueries({ queryKey: ['sch'] })
       reset()
     }

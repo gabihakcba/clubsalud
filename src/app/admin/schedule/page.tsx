@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
 import { Card } from 'primereact/card'
@@ -61,6 +61,9 @@ export default function Schelude(): ReactElement {
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
+
+  const queryClient = useQueryClient()
+  void queryClient.invalidateQueries({ queryKey: ['sch'] })
 
   const { data } = useQuery({
     queryKey: ['sch'],
