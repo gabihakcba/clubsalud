@@ -7,20 +7,22 @@ const db: PrismaClient = prisma
 export async function GET(): Promise<Response> {
   try {
     const schedules: Schedule[] = await db.schedule.findMany({
-      orderBy: [
-        {
-          start: 'asc'
-        },
-        {
-          day: 'asc'
-        }
-      ],
-      include: {
-        class: true,
-        charge: true
-      }
+      include: { class: true, charge: true }
     })
-    console.log(schedules)
+    // const schedules: Schedule[] = await db.schedule.findMany({
+    //   orderBy: [
+    //     {
+    //       start: 'asc'
+    //     },
+    //     {
+    //       day: 'asc'
+    //     }
+    //   ],
+    //   include: {
+    //     class: true,
+    //     charge: true
+    //   }
+    // })
     return new Response(JSONbig.stringify(schedules), {
       status: 200
     })
