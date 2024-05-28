@@ -128,7 +128,6 @@ export default function Schelude(): ReactElement {
         />
         <Column
           body={(sch) => {
-            console.log(sch.classes[0])
             return (
               <div className='flex align-items-center gap-2'>
                 <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
