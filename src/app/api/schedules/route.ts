@@ -26,10 +26,7 @@ export async function GET(): Promise<Response> {
 
     revalidatePath('api/schedules')
     return new Response(JSONbig.stringify(schedules), {
-      status: 200,
-      headers: {
-        'Cache-control': 'no-cache'
-      }
+      status: 200
     })
   } catch (error) {
     return new Response(JSONbig.stringify(error), {
