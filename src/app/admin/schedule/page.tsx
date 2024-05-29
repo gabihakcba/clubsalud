@@ -70,6 +70,9 @@ export default function Schelude(): ReactElement {
     queryKey: ['sch'],
     queryFn: async (): Promise<Schedule[]> => {
       const response = await fetch(`${path()}/api/schedules`, {
+        /**
+         * This does not work in client components
+         */
         next: { revalidate: 0 },
         cache: 'no-store'
       })
