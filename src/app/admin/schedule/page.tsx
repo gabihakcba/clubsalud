@@ -10,8 +10,8 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
-import { getSchedules } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
+import { path } from 'utils/path'
 import { type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
@@ -24,6 +24,7 @@ interface scheduleType {
   end: number
   classes: Schedule[]
 }
+
 const formatScheduler = (schedules: Schedule[]): any[] => {
   const schedule: scheduleType[] = [
     { start: 800, end: 830, classes: [] },
@@ -67,10 +68,13 @@ export default function Schelude(): ReactElement {
 
   const { data } = useQuery({
     queryKey: ['sch'],
-    queryFn: async () => {
-      const res = await getSchedules()
-      console.log(res)
-      return res
+    queryFn: async (): Promise<Schedule[]> => {
+      const response = await fetch(`${path()}/api/schedules`, {
+        next: { revalidate: 0 },
+        cache: 'no-store'
+      })
+      const data = await response.json()
+      return data
     }
   })
 
