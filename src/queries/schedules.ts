@@ -12,12 +12,6 @@ export const getSchedules = async (): Promise<Schedule[]> => {
       cache: 'no-store'
     }
   })
-  // const response = await fetch(`${path()}/api/schedules`, {
-  //   next: { revalidate: 0 },
-  //   cache: 'no-store'
-  // })
-  // const data = await response.json()
-  // console.log('from service: ', data)
   return response.data
 }
 
