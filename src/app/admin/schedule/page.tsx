@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
 import { Card } from 'primereact/card'
@@ -24,6 +24,7 @@ interface scheduleType {
   end: number
   classes: Schedule[]
 }
+
 const formatScheduler = (schedules: Schedule[]): any[] => {
   const schedule: scheduleType[] = [
     { start: 800, end: 830, classes: [] },
@@ -45,6 +46,7 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
     { start: 1700, end: 1730, classes: [] },
     { start: 1730, end: 1800, classes: [] }
   ]
+
   schedule.forEach((sch) => {
     schedules.forEach((sch2) => {
       if (sch.start === sch2.start) {
@@ -60,12 +62,14 @@ export default function Schelude(): ReactElement {
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
+
+  const queryClient = useQueryClient()
+  void queryClient.invalidateQueries({ queryKey: ['sch'] })
+
   const { data } = useQuery({
     queryKey: ['sch'],
-    queryFn: async () => {
-      const res = await getSchedules()
-      console.log(res)
-      return res
+    queryFn: async (): Promise<Schedule[]> => {
+      return await getSchedules()
     }
   })
 
@@ -125,12 +129,14 @@ export default function Schelude(): ReactElement {
           header='Horario'
         />
         <Column
-          body={(sch) => (
-            <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
-              <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
-            </div>
-          )}
+          body={(sch) => {
+            return (
+              <div className='flex align-items-center gap-2'>
+                <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
+                <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
+              </div>
+            )
+          }}
           header='Lunes'
         />
         <Column

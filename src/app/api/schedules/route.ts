@@ -1,8 +1,11 @@
 import { type Schedule, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
+import { revalidatePath } from 'next/cache'
 
 const db: PrismaClient = prisma
+
+export const fetchCache = 'force-no-store'
 
 export async function GET(): Promise<Response> {
   try {
@@ -20,6 +23,8 @@ export async function GET(): Promise<Response> {
         charge: true
       }
     })
+
+    revalidatePath('api/schedules')
     return new Response(JSONbig.stringify(schedules), {
       status: 200
     })

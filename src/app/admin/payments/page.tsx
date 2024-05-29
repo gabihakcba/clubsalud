@@ -7,12 +7,15 @@ import { Card } from 'primereact/card'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { getEmployeePayments } from 'queries/employeePayments'
 import { getInstructorPayments } from 'queries/instructorPayments'
+import { getSchedules } from 'queries/schedules'
 import { type ReactElement } from 'react'
 
 export default function Page(): ReactElement {
   const { data: employeePayments } = useQuery({
     queryKey: ['employeePayments'],
     queryFn: async () => {
+      const sch = await getSchedules()
+      console.log('from payments: ', sch)
       return await getEmployeePayments()
     }
   })
