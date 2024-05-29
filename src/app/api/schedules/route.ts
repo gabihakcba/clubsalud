@@ -21,7 +21,10 @@ export async function GET(): Promise<Response> {
       }
     })
     return new Response(JSONbig.stringify(schedules), {
-      status: 200
+      status: 200,
+      headers: {
+        'Cache-control': 'no-cache'
+      }
     })
   } catch (error) {
     return new Response(JSONbig.stringify(error), {
