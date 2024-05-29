@@ -10,8 +10,8 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
+import { getSchedules } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
-import { path } from 'utils/path'
 import { type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
@@ -69,15 +69,7 @@ export default function Schelude(): ReactElement {
   const { data } = useQuery({
     queryKey: ['sch'],
     queryFn: async (): Promise<Schedule[]> => {
-      const response = await fetch(`${path()}/api/schedules`, {
-        /**
-         * This does not work in client components
-         */
-        next: { revalidate: 0 },
-        cache: 'no-store'
-      })
-      const data = await response.json()
-      return data
+      return await getSchedules()
     }
   })
 
