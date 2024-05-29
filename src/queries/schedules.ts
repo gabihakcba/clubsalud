@@ -22,6 +22,9 @@ export const assignClass = async ({
     data: {
       classId,
       scheduleId
+    },
+    headers: {
+      'Cache-Control': 'no-cache'
     }
   })
   return classInfo.data
