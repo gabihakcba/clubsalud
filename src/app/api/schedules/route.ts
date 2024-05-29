@@ -4,6 +4,8 @@ import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
+export const fetchCache = 'force-no-store'
+
 export async function GET(): Promise<Response> {
   try {
     const schedules: Schedule[] = await db.schedule.findMany({

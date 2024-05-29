@@ -4,7 +4,14 @@ import { getClassesByName } from './classes'
 import { path } from 'utils/path'
 
 export const getSchedules = async (): Promise<Schedule[]> => {
-  const response = await axios.get(`${path()}/api/schedules`)
+  const response = await axios.get(`${path()}/api/schedules`, {
+    headers: {
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+      Expires: '0',
+      cache: 'no-store'
+    }
+  })
   console.log('from service: ', response.data)
   return response.data
 }
@@ -22,9 +29,6 @@ export const assignClass = async ({
     data: {
       classId,
       scheduleId
-    },
-    headers: {
-      'Cache-Control': 'no-cache'
     }
   })
   return classInfo.data
