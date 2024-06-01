@@ -22,7 +22,7 @@ const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const response = await signInAccount(user)
   if (response.status === 200) {
     setLoading('success')
-    router.push('/admin')
+    router.push('/admin/accounts')
   } else {
     setLoading('error')
   }
