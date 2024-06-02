@@ -1,28 +1,17 @@
-import { useState, type ReactElement, useEffect } from 'react'
+import { useEffect, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import {
   type CreateMember,
-  type Member,
   MemberSate,
-  type Account
+  Permissions,
+  type CreateAccount
 } from 'utils/types'
-import { findAccountByUsername } from 'queries/accounts'
+import { createAccount, deleteAccount } from 'queries/accounts'
 import { createMember } from 'queries/members'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
-import { Dropdown } from 'primereact/dropdown'
-
-const idAccount = async (username: string): Promise<number> => {
-  try {
-    const response = await findAccountByUsername(username)
-    return response.id
-  } catch (error) {
-    alert('Usuario no encontrado')
-    return -1
-  }
-}
 
 const formToMember = (data: FieldValues, id: number): CreateMember => {
   return {
@@ -40,78 +29,144 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
   }
 }
 
-const create = async (data: FieldValues): Promise<Member> => {
-  const id = await idAccount(data.accountName as string)
-  const newMember = formToMember(data, id)
-  return await createMember(newMember)
-}
-
 export function CreateMemberForm(): ReactElement {
-  const [accounts, setAccounts] = useState<Account[] | null | undefined>(null)
-  const [selected, setSelected] = useState<any>(null)
-
   const query = useQueryClient()
-
-  useEffect(() => {
-    setAccounts(query.getQueryData(['acc']))
-  }, [])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-    watch
+    watch,
+    setValue,
+    getValues
   } = useForm()
 
   const {
-    mutate: mutateC,
-    isPending: isPendingC,
-    isSuccess: isSuccessC,
-    isError: isErrorC
+    mutate: createAcc,
+    isPending: isPendingAccount,
+    data: newAccount
   } = useMutation({
-    mutationFn: create,
+    mutationFn: async (data: FieldValues) => {
+      return await createAccount(data as CreateAccount)
+    },
+    onSuccess: async (data) => {
+      const dataForm = getValues()
+      mutateC({ data: dataForm, id: data.id })
+      return data
+    }
+  })
+
+  const {
+    mutate: mutateC,
+    isPending: isPendingMember,
+    isSuccess: isSuccessMember,
+    isError: isErrorMember
+  } = useMutation({
+    mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
+      const newMember = formToMember(data, id)
+      await createMember(newMember)
+    },
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['mem'] })
-      reset()
+      await query.refetchQueries({ queryKey: ['acc'] })
+    },
+    onError: async () => {
+      console.log('newAccount: ', newAccount)
+      if (newAccount) {
+        const deleted = await deleteAccount(newAccount.id)
+        console.log('deleted: ', deleted)
+      }
     }
+  })
+
+  useEffect(() => {
+    setValue('permissions', Permissions.MEM)
   })
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        mutateC(data)
-        console.log(data.inscriptionDate)
-        console.log(data.inscriptionDate.toISOString())
+        createAcc({
+          username: data.username,
+          password: data.password,
+          permissions: [Permissions[data.permissions]]
+        })
       })}
       className='relative rounded h-max w-max flex flex-column pt-4 gap-4'
       id='createForm'
     >
+      {/**
+       * Account
+       */}
+
       <div className='p-float-label'>
-        <Dropdown
-          className='w-full'
-          value={selected}
-          options={accounts ?? []}
-          {...register('accountName', {
+        <InputText
+          id='username'
+          type='text'
+          {...register('username', {
             required: {
               value: true,
-              message: 'Nombre de usuario requerido'
+              message: 'El nombre de usuario es requerido'
             }
           })}
-          name='accountName'
-          id='accountName'
+          autoComplete='off'
           form='createForm'
-          optionLabel='username'
-          invalid={errors?.accountName !== undefined}
-          checkmark={true}
-          onChange={(e) => {
-            setSelected(e.value)
-          }}
-          filter
+          invalid={errors?.username !== undefined}
         />
-        <label htmlFor='accountName'>Cuenta asociada</label>
+        <label htmlFor='username'>Nombre de usuario</label>
       </div>
 
+      <div className='p-float-label'>
+        <InputText
+          id='password'
+          type='password'
+          {...register('password', {
+            required: {
+              value: true,
+              message: 'La contraseña es requerida'
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.password !== undefined}
+        />
+        <label htmlFor='password'>Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          id='repeatpassword'
+          type='password'
+          {...register('repeatpassword', {
+            required: {
+              value: true,
+              message: 'Confirmar la contraseña es requerido'
+            },
+            validate: (value) => {
+              return (
+                watch('password') === value || 'Las contraseñas deben coincidir'
+              )
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.repeatpassword !== undefined}
+        />
+        <label htmlFor='repeatpassword'>Repetir Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('permissions')}
+          disabled
+          value={Permissions.MEM}
+        />
+        <label htmlFor='permissions'>Permisos</label>
+      </div>
+
+      {/**
+       *
+       */}
       <div className='p-float-label'>
         <InputText
           {...register('name', {
@@ -250,11 +305,11 @@ export function CreateMemberForm(): ReactElement {
           label='Crear'
           icon='pi pi-upload'
           iconPos='right'
-          loading={isPendingC}
+          loading={isPendingMember || isPendingAccount}
         />
         <small>
-          {isSuccessC && <p className='w-max text-green-400'>OK</p>}
-          {isErrorC && <p className='w-max text-red-400'>Failed!</p>}
+          {isSuccessMember && <p className='w-max text-green-400'>OK</p>}
+          {isErrorMember && <p className='w-max text-red-400'>Failed!</p>}
         </small>
       </div>
     </form>
