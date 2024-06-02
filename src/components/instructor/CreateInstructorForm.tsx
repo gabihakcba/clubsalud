@@ -53,6 +53,7 @@ export function CreateInstructorForm(): ReactElement {
     },
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['ins'] })
+      await query.refetchQueries({ queryKey: ['acc'] })
     },
     onError: async () => {
       if (newAccount) {
@@ -71,7 +72,6 @@ export function CreateInstructorForm(): ReactElement {
       return await createAccount(data as CreateAccount)
     },
     onSuccess: async (data) => {
-      await query.refetchQueries({ queryKey: ['acc'] })
       const dataForm = getValues()
       mutateC({ data: dataForm, id: data.id })
     }
