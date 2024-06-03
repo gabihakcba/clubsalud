@@ -107,46 +107,6 @@ export default function AccountInfo({ account }: params): ReactElement {
           </Accordion>
         )}
       </div>
-
-      {/* <div className='flex flex-column gap-2'>
-        <Divider />
-        Perfiles asociados
-        {account?.memberAccount && (
-          <div className='flex flex-column gap-2 w-full align-items-center'>
-            <button
-              className='bg-gray-200 rounded w-full p-2 text-start'
-              onClick={() => {
-                changeMember((prev) => !prev)
-              }}
-            >
-              Alumno: {account.memberAccount.name}
-            </button>
-            {member && (
-              <div className='w-full'>
-                <MemberCard member={account.memberAccount}></MemberCard>
-              </div>
-            )}
-          </div>
-        )}
-        {account?.instructorAccount && (
-          <div className='flex flex-column gap-2 w-full align-items-center'>
-            <Button
-              onClick={() => {
-                changeInstructor((prev) => !prev)
-              }}
-              label={`Profesor: ${account.instructorAccount.name}`}
-            />
-            {instructor && (
-              <div className='w-full'>
-                <InstructorCard
-                  instructor={account.instructorAccount}
-                ></InstructorCard>
-              </div>
-            )}
-          </div>
-        )}
-        <hr />
-      </div> */}
     </div>
   )
 }
