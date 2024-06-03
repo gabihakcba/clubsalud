@@ -1,45 +1,46 @@
 'use client'
 
 import { ContractType } from '@prisma/client'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
-import { findAccountByUsername, getAccounts } from 'queries/accounts'
+import { createAccount, deleteAccount } from 'queries/accounts'
 import { createEmployee } from 'queries/employees'
 import { useEffect, type ReactElement, useState } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { JobPosition, type CreateEmployee, type Employee } from 'utils/types'
+import {
+  JobPosition,
+  type CreateEmployee,
+  type Employee,
+  Permissions,
+  type CreateAccount
+} from 'utils/types'
 
-const parseData = async (data: FieldValues): Promise<CreateEmployee | null> => {
-  try {
-    const hasAccount: boolean = data.accountName !== ''
-    let id: number | null = null
-    if (hasAccount) {
-      const account = await findAccountByUsername(data.accountName as string)
-      id = account.id
-    }
-    return {
-      name: String(data.name),
-      lastName: String(data.lastName),
-      dni: BigInt(Number(data.dni)),
-      cuit: data.cuit !== '' ? BigInt(Number(data.cuit)) : undefined,
-      phoneNumber: BigInt(Number(data.phoneNumber)),
-      email: String(data.email),
-      position: data.position,
-      contractType: data.contractType,
-      salary: Number(data.salary),
-      cbu: data.cbu !== '' ? BigInt(Number(data.cbu)) : undefined,
-      alias: data.alias !== '' ? String(data.alias) : undefined,
-      accountId: hasAccount ? Number(id) : undefined
-    }
-  } catch (error) {
-    return null
+const parseData = ({
+  data,
+  id
+}: {
+  data: FieldValues
+  id: number
+}): CreateEmployee => {
+  return {
+    name: String(data.name),
+    lastName: String(data.lastName),
+    dni: BigInt(Number(data.dni)),
+    cuit: data.cuit !== '' ? BigInt(Number(data.cuit)) : undefined,
+    phoneNumber: BigInt(Number(data.phoneNumber)),
+    email: String(data.email),
+    position: data.position,
+    contractType: data.contractType,
+    salary: Number(data.salary),
+    cbu: data.cbu !== '' ? BigInt(Number(data.cbu)) : undefined,
+    alias: data.alias !== '' ? String(data.alias) : undefined,
+    accountId: id
   }
 }
 
 export default function CreateEmployeeForm(): ReactElement {
-  const [selectedAccount, setSelectedAccount] = useState<any>(null)
   const [selectedJobPosition, setSelectedJobPosition] = useState<any>(null)
   const [selectedContractType, setSelectedContractType] = useState<any>(null)
 
@@ -51,32 +52,56 @@ export default function CreateEmployeeForm(): ReactElement {
     isSuccess,
     isError
   } = useMutation({
-    mutationFn: createEmployee,
+    mutationFn: async (data: FieldValues) => {
+      return await createEmployee(data as CreateEmployee)
+    },
     onSuccess: (data) => {
+      console.log(data)
       query.setQueryData(['employees'], (oldData: Employee[]) => [
         ...oldData,
         data
       ])
-      reset()
+    },
+    onError: async () => {
+      if (newAccount) {
+        console.log('delte: ', newAccount)
+        await deleteAccount(newAccount.id)
+      }
     }
   })
 
-  const { data: accounts, isPending: isPendingAccounts } = useQuery({
-    queryKey: ['accounts'],
-    queryFn: async () => {
-      return await getAccounts(0, 0)
+  const {
+    mutate: mutateCreateAccoount,
+    isError: isErrorCreateAccount,
+    isPending: isPendingAccount,
+    data: newAccount
+  } = useMutation({
+    mutationFn: async (data: FieldValues) => {
+      const res = await createAccount(data as CreateAccount)
+      console.log(res)
+      return res
+    },
+    onSuccess: async (data) => {
+      const dataForm = getValues()
+      console.log(data)
+      const newAccountParsed = parseData({ data: dataForm, id: data.id })
+      console.log(newAccountParsed)
+      create(newAccountParsed)
     }
   })
 
   useEffect(() => {
     void query.refetchQueries({ queryKey: ['acc'] })
+    setValue('permissions', [Permissions.ADM])
   }, [])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    watch,
+    getValues,
+    setValue
   } = useForm()
 
   return (
@@ -84,14 +109,87 @@ export default function CreateEmployeeForm(): ReactElement {
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
         console.log(data)
-        const newEmployee = await parseData(data)
-        console.log(newEmployee)
-        if (newEmployee) {
-          create(newEmployee)
-        }
+        mutateCreateAccoount({
+          username: data.username,
+          password: data.password,
+          repeatpassword: data.repeatpassword,
+          permissions: [Permissions[data.permissions]]
+        })
       })}
       className='flex flex-column gap-4 pt-4'
     >
+      {/**
+       * Account
+       */}
+
+      <div className='p-float-label'>
+        <InputText
+          id='username'
+          type='text'
+          {...register('username', {
+            required: {
+              value: true,
+              message: 'El nombre de usuario es requerido'
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.username !== undefined}
+        />
+        <label htmlFor='username'>Nombre de usuario</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          id='password'
+          type='password'
+          {...register('password', {
+            required: {
+              value: true,
+              message: 'La contraseña es requerida'
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.password !== undefined}
+        />
+        <label htmlFor='password'>Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          id='repeatpassword'
+          type='password'
+          {...register('repeatpassword', {
+            required: {
+              value: true,
+              message: 'Confirmar la contraseña es requerido'
+            },
+            validate: (value) => {
+              return (
+                watch('password') === value || 'Las contraseñas deben coincidir'
+              )
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.repeatpassword !== undefined}
+        />
+        <label htmlFor='repeatpassword'>Repetir Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('permissions')}
+          disabled
+          value={Permissions.ADM}
+        />
+        <label htmlFor='permissions'>Permisos</label>
+      </div>
+
+      {/**
+       *
+       */}
       <div className='p-float-label'>
         <InputText
           type='text'
@@ -202,26 +300,6 @@ export default function CreateEmployeeForm(): ReactElement {
 
       <div className='p-float-label'>
         <Dropdown
-          options={accounts?.pages}
-          loading={isPendingAccounts}
-          optionLabel='username'
-          optionValue='id'
-          value={selectedAccount}
-          className='w-full'
-          {...register('accountName', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          onChange={(e) => {
-            setSelectedAccount(e.value)
-          }}
-          invalid={errors?.accountName !== undefined}
-          filter
-        />
-        <label>Cuenta asociada</label>
-      </div>
-
-      <div className='p-float-label'>
-        <Dropdown
           options={Object.keys(JobPosition).map((key) => ({
             label: key,
             value: key.toLocaleLowerCase()
@@ -274,13 +352,16 @@ export default function CreateEmployeeForm(): ReactElement {
         icon='pi pi-upload'
         iconPos='right'
         size='small'
-        loading={isPending}
+        loading={isPending || isPendingAccount}
       />
       {isPending && (
         <small className='text-sm text-yellow-500'>Creando...</small>
       )}
       {isSuccess && <small className='text-sm text-green-500'>Listo!</small>}
       {isError && <small className='text-sm text-red-500'>Error!</small>}
+      {isErrorCreateAccount && (
+        <small className='text-sm text-red-500'>Error creating account!</small>
+      )}
     </form>
   )
 }
