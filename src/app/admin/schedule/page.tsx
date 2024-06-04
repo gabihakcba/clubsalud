@@ -41,10 +41,16 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
     { start: 1330, end: 1400, classes: [] },
     { start: 1400, end: 1430, classes: [] },
     { start: 1430, end: 1500, classes: [] },
-    { start: 1500, end: 1630, classes: [] },
+    { start: 1500, end: 1530, classes: [] },
+    { start: 1530, end: 1600, classes: [] },
+    { start: 1600, end: 1630, classes: [] },
     { start: 1630, end: 1700, classes: [] },
     { start: 1700, end: 1730, classes: [] },
-    { start: 1730, end: 1800, classes: [] }
+    { start: 1730, end: 1800, classes: [] },
+    { start: 1800, end: 1830, classes: [] },
+    { start: 1830, end: 1900, classes: [] },
+    { start: 1900, end: 1930, classes: [] },
+    { start: 1930, end: 2000, classes: [] }
   ]
 
   schedule.forEach((sch) => {

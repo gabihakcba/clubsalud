@@ -1,27 +1,16 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import {
-  type Account,
+  Permissions,
   type CreateInstructor,
-  type Instructor
+  type CreateAccount
 } from 'utils/types'
-import { findAccountByUsername } from 'queries/accounts'
+import { createAccount, deleteAccount } from 'queries/accounts'
 import { createInstructor } from 'queries/instructors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
-import { Dropdown } from 'primereact/dropdown'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Button } from 'primereact/button'
-
-const idAccount = async (username: string): Promise<number> => {
-  try {
-    const response = await findAccountByUsername(username)
-    return response.id
-  } catch (error) {
-    alert('Usuario no encontrado')
-    return -1
-  }
-}
 
 const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
   return {
@@ -39,29 +28,17 @@ const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
   }
 }
 
-const create = async (data: FieldValues): Promise<Instructor> => {
-  const id = await idAccount(data.accountName as string)
-  const newInstructor = formToInstructor(data, id)
-  return await createInstructor(newInstructor)
-}
-
 export function CreateInstructorForm(): ReactElement {
-  const [accounts, setAccounts] = useState<Account[] | null | undefined>([])
   const [selectedDegree, setSelectedDegree] = useState<boolean>(false)
-  const [accselected, setAccselected] = useState<any>(null)
-
   const query = useQueryClient()
-
-  useEffect(() => {
-    setAccounts(query.getQueryData(['acc']))
-  }, [])
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
-    setValue
+    setValue,
+    watch,
+    getValues
   } = useForm()
 
   const {
@@ -70,43 +47,131 @@ export function CreateInstructorForm(): ReactElement {
     isSuccess: isSuccessC,
     isError: isErrorC
   } = useMutation({
-    mutationFn: create,
-    onSuccess: async (data) => {
+    mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
+      const newInstructor = formToInstructor(data, id)
+      return await createInstructor(newInstructor)
+    },
+    onSuccess: async () => {
       await query.resetQueries({ queryKey: ['ins'] })
-      reset()
+      await query.refetchQueries({ queryKey: ['acc'] })
+    },
+    onError: async () => {
+      if (newAccount) {
+        await deleteAccount(newAccount.id)
+      }
     }
   })
+
+  const {
+    mutate: mutateCreateAccoount,
+    isError: isErrorCreateAccount,
+    isPending: isPendingAccount,
+    data: newAccount
+  } = useMutation({
+    mutationFn: async (data: FieldValues) => {
+      return await createAccount(data as CreateAccount)
+    },
+    onSuccess: async (data) => {
+      const dataForm = getValues()
+      mutateC({ data: dataForm, id: data.id })
+    }
+  })
+
+  useEffect(() => {
+    setValue('permissions', Permissions.INS)
+    setValue('degree', false)
+  }, [])
 
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        mutateC(data)
+        mutateCreateAccoount({
+          username: data.username,
+          password: data.password,
+          permissions: [Permissions[data.permissions]]
+        })
+        if (isErrorCreateAccount) {
+          alert('No se pudo crear la cuenta')
+        }
+        if (isErrorC) {
+          alert('No se pudo crear el perfil de profesor')
+        }
       })}
       className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
       id='createFormIns'
     >
+      {/*
+       * Account
+       */}
+
       <div className='p-float-label'>
-        <Dropdown
-          className='w-full'
-          value={accselected}
-          options={accounts ?? []}
-          {...register('accountName', {
+        <InputText
+          id='username'
+          type='text'
+          {...register('username', {
             required: {
               value: true,
-              message: 'Nombre de usuario requerido'
+              message: 'El nombre de usuario es requerido'
             }
           })}
-          form='createFormIns'
-          optionLabel='username'
-          invalid={errors?.accountName !== undefined}
-          checkmark={true}
-          onChange={(e) => {
-            setAccselected(e.value)
-          }}
-          filter
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.username !== undefined}
         />
-        <label htmlFor='accountName'>Cuenta asociada</label>
+        <label htmlFor='username'>Nombre de usuario</label>
       </div>
+
+      <div className='p-float-label'>
+        <InputText
+          id='password'
+          type='password'
+          {...register('password', {
+            required: {
+              value: true,
+              message: 'La contraseña es requerida'
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.password !== undefined}
+        />
+        <label htmlFor='password'>Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          id='repeatpassword'
+          type='password'
+          {...register('repeatpassword', {
+            required: {
+              value: true,
+              message: 'Confirmar la contraseña es requerido'
+            },
+            validate: (value) => {
+              return (
+                watch('password') === value || 'Las contraseñas deben coincidir'
+              )
+            }
+          })}
+          autoComplete='off'
+          form='createForm'
+          invalid={errors?.repeatpassword !== undefined}
+        />
+        <label htmlFor='repeatpassword'>Repetir Contraseña</label>
+      </div>
+
+      <div className='p-float-label'>
+        <InputText
+          {...register('permissions')}
+          disabled
+          value={Permissions.INS}
+        />
+        <label htmlFor='permissions'>Permisos</label>
+      </div>
+
+      {/*
+       *
+       */}
 
       <div className='p-float-label'>
         <InputText
@@ -267,7 +332,7 @@ export function CreateInstructorForm(): ReactElement {
           label='Crear'
           icon='pi pi-upload'
           iconPos='right'
-          loading={isPendingC}
+          loading={isPendingC || isPendingAccount}
         />
         <small className='w-full flex flex-row align-items-center justify-content-center'>
           {isSuccessC && <p className='w-max text-green-400'>LIsto!</p>}
