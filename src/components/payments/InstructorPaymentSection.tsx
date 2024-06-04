@@ -10,6 +10,7 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { deleteInstructorPayment } from 'queries/instructorPayments'
 import { FilterMatchMode } from 'primereact/api'
+import { InstructorTable } from './InstructorTable'
 
 interface params {
   instructorPayments: InstructorPayment[] | undefined
@@ -18,6 +19,8 @@ export function InstructorPaymentsSection({
   instructorPayments
 }: params): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
+  const [instructorTable, openInstructorTable, closeInstructorTable] =
+    useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
     'instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
@@ -55,6 +58,13 @@ export function InstructorPaymentsSection({
       >
         <CreateInstructorPaymentForm />
       </Dialog>
+      <Dialog
+        visible={instructorTable}
+        onHide={closeInstructorTable}
+        header='Precios por hora'
+      >
+        <InstructorTable />
+      </Dialog>
       <DataTable
         value={instructorPayments}
         header={() => (
@@ -65,6 +75,13 @@ export function InstructorPaymentsSection({
               label='Generar Pago'
               size='small'
               icon='pi pi-plus'
+              iconPos='right'
+            />
+            <Button
+              onClick={openInstructorTable}
+              label='Precios por hora'
+              size='small'
+              icon='pi pi-search'
               iconPos='right'
             />
           </nav>
