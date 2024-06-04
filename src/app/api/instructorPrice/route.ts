@@ -2,6 +2,7 @@ import { type InstructorPrice, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
 import { type CreateInstructorPrice } from 'utils/types'
+import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
 
