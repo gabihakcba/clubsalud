@@ -33,7 +33,12 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
 
   const { mutate: mutateInstructor, isPending: isPendingInstructor } =
     useMutation({
-      mutationFn: assignInstructor,
+      mutationFn: async (data: {
+        instructorId: number
+        scheduleId: number
+      }) => {
+        return await assignInstructor(data)
+      },
       async onSuccess(data) {
         await query.refetchQueries({ queryKey: ['sch'] })
         reset()
