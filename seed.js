@@ -980,7 +980,7 @@ const manyAccounts = {
 
 const hours = [
   800, 830, 900, 930, 1000, 1030, 1100, 1130, 1200, 1230, 1300, 1330, 1400,
-  1430, 1500, 1530, 1600, 1630, 1700, 1730
+  1430, 1500, 1530, 1600, 1630, 1700, 1730, 1800, 1830, 1900, 1930, 2000
 ]
 
 const createSchedules = async () => {
@@ -1108,6 +1108,26 @@ const createPromotions = async () => {
   })
 }
 
+const dSche = async () => {
+  console.log('Deleting schedules ...')
+  try {
+    await db.schedule.deleteMany()
+  } catch (error) {
+    console.log('Failed deleting schedules :(')
+    console.log(error)
+  }
+}
+
+const cSche = async () => {
+  console.log('Creating schedules ...')
+  try {
+    await createSchedules()
+  } catch (error) {
+    console.log('Failed deleting schedules :(')
+    console.log(error)
+  }
+}
+
 const dAll = async () => {
   console.log('Deleting all ...')
   try {
@@ -1162,35 +1182,6 @@ const cAll = async () => {
       } catch (error) {
         throw new Error(error)
       }
-      // console.log(username)
-      // try {
-      //   if (account.permissions === [AccountPermissions.MEM]) {
-      //     await db.member.create({
-      //       data: {
-      //         ...generateMember(account.username),
-      //         account: {
-      //           connect: {
-      //             id
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      //   if (account.permissions === [AccountPermissions.INS]) {
-      //     await db.instructor.create({
-      //       data: {
-      //         ...generateInstrucor(account.username),
-      //         account: {
-      //           connect: {
-      //             id
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      // } catch (error) {
-      //   throw new Error(error)
-      // }
     })
   }
   console.log('Creating schedules ...')
@@ -1301,6 +1292,10 @@ const createDB = async (args) => {
       cMemebers(args.slice(1))
       break
 
+    case '-sche':
+      cSche()
+      break
+
     case '-single':
       console.log('Creating single own account')
       const single = await db.account.create({
@@ -1322,6 +1317,10 @@ const deleteDB = async (args) => {
     switch (args[0]) {
       case '-all':
         dAll()
+        break
+
+      case '-sche':
+        await dSche()
         break
 
       // case '-ins':
