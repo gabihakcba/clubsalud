@@ -1108,6 +1108,26 @@ const createPromotions = async () => {
   })
 }
 
+const dSche = async () => {
+  console.log('Deleting schedules ...')
+  try {
+    await db.schedule.deleteMany()
+  } catch (error) {
+    console.log('Failed deleting schedules :(')
+    console.log(error)
+  }
+}
+
+const cSche = async () => {
+  console.log('Creating schedules ...')
+  try {
+    await createSchedules()
+  } catch (error) {
+    console.log('Failed deleting schedules :(')
+    console.log(error)
+  }
+}
+
 const dAll = async () => {
   console.log('Deleting all ...')
   try {
@@ -1162,35 +1182,6 @@ const cAll = async () => {
       } catch (error) {
         throw new Error(error)
       }
-      // console.log(username)
-      // try {
-      //   if (account.permissions === [AccountPermissions.MEM]) {
-      //     await db.member.create({
-      //       data: {
-      //         ...generateMember(account.username),
-      //         account: {
-      //           connect: {
-      //             id
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      //   if (account.permissions === [AccountPermissions.INS]) {
-      //     await db.instructor.create({
-      //       data: {
-      //         ...generateInstrucor(account.username),
-      //         account: {
-      //           connect: {
-      //             id
-      //           }
-      //         }
-      //       }
-      //     })
-      //   }
-      // } catch (error) {
-      //   throw new Error(error)
-      // }
     })
   }
   console.log('Creating schedules ...')
@@ -1301,6 +1292,10 @@ const createDB = async (args) => {
       cMemebers(args.slice(1))
       break
 
+    case '-sche':
+      cSche()
+      break
+
     case '-single':
       console.log('Creating single own account')
       const single = await db.account.create({
@@ -1322,6 +1317,10 @@ const deleteDB = async (args) => {
     switch (args[0]) {
       case '-all':
         dAll()
+        break
+
+      case '-sche':
+        await dSche()
         break
 
       // case '-ins':
