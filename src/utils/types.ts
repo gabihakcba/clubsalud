@@ -283,4 +283,14 @@ export interface CreateBilledConsultation {
   healthSubscribedPlanId: number
 }
 
+export interface InstructorPrice extends CreateInstructorPrice {
+  id: number
+}
+
+export interface CreateInstructorPrice {
+  degree: boolean
+  amount: bigint
+  lastUpdate: Date
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
