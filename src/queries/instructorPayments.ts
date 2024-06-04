@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { path } from 'utils/path'
 import {
+  type InstructorPrice,
+  type CreateInstructorPrice,
   type CreateInstructorPayment,
   type InstructorPayment
 } from 'utils/types'
@@ -26,5 +28,24 @@ export const deleteInstructorPayment = async (
   const response = await axios.delete(`${path()}/api/instructorPayments`, {
     data: id
   })
+  return response.data
+}
+
+export const getInstructorPrice = async (): Promise<InstructorPrice[]> => {
+  const response = await axios.get(`${path()}/api/instructorPrice`)
+  return response.data
+}
+
+export const createInstructorPrice = async (
+  data: CreateInstructorPrice
+): Promise<InstructorPrice> => {
+  const response = await axios.post(`${path()}/api/instructorPrice`, data)
+  return response.data
+}
+
+export const updateInstructorPrice = async (
+  data: InstructorPrice
+): Promise<InstructorPrice> => {
+  const response = await axios.post(`${path()}/api/instructorPrice`, data)
   return response.data
 }
