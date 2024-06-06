@@ -295,4 +295,27 @@ export interface CreateInstructorPrice {
   lastUpdate: Date
 }
 
+export interface priceType {
+  title: number
+  notitle: number
+}
+
+export interface reportType {
+  title: string
+
+  totalHoursPerWeek: number
+  hoursTitlePerWeek: number
+  hoursNoTitlePerWeek: number
+  amountTitlePerWeek: number
+  amountNoTitlePerWeek: number
+  amountPerWeek: number
+
+  totalHoursPerMonth: number
+  hoursTitlePerMonth: number
+  hoursNoTitlePerMonth: number
+  amountTitlePerMonth: number
+  amountNoTitlePerMonth: number
+  amountPerMonth: number
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
