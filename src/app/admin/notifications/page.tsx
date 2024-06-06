@@ -17,15 +17,20 @@ export default function NotificationsPage(): ReactElement {
   const [create, openCreate, closeCreate] = useModal(false)
 
   useEffect(() => {
-    const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
-    setUser(user)
-    void refetch()
+    const storage = localStorage.getItem('user')
+    if (storage) {
+      const user: Account = JSON.parse(storage)
+      setUser(user)
+      void refetch()
+    }
   }, [])
 
   const { data: notifications, refetch } = useQuery({
     queryKey: ['notifications'],
     queryFn: async (): Promise<Notification[]> => {
-      const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+      const storage = localStorage.getItem('user')
+      if (!storage) return []
+      const user: Account = JSON.parse(storage)
       if (user?.id) {
         const not = await getAccountNotifications(user.id)
         console.log(not, user.id)
