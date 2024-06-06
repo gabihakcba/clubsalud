@@ -10,6 +10,7 @@ import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import Image from 'next/image'
 import logo from '../../public/logos/logo_large.png'
+import { getUserToken, verifyToken } from 'utils/auth'
 
 interface params {
   data: FieldValues
@@ -20,10 +21,14 @@ const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const user: LogIn = data as LogIn
   setLoading('loading')
   try {
-    const userLoged = await signInAccount(user)
-    console.log(userLoged)
-    setLoading('success')
-    router.push('/admin/accounts')
+    await signInAccount(user)
+    const token = getUserToken()
+    const userLoged = await verifyToken(token)
+    if (userLoged) {
+      localStorage.setItem('user', JSON.stringify(userLoged))
+      setLoading('success')
+      router.push('/admin/accounts')
+    }
   } catch (error) {
     setLoading('error')
   }
