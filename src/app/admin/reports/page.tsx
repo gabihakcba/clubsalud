@@ -12,30 +12,12 @@ import { Tag } from 'primereact/tag'
 import { getInstructorPrice } from 'queries/instructorPayments'
 import { getSchedules } from 'queries/schedules'
 import { useEffect, type ReactElement, useState } from 'react'
-import { type Schedule, type InstructorPrice } from 'utils/types'
-
-interface priceType {
-  title: number
-  notitle: number
-}
-
-interface reportType {
-  title: string
-
-  totalHoursPerWeek: number
-  hoursTitlePerWeek: number
-  hoursNoTitlePerWeek: number
-  amountTitlePerWeek: number
-  amountNoTitlePerWeek: number
-  amountPerWeek: number
-
-  totalHoursPerMonth: number
-  hoursTitlePerMonth: number
-  hoursNoTitlePerMonth: number
-  amountTitlePerMonth: number
-  amountNoTitlePerMonth: number
-  amountPerMonth: number
-}
+import {
+  type Schedule,
+  type InstructorPrice,
+  type priceType,
+  type reportType
+} from 'utils/types'
 
 const fullReport = (price: priceType, title: boolean): reportType => {
   const hoursPerDay = 12
