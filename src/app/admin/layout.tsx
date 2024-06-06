@@ -151,6 +151,13 @@ export default function AdminLayout({ children }: any): ReactElement {
       role: [Permissions.ADM, Permissions.OWN]
     },
     {
+      label: 'Reportes',
+      icon: 'pi pi-chart-bar',
+      template: itemRenderer,
+      url: '/admin/reports',
+      role: [Permissions.ADM, Permissions.OWN]
+    },
+    {
       label: 'Perfil',
       icon: 'pi pi-id-card',
       template: itemRenderer,
