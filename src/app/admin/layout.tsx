@@ -22,6 +22,7 @@ const client = new QueryClient()
 const logOut = async (router: AppRouterInstance): Promise<void> => {
   try {
     await logOutAccount()
+    localStorage.removeItem('user')
     router.push('/')
   } catch (error) {
     console.log(error)

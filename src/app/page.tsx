@@ -19,11 +19,12 @@ interface params {
 const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const user: LogIn = data as LogIn
   setLoading('loading')
-  const response = await signInAccount(user)
-  if (response.status === 200) {
+  try {
+    const userLoged = await signInAccount(user)
+    console.log(userLoged)
     setLoading('success')
     router.push('/admin/accounts')
-  } else {
+  } catch (error) {
     setLoading('error')
   }
 }
