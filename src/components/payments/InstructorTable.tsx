@@ -1,22 +1,37 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
-import { getInstructorPrice } from 'queries/instructorPayments'
-import { type ReactElement } from 'react'
+import {
+  deleteInstructorPrice,
+  getInstructorPrice
+} from 'queries/instructorPayments'
+import { useState, type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import FormInstructorPrice from './FormInstructorPrice'
 
 export function InstructorTable(): ReactElement {
   const [createPrice, openPrice, closePrice] = useModal(false)
+  const [selected, setSelected] = useState<number>(0)
+
+  const query = useQueryClient()
 
   const { data: prices } = useQuery({
     queryKey: ['prices'],
     queryFn: async () => {
       return await getInstructorPrice()
+    }
+  })
+
+  const { mutate: deletePrice, isPending: deleting } = useMutation({
+    mutationFn: async (id: number) => {
+      return await deleteInstructorPrice(id)
+    },
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['prices'] })
     }
   })
 
@@ -46,6 +61,7 @@ export function InstructorTable(): ReactElement {
         value={prices}
         scrollable
         scrollHeight='20rem'
+        selectionMode='single'
       >
         <Column
           field='id'
@@ -83,6 +99,26 @@ export function InstructorTable(): ReactElement {
             )
           }}
           sortable
+        />
+
+        <Column
+          body={(e) => {
+            return (
+              <Button
+                label='Eliminar'
+                icon='pi pi-trash'
+                iconPos='right'
+                size='small'
+                severity='danger'
+                outlined
+                onClick={() => {
+                  setSelected(e.id as number)
+                  deletePrice(e.id as number)
+                }}
+                loading={deleting && (e.id as number) === selected}
+              />
+            )
+          }}
         />
       </DataTable>
     </>

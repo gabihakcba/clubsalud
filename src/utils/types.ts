@@ -158,6 +158,8 @@ export interface Schedule {
   instructorInCharge?: number
   instructorSubstitute?: number
   classId?: number
+  charge?: Instructor
+  class?: Class_
 }
 
 export interface Promotion extends CreatePromotion {
