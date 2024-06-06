@@ -49,3 +49,12 @@ export const updateInstructorPrice = async (
   const response = await axios.post(`${path()}/api/instructorPrice`, data)
   return response.data
 }
+
+export const deleteInstructorPrice = async (
+  id: number
+): Promise<InstructorPrice> => {
+  const response = await axios.delete(`${path()}/api/instructorPrice`, {
+    data: id
+  })
+  return response.data
+}
