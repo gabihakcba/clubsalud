@@ -28,6 +28,15 @@ export default function NotificationsPage(): ReactElement {
       const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
       if (user?.id) {
         const not = await getAccountNotifications(user.id)
+        console.log(not, user.id)
+        console.log(
+          'Recibidas: ',
+          not?.filter((notification) => notification.receiverId === user?.id)
+        )
+        console.log(
+          'Enviadas: ',
+          not?.filter((notification) => notification.senderId === user?.id)
+        )
         return not
       }
       return []
@@ -65,11 +74,11 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='receiver.username'
+          field='sender.username'
           header='De'
         />
         <Column
-          field='sender.username'
+          field='receiver.username'
           header='Para'
         />
         <Column
@@ -93,11 +102,11 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='receiver.username'
+          field='sender.username'
           header='De'
         />
         <Column
-          field='sender.username'
+          field='receiver.username'
           header='Para'
         />
         <Column
