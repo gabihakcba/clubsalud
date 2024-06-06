@@ -122,12 +122,12 @@ export default function Reports(): ReactElement {
   ]
 
   const weekColumns = [
-    'amountPerMonth',
-    'totalHoursPerMonth',
-    'amountTitlePerMonth',
-    'hoursTitlePerMonth',
-    'amountNoTitlePerMonth',
-    'hoursNoTitlePerMonth'
+    'amountPerWeek',
+    'totalHoursPerWeek',
+    'amountTitlePerWeek',
+    'hoursTitlePerWeek',
+    'amountNoTitlePerWeek',
+    'hoursNoTitlePerWeek'
   ]
 
   const titleColumns = [
