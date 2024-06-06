@@ -1,30 +1,46 @@
-import { useState, type ReactElement } from 'react'
+'use client'
+
+import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from 'utils/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
 import { type EmployeePayment } from 'utils/types'
-import { Card } from 'primereact/card'
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { Dialog } from 'primereact/dialog'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteEmployeePayment } from 'queries/employeePayments'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  deleteEmployeePayment,
+  getEmployeePayments
+} from 'queries/employeePayments'
 import { FilterMatchMode } from 'primereact/api'
+import { Tag } from 'primereact/tag'
 
-interface params {
-  employeePayments: EmployeePayment[] | undefined
+const getAccounting = (payments: EmployeePayment[], setPaid): void => {
+  const paid = payments.reduce(
+    (acc: number, curr: EmployeePayment) => acc + curr.amount,
+    0
+  )
+  setPaid(paid)
 }
-export function EmplooyeePaymentsSection({
-  employeePayments
-}: params): ReactElement {
+
+export function EmployeePaymentsSection(): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
     'employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
+  const [paid, setPaid] = useState<number | null>(null)
 
   const query = useQueryClient()
+
+  const { data: employeePayments } = useQuery({
+    queryKey: ['employeePayments'],
+    queryFn: async () => {
+      return await getEmployeePayments()
+    }
+  })
 
   const {
     mutate: deleteEmployeePayment_,
@@ -44,8 +60,14 @@ export function EmplooyeePaymentsSection({
     }
   })
 
+  useEffect(() => {
+    if (employeePayments) {
+      getAccounting(employeePayments, setPaid)
+    }
+  }, [employeePayments])
+
   return (
-    <Card className='flex flex-column'>
+    <div className='flex flex-column'>
       <Dialog
         visible={createPayment}
         onHide={closePayment}
@@ -56,14 +78,17 @@ export function EmplooyeePaymentsSection({
       <DataTable
         value={employeePayments}
         header={() => (
-          <nav className='flex gap-4 align-items-center'>
-            <h2>Pagos a empleados</h2>
+          <nav className='flex gap-4 align-items-center justify-content-between'>
             <Button
               onClick={openPayment}
               label='Generar Pago'
               size='small'
               icon='pi pi-plus'
               iconPos='right'
+            />
+            <Tag
+              value={`Pagado: ${paid}`}
+              severity='success'
             />
           </nav>
         )}
@@ -131,6 +156,6 @@ export function EmplooyeePaymentsSection({
           )}
         />
       </DataTable>
-    </Card>
+    </div>
   )
 }
