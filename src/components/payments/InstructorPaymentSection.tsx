@@ -1,23 +1,92 @@
-import { type ReactElement, useState } from 'react'
+'use client'
+
+import { type ReactElement, useState, useEffect } from 'react'
 import { useModal } from 'utils/useModal'
-import { type InstructorPayment } from 'utils/types'
+import {
+  type priceType,
+  type InstructorPayment,
+  type InstructorPrice,
+  type Schedule,
+  type reportType
+} from 'utils/types'
 import CreateInstructorPaymentForm from './CreateInstructorPaymentForm'
 import { DataTable } from 'primereact/datatable'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { Column } from 'primereact/column'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteInstructorPayment } from 'queries/instructorPayments'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  deleteInstructorPayment,
+  getInstructorPayments,
+  getInstructorPrice
+} from 'queries/instructorPayments'
 import { FilterMatchMode } from 'primereact/api'
 import { InstructorTable } from './InstructorTable'
+import { getSchedules } from 'queries/schedules'
+import { Tag } from 'primereact/tag'
 
-interface params {
-  instructorPayments: InstructorPayment[] | undefined
+const paidAndRemaining = (
+  payments: InstructorPayment[],
+  total: number,
+  setPaid,
+  setRemaining
+): void => {
+  const paid = payments.reduce(
+    (acc: number, current: InstructorPayment) => acc + current.amount,
+    0
+  )
+  setPaid(paid)
+  setRemaining(total - paid)
 }
-export function InstructorPaymentsSection({
-  instructorPayments
-}: params): ReactElement {
+
+const currentReport = (
+  schedules: Schedule[],
+  price: priceType,
+  setTotal
+): void => {
+  const activeSchedules = schedules.filter((sche: Schedule) => sche.charge)
+
+  const totalHoursPerWeek = activeSchedules.length / 2
+  const hoursTitlePerWeek =
+    activeSchedules.filter((sche: Schedule) => sche.charge?.degree).length / 2
+  const hoursNoTitlePerWeek =
+    activeSchedules.filter((sche: Schedule) => !sche.charge?.degree).length / 2
+
+  const amountTitlePerWeek = hoursTitlePerWeek * price.title
+  const amountNoTitlePerWeek = hoursNoTitlePerWeek * price.notitle
+  const amountPerWeek = amountTitlePerWeek + amountNoTitlePerWeek
+
+  const totalHoursPerMonth = totalHoursPerWeek * 4
+  const hoursTitlePerMonth = hoursTitlePerWeek * 4
+  const hoursNoTitlePerMonth = hoursNoTitlePerWeek * 4
+  const amountTitlePerMonth = hoursTitlePerMonth * price.title
+  const amountNoTitlePerMonth = hoursNoTitlePerMonth * price.notitle
+  const amountPerMonth = amountTitlePerMonth + amountNoTitlePerMonth
+
+  const report: reportType = {
+    title: 'Horarios actuales',
+
+    totalHoursPerWeek,
+    hoursTitlePerWeek,
+    hoursNoTitlePerWeek,
+    amountTitlePerWeek,
+    amountNoTitlePerWeek,
+    amountPerWeek,
+
+    totalHoursPerMonth,
+    hoursTitlePerMonth,
+    hoursNoTitlePerMonth,
+    amountTitlePerMonth,
+    amountNoTitlePerMonth,
+    amountPerMonth
+  }
+  setTotal(report.amountPerMonth)
+}
+
+export function InstructorPaymentsSection(): ReactElement {
+  const query = useQueryClient()
+
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [instructorTable, openInstructorTable, closeInstructorTable] =
     useModal(false)
@@ -26,7 +95,31 @@ export function InstructorPaymentsSection({
     'instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
 
-  const query = useQueryClient()
+  const [price, setPrice] = useState<priceType | null>(null)
+  const [total, setTotal] = useState<number | null>(null)
+  const [paid, setPaid] = useState<number | null>(null)
+  const [remaining, setRemaining] = useState<number | null>(null)
+
+  const { data: schedules } = useQuery({
+    queryKey: ['sche'],
+    queryFn: async () => {
+      return await getSchedules()
+    }
+  })
+
+  const { data: prices } = useQuery({
+    queryKey: ['ins'],
+    queryFn: async () => {
+      return await getInstructorPrice()
+    }
+  })
+
+  const { data: instructorPayments } = useQuery({
+    queryKey: ['payments'],
+    queryFn: async () => {
+      return await getInstructorPayments()
+    }
+  })
 
   const {
     mutate: deleteInstructorPayment_,
@@ -49,6 +142,33 @@ export function InstructorPaymentsSection({
     }
   })
 
+  useEffect(() => {
+    if (price && schedules) {
+      currentReport(schedules, price, setTotal)
+    }
+  }, [price, schedules])
+
+  useEffect(() => {
+    if (total && instructorPayments) {
+      paidAndRemaining(instructorPayments, total, setPaid, setRemaining)
+    }
+  }, [total, instructorPayments])
+
+  useEffect(() => {
+    if (prices) {
+      const lastIndexWithTitle = prices.findIndex(
+        (price: InstructorPrice) => price.degree
+      )
+      const lastIndexWithNoTitle = prices.findIndex(
+        (price: InstructorPrice) => !price.degree
+      )
+      setPrice({
+        title: Number(prices[lastIndexWithTitle].amount),
+        notitle: Number(prices[lastIndexWithNoTitle].amount)
+      })
+    }
+  }, [prices])
+
   return (
     <div className='flex flex-column'>
       <Dialog
@@ -68,22 +188,37 @@ export function InstructorPaymentsSection({
       <DataTable
         value={instructorPayments}
         header={() => (
-          <nav className='flex gap-4 align-items-center'>
-            <h2>Pagos a profesores</h2>
-            <Button
-              onClick={openPayment}
-              label='Generar Pago'
-              size='small'
-              icon='pi pi-plus'
-              iconPos='right'
-            />
-            <Button
-              onClick={openInstructorTable}
-              label='Precios por hora'
-              size='small'
-              icon='pi pi-search'
-              iconPos='right'
-            />
+          <nav className='flex flex-row gap-2 justify-content-between'>
+            <div className='flex align-items-center gap-4'>
+              <Button
+                onClick={openPayment}
+                label='Generar Pago'
+                size='small'
+                icon='pi pi-plus'
+                iconPos='right'
+              />
+              <Button
+                onClick={openInstructorTable}
+                label='Precios por hora'
+                size='small'
+                icon='pi pi-search'
+                iconPos='right'
+              />
+            </div>
+            <div className='flex align-items-center gap-4'>
+              <Tag
+                value={`Total: ${total}`}
+                severity='info'
+              />
+              <Tag
+                value={`Pagado: ${paid}`}
+                severity='success'
+              />
+              <Tag
+                value={`Faltante: ${remaining}`}
+                severity='danger'
+              />
+            </div>
           </nav>
         )}
         filters={filters}
