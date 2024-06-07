@@ -9,7 +9,7 @@ import { getMembers } from 'queries/members'
 import { setParticularPayment, setPlanPayment } from 'queries/payments'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Member, type Payment } from 'utils/types'
+import { type Subscription, type Member, type Payment } from 'utils/types'
 
 const hasSubs = (member): boolean => {
   return member?.memberSubscription.some((subs) => !subs.paid)
@@ -49,7 +49,6 @@ export default function CreatePaymentForm(): ReactElement {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
     watch,
     setValue,
     getValues
@@ -77,7 +76,6 @@ export default function CreatePaymentForm(): ReactElement {
         ...oldData,
         data
       ])
-      reset()
     }
   })
 
@@ -91,7 +89,6 @@ export default function CreatePaymentForm(): ReactElement {
     onSuccess: async (data: Payment) => {
       await query.refetchQueries({ queryKey: ['members'] })
       query.setQueryData(['billed'], (oldData: Payment[]) => [...oldData, data])
-      reset()
     }
   })
 
@@ -101,7 +98,6 @@ export default function CreatePaymentForm(): ReactElement {
       className='flex flex-column pt-4 gap-4'
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
-        console.log(data)
         if (ishealth) {
           planPayment({
             amount: data.amountPlan,
@@ -143,9 +139,10 @@ export default function CreatePaymentForm(): ReactElement {
       </div>
       <div className='p-float-label'>
         <Dropdown
-          options={
-            selectMember(members, Number(watch('memberId')))?.memberSubscription
-          }
+          options={selectMember(
+            members,
+            Number(watch('memberId'))
+          )?.memberSubscription?.filter((subs: Subscription) => !subs.paid)}
           value={selectedSubscription}
           optionLabel='promotion.title'
           optionValue='id'
@@ -251,7 +248,7 @@ export default function CreatePaymentForm(): ReactElement {
         size='small'
         icon='pi pi-upload'
         iconPos='right'
-        loading={isPendingP}
+        loading={isPendingP || isPendingB}
       />
       {(isPendingP || isPendingB) && (
         <span className='text-yellow-400'>Creando...</span>
