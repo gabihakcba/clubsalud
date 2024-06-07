@@ -3,7 +3,7 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from 'utils/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
-import { type EmployeePayment } from 'utils/types'
+import { type dateType, type EmployeePayment } from 'utils/types'
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -16,6 +16,8 @@ import {
 } from 'queries/employeePayments'
 import { FilterMatchMode } from 'primereact/api'
 import { Tag } from 'primereact/tag'
+import { Calendar } from 'primereact/calendar'
+import moment from 'moment'
 
 const getAccounting = (payments: EmployeePayment[], setPaid): void => {
   const paid = payments.reduce(
@@ -26,6 +28,8 @@ const getAccounting = (payments: EmployeePayment[], setPaid): void => {
 }
 
 export function EmployeePaymentsSection(): ReactElement {
+  const [filterPayments, setFilterPayments] = useState<EmployeePayment[]>([])
+  const [selectedDate, setSelectedDate] = useState<dateType | null>(null)
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
@@ -61,10 +65,21 @@ export function EmployeePaymentsSection(): ReactElement {
   })
 
   useEffect(() => {
-    if (employeePayments) {
-      getAccounting(employeePayments, setPaid)
+    if (employeePayments && selectedDate) {
+      setFilterPayments(
+        employeePayments.filter(
+          (pay: EmployeePayment) =>
+            moment(pay.date).month() === selectedDate.month
+        )
+      )
+    } else if (employeePayments) {
+      setFilterPayments(employeePayments)
     }
-  }, [employeePayments])
+  }, [employeePayments, selectedDate])
+
+  useEffect(() => {
+    getAccounting(filterPayments, setPaid)
+  }, [filterPayments])
 
   return (
     <div className='flex flex-column'>
@@ -76,7 +91,7 @@ export function EmployeePaymentsSection(): ReactElement {
         <CreateEmployeePaymentForm closeModal={closePayment} />
       </Dialog>
       <DataTable
-        value={employeePayments}
+        value={filterPayments}
         header={() => (
           <nav className='flex gap-4 align-items-center justify-content-between'>
             <Button
@@ -86,10 +101,28 @@ export function EmployeePaymentsSection(): ReactElement {
               icon='pi pi-plus'
               iconPos='right'
             />
-            <Tag
-              value={`Pagado: ${paid}`}
-              severity='success'
-            />
+            <div className='flex gap-4'>
+              <Calendar
+                view='month'
+                dateFormat='mm/yy'
+                onChange={(e) => {
+                  setSelectedDate({
+                    month: moment(e.value).month(),
+                    year: moment(e.value).year()
+                  })
+                }}
+              />
+              <Button
+                icon='pi pi-filter-slash'
+                onClick={() => {
+                  setSelectedDate(null)
+                }}
+              />
+              <Tag
+                value={`Pagado: ${paid}`}
+                severity='success'
+              />
+            </div>
           </nav>
         )}
         filters={filters}
@@ -98,32 +131,39 @@ export function EmployeePaymentsSection(): ReactElement {
         <Column
           field='id'
           header='ID'
+          sortable
         />
         <Column
           field='employee.name'
           header='Empleado'
+          sortable
         />
         <Column
           field='employee.dni'
           header='DNI'
           filter
           filterPlaceholder='DNI'
+          sortable
         />
         <Column
           field='amount'
           header='Pago'
+          sortable
         />
         <Column
           field='date'
           header='Fecha de pago'
+          sortable
         />
         <Column
           field='monthPayment'
           header='Mes trabajado'
+          sortable
         />
         <Column
           field='hoursWorked'
           header='Horas trabajadas'
+          sortable
         />
         <Column
           body={(payment) => (

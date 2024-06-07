@@ -7,7 +7,8 @@ import {
   type InstructorPayment,
   type InstructorPrice,
   type Schedule,
-  type reportType
+  type reportType,
+  type dateType
 } from 'utils/types'
 import CreateInstructorPaymentForm from './CreateInstructorPaymentForm'
 import { DataTable } from 'primereact/datatable'
@@ -25,6 +26,8 @@ import { FilterMatchMode } from 'primereact/api'
 import { InstructorTable } from './InstructorTable'
 import { getSchedules } from 'queries/schedules'
 import { Tag } from 'primereact/tag'
+import { Calendar } from 'primereact/calendar'
+import moment from 'moment'
 
 const paidAndRemaining = (
   payments: InstructorPayment[],
@@ -87,6 +90,8 @@ const currentReport = (
 export function InstructorPaymentsSection(): ReactElement {
   const query = useQueryClient()
 
+  const [selectedDate, setSelectedDate] = useState<dateType | null>(null)
+  const [fitlerPayments, setFilterPayments] = useState<InstructorPayment[]>([])
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [instructorTable, openInstructorTable, closeInstructorTable] =
     useModal(false)
@@ -127,18 +132,15 @@ export function InstructorPaymentsSection(): ReactElement {
   } = useMutation({
     mutationFn: deleteInstructorPayment,
     onSuccess: async (data) => {
-      query.setQueryData(
-        ['instructorPayments'],
-        (oldData: InstructorPayment[]) => {
-          const index = oldData.findIndex(
-            (instructorPayment: InstructorPayment) =>
-              Number(instructorPayment.id) === Number(data.id)
-          )
-          const newData = [...oldData]
-          newData.splice(index, 1)
-          return newData
-        }
-      )
+      query.setQueryData(['payments'], (oldData: InstructorPayment[]) => {
+        const index = oldData.findIndex(
+          (instructorPayment: InstructorPayment) =>
+            Number(instructorPayment.id) === Number(data.id)
+        )
+        const newData = [...oldData]
+        newData.splice(index, 1)
+        return newData
+      })
     }
   })
 
@@ -149,10 +151,23 @@ export function InstructorPaymentsSection(): ReactElement {
   }, [price, schedules])
 
   useEffect(() => {
-    if (total && instructorPayments) {
-      paidAndRemaining(instructorPayments, total, setPaid, setRemaining)
+    if (instructorPayments && selectedDate) {
+      setFilterPayments(
+        instructorPayments.filter(
+          (pay: InstructorPayment) =>
+            moment(pay.paymentDate).month() === selectedDate.month
+        )
+      )
+    } else if (instructorPayments) {
+      setFilterPayments(instructorPayments)
     }
-  }, [total, instructorPayments])
+  }, [instructorPayments, selectedDate])
+
+  useEffect(() => {
+    if (total && fitlerPayments) {
+      paidAndRemaining(fitlerPayments, total, setPaid, setRemaining)
+    }
+  }, [total, fitlerPayments])
 
   useEffect(() => {
     if (prices) {
@@ -186,7 +201,7 @@ export function InstructorPaymentsSection(): ReactElement {
         <InstructorTable />
       </Dialog>
       <DataTable
-        value={instructorPayments}
+        value={fitlerPayments}
         header={() => (
           <nav className='flex flex-row gap-2 justify-content-between'>
             <div className='flex align-items-center gap-4'>
@@ -206,6 +221,22 @@ export function InstructorPaymentsSection(): ReactElement {
               />
             </div>
             <div className='flex align-items-center gap-4'>
+              <Calendar
+                view='month'
+                dateFormat='mm/yy'
+                onChange={(e) => {
+                  setSelectedDate({
+                    month: moment(e.value).month(),
+                    year: moment(e.value).year()
+                  })
+                }}
+              />
+              <Button
+                icon='pi pi-filter-slash'
+                onClick={() => {
+                  setSelectedDate(null)
+                }}
+              />
               <Tag
                 value={`Total: ${total}`}
                 severity='info'
