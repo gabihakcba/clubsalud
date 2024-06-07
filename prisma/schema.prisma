@@ -373,7 +373,10 @@ model InstructorPrice {
 }
 
 model ExtraCost {
-  id Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  amount      Int
+  date        DateTime @default(now())
+  description String
 }
 
 model RegistrationForm {
