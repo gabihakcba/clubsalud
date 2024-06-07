@@ -22,6 +22,7 @@ const client = new QueryClient()
 const logOut = async (router: AppRouterInstance): Promise<void> => {
   try {
     await logOutAccount()
+    localStorage.removeItem('user')
     router.push('/')
   } catch (error) {
     console.log(error)
@@ -148,6 +149,13 @@ export default function AdminLayout({ children }: any): ReactElement {
       icon: 'pi pi-chart-line',
       template: itemRenderer,
       url: '/admin/accounting',
+      role: [Permissions.ADM, Permissions.OWN]
+    },
+    {
+      label: 'Reportes',
+      icon: 'pi pi-chart-bar',
+      template: itemRenderer,
+      url: '/admin/reports',
       role: [Permissions.ADM, Permissions.OWN]
     },
     {

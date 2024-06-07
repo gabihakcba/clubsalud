@@ -8,24 +8,21 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { getAccountNotifications } from 'queries/notifications'
-import { useState, type ReactElement, useEffect } from 'react'
+import { useState, type ReactElement } from 'react'
 import { type Notification, type Account } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 export default function NotificationsPage(): ReactElement {
-  const [user, setUser] = useState<Account | null>(null)
   const [create, openCreate, closeCreate] = useModal(false)
+  const [currentUser, setCurrentUser] = useState<Account | null>(null)
 
-  useEffect(() => {
-    const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
-    setUser(user)
-    void refetch()
-  }, [])
-
-  const { data: notifications, refetch } = useQuery({
+  const { data: notifications } = useQuery({
     queryKey: ['notifications'],
     queryFn: async (): Promise<Notification[]> => {
-      const user: Account = JSON.parse(localStorage.getItem('user') ?? '')
+      const storage = localStorage.getItem('user')
+      if (!storage) return []
+      const user: Account = JSON.parse(storage)
+      setCurrentUser(user)
       if (user?.id) {
         const not = await getAccountNotifications(user.id)
         return not
@@ -56,7 +53,7 @@ export default function NotificationsPage(): ReactElement {
 
       <DataTable
         value={notifications?.filter(
-          (notification) => notification.receiverId === user?.id
+          (notification) => notification.receiverId === currentUser?.id
         )}
         header='Recibidas'
       >
@@ -65,11 +62,11 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='receiver.username'
+          field='sender.username'
           header='De'
         />
         <Column
-          field='sender.username'
+          field='receiver.username'
           header='Para'
         />
         <Column
@@ -84,7 +81,7 @@ export default function NotificationsPage(): ReactElement {
 
       <DataTable
         value={notifications?.filter(
-          (notification) => notification.senderId === user?.id
+          (notification) => notification.senderId === currentUser?.id
         )}
         header='Enviadas'
       >
@@ -93,11 +90,11 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='receiver.username'
+          field='sender.username'
           header='De'
         />
         <Column
-          field='sender.username'
+          field='receiver.username'
           header='Para'
         />
         <Column
