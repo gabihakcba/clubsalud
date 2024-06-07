@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { createInstructorPayment } from 'queries/instructorPayments'
 import { getInstructors } from 'queries/instructors'
@@ -32,11 +33,10 @@ export default function CreateInstructorPaymentForm(): ReactElement {
   } = useMutation({
     mutationFn: createInstructorPayment,
     onSuccess: (data) => {
-      console.log(data)
-      query.setQueryData(
-        ['instructorPayments'],
-        (oldData: InstructorPayment[]) => [...oldData, data]
-      )
+      query.setQueryData(['payments'], (oldData: InstructorPayment[]) => [
+        ...oldData,
+        data
+      ])
       reset()
     }
   })
@@ -74,7 +74,8 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         />
         <label htmlFor=''>Cantidad</label>
       </div>
-      <div className='p-float-label'>
+
+      <FloatLabel>
         <Calendar
           {...register('workedMonth', {
             required: { value: true, message: 'Campo requerido' }
@@ -82,7 +83,8 @@ export default function CreateInstructorPaymentForm(): ReactElement {
           invalid={errors?.workedMonth !== undefined}
         />
         <label htmlFor=''>Mes trabajado</label>
-      </div>
+      </FloatLabel>
+
       <div className='p-float-label'>
         <InputText
           type='number'
