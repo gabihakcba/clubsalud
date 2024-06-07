@@ -328,4 +328,9 @@ export interface reportType {
   amountPerMonth: number
 }
 
+export interface dateType {
+  month: number
+  year: number
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>
