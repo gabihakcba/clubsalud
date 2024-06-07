@@ -55,7 +55,8 @@ export default function BillsTable(): ReactElement {
       setFilterSubscription(
         subscriptions.filter(
           (subscription: Subscription) =>
-            moment(subscription.date).month() === selectedDate.month
+            moment(subscription.date).month() === selectedDate.month &&
+            moment(subscription.date).year() === selectedDate.year
         )
       )
     } else if (subscriptions) {
