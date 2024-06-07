@@ -5,6 +5,7 @@ import BillsTable from 'components/accounting/BillsTable'
 import { ConfirmDialog } from 'primereact/confirmdialog'
 import { InstructorPaymentsSection } from 'components/payments/InstructorPaymentSection'
 import { EmployeePaymentsSection } from 'components/payments/EmployeePaymentsSection'
+import ExtraCostSection from 'components/extraCost/ExtraCostSection'
 
 export default function Accounting(): ReactElement {
   return (
@@ -23,6 +24,9 @@ export default function Accounting(): ReactElement {
               <EmployeePaymentsSection />
             </TabPanel>
           </TabView>
+        </TabPanel>
+        <TabPanel header='Gastos Extra'>
+          <ExtraCostSection />
         </TabPanel>
       </TabView>
     </Card>
