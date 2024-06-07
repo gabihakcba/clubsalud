@@ -17,7 +17,6 @@ export default function FormInstructorPrice(): ReactElement {
   const { mutate: createIns, isPending: isPendingCreate } = useMutation({
     mutationFn: async (data: CreateInstructorPrice) => {
       const response = await createInstructorPrice(data)
-      console.log(response)
       return response
     },
     onSuccess: async () => {

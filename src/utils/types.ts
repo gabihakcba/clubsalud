@@ -158,6 +158,8 @@ export interface Schedule {
   instructorInCharge?: number
   instructorSubstitute?: number
   classId?: number
+  charge?: Instructor
+  class?: Class_
 }
 
 export interface Promotion extends CreatePromotion {
@@ -291,6 +293,39 @@ export interface CreateInstructorPrice {
   degree: boolean
   amount: bigint
   lastUpdate: Date
+}
+
+export interface ExtraCost extends CreateExtraCost {
+  id: number
+}
+
+export interface CreateExtraCost {
+  amount: number
+  date: Date
+  description: string
+}
+
+export interface priceType {
+  title: number
+  notitle: number
+}
+
+export interface reportType {
+  title: string
+
+  totalHoursPerWeek: number
+  hoursTitlePerWeek: number
+  hoursNoTitlePerWeek: number
+  amountTitlePerWeek: number
+  amountNoTitlePerWeek: number
+  amountPerWeek: number
+
+  totalHoursPerMonth: number
+  hoursTitlePerMonth: number
+  hoursNoTitlePerMonth: number
+  amountTitlePerMonth: number
+  amountNoTitlePerMonth: number
+  amountPerMonth: number
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>

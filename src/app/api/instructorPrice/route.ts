@@ -69,3 +69,21 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     })
   }
 }
+
+export async function DELETE(req: NextRequest): Promise<Response> {
+  const id = await req.json()
+  try {
+    const prices = await db.instructorPrice.delete({
+      where: { id }
+    })
+
+    return new Response(JSONbig.stringify(prices), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response(JSONbig.stringify(error), {
+      status: 400
+    })
+  }
+}
