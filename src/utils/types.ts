@@ -295,6 +295,16 @@ export interface CreateInstructorPrice {
   lastUpdate: Date
 }
 
+export interface ExtraCost extends CreateExtraCost {
+  id: number
+}
+
+export interface CreateExtraCost {
+  amount: number
+  date: Date
+  description: string
+}
+
 export interface priceType {
   title: number
   notitle: number
