@@ -12,7 +12,8 @@ import ExtraCostForm from './ExtraCostForm'
 import { Calendar } from 'primereact/calendar'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Tag } from 'primereact/tag'
-import { type ExtraCost } from 'utils/types'
+import { type dateType, type ExtraCost } from 'utils/types'
+import moment from 'moment'
 
 const getTotal = (payments: ExtraCost[], setTotal): void => {
   const total = payments.reduce(
@@ -25,6 +26,8 @@ const getTotal = (payments: ExtraCost[], setTotal): void => {
 export default function ExtraCostSection(): ReactElement {
   const [total, setTotal] = useState<number | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
+  const [filterExtraCost, setFilterExtraCost] = useState<ExtraCost[]>([])
+  const [selectedDate, setSelectedDate] = useState<dateType | null>(null)
 
   const [createExtraCost, openCreateExtraCost, closeCreateExtraCost] =
     useModal(false)
@@ -46,10 +49,22 @@ export default function ExtraCostSection(): ReactElement {
   })
 
   useEffect(() => {
-    if (extracost) {
-      getTotal(extracost, setTotal)
+    getTotal(filterExtraCost, setTotal)
+  }, [filterExtraCost])
+
+  useEffect(() => {
+    if (extracost && selectedDate) {
+      setFilterExtraCost(
+        extracost.filter(
+          (extra: ExtraCost) =>
+            moment(extra.date).month() === selectedDate.month &&
+            moment(extra.date).year() === selectedDate.year
+        )
+      )
+    } else if (extracost) {
+      setFilterExtraCost(extracost)
     }
-  }, [extracost])
+  }, [extracost, selectedDate])
 
   return (
     <>
@@ -61,7 +76,7 @@ export default function ExtraCostSection(): ReactElement {
         <ExtraCostForm />
       </Dialog>
       <DataTable
-        value={extracost}
+        value={filterExtraCost}
         header={() => (
           <nav className='w-full flex align-items-center justify-content-between'>
             <Button
@@ -71,10 +86,28 @@ export default function ExtraCostSection(): ReactElement {
               iconPos='right'
               onClick={openCreateExtraCost}
             />
-            <Tag
-              value={`Pagado: ${total}`}
-              severity='success'
-            />
+            <div className='flex gap-4'>
+              <Calendar
+                view='month'
+                dateFormat='mm/yy'
+                onChange={(e) => {
+                  setSelectedDate({
+                    month: moment(e.value).month(),
+                    year: moment(e.value).year()
+                  })
+                }}
+              />
+              <Button
+                icon='pi pi-filter-slash'
+                onClick={() => {
+                  setSelectedDate(null)
+                }}
+              />
+              <Tag
+                value={`Pagado: ${total}`}
+                severity='success'
+              />
+            </div>
           </nav>
         )}
       >

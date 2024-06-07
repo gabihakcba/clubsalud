@@ -155,7 +155,8 @@ export function InstructorPaymentsSection(): ReactElement {
       setFilterPayments(
         instructorPayments.filter(
           (pay: InstructorPayment) =>
-            moment(pay.paymentDate).month() === selectedDate.month
+            moment(pay.paymentDate).month() === selectedDate.month &&
+            moment(pay.paymentDate).year() === selectedDate.year
         )
       )
     } else if (instructorPayments) {
