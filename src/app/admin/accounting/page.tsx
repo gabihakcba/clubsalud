@@ -12,7 +12,7 @@ export default function Accounting(): ReactElement {
     <Card className='h-full'>
       <ConfirmDialog />
       <TabView>
-        <TabPanel header='Cobros'>
+        <TabPanel header='Suscripciones'>
           <BillsTable />
         </TabPanel>
         <TabPanel header='Pagos'>
