@@ -27,7 +27,7 @@ const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
     if (userLoged) {
       localStorage.setItem('user', JSON.stringify(userLoged))
       setLoading('success')
-      router.push('/admin/accounts')
+      router.push('/admin')
     }
   } catch (error) {
     setLoading('error')

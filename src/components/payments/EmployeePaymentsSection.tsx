@@ -3,7 +3,7 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from 'utils/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
-import { type dateType, type EmployeePayment } from 'utils/types'
+import { Permissions, type dateType, type EmployeePayment } from 'utils/types'
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -18,6 +18,7 @@ import { FilterMatchMode } from 'primereact/api'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
 import moment from 'moment'
+import HasRole from 'components/HasRole'
 
 const getAccounting = (payments: EmployeePayment[], setPaid): void => {
   const paid = payments.reduce(
@@ -119,10 +120,12 @@ export function EmployeePaymentsSection(): ReactElement {
                   setSelectedDate(null)
                 }}
               />
-              <Tag
-                value={`Pagado: ${paid}`}
-                severity='success'
-              />
+              <HasRole required={[Permissions.OWN]}>
+                <Tag
+                  value={`Pagado: ${paid}`}
+                  severity='success'
+                />
+              </HasRole>
             </div>
           </nav>
         )}
