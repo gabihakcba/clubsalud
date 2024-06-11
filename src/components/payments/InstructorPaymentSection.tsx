@@ -8,7 +8,8 @@ import {
   type InstructorPrice,
   type Schedule,
   type reportType,
-  type dateType
+  type dateType,
+  Permissions
 } from 'utils/types'
 import CreateInstructorPaymentForm from './CreateInstructorPaymentForm'
 import { DataTable } from 'primereact/datatable'
@@ -28,6 +29,7 @@ import { getSchedules } from 'queries/schedules'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
 import moment from 'moment'
+import HasRole from 'components/HasRole'
 
 const paidAndRemaining = (
   payments: InstructorPayment[],
@@ -238,18 +240,20 @@ export function InstructorPaymentsSection(): ReactElement {
                   setSelectedDate(null)
                 }}
               />
-              <Tag
-                value={`Total: ${total}`}
-                severity='info'
-              />
-              <Tag
-                value={`Pagado: ${paid}`}
-                severity='success'
-              />
-              <Tag
-                value={`Faltante: ${remaining}`}
-                severity='danger'
-              />
+              <HasRole required={[Permissions.OWN]}>
+                <Tag
+                  value={`Total: ${total}`}
+                  severity='info'
+                />
+                <Tag
+                  value={`Pagado: ${paid}`}
+                  severity='success'
+                />
+                <Tag
+                  value={`Faltante: ${remaining}`}
+                  severity='danger'
+                />
+              </HasRole>
             </div>
           </nav>
         )}

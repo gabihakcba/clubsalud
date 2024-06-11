@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import HasRole from 'components/HasRole'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
 import { Card } from 'primereact/card'
@@ -12,7 +13,8 @@ import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
 import { getSchedules } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
-import { type Schedule } from 'utils/types'
+import { hasPermission } from 'utils/auth'
+import { Permissions, type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 const formatHour = (hour: number): string => {
@@ -81,20 +83,22 @@ export default function Schelude(): ReactElement {
 
   return (
     <Card className='h-full'>
-      <Dialog
-        visible={assignClass}
-        onHide={closeAssignClass}
-        header='Asignar Clase'
-      >
-        <ClassAssign schedule={selectedSchedule} />
-      </Dialog>
-      <Dialog
-        visible={assignInstructor}
-        onHide={closeAssignInstructor}
-        header='Asignar Profesor'
-      >
-        <InstructorAssign schedule={selectedSchedule} />
-      </Dialog>
+      <HasRole required={[Permissions.ADM, Permissions.OWN]}>
+        <Dialog
+          visible={assignClass}
+          onHide={closeAssignClass}
+          header='Asignar Clase'
+        >
+          <ClassAssign schedule={selectedSchedule} />
+        </Dialog>
+        <Dialog
+          visible={assignInstructor}
+          onHide={closeAssignInstructor}
+          header='Asignar Profesor'
+        >
+          <InstructorAssign schedule={selectedSchedule} />
+        </Dialog>
+      </HasRole>
       <ConfirmDialog />
       <DataTable
         value={formatScheduler(data ?? [])}
@@ -102,20 +106,22 @@ export default function Schelude(): ReactElement {
         scrollHeight='80vh'
         cellSelection
         selectionMode='single'
-        onSelectionChange={(e) => {
+        onSelectionChange={async (e) => {
           setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
-          confirmDialog({
-            header: 'Asignar ...',
-            message: 'Seleccione que desea asignar',
-            acceptLabel: 'Clase',
-            rejectLabel: 'Profesor',
-            accept() {
-              openAssingClass()
-            },
-            reject() {
-              openAssignInstructor()
-            }
-          })
+          if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
+            confirmDialog({
+              header: 'Asignar ...',
+              message: 'Seleccione que desea asignar',
+              acceptLabel: 'Clase',
+              rejectLabel: 'Profesor',
+              accept() {
+                openAssingClass()
+              },
+              reject() {
+                openAssignInstructor()
+              }
+            })
+          }
         }}
         header={() => <h2>Horarios</h2>}
       >
