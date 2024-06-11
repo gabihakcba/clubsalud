@@ -19,7 +19,7 @@ const subscribe = async (promotion: Promotion): Promise<void> => {
   const userId = user?.id
   const member = await getMemberById(Number(userId))
   const subs = await setSubscription({
-    memberId: member.data.id,
+    memberId: member.id,
     promotion
   })
   if (!subs) {

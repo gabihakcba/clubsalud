@@ -42,6 +42,9 @@ export default function SubscriptionForm(): ReactElement {
       if (!subs) {
         alert('No se pudo adherir a la suscripción')
       }
+    },
+    onSuccess: () => {
+      alert('Inscipción hecha')
     }
   })
 
