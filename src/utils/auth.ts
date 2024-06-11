@@ -2,11 +2,13 @@ import { type JWTPayload, type JWTVerifyResult, jwtVerify } from 'jose'
 import { type Account, type Permissions } from './types'
 import { parse } from 'cookie'
 
-export const hasPermission = (
-  permissionNeeded: Permissions,
-  currentPermission: Permissions[]
-): boolean => {
-  return currentPermission.includes(permissionNeeded)
+export const hasPermission = async (
+  required: Permissions[]
+): Promise<boolean> => {
+  const token = getUserToken()
+  const user = await verifyToken(token)
+  const role = user?.permissions
+  return required.some((permission) => role?.includes(permission))
 }
 
 export const setNewUser = async (
@@ -46,4 +48,10 @@ export const verifyToken = async (
   } catch (error) {
     return null
   }
+}
+
+export const getUserInfo = async (): Promise<Account | null> => {
+  const token = getUserToken()
+  const userInfo = await verifyToken(token)
+  return userInfo
 }

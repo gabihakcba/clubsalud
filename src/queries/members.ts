@@ -12,8 +12,9 @@ export const getMembers = async (page: number = 0): Promise<Member[]> => {
   return response.data
 }
 
-export const getMemberById = async (id: number): Promise<GetMemResponse> => {
-  return await axios.get(`${path()}/api/members/${id}`)
+export const getMemberById = async (id: number): Promise<Member> => {
+  const response = await axios.get(`${path()}/api/members/${id}`)
+  return response.data
 }
 
 export const getTotalPagesM = async (): Promise<GetMemResponse> => {
