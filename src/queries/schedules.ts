@@ -48,3 +48,8 @@ export const assignInstructor = async ({
   })
   return response.data
 }
+
+export const clearSchedule = async (id: number): Promise<Schedule> => {
+  const response = await axios.patch(`${path()}/api/schedules`, id)
+  return response.data
+}
