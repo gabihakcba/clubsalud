@@ -2,6 +2,7 @@ import { type Schedule, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import { revalidatePath } from 'next/cache'
+import { type NextRequest } from 'next/server'
 
 const db: PrismaClient = prisma
 
@@ -31,6 +32,34 @@ export async function GET(): Promise<Response> {
   } catch (error) {
     return new Response(JSONbig.stringify(error), {
       status: 500
+    })
+  }
+}
+
+export async function PATCH(req: NextRequest): Promise<Response> {
+  try {
+    const id: number = await req.json()
+    const schedule: Schedule = await db.schedule.update({
+      where: {
+        id
+      },
+      data: {
+        classId: null,
+        instructorInCharge: null,
+        instructorSubstitute: null
+      },
+      include: {
+        class: true,
+        charge: true
+      }
+    })
+    return new Response(JSONbig.stringify(schedule), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response(JSONbig.stringify(error), {
+      status: 499
     })
   }
 }
