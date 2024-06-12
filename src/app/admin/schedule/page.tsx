@@ -1,9 +1,11 @@
 'use client'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import HasRole from 'components/HasRole'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
+import { Button } from 'primereact/button'
+import { ButtonGroup } from 'primereact/buttongroup'
 import { Card } from 'primereact/card'
 import { Chip } from 'primereact/chip'
 import { Column } from 'primereact/column'
@@ -11,7 +13,7 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
-import { getSchedules } from 'queries/schedules'
+import { clearSchedule, getSchedules } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
 import { hasPermission } from 'utils/auth'
 import { Permissions, type Schedule } from 'utils/types'
@@ -70,14 +72,22 @@ export default function Schelude(): ReactElement {
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
+  const [showOptions, openShowOptions, closeShowOptions] = useModal(false)
 
   const queryClient = useQueryClient()
   void queryClient.invalidateQueries({ queryKey: ['sch'] })
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['sch'],
     queryFn: async (): Promise<Schedule[]> => {
       return await getSchedules()
+    }
+  })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: clearSchedule,
+    onSuccess: async () => {
+      await refetch()
     }
   })
 
@@ -98,8 +108,55 @@ export default function Schelude(): ReactElement {
         >
           <InstructorAssign schedule={selectedSchedule} />
         </Dialog>
+        <Dialog
+          visible={showOptions}
+          onHide={closeShowOptions}
+          header='Opciones'
+        >
+          <ButtonGroup>
+            <Button
+              label='Clase'
+              size='small'
+              outlined
+              icon='pi pi-calendar-plus'
+              iconPos='right'
+              onClick={openAssingClass}
+            />
+            <Button
+              label='Profesor'
+              size='small'
+              outlined
+              icon='pi pi-user'
+              iconPos='right'
+              onClick={openAssignInstructor}
+            />
+            <Button
+              label='Limpiar'
+              size='small'
+              outlined
+              icon='pi pi-trash'
+              iconPos='right'
+              severity='danger'
+              loading={isPending}
+              onClick={() => {
+                confirmDialog({
+                  message: 'Seguro que quieres resetear este horario?',
+                  header: 'Confirmación',
+                  icon: 'pi pi-info-circle',
+                  defaultFocus: 'reject',
+                  acceptClassName: 'p-button-danger',
+                  acceptLabel: 'Si',
+                  rejectLabel: 'No',
+                  accept: () => {
+                    mutate(selectedSchedule.id as number)
+                  }
+                })
+              }}
+            />
+          </ButtonGroup>
+        </Dialog>
+        <ConfirmDialog />
       </HasRole>
-      <ConfirmDialog />
       <DataTable
         value={formatScheduler(data ?? [])}
         scrollable
@@ -109,18 +166,7 @@ export default function Schelude(): ReactElement {
         onSelectionChange={async (e) => {
           setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
           if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
-            confirmDialog({
-              header: 'Asignar ...',
-              message: 'Seleccione que desea asignar',
-              acceptLabel: 'Clase',
-              rejectLabel: 'Profesor',
-              accept() {
-                openAssingClass()
-              },
-              reject() {
-                openAssignInstructor()
-              }
-            })
+            openShowOptions()
           }
         }}
         header={() => <h2>Horarios</h2>}
