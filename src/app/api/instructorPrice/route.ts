@@ -26,7 +26,7 @@ export async function GET(): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data: CreateInstructorPrice = await req.json()
-    data.lastUpdate = new Date('07/04/2024')
+    data.lastUpdate = new Date()
     const res: InstructorPrice = await db.instructorPrice.create({ data })
     return new Response(JSONbig.stringify(res), {
       status: 200
