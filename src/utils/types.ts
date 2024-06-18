@@ -291,7 +291,7 @@ export interface InstructorPrice extends CreateInstructorPrice {
 
 export interface CreateInstructorPrice {
   degree: boolean
-  amount: bigint
+  amount: number
   lastUpdate: Date
 }
 

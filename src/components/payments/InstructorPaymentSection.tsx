@@ -181,8 +181,8 @@ export function InstructorPaymentsSection(): ReactElement {
         (price: InstructorPrice) => !price.degree
       )
       setPrice({
-        title: Number(prices[lastIndexWithTitle].amount),
-        notitle: Number(prices[lastIndexWithNoTitle].amount)
+        title: Number(prices[lastIndexWithTitle]?.amount),
+        notitle: Number(prices[lastIndexWithNoTitle]?.amount)
       })
     }
   }, [prices])

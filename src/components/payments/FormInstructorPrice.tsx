@@ -76,6 +76,8 @@ export default function FormInstructorPrice(): ReactElement {
           })}
           min={0}
           max={9999999}
+          minFractionDigits={0}
+          maxFractionDigits={3}
           inputId='amount'
           name='amount'
           onChange={(e) => {
