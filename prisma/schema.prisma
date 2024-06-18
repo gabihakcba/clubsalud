@@ -368,7 +368,7 @@ model InstructorPrice {
   // Fields
   id         Int      @id @default(autoincrement())
   degree     Boolean
-  amount     BigInt   @db.BigInt
+  amount     Float
   lastUpdate DateTime @default(now())
 }
 
