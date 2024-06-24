@@ -68,7 +68,7 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
 }
 
 export default function Schelude(): ReactElement {
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null)
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(undefined)
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
@@ -157,6 +157,7 @@ export default function Schelude(): ReactElement {
         </Dialog>
         <ConfirmDialog />
       </HasRole>
+
       <DataTable
         value={formatScheduler(data ?? [])}
         scrollable
@@ -164,7 +165,8 @@ export default function Schelude(): ReactElement {
         cellSelection
         selectionMode='single'
         onSelectionChange={async (e) => {
-          setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
+          const selected = e.value.rowData.classes[e.value.cellIndex - 1]
+          setSelectedSchedule(selected)
           if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
             openShowOptions()
           }
