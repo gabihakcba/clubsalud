@@ -160,6 +160,7 @@ export interface Schedule {
   classId?: number
   charge?: Instructor
   class?: Class_
+  attendance?: Attendance
 }
 
 export interface Promotion extends CreatePromotion {
@@ -303,6 +304,29 @@ export interface CreateExtraCost {
   amount: number
   date: Date
   description: string
+}
+
+export interface OpenClass extends CreateOpenClass {
+  id: number
+}
+
+export interface CreateOpenClass {
+  date: Date
+  given: boolean
+  instructorId: number
+  classId: number
+}
+
+export interface Attendance extends CreateAttendance {
+  id: number
+}
+
+export interface CreateAttendance {
+  date: Date
+  classId: number
+  memberId: number
+  member?: Member
+  class_?: Class_
 }
 
 export interface priceType {
