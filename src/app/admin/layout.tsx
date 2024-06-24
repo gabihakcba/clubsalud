@@ -72,6 +72,17 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
+      label: 'Asistencia',
+      icon: 'pi pi-calendar',
+      template: itemRenderer,
+      url: '/admin/attendance',
+      show: await hasPermission([
+        Permissions.ADM,
+        Permissions.OWN,
+        Permissions.MEM
+      ])
+    },
+    {
       label: 'Cobros',
       icon: 'pi pi-dollar',
       template: itemRenderer,
