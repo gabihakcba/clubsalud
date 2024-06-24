@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { path } from 'utils/path'
-import { Attendance } from 'utils/types'
+import { type Attendance } from 'utils/types'
 
 export const createAttendance = async ({
   memberId,
