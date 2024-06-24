@@ -13,10 +13,12 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
+import { createAttendance } from 'queries/attendance'
+import { getMembers } from 'queries/members'
 import { clearSchedule, getSchedules } from 'queries/schedules'
-import { useState, type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
 import { hasPermission } from 'utils/auth'
-import { Permissions, type Schedule } from 'utils/types'
+import { Member, Permissions, type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 const formatHour = (hour: number): string => {
@@ -68,7 +70,7 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
 }
 
 export default function Schelude(): ReactElement {
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null)
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(undefined)
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
@@ -157,6 +159,7 @@ export default function Schelude(): ReactElement {
         </Dialog>
         <ConfirmDialog />
       </HasRole>
+
       <DataTable
         value={formatScheduler(data ?? [])}
         scrollable
@@ -164,7 +167,8 @@ export default function Schelude(): ReactElement {
         cellSelection
         selectionMode='single'
         onSelectionChange={async (e) => {
-          setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
+          const selected = e.value.rowData.classes[e.value.cellIndex - 1]
+          setSelectedSchedule(selected)
           if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
             openShowOptions()
           }
