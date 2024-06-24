@@ -167,19 +167,18 @@ model OpenClass {
   instructor       Instructor?   @relation(fields: [instructorId], references: [id], name: "givenClassInstructor")
   class            Class         @relation(fields: [classId], references: [id], name: "givenClassClass")
   // Relations
-  attendanceClass  Attendance[]  @relation(name: "attendanceClass")
   reservationClass Reservation[] @relation(name: "reservationClass")
 }
 
 model Attendance {
   // Fields
-  id       Int       @id @default(autoincrement())
-  date     DateTime  @default(now())
+  id       Int      @id @default(autoincrement())
+  date     DateTime @default(now())
   // Foreignkeys
   classId  Int
   memberId Int
-  class    OpenClass @relation(fields: [classId], references: [id], name: "attendanceClass")
-  member   Member    @relation(fields: [memberId], references: [id], name: "attendanceMember")
+  class    Class    @relation(fields: [classId], references: [id], name: "attendanceClass")
+  member   Member   @relation(fields: [memberId], references: [id], name: "attendanceMember")
 }
 
 // Format 24hs each 30 min
@@ -202,12 +201,13 @@ model Schedule {
 
 model Class {
   // Fields
-  id        Int         @id @default(autoincrement())
-  name      String
-  duration  Float
+  id              Int          @id @default(autoincrement())
+  name            String
+  duration        Float
   // Relations
-  openClass OpenClass[] @relation(name: "givenClassClass")
-  schelude  Schedule[]  @relation(name: "scheludedClass")
+  openClass       OpenClass[]  @relation(name: "givenClassClass")
+  schelude        Schedule[]   @relation(name: "scheludedClass")
+  attendanceClass Attendance[] @relation(name: "attendanceClass")
 }
 
 model Reservation {
