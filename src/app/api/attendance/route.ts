@@ -1,4 +1,4 @@
-import { Attendance, type PrismaClient } from '@prisma/client'
+import { type Attendance, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import moment from 'moment'

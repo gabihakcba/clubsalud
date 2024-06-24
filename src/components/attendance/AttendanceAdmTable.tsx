@@ -7,9 +7,9 @@ import { Dropdown } from 'primereact/dropdown'
 import { createAttendance, getAttendances } from 'queries/attendance'
 import { getClasses } from 'queries/classes'
 import { getMembers } from 'queries/members'
-import { ReactElement, useState } from 'react'
+import { type ReactElement, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Class_, Member } from 'utils/types'
+import { type Class_, type Member } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 export default function AttendanceAdmTable(): ReactElement {
@@ -50,8 +50,9 @@ export default function AttendanceAdmTable(): ReactElement {
     isPending: isPendingAtt
   } = useMutation({
     mutationFn: createAttendance,
-    onSuccess: (data) => {
-      refetch()
+    onSuccess: async (data) => {
+      await refetch()
+      console.log(att)
     },
     onError: (data) => {
       console.log('error: ', data)
@@ -123,8 +124,8 @@ export default function AttendanceAdmTable(): ReactElement {
             placeholder='Alumno'
             loading={loadingMembers}
             onChange={(e) => {
-              setSelectedMember(e.value)
-              setValue('memberId', e.value)
+              setSelectedMember(e.value as Member)
+              setValue('memberId', e.value as number)
               console.log(e.value)
             }}
           />
@@ -137,8 +138,8 @@ export default function AttendanceAdmTable(): ReactElement {
             placeholder='Clase'
             loading={loadingClasses}
             onChange={(e) => {
-              setSelectedClass(e.value)
-              setValue('classId', e.value)
+              setSelectedClass(e.value as Class_)
+              setValue('classId', e.value as number)
               console.log(e.value)
             }}
           />
