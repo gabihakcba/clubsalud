@@ -342,6 +342,9 @@ model Subscription {
   paid               Boolean
   remaining          Float
   total              Float
+  initialDate        DateTime             @default(now())
+  expirationDate     DateTime             @default(now())
+  remainingClasses   Int                  @default(0)
   // Foreignkeys
   promotionId        Int
   memberId           Int
