@@ -1,16 +1,24 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
+import moment from 'moment'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
+import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/members'
 import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
 import { useState, type ReactElement } from 'react'
-import { type FieldValues, useForm } from 'react-hook-form'
-import { type Promotion } from 'utils/types'
+import { useForm } from 'react-hook-form'
+import { type CreateSubscription } from 'utils/types'
+
+const calculateFinalPrice = (price, discount): number => {
+  return price - (price * discount) / 100
+}
 
 export default function SubscriptionForm(): ReactElement {
   const [selectedMember, setSelectedMember] = useState<any>(null)
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
+  const [selectedType, setSelectedType] = useState<any>(null)
 
   const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['memS'],
@@ -27,24 +35,16 @@ export default function SubscriptionForm(): ReactElement {
   })
 
   const { mutate: subscribe, isPending } = useMutation({
-    mutationFn: async ({
-      id,
-      promotion
-    }: {
-      id: string
-      promotion: FieldValues
-    }) => {
-      const memberId = Number(id)
-      const subs = await setSubscription({
-        memberId,
-        promotion: promotion as Promotion
-      })
-      if (!subs) {
-        alert('No se pudo adherir a la suscripción')
-      }
+    mutationFn: async (subscription: CreateSubscription) => {
+      const subs = await setSubscription(subscription)
+      return subs
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data)
       alert('Inscipción hecha')
+    },
+    onError: () => {
+      alert('No se pudo adherir a la suscripción')
     }
   })
 
@@ -62,10 +62,31 @@ export default function SubscriptionForm(): ReactElement {
       className='flex flex-column gap-4 pt-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        subscribe({
-          id: data.memberId as string,
-          promotion: data.promotion
-        })
+        const week = data.promotion.amountWeeklyClasses
+        const month = week * 4
+
+        const remainingClasses = month * data.months
+        const remaining = calculateFinalPrice(
+          selectedPromotion?.amountPrice,
+          selectedType
+        )
+        const total = remaining
+        const initialDate = moment().toISOString()
+        const expirationDate = moment()
+          .add(data.months as moment.DurationInputArg1, 'months')
+          .toISOString()
+        const subscription: CreateSubscription = {
+          date: new Date(),
+          paid: false,
+          remaining,
+          total,
+          initialDate: new Date(initialDate),
+          expirationDate: new Date(expirationDate),
+          remainingClasses,
+          promotionId: data.promotion.id,
+          memberId: data.memberId
+        }
+        subscribe(subscription)
       })}
     >
       <li className='p-float-label'>
@@ -113,6 +134,46 @@ export default function SubscriptionForm(): ReactElement {
         />
         <label htmlFor='promotionName'>Plan </label>
       </li>
+      <FloatLabel>
+        <Dropdown
+          {...register('type', {
+            required: true
+          })}
+          value={selectedType}
+          options={[
+            { name: 'Mensual', discount: 0 },
+            { name: 'Trimestral 15% OFF', discount: 15 },
+            { name: 'Semestral 25% OFF', discount: 25 },
+            { name: 'Anual 30% OFF', discount: 30 }
+          ]}
+          optionLabel='name'
+          optionValue='discount'
+          onChange={(e) => {
+            const discount = e.value
+            setSelectedType(discount)
+            switch (discount) {
+              case 0:
+                setValue('months', 1)
+                break
+              case 15:
+                setValue('months', 3)
+                break
+              case 25:
+                setValue('months', 6)
+                break
+              case 30:
+                setValue('months', 12)
+                break
+              default:
+                break
+            }
+          }}
+        />
+        <label htmlFor=''>Tipo</label>
+      </FloatLabel>
+      <Tag severity='warning'>
+        ${calculateFinalPrice(selectedPromotion?.amountPrice, selectedType)}
+      </Tag>
       <Button
         type='submit'
         label='Enviar'
