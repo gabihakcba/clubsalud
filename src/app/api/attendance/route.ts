@@ -1,4 +1,8 @@
-import { type Attendance, type PrismaClient } from '@prisma/client'
+import {
+  type Attendance,
+  type PrismaClient,
+  type Subscription
+} from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import moment from 'moment'
@@ -68,10 +72,41 @@ export async function POST(req: NextRequest): Promise<Response> {
           member: true
         }
       })
-      console.log(attendance)
-      return new Response(JSONbig.stringify(attendance), {
-        status: 200
+
+      const member = await db.member.findUnique({
+        where: { id: data.memberId },
+        include: { memberSubscription: true }
       })
+
+      const subs = member?.memberSubscription
+
+      if (subs) {
+        const sub: Subscription = subs[subs?.length - 1]
+        const newRemaining = sub.remaining - 1
+        const subUpdated = await db.subscription.update({
+          where: {
+            id: sub.id
+          },
+          data: {
+            remaining: newRemaining
+          }
+        })
+        return new Response(
+          JSONbig.stringify({ attendance, subscription: subUpdated }),
+          {
+            status: 200
+          }
+        )
+      } else {
+        return new Response(
+          JSON.stringify({
+            message: 'No tiene suscripciones vigentes'
+          }),
+          {
+            status: 300
+          }
+        )
+      }
     }
   } catch (error) {
     return new Response(JSONbig.stringify(error), {

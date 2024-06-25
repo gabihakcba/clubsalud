@@ -25,13 +25,18 @@ export async function GET(): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data: Subscription = await req.json()
+    const data = await req.json()
+
     const parsed = {
       date: data.date,
-      paid: Boolean(data.paid),
-      remaining: parseFloat(String(data.remaining)),
-      total: parseFloat(String(data.total))
+      paid: data.paid,
+      remaining: data.remaining,
+      total: data.total,
+      initialDate: data.initialDate,
+      expirationDate: data.expirationDate,
+      remainingClasses: data.remainingClasses
     }
+
     const res: Subscription = await db.subscription.create({
       data: {
         ...parsed,
@@ -45,6 +50,10 @@ export async function POST(req: NextRequest): Promise<Response> {
             id: Number(data.memberId)
           }
         }
+      },
+      include: {
+        member: true,
+        promotion: true
       }
     })
     return new Response(JSONbig.stringify(res), {

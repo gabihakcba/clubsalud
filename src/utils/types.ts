@@ -185,6 +185,9 @@ export interface CreateSubscription {
   paid: boolean
   remaining: number
   total: number
+  initialDate: Date
+  expirationDate: Date
+  remainingClasses: number
   promotionId: number
   memberId: number
 }
