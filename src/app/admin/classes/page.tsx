@@ -24,7 +24,6 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import UpdatePromotionForm from 'components/promotions/UpdatePromotionForm'
 import HasRole from 'components/HasRole'
 import { type FieldValues } from 'react-hook-form'
-import { setSubscription } from 'queries/subscriptions'
 import { getMemberById } from 'queries/members'
 
 export default function Classes(): ReactElement {
@@ -104,12 +103,12 @@ export default function Classes(): ReactElement {
       id: string
       promotion: FieldValues
     }) => {
-      const memberId = Number(id)
+      // const memberId = Number(id)
       try {
-        return await setSubscription({
-          memberId,
-          promotion: promotion as Promotion
-        })
+        // return await setSubscription({
+        //   memberId,
+        //   promotion: promotion as Promotion
+        // })
       } catch (error) {
         console.log(error)
         alert('No se pudo adherir a la suscripción')
