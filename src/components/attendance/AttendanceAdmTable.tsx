@@ -106,7 +106,6 @@ export default function AttendanceAdmTable(): ReactElement {
           className='flex flex-column gap-4'
           onSubmit={handleSubmit((data, event) => {
             event?.preventDefault()
-            console.log(data)
             createAtt({ memberId: data.memberId, classId: data.classId })
           })}
         >
@@ -121,7 +120,6 @@ export default function AttendanceAdmTable(): ReactElement {
             onChange={(e) => {
               setSelectedMember(e.value as Member)
               setValue('memberId', e.value as number)
-              console.log(e.value)
             }}
           />
           <Dropdown
@@ -135,7 +133,6 @@ export default function AttendanceAdmTable(): ReactElement {
             onChange={(e) => {
               setSelectedClass(e.value as Class_)
               setValue('classId', e.value as number)
-              console.log(e.value)
             }}
           />
           <Button
