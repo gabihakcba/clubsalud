@@ -76,11 +76,14 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-calendar',
       template: itemRenderer,
       url: '/admin/attendance',
-      show: await hasPermission([
-        Permissions.ADM,
-        Permissions.OWN,
-        Permissions.MEM
-      ])
+      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+    },
+    {
+      label: 'Suscripciones',
+      icon: 'pi pi-list-check',
+      template: itemRenderer,
+      url: '/admin/subscriptions',
+      show: await hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
       label: 'Cobros',
@@ -95,13 +98,6 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       template: itemRenderer,
       url: '/admin/payments',
       show: await hasPermission([Permissions.ADM, Permissions.OWN])
-    },
-    {
-      label: 'Asistencia',
-      icon: 'pi pi-list-check',
-      template: itemRenderer,
-      url: '/admin',
-      show: false
     },
     {
       label: 'Notificaciones',
