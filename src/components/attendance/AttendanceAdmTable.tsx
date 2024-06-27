@@ -44,15 +44,10 @@ export default function AttendanceAdmTable(): ReactElement {
     }
   })
 
-  const {
-    mutate: createAtt,
-    data: att,
-    isPending: isPendingAtt
-  } = useMutation({
+  const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
     mutationFn: createAttendance,
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       await refetch()
-      console.log(att)
     },
     onError: (data) => {
       console.log('error: ', data)

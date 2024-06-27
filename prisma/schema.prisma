@@ -345,6 +345,7 @@ model Subscription {
   initialDate        DateTime             @default(now())
   expirationDate     DateTime             @default(now())
   remainingClasses   Int                  @default(0)
+  active             Boolean              @default(false)
   // Foreignkeys
   promotionId        Int
   memberId           Int
