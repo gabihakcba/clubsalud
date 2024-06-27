@@ -188,6 +188,7 @@ export interface CreateSubscription {
   initialDate: Date
   expirationDate: Date
   remainingClasses: number
+  active: boolean
   promotionId: number
   memberId: number
 }

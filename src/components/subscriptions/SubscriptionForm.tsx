@@ -84,7 +84,8 @@ export default function SubscriptionForm(): ReactElement {
           expirationDate: new Date(expirationDate),
           remainingClasses,
           promotionId: data.promotion.id,
-          memberId: data.memberId
+          memberId: data.memberId,
+          active: true
         }
         subscribe(subscription)
       })}
