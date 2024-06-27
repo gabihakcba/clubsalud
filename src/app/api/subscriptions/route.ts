@@ -1,4 +1,4 @@
-import { type Subscription, type PrismaClient, Member } from '@prisma/client'
+import { type Subscription, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
