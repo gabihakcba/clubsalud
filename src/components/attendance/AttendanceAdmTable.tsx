@@ -74,6 +74,8 @@ export default function AttendanceAdmTable(): ReactElement {
         }}
         value={attendances}
         loading={loadingAttendances}
+        scrollable
+        scrollHeight='80dvh'
       >
         <Column
           field='id'
