@@ -53,26 +53,6 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
       )
     } else {
-      const attendance: Attendance = await db.attendance.create({
-        data: {
-          date: today,
-          class: {
-            connect: {
-              id: data.classId
-            }
-          },
-          member: {
-            connect: {
-              id: data.memberId
-            }
-          }
-        },
-        include: {
-          class: true,
-          member: true
-        }
-      })
-
       const member = await db.member.findUnique({
         where: { id: data.memberId },
         include: { memberSubscription: true }
@@ -82,15 +62,77 @@ export async function POST(req: NextRequest): Promise<Response> {
 
       if (subs) {
         const sub: Subscription = subs[subs?.length - 1]
-        const newRemaining = sub.remaining - 1
+
+        if (moment(sub.expirationDate).isSame(moment(), 'day')) {
+          await db.subscription.update({
+            where: {
+              id: sub.id
+            },
+            data: {
+              active: false
+            }
+          })
+
+          return new Response(
+            JSON.stringify({
+              message: 'Su suscripción ha vencido'
+            }),
+            {
+              status: 300
+            }
+          )
+        }
+
+        const newRemaining = sub.remainingClasses - 1
+        if (newRemaining < 0) {
+          await db.subscription.update({
+            where: {
+              id: sub.id
+            },
+            data: {
+              active: false
+            }
+          })
+
+          return new Response(
+            JSON.stringify({
+              message: 'No tiene más clases disponibles'
+            }),
+            {
+              status: 300
+            }
+          )
+        }
+
         const subUpdated = await db.subscription.update({
           where: {
             id: sub.id
           },
           data: {
-            remaining: newRemaining
+            remainingClasses: newRemaining
           }
         })
+
+        const attendance: Attendance = await db.attendance.create({
+          data: {
+            date: today,
+            class: {
+              connect: {
+                id: data.classId
+              }
+            },
+            member: {
+              connect: {
+                id: data.memberId
+              }
+            }
+          },
+          include: {
+            class: true,
+            member: true
+          }
+        })
+
         return new Response(
           JSONbig.stringify({ attendance, subscription: subUpdated }),
           {
