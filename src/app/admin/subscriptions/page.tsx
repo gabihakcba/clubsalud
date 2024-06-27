@@ -87,7 +87,7 @@ export default function SubscriptionPage(): ReactElement {
                 severity='warning'
                 onClick={() => {
                   setSelectedSubs(e)
-                  change(e.id)
+                  change(e.id as number)
                 }}
                 loading={loadingChange && e.id === selectedSubs?.id}
               />
@@ -104,7 +104,7 @@ export default function SubscriptionPage(): ReactElement {
                 outlined
                 severity='danger'
                 onClick={() => {
-                  delete_(e.id)
+                  delete_(e.id as number)
                 }}
                 loading={loadingDelete && e.id === selectedSubs?.id}
               />
