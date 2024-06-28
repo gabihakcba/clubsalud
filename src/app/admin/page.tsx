@@ -10,17 +10,20 @@ import logo from '../../../public/logos/logo_large.png'
 import Image from 'next/image'
 import { Tag } from 'primereact/tag'
 import HasRole from 'components/HasRole'
-import moment from 'moment'
 import MemberPage from 'components/homepage/MemberPage'
 import AdminPage from 'components/homepage/AdminPage'
 
-const getTypeAccount = (acc: Account | undefined) => {
+const getTypeAccount = (
+  acc: Account | undefined
+): { type: string; severity: string } => {
   if (acc) {
-    if (acc.memberAccount) return { type: 'Alumna/o', severity: 'success' }
-    else if (acc.employeeAccount)
+    if (acc.memberAccount) {
+      return { type: 'Alumna/o', severity: 'success' }
+    } else if (acc.employeeAccount) {
       return { type: 'Empleada/o', severity: 'warning' }
-    else if (acc.instructorAccount)
+    } else if (acc.instructorAccount) {
       return { type: 'Profesor/a', severity: 'info' }
+    }
   }
   return { type: 'Propietario/a', severity: 'danger' }
 }
@@ -34,7 +37,7 @@ const getName = (acc: Account | undefined): string => {
   return ''
 }
 
-const setInfo = (acc: Account | undefined, setAccountInfo) => {
+const setInfo = (acc: Account | undefined, setAccountInfo): void => {
   const type = getTypeAccount(acc)
   const info = {
     name: getName(acc),
