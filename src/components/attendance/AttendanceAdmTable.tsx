@@ -1,56 +1,20 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
-import { Dropdown } from 'primereact/dropdown'
-import { createAttendance, getAttendances } from 'queries/attendance'
-import { getClasses } from 'queries/classes'
-import { getMembers } from 'queries/members'
-import { type ReactElement, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { type Class_, type Member } from 'utils/types'
+import { getAttendances } from 'queries/attendance'
+import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
+import AttendanceForm from './AttendanceForm'
 
 export default function AttendanceAdmTable(): ReactElement {
   const [showAttendance, openAttendance, closeAttendace] = useModal(false)
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
-  const [selectedClass, setSelectedClass] = useState<Class_ | null>(null)
 
-  const { register, handleSubmit, setValue } = useForm()
-
-  const {
-    data: attendances,
-    isPending: loadingAttendances,
-    refetch
-  } = useQuery({
+  const { data: attendances, isPending: loadingAttendances } = useQuery({
     queryKey: ['attendances'],
     queryFn: async () => {
       return await getAttendances()
-    }
-  })
-
-  const { data: classes, isPending: loadingClasses } = useQuery({
-    queryKey: ['class'],
-    queryFn: async () => {
-      return await getClasses()
-    }
-  })
-
-  const { data: members, isPending: loadingMembers } = useQuery({
-    queryKey: ['mem'],
-    queryFn: async () => {
-      return await getMembers()
-    }
-  })
-
-  const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
-    mutationFn: createAttendance,
-    onSuccess: async () => {
-      await refetch()
-    },
-    onError: (data) => {
-      console.log('error: ', data)
     }
   })
 
@@ -103,49 +67,7 @@ export default function AttendanceAdmTable(): ReactElement {
         onHide={closeAttendace}
         header='Asistencia'
       >
-        <form
-          action=''
-          className='flex flex-column gap-4'
-          onSubmit={handleSubmit((data, event) => {
-            event?.preventDefault()
-            createAtt({ memberId: data.memberId, classId: data.classId })
-          })}
-        >
-          <Dropdown
-            {...register('member', { required: true })}
-            value={selectedMember}
-            options={members}
-            optionLabel='name'
-            optionValue='id'
-            placeholder='Alumno'
-            loading={loadingMembers}
-            onChange={(e) => {
-              setSelectedMember(e.value as Member)
-              setValue('memberId', e.value as number)
-            }}
-          />
-          <Dropdown
-            {...register('class', { required: true })}
-            value={selectedClass}
-            options={classes}
-            optionLabel='name'
-            optionValue='id'
-            placeholder='Clase'
-            loading={loadingClasses}
-            onChange={(e) => {
-              setSelectedClass(e.value as Class_)
-              setValue('classId', e.value as number)
-            }}
-          />
-          <Button
-            label='Enviar'
-            icon='pi pi-upload'
-            iconPos='right'
-            outlined
-            size='small'
-            loading={isPendingAtt}
-          />
-        </form>
+        <AttendanceForm />
       </Dialog>
     </>
   )
