@@ -6,12 +6,12 @@ import { getClasses } from 'queries/classes'
 import { getMembers } from 'queries/members'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Class_, type Member } from 'utils/types'
+import { type Member, type Class_ } from '../../utils/types'
 
 export default function AttendanceForm(): ReactElement {
   const query = useQueryClient()
 
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const [selectedMember, setSelectedMember] = useState<any>(null)
   const [selectedClass, setSelectedClass] = useState<Class_ | null>(null)
 
   const { register, handleSubmit, setValue } = useForm()
