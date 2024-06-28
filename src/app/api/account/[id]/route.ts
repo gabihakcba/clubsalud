@@ -19,7 +19,8 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
         instructorAccount: true,
         memberAccount: {
           include: {
-            planSubscribed: { include: { plan: true } }
+            planSubscribed: { include: { plan: true } },
+            memberSubscription: { include: { promotion: true } }
           }
         },
         employeeAccount: true
