@@ -1,13 +1,24 @@
+import { useQuery } from '@tanstack/react-query'
 import AttendanceForm from 'components/attendance/AttendanceForm'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
+import MemberSubsTable from 'components/subscriptions/MemberSubsTable'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
+import { getOrderedSubscriptions } from 'queries/subscriptions'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 
 export default function AdminPage(): ReactElement {
   const [showAttendance, openAttendance, closeAttendace] = useModal(false)
   const [create, openCreate, closeCreate] = useModal(false)
+
+  const { data: members } = useQuery({
+    queryKey: ['members'],
+    queryFn: async () => {
+      const mems = await getOrderedSubscriptions()
+      return mems
+    }
+  })
 
   return (
     <div className='flex flex-column'>
@@ -43,6 +54,9 @@ export default function AdminPage(): ReactElement {
           onClick={openCreate}
         />
       </nav>
+      <main>
+        <MemberSubsTable members={members} />
+      </main>
     </div>
   )
 }
