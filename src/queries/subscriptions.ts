@@ -1,6 +1,10 @@
 import axios from 'axios'
 import { path } from 'utils/path'
-import { type Subscription, type CreateSubscription, Member } from 'utils/types'
+import {
+  type Subscription,
+  type CreateSubscription,
+  type Member
+} from 'utils/types'
 
 export const setSubscription = async (
   subscription: CreateSubscription
