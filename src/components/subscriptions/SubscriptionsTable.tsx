@@ -4,8 +4,8 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Tag } from 'primereact/tag'
 import { deleteSubscription, updateSubscription } from 'queries/subscriptions'
-import { ReactElement, useState } from 'react'
-import { Member } from 'utils/types'
+import { type ReactElement, useState } from 'react'
+import { type Member } from 'utils/types'
 
 export default function SubscriptionTable({
   member
