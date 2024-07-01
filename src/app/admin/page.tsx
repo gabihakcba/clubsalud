@@ -12,6 +12,7 @@ import { Tag } from 'primereact/tag'
 import HasRole from 'components/HasRole'
 import MemberPage from 'components/homepage/MemberPage'
 import AdminPage from 'components/homepage/AdminPage'
+import InstructorPage from 'components/homepage/InstructorPage'
 
 const getTypeAccount = (
   acc: Account | undefined
@@ -98,6 +99,9 @@ export default function PersonalAccount(): ReactElement {
       </HasRole>
       <HasRole required={[Permissions.ADM, Permissions.OWN]}>
         <AdminPage />
+      </HasRole>
+      <HasRole required={[Permissions.INS]}>
+        <InstructorPage account={account} />
       </HasRole>
       {/* <div className='border-2'>Nav</div>
       <div>Bienvenido {account !== undefined ? getName(account) : ''}</div>
