@@ -6,11 +6,22 @@ import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma
 
-export async function GET(): Promise<Response> {
+export async function GET(req: NextRequest): Promise<Response> {
+  const url = new URL(req.url)
+  const id = url.searchParams.get('id')
+  console.log(id)
   try {
-    const instructors = await db.instructor.findMany({
-      include: { instructorPayments: true }
-    })
+    let instructors: Instructor[] | Instructor
+    if (id) {
+      instructors = await db.instructor.findMany({
+        where: { id: Number(id) },
+        include: { instructorPayments: true }
+      })
+    } else {
+      instructors = await db.instructor.findMany({
+        include: { instructorPayments: true }
+      })
+    }
     return new Response(JSONbig.stringify(instructors), {
       status: 200
     })

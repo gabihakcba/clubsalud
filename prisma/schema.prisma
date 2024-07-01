@@ -108,8 +108,8 @@ model Instructor {
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
   givenClass         OpenClass[]         @relation(name: "givenClassInstructor")
-  scheludeInCharge   Schedule[]          @relation(name: "instructorInCharge")
-  scheludeSubstitute Schedule[]          @relation(name: "instructorSubstitute")
+  scheduleInCharge   Schedule[]          @relation(name: "instructorInCharge")
+  scheduleSubstitute Schedule[]          @relation(name: "instructorSubstitute")
 }
 
 model Member {
@@ -196,7 +196,7 @@ model Schedule {
   classId              Int?
   charge               Instructor? @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
   substitute           Instructor? @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
-  class                Class?      @relation(fields: [classId], references: [id], name: "scheludedClass")
+  class                Class?      @relation(fields: [classId], references: [id], name: "scheduledClass")
 }
 
 model Class {
@@ -206,7 +206,7 @@ model Class {
   duration        Float
   // Relations
   openClass       OpenClass[]  @relation(name: "givenClassClass")
-  schelude        Schedule[]   @relation(name: "scheludedClass")
+  schedule        Schedule[]   @relation(name: "scheduledClass")
   attendanceClass Attendance[] @relation(name: "attendanceClass")
 }
 

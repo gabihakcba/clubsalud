@@ -9,24 +9,9 @@ interface GetInsInstructor {
 
 export const getInstructorById = async (
   id: number | undefined
-): Promise<GetInsInstructor> => {
-  if (!id) {
-    return {
-      _: null,
-      data: {
-        id: 0,
-        name: '',
-        lastName: '',
-        dni: BigInt(0),
-        phoneNumber: BigInt(0),
-        address: '',
-        email: '',
-        degree: false,
-        accountId: 0
-      }
-    }
-  }
-  return await axios.get(`${path()}/api/instructors/${id}`)
+): Promise<Instructor> => {
+  const response = await axios.get(`${path()}/api/instructors/${id}`)
+  return response.data
 }
 
 export const createInstructor = async (
