@@ -1,7 +1,7 @@
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, type ReactElement, useState } from 'react'
-import { Schedule, type Account } from 'utils/types'
+import { type Schedule, type Account } from 'utils/types'
 
 export default function InstructorPage({
   account
