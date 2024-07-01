@@ -34,10 +34,7 @@ export default function ScheduleCard({ schedule }: params): ReactElement {
   const { data: instructor } = useQuery({
     queryKey: ['insSChe', schedule.id],
     queryFn: async () => {
-      const scheduleResponse = await getInstructorById(
-        schedule.instructorInCharge
-      )
-      return scheduleResponse.data
+      return await getInstructorById(schedule.instructorInCharge)
     },
     refetchOnMount: 'always'
   })
