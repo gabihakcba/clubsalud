@@ -92,6 +92,7 @@ export default function CreateNotificationForm(): ReactElement {
           type='text'
           {...register('subject', { required: true })}
           invalid={errors?.subject !== undefined}
+          autoComplete='off'
         />
         <label htmlFor=''>Asunto</label>
       </FloatLabel>
@@ -100,6 +101,7 @@ export default function CreateNotificationForm(): ReactElement {
           type='text'
           {...register('body', { required: true })}
           invalid={errors?.body !== undefined}
+          autoComplete='off'
         />
         <label htmlFor=''>Mensaje</label>
       </FloatLabel>
