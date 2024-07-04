@@ -192,8 +192,17 @@ export default function Schelude(): ReactElement {
           body={(sch) => {
             return (
               <div className='flex align-items-center gap-2'>
-                <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
-                <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
+                {sch.classes[0]?.class?.name && (
+                  <Tag
+                    value={sch.classes[0]?.class?.name}
+                    severity='success'
+                  />
+                )}
+                {!sch.classes[0]?.class?.name && <p>{sch.classes[0]?.day}</p>}
+                {sch.classes[0]?.charge?.name && (
+                  <Tag value={sch.classes[0]?.charge?.name} />
+                )}
+                {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
               </div>
             )
           }}
@@ -202,8 +211,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[1]?.class?.name ?? sch.classes[1]?.day}</p>
-              <Chip label={sch.classes[1]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[1]?.class?.name && (
+                <Tag
+                  value={sch.classes[1]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[1]?.class?.name && <p>{sch.classes[1]?.day}</p>}
+              {sch.classes[1]?.charge?.name && (
+                <Tag value={sch.classes[1]?.charge?.name} />
+              )}
+              {!sch.classes[1]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Martes'
@@ -211,8 +229,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[2]?.class?.name ?? sch.classes[2]?.day}</p>
-              <Chip label={sch.classes[2]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[2]?.class?.name && (
+                <Tag
+                  value={sch.classes[2]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[2]?.class?.name && <p>{sch.classes[2]?.day}</p>}
+              {sch.classes[2]?.charge?.name && (
+                <Tag value={sch.classes[2]?.charge?.name} />
+              )}
+              {!sch.classes[2]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Miércoles'
@@ -220,8 +247,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[3]?.class?.name ?? sch.classes[3]?.day}</p>
-              <Chip label={sch.classes[3]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[3]?.class?.name && (
+                <Tag
+                  value={sch.classes[3]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[3]?.class?.name && <p>{sch.classes[3]?.day}</p>}
+              {sch.classes[3]?.charge?.name && (
+                <Tag value={sch.classes[3]?.charge?.name} />
+              )}
+              {!sch.classes[3]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Jueves'
@@ -229,17 +265,29 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[4]?.class?.name ?? sch.classes[4]?.day}</p>
-              <Chip label={sch.classes[4]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[4]?.class?.name && (
+                <Tag
+                  value={sch.classes[4]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[4]?.class?.name && <p>{sch.classes[4]?.day}</p>}
+              {sch.classes[4]?.charge?.name && (
+                <Tag value={sch.classes[4]?.charge?.name} />
+              )}
+              {!sch.classes[4]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Viernes'
         />
-        <Column
+        {/* <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
               <p>{sch.classes[5]?.class?.name ?? sch.classes[5]?.day}</p>
-              <Chip label={sch.classes[5]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[0]?.charge?.name && (
+                <Tag value={sch.classes[0]?.charge?.name} />
+              )}
+              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Sábado'
@@ -248,11 +296,14 @@ export default function Schelude(): ReactElement {
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
               <p>{sch.classes[6]?.class?.name ?? sch.classes[6]?.day}</p>
-              <Chip label={sch.classes[6]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[0]?.charge?.name && (
+                <Tag value={sch.classes[0]?.charge?.name} />
+              )}
+              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Domingo'
-        />
+        /> */}
       </DataTable>
     </Card>
   )
