@@ -24,7 +24,7 @@ export default function AttendanceAdmTable(): ReactElement {
         header={() => {
           return (
             <div className='w-full flex align-items-center justify-content-between'>
-              <h2>Asistencias</h2>
+              <h2>Asistencias de alumno</h2>
               <Button
                 label='Cargar asistencia'
                 size='small'
