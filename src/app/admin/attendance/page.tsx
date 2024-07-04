@@ -7,7 +7,6 @@ import { Permissions } from 'utils/types'
 import AttendanceAdmTable from 'components/attendance/AttendanceAdmTable'
 
 export default function Attendace(): ReactElement {
-
   return (
     <Card className='h-full w-full'>
       <HasRole required={[Permissions.ADM, Permissions.OWN]}>
