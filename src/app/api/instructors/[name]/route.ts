@@ -31,6 +31,7 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
       })
     }
   } catch (error) {
+    console.log(error)
     return new Response(
       JSONbig.stringify('No isntructor with this id or name'),
       {
