@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import HasRole from 'components/HasRole'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
+import MemberAssign from 'components/schedules/MemberAssign'
 import { Button } from 'primereact/button'
 import { ButtonGroup } from 'primereact/buttongroup'
 import { Card } from 'primereact/card'
@@ -73,6 +74,11 @@ export default function Schelude(): ReactElement {
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
   const [showOptions, openShowOptions, closeShowOptions] = useModal(false)
+  const [
+    assignScheduleInscription,
+    openAssignScheduleInscription,
+    closeAssignScheduleInscription
+  ] = useModal(false)
 
   const queryClient = useQueryClient()
   void queryClient.invalidateQueries({ queryKey: ['sch'] })
@@ -109,6 +115,13 @@ export default function Schelude(): ReactElement {
           <InstructorAssign schedule={selectedSchedule} />
         </Dialog>
         <Dialog
+          visible={assignScheduleInscription}
+          onHide={closeAssignScheduleInscription}
+          header='Inscribir Alumno'
+        >
+          <MemberAssign schedule={selectedSchedule} />
+        </Dialog>
+        <Dialog
           visible={showOptions}
           onHide={closeShowOptions}
           header='Opciones'
@@ -129,6 +142,14 @@ export default function Schelude(): ReactElement {
               icon='pi pi-user'
               iconPos='right'
               onClick={openAssignInstructor}
+            />
+            <Button
+              label='Alumno'
+              size='small'
+              outlined
+              icon='pi pi-users'
+              iconPos='right'
+              onClick={openAssignScheduleInscription}
             />
             <Button
               label='Limpiar'
