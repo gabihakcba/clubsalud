@@ -2,9 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import HasRole from 'components/HasRole'
+import ScheduleInscription from 'components/scheduleInscription/ScheduleInscription'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
-import MemberAssign from 'components/schedules/MemberAssign'
 import { Button } from 'primereact/button'
 import { ButtonGroup } from 'primereact/buttongroup'
 import { Card } from 'primereact/card'
@@ -75,9 +75,9 @@ export default function Schelude(): ReactElement {
     useModal(false)
   const [showOptions, openShowOptions, closeShowOptions] = useModal(false)
   const [
-    assignScheduleInscription,
-    openAssignScheduleInscription,
-    closeAssignScheduleInscription
+    membersInscripted,
+    openMembersInscripted,
+    closeMembersInscripted
   ] = useModal(false)
 
   const queryClient = useQueryClient()
@@ -115,11 +115,11 @@ export default function Schelude(): ReactElement {
           <InstructorAssign schedule={selectedSchedule} />
         </Dialog>
         <Dialog
-          visible={assignScheduleInscription}
-          onHide={closeAssignScheduleInscription}
-          header='Inscribir Alumno'
+          visible={membersInscripted}
+          onHide={closeMembersInscripted}
+          header='Alumnos inscriptos'
         >
-          <MemberAssign schedule={selectedSchedule} />
+          <ScheduleInscription schedule={selectedSchedule}/>
         </Dialog>
         <Dialog
           visible={showOptions}
@@ -144,12 +144,12 @@ export default function Schelude(): ReactElement {
               onClick={openAssignInstructor}
             />
             <Button
-              label='Alumno'
+              label='Alumnos'
               size='small'
               outlined
               icon='pi pi-users'
               iconPos='right'
-              onClick={openAssignScheduleInscription}
+              onClick={openMembersInscripted}
             />
             <Button
               label='Limpiar'
