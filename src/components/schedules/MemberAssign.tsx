@@ -3,8 +3,8 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { getMembers } from 'queries/members'
-import { createScheduleInscription } from 'queries/scheduleInscription'
-import { useState, type ReactElement } from 'react'
+import { createScheduleInscription, getScheduleInscriptionByScheduleId } from 'queries/scheduleInscription'
+import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Schedule } from 'utils/types'
 
@@ -12,16 +12,10 @@ interface params {
   schedule: Schedule
 }
 export default function InstructorAssign({ schedule }: params): ReactElement {
-  const [selectedMember, setSelectedMember] = useState<any>(null)
-
   const query = useQueryClient()
 
-  const { data: members, isPending: loadingMembers } = useQuery({
-    queryKey: ['members'],
-    queryFn: async () => {
-      return await getMembers()
-    }
-  })
+  const [membersFitlers, setMembersFilters] = useState<any>(null)
+  const [selectedMember, setSelectedMember] = useState<any>(null)
 
   const {
     register,
@@ -31,6 +25,20 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
     setValue
   } = useForm()
 
+  const { data: members, isPending: loadingMembers } = useQuery({
+    queryKey: ['members'],
+    queryFn: async () => {
+      return await getMembers()
+    }
+  })
+
+  const { data: inscriptions, isPending: loadingInscriptions } = useQuery({
+    queryKey: ['inscriptionsById'],
+    queryFn: async () => {
+      return await getScheduleInscriptionByScheduleId(schedule.id)
+    }
+  })
+
   const {
     mutate: mutateScheduleInscription,
     isPending: isPendingScheduleInscription
@@ -39,21 +47,27 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
       return await createScheduleInscription(data)
     },
     async onSuccess(data) {
-      await query.refetchQueries({ queryKey: ['sch'] })
+      await query.refetchQueries({ queryKey: ['inscriptionsById'] })
+      await query.refetchQueries({ queryKey: ['inscriptions'] })
       reset()
     }
   })
 
+  useEffect(() => {
+    if (members && inscriptions) {
+      const filters = members?.filter((member) => {
+        return inscriptions.every((inscription) => inscription.memberId !== member.id)
+      })
+      setMembersFilters(filters)
+    }
+  }, [members, inscriptions])
+
   return (
     <form
       action=''
-      id='assignInstructor'
+      id='assignMember'
       onSubmit={handleSubmit((data) => {
-        // mutateScheduleInscription({
-        //   memberId: data.memberId,
-        //   scheduleId: schedule.id
-        // })
-        console.log({
+        mutateScheduleInscription({
           memberId: data.memberId,
           scheduleId: schedule.id
         })
@@ -63,7 +77,7 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
       <FloatLabel>
         <Dropdown
           form='assign'
-          options={members}
+          options={membersFitlers}
           optionLabel='name'
           optionValue='id'
           filter
@@ -79,7 +93,7 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
             setValue('memberId', e.value)
           }}
           className='w-full'
-          loading={loadingMembers}
+          loading={loadingMembers || loadingInscriptions || membersFitlers === null}
           invalid={errors?.member !== undefined}
         />
 
