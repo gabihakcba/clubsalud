@@ -3,7 +3,7 @@ import HasRole from 'components/HasRole'
 import MemberAssign from 'components/schedules/MemberAssign'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
-import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog'
+import { confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { deleteScheduleInscription, getScheduleInscriptionByScheduleId } from 'queries/scheduleInscription'
@@ -35,8 +35,8 @@ export default function ScheduleInscription({
       return response
     },
     onSuccess: async (data) => {
-      await query.refetchQueries({queryKey: ['inscriptions']})
-      await query.refetchQueries({queryKey: ['inscriptionsById']})
+      await query.refetchQueries({ queryKey: ['inscriptions'] })
+      await query.refetchQueries({ queryKey: ['inscriptionsById'] })
     }
   })
 

@@ -22,7 +22,7 @@ export const createScheduleInscription = async ({
 }
 
 export const getScheduleInscription = async (): Promise<
-  ScheduleInscription[]
+ScheduleInscription[]
 > => {
   try {
     const response = await axios.get(`${path()}/api/scheduleInscription`)
