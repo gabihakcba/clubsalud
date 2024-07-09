@@ -8,50 +8,78 @@ export default function InstructorPage({
 }: {
   account: Account | undefined
 }): ReactElement {
-  const [charges, setCharges] = useState<any>(null)
+  const [expandedRows, setExpandedRows] = useState<any>(undefined)
+  const [charges, setCharges] = useState<Schedule[] | undefined>(undefined)
 
   useEffect(() => {
     if (account) {
-      console.log(account)
-      setCharges(account?.instructorAccount)
+      setCharges(account?.instructorAccount?.scheduleInCharge)
     }
   }, [account])
 
-  useEffect(() => {
-    console.log(charges)
-  }, [charges])
+  const membersInCharge = (data): ReactElement => {
+    const schedule: Schedule = data as Schedule
+    const scheduleInscription = schedule?.scheduleInscription?.map((sch) => sch)
+    const members = scheduleInscription?.map((sche) => sche.member)
+    return (
+      <DataTable value={members} scrollable scrollHeight='20vh'>
+        <Column
+          field='dni'
+          header='DNI'
+        />
+        <Column
+          field='name'
+          header='Nombre'
+        />
+      </DataTable>
+    )
+  }
 
   return (
-    <DataTable
-      value={charges?.scheduleInCharge
-        .filter((sche: Schedule) => sche.start % 100 === 0)
-        .sort((sche1: Schedule, sche2: Schedule) => {
-          if (sche1.day && sche2.day) {
-            if (sche1.day <= sche2.day) {
-              return -1
+    <div className='flex flex-column gap-2'>
+      <DataTable
+        value={charges
+          ?.filter((sche: Schedule) => sche.start % 100 === 0)
+          ?.sort((sche1: Schedule, sche2: Schedule) => {
+            if (sche1.day && sche2.day) {
+              if (sche1.day <= sche2.day) {
+                return -1
+              } else {
+                return 1
+              }
             } else {
-              return 1
+              return 0
             }
-          } else {
-            return 0
+          })}
+        onRowToggle={(e) => {
+          setExpandedRows(e.data)
+        }}
+        expandedRows={expandedRows}
+        rowExpansionTemplate={membersInCharge}
+        scrollable
+        scrollHeight='60dvh'
+        header='Tus clases'
+      >
+        <Column
+          expander={(rowData: Schedule) =>
+            rowData.scheduleInscription?.length !== undefined &&
+            rowData.scheduleInscription?.length > 0
           }
-        })}
-      scrollable
-      scrollHeight='60dvh'
-      header='Tus clases'
-    >
-      <Column
-        field='class.name'
-        header='Clase'
-      />
-      <Column
-        field='start'
-        header='Inicia'
-      />
-      <Column
-        field='day'
-        header='Día'
-      />
-    </DataTable>
+          style={{ width: '5rem' }}
+        />
+        <Column
+          field='class.name'
+          header='Clase'
+        />
+        <Column
+          field='start'
+          header='Inicia'
+        />
+        <Column
+          field='day'
+          header='Día'
+        />
+      </DataTable>
+    </div>
   )
 }
