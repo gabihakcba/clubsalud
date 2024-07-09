@@ -17,12 +17,25 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
         notificationSender: true,
         notifiactionReceiver: true,
         instructorAccount: {
-          include: { scheduleInCharge: { include: { class: true } } }
+          include: {
+            scheduleInCharge: {
+              include: {
+                class: true,
+                scheduleInscription: { include: { member: true } }
+              }
+            }
+          }
         },
         memberAccount: {
           include: {
             planSubscribed: { include: { plan: true } },
-            memberSubscription: { include: { promotion: true } }
+            memberSubscription: { include: { promotion: true } },
+            scheduleInscription: {
+              include: {
+                schedule: { include: { charge: true, class: true } },
+                member: true
+              }
+            }
           }
         },
         employeeAccount: true
