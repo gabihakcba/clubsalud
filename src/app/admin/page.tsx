@@ -103,16 +103,6 @@ export default function PersonalAccount(): ReactElement {
       <HasRole required={[Permissions.INS]}>
         <InstructorPage account={account} />
       </HasRole>
-      {/* <div className='border-2'>Nav</div>
-      <div>Bienvenido {account !== undefined ? getName(account) : ''}</div>
-      <p>
-        {user.username} {user.id}
-      </p>
-      <div>
-        {user.permissions.map((permission, index) => (
-          <p key={index}>{permission}</p>
-        ))}
-      </div> */}
     </Card>
   )
 }
