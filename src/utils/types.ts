@@ -83,6 +83,7 @@ export interface LogIn {
 
 export interface Member extends CreateMember {
   id: number
+  scheduleInscription?: ScheduleInscription[]
   memberSubscription?: Subscription[]
   payment?: Payment[]
   planSubscribed?: HealthPlanSubscribed[]
@@ -161,6 +162,7 @@ export interface Schedule {
   charge?: Instructor
   class?: Class_
   attendance?: Attendance
+  scheduleInscription?: ScheduleInscription[]
 }
 
 export interface Promotion extends CreatePromotion {
@@ -335,13 +337,13 @@ export interface CreateAttendance {
 
 export interface ScheduleInscription extends CreateScheduleInscription {
   id: number
+  schedule: Schedule
+  member: Member
 }
 
 export interface CreateScheduleInscription {
   scheduleId: number
   memberId: number
-  schedule: Schedule[]
-  member: Member[]
 }
 
 export interface priceType {
