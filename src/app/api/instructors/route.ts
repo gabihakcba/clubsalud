@@ -9,7 +9,6 @@ const db: PrismaClient = prisma
 export async function GET(req: NextRequest): Promise<Response> {
   const url = new URL(req.url)
   const id = url.searchParams.get('id')
-  console.log(id)
   try {
     let instructors: Instructor[] | Instructor
     if (id) {

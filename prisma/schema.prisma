@@ -107,39 +107,38 @@ model Instructor {
   account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount", onDelete: Cascade)
   // Relations
   instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
-  givenClass         OpenClass[]         @relation(name: "givenClassInstructor")
   scheduleInCharge   Schedule[]          @relation(name: "instructorInCharge")
   scheduleSubstitute Schedule[]          @relation(name: "instructorSubstitute")
 }
 
 model Member {
   // Fields
-  id                 Int                    @id @default(autoincrement())
-  name               String
-  lastName           String
-  dni                BigInt                 @db.BigInt
-  cuit               BigInt?                @db.BigInt
-  phoneNumber        BigInt                 @db.BigInt
-  address            String
-  inscriptionDate    DateTime               @default(now())
-  cancelationDate    DateTime?
-  cancelationReason  String?
-  derivedBy          String
-  afiliateNumber     BigInt                 @db.BigInt
-  state              MemberState
-  remainingClasses   BigInt?                @db.BigInt
+  id                  Int                    @id @default(autoincrement())
+  name                String
+  lastName            String
+  dni                 BigInt                 @db.BigInt
+  cuit                BigInt?                @db.BigInt
+  phoneNumber         BigInt                 @db.BigInt
+  address             String
+  inscriptionDate     DateTime               @default(now())
+  cancelationDate     DateTime?
+  cancelationReason   String?
+  derivedBy           String
+  afiliateNumber      BigInt                 @db.BigInt
+  state               MemberState
+  remainingClasses    BigInt?                @db.BigInt
   // Foreignkeys
-  accountId          Int                    @unique
-  medicalRecordId    Int?                   @unique
-  account            Account                @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
-  medicalRecord      MedicalRecord?         @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
+  accountId           Int                    @unique
+  medicalRecordId     Int?                   @unique
+  account             Account                @relation(fields: [accountId], references: [id], name: "memberAccount", onDelete: Cascade)
+  medicalRecord       MedicalRecord?         @relation(fields: [medicalRecordId], references: [id], name: "medicalRecord")
   // Relations
-  memberAttendance   Attendance[]           @relation(name: "attendanceMember")
-  memberReservation  Reservation[]          @relation(name: "reservationMember")
-  memberSubscription Subscription[]         @relation(name: "subscriptionMember")
-  planSubscribed     HealthPlanSubscribed[] @relation(name: "planMember")
-  payment            Payment[]              @relation(name: "paymentMember")
-  derivation         Derivation[]           @relation(name: "derivationMember")
+  memberAttendance    Attendance[]           @relation(name: "attendanceMember")
+  scheduleInscription ScheduleInscription[]  @relation(name: "scheduleInscription")
+  memberSubscription  Subscription[]         @relation(name: "subscriptionMember")
+  planSubscribed      HealthPlanSubscribed[] @relation(name: "planMember")
+  payment             Payment[]              @relation(name: "paymentMember")
+  derivation          Derivation[]           @relation(name: "derivationMember")
 }
 
 model InstructorPayment {
@@ -154,20 +153,6 @@ model InstructorPayment {
   // Foreignkeys
   instructorId   Int
   instructor     Instructor @relation(fields: [instructorId], references: [id], name: "instructorPayment")
-}
-
-model OpenClass {
-  // Fields
-  id               Int           @id @default(autoincrement())
-  date             DateTime      @default(now())
-  given            Boolean       @default(false)
-  // Foreignkeys
-  instructorId     Int
-  classId          Int
-  instructor       Instructor?   @relation(fields: [instructorId], references: [id], name: "givenClassInstructor")
-  class            Class         @relation(fields: [classId], references: [id], name: "givenClassClass")
-  // Relations
-  reservationClass Reservation[] @relation(name: "reservationClass")
 }
 
 model Attendance {
@@ -186,7 +171,7 @@ model Attendance {
 // end: 0900
 model Schedule {
   // Fields
-  id                   Int         @id @default(autoincrement())
+  id                   Int                   @id @default(autoincrement())
   day                  Days
   start                Int
   end                  Int
@@ -194,9 +179,11 @@ model Schedule {
   instructorInCharge   Int?
   instructorSubstitute Int?
   classId              Int?
-  charge               Instructor? @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
-  substitute           Instructor? @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
-  class                Class?      @relation(fields: [classId], references: [id], name: "scheduledClass")
+  charge               Instructor?           @relation(fields: [instructorInCharge], references: [id], name: "instructorInCharge")
+  substitute           Instructor?           @relation(fields: [instructorSubstitute], references: [id], name: "instructorSubstitute")
+  class                Class?                @relation(fields: [classId], references: [id], name: "scheduledClass")
+  // Relations
+  scheduleInscription  ScheduleInscription[] @relation(name: "scheduleInscription")
 }
 
 model Class {
@@ -205,19 +192,18 @@ model Class {
   name            String
   duration        Float
   // Relations
-  openClass       OpenClass[]  @relation(name: "givenClassClass")
   schedule        Schedule[]   @relation(name: "scheduledClass")
   attendanceClass Attendance[] @relation(name: "attendanceClass")
 }
 
-model Reservation {
+model ScheduleInscription {
   // Fields
-  id          Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   // Foreignkeys
-  openClassId Int
-  memberId    Int
-  openClass   OpenClass @relation(fields: [openClassId], references: [id], name: "reservationClass")
-  member      Member    @relation(fields: [memberId], references: [id], name: "reservationMember")
+  scheduleId Int
+  memberId   Int
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], name: "scheduleInscription")
+  member     Member   @relation(fields: [memberId], references: [id], name: "scheduleInscription")
 }
 
 model Payment {
