@@ -28,8 +28,12 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx"
-, "seed.js", "src/app/layout.jsx", "src/app/layout.jsx", "src/app/layout.jsx"  ],
+    "**/*.tsx",
+    "seed.js",
+    "src/app/layout.jsx",
+    "src/app/layout.jsx",
+    "src/app/layout.jsx"
+  ],
   "exclude": [
     "node_modules"
   ]
