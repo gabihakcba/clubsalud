@@ -333,6 +333,17 @@ export interface CreateAttendance {
   class_?: Class_
 }
 
+export interface ScheduleInscription extends CreateScheduleInscription {
+  id: number
+}
+
+export interface CreateScheduleInscription {
+  scheduleId: number
+  memberId: number
+  schedule: Schedule[]
+  member: Member[]
+}
+
 export interface priceType {
   title: number
   notitle: number
