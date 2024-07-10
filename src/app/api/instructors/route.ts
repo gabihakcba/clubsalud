@@ -18,7 +18,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       })
     } else {
       instructors = await db.instructor.findMany({
-        include: { instructorPayments: true }
+        include: { instructorPayments: true, attendanceInstructor: true }
       })
     }
     return new Response(JSONbig.stringify(instructors), {
