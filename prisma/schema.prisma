@@ -91,24 +91,25 @@ model Doctor {
 
 model Instructor {
   // Fields
-  id                 Int                 @id @default(autoincrement())
-  name               String
-  lastName           String
-  dni                BigInt              @db.BigInt
-  cuit               BigInt?             @db.BigInt
-  phoneNumber        BigInt              @db.BigInt
-  address            String
-  email              String
-  degree             Boolean             @default(false)
-  cbu                BigInt?             @db.BigInt
-  alias              String?
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  lastName             String
+  dni                  BigInt                 @db.BigInt
+  cuit                 BigInt?                @db.BigInt
+  phoneNumber          BigInt                 @db.BigInt
+  address              String
+  email                String
+  degree               Boolean                @default(false)
+  cbu                  BigInt?                @db.BigInt
+  alias                String?
   // Foreignkeys
-  accountId          Int                 @unique
-  account            Account             @relation(fields: [accountId], references: [id], name: "instructorAccount", onDelete: Cascade)
+  accountId            Int                    @unique
+  account              Account                @relation(fields: [accountId], references: [id], name: "instructorAccount", onDelete: Cascade)
   // Relations
-  instructorPayments InstructorPayment[] @relation(name: "instructorPayment")
-  scheduleInCharge   Schedule[]          @relation(name: "instructorInCharge")
-  scheduleSubstitute Schedule[]          @relation(name: "instructorSubstitute")
+  instructorPayments   InstructorPayment[]    @relation(name: "instructorPayment")
+  scheduleInCharge     Schedule[]             @relation(name: "instructorInCharge")
+  scheduleSubstitute   Schedule[]             @relation(name: "instructorSubstitute")
+  attendanceInstructor AttendanceInstructor[] @relation(name: "attendanceInstructorInstructor")
 }
 
 model Member {
@@ -166,6 +167,17 @@ model Attendance {
   member   Member   @relation(fields: [memberId], references: [id], name: "attendanceMember")
 }
 
+model AttendanceInstructor {
+  // Fields
+  id           Int        @id @default(autoincrement())
+  date         DateTime   @default(now())
+  // Foreignkeys
+  classId      Int
+  instructorId Int
+  class        Class      @relation(fields: [classId], references: [id], name: "attendanceInstructorClass")
+  instructor   Instructor @relation(fields: [instructorId], references: [id], name: "attendanceInstructorInstructor")
+}
+
 // Format 24hs each 30 min
 // start: 0830
 // end: 0900
@@ -188,12 +200,13 @@ model Schedule {
 
 model Class {
   // Fields
-  id              Int          @id @default(autoincrement())
-  name            String
-  duration        Float
+  id                        Int                    @id @default(autoincrement())
+  name                      String
+  duration                  Float
   // Relations
-  schedule        Schedule[]   @relation(name: "scheduledClass")
-  attendanceClass Attendance[] @relation(name: "attendanceClass")
+  schedule                  Schedule[]             @relation(name: "scheduledClass")
+  attendanceClass           Attendance[]           @relation(name: "attendanceClass")
+  attendanceInstructorClass AttendanceInstructor[] @relation(name: "attendanceInstructorClass")
 }
 
 model ScheduleInscription {
