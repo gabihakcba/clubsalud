@@ -126,6 +126,7 @@ export interface Instructor extends CreateInstructor {
   instructorPayment?: InstructorPayment[]
   scheduleInCharge?: Schedule[]
   scheduleSubstitute?: Schedule[]
+  attendanceInstructor?: AttendanceInstructor[]
 }
 
 export interface CreateInstructor {
@@ -321,6 +322,18 @@ export interface CreateOpenClass {
   given: boolean
   instructorId: number
   classId: number
+}
+
+export interface AttendanceInstructor extends CreateAttendanceInstructor {
+  id: number
+  class?: Class_
+  instructor?: Instructor
+}
+
+export interface CreateAttendanceInstructor {
+  date: Date
+  classId: number
+  instructorId: number
 }
 
 export interface Attendance extends CreateAttendance {
