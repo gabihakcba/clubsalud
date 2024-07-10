@@ -14,6 +14,10 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
       const res = await db.instructor.findFirstOrThrow({
         where: {
           name
+        },
+        include: {
+          instructorPayments: true,
+          attendanceInstructor: true
         }
       })
       return new Response(JSONbig.stringify(res), {

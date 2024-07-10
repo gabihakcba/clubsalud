@@ -3,18 +3,18 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
-import { getAttendances } from 'queries/attendance'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
-import AttendanceForm from './AttendanceForm'
+import AttendanceInstructorForm from './AttendanceInstructorForm'
+import { getAttendancesInstructor } from 'queries/attendanceInstructor'
 
 export default function AttendanceAdmTable(): ReactElement {
   const [showAttendance, openAttendance, closeAttendace] = useModal(false)
 
   const { data: attendances, isPending: loadingAttendances } = useQuery({
-    queryKey: ['attendances'],
+    queryKey: ['attendancesInstructor'],
     queryFn: async () => {
-      return await getAttendances()
+      return await getAttendancesInstructor()
     }
   })
 
@@ -24,7 +24,7 @@ export default function AttendanceAdmTable(): ReactElement {
         header={() => {
           return (
             <div className='w-full flex align-items-center justify-content-between'>
-              <h2>Asistencias de alumno</h2>
+              <h2>Asistencias de profesor</h2>
               <Button
                 label='Cargar asistencia'
                 size='small'
@@ -46,11 +46,11 @@ export default function AttendanceAdmTable(): ReactElement {
           header='Clase'
         />
         <Column
-          field='member.name'
-          header='Alumno'
+          field='instructor.name'
+          header='Profesor'
         />
         <Column
-          field='member.dni'
+          field='instructor.dni'
           header='DNI'
         />
         <Column
@@ -63,7 +63,7 @@ export default function AttendanceAdmTable(): ReactElement {
         onHide={closeAttendace}
         header='Asistencia'
       >
-        <AttendanceForm />
+        <AttendanceInstructorForm />
       </Dialog>
     </>
   )
