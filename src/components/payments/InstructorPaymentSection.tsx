@@ -24,7 +24,7 @@ import {
   getInstructorPrice
 } from 'queries/instructorPayments'
 import { FilterMatchMode } from 'primereact/api'
-import { InstructorTable } from './InstructorTable'
+import { InstructorPriceTable } from './InstructorPriceTable'
 import { getSchedules } from 'queries/schedules'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
@@ -201,7 +201,7 @@ export function InstructorPaymentsSection(): ReactElement {
         onHide={closeInstructorTable}
         header='Precios por hora'
       >
-        <InstructorTable />
+        <InstructorPriceTable />
       </Dialog>
       <DataTable
         value={fitlerPayments}

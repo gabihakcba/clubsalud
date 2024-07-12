@@ -6,14 +6,16 @@ import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
 import {
+  changeStateInstructorPrice,
   deleteInstructorPrice,
   getInstructorPrice
 } from 'queries/instructorPayments'
 import { useState, type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import FormInstructorPrice from './FormInstructorPrice'
+import { type InstructorPrice } from 'utils/types'
 
-export function InstructorTable(): ReactElement {
+export function InstructorPriceTable(): ReactElement {
   const [createPrice, openPrice, closePrice] = useModal(false)
   const [selected, setSelected] = useState<number>(0)
 
@@ -29,6 +31,15 @@ export function InstructorTable(): ReactElement {
   const { mutate: deletePrice, isPending: deleting } = useMutation({
     mutationFn: async (id: number) => {
       return await deleteInstructorPrice(id)
+    },
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['prices'] })
+    }
+  })
+
+  const { mutate: changeStatePrice, isPending: changing } = useMutation({
+    mutationFn: async (id: number) => {
+      return await changeStateInstructorPrice(id)
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['prices'] })
@@ -74,6 +85,20 @@ export function InstructorTable(): ReactElement {
           header='Pago por hora'
           sortable
         />
+
+        <Column
+          field='active'
+          header='Estado'
+          sortable
+          body={(e: InstructorPrice) => {
+            return (
+              <Tag severity={e.active ? 'success' : 'danger'}>
+                {e.active ? 'Actual' : 'Histórico'}
+              </Tag>
+            )
+          }}
+        />
+
         <Column
           field='degree'
           header='Titulo'
@@ -116,6 +141,26 @@ export function InstructorTable(): ReactElement {
                   deletePrice(e.id as number)
                 }}
                 loading={deleting && (e.id as number) === selected}
+              />
+            )
+          }}
+        />
+
+        <Column
+          body={(e) => {
+            return (
+              <Button
+                label='Cambiar estado'
+                icon='pi pi-sync'
+                iconPos='right'
+                size='small'
+                severity='warning'
+                outlined
+                onClick={() => {
+                  setSelected(e.id as number)
+                  changeStatePrice(e.id as number)
+                }}
+                loading={changing && (e.id as number) === selected}
               />
             )
           }}
