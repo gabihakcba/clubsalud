@@ -1,20 +1,38 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { duration } from 'moment'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
-import { createInstructorPayment } from 'queries/instructorPayments'
+import { createInstructorPayment, getInstructorPrice } from 'queries/instructorPayments'
 import { getInstructors } from 'queries/instructors'
-import { useState, type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import {
+  type AttendanceInstructor,
+  type Instructor,
   type CreateInstructorPayment,
   type InstructorPayment
 } from 'utils/types'
 
+const getWorkedHours = (attendances: AttendanceInstructor[]): number => {
+  const hours = attendances.reduce((acc, curr) => acc + (curr.class?.duration ?? 0), 0)
+  return hours
+}
+
+const getInstructor = (id: number, instructors: Instructor[]): Instructor => {
+  const index = instructors.findIndex((ins: Instructor) => ins.id === id)
+  return instructors[index]
+}
+
+const getAttendances = (instructor: Instructor):AttendanceInstructor[] | undefined => {
+  const attendances = instructor.attendanceInstructor
+  return attendances
+}
+
 export default function CreateInstructorPaymentForm(): ReactElement {
-  const [selectedInstructor, setSelectedInstructor] = useState<any>(null)
+  const [selectedInstructor, setSelectedInstructor] = useState<number | null>(null)
 
   const query = useQueryClient()
 
@@ -22,6 +40,15 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     queryKey: ['instructors'],
     queryFn: async () => {
       return await getInstructors()
+    }
+  })
+
+  const { data: prices, isPending: isLoadingPrices } = useQuery({
+    queryKey: ['prices'],
+    queryFn: async () => {
+      const prices = await getInstructorPrice()
+      console.log(prices)
+      return prices
     }
   })
 
@@ -49,6 +76,16 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     setValue
   } = useForm()
 
+  useEffect(() => {
+    if(selectedInstructor && instructors) {
+      const instructor = getInstructor(selectedInstructor, instructors)
+      const attendances = getAttendances(instructor)
+      if(attendances) {
+        console.log(getWorkedHours(attendances))
+      }
+    }
+  }, [selectedInstructor])
+
   return (
     <form
       className='flex flex-column gap-4 pt-4'
@@ -64,53 +101,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         create(parsed)
       })}
     >
-      <div className='p-float-label'>
-        <InputText
-          type='number'
-          {...register('amount', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          invalid={errors?.amount !== undefined}
-        />
-        <label htmlFor=''>Cantidad</label>
-      </div>
-
       <FloatLabel>
-        <Calendar
-          {...register('workedMonth', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          invalid={errors?.workedMonth !== undefined}
-        />
-        <label htmlFor=''>Mes trabajado</label>
-      </FloatLabel>
-
-      <div className='p-float-label'>
-        <InputText
-          type='number'
-          {...register('workedHours', {
-            required: {
-              value: true,
-              message: 'Campo requerido'
-            }
-          })}
-          invalid={errors?.workedHours !== undefined}
-        />
-        <label htmlFor=''>Horas trabajadas</label>
-      </div>
-      <div className='p-float-label'>
-        <Calendar
-          {...register('paymentDate', {
-            required: {
-              value: true,
-              message: 'Campo requerido'
-            }
-          })}
-          invalid={errors?.paymentDate !== undefined}
-        />
-        <label htmlFor=''>Fecha de pago</label>
-      </div>
-      <div className='p-float-label'>
         <Dropdown
           options={instructors}
           value={selectedInstructor}
@@ -129,7 +120,56 @@ export default function CreateInstructorPaymentForm(): ReactElement {
           className='w-full'
         />
         <label htmlFor=''>Profesor</label>
-      </div>
+      </FloatLabel>
+
+      <FloatLabel>
+        <InputText
+          type='number'
+          {...register('amount', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.amount !== undefined}
+        />
+        <label htmlFor=''>Cantidad</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <Calendar
+          {...register('workedMonth', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.workedMonth !== undefined}
+        />
+        <label htmlFor=''>Mes trabajado</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <InputText
+          type='number'
+          {...register('workedHours', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.workedHours !== undefined}
+        />
+        <label htmlFor=''>Horas trabajadas</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <Calendar
+          {...register('paymentDate', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          invalid={errors?.paymentDate !== undefined}
+        />
+        <label htmlFor=''>Fecha de pago</label>
+      </FloatLabel>
+
       <Button
         loading={isPending}
         label='Enviar'
@@ -137,11 +177,13 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         iconPos='right'
         size='small'
       />
+
       {isSuccess && <small className='text-sm text-green-600'>Listo!</small>}
       {isPending && (
         <small className='text-sm text-yellow-600'>Creando...</small>
       )}
       {isError && <small className='text-sm text-red-600'>Error!</small>}
+
     </form>
   )
 }
