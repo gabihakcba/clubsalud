@@ -300,6 +300,7 @@ export interface InstructorPrice extends CreateInstructorPrice {
 export interface CreateInstructorPrice {
   degree: boolean
   amount: number
+  active: number
   lastUpdate: Date
 }
 
