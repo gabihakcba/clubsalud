@@ -372,6 +372,7 @@ model InstructorPrice {
   id         Int      @id @default(autoincrement())
   degree     Boolean
   amount     Float
+  active     Boolean  @default(false)
   lastUpdate DateTime @default(now())
 }
 

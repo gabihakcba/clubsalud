@@ -1,7 +1,6 @@
 import { type InstructorPrice, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { type CreateInstructorPrice } from 'utils/types'
 import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
@@ -25,7 +24,7 @@ export async function GET(): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data: CreateInstructorPrice = await req.json()
+    const data = await req.json()
     data.lastUpdate = new Date()
     const res: InstructorPrice = await db.instructorPrice.create({ data })
     return new Response(JSONbig.stringify(res), {
@@ -41,25 +40,38 @@ export async function POST(req: NextRequest): Promise<Response> {
 
 export async function PATCH(req: NextRequest): Promise<Response> {
   try {
-    const data: InstructorPrice = await req.json()
+    const id = await req.json()
 
-    const prevPrice = await db.instructorPrice.findFirst({
-      where: { degree: data.degree },
-      orderBy: { lastUpdate: 'asc' }
-    })
+    const oldPriceInstructor: InstructorPrice | null =
+      await db.instructorPrice.findUnique({
+        where: { id: Number(id) }
+      })
 
-    let date: Date = data.lastUpdate
+    const lastActive: InstructorPrice | null =
+      await db.instructorPrice.findFirst({
+        where: { degree: oldPriceInstructor?.degree, active: true }
+      })
 
-    if (prevPrice?.amount !== data.amount) {
-      date = new Date()
+    if (!oldPriceInstructor?.active && lastActive) {
+      const lastActiveUpdated: InstructorPrice | null =
+        await db.instructorPrice.update({
+          where: { id: lastActive?.id },
+          data: { active: false }
+        })
+
+      if (!lastActiveUpdated) {
+        throw new Error('Error al actualizar')
+      }
     }
 
-    const res: InstructorPrice = await db.instructorPrice.update({
-      where: { id: data.id },
-      data: { amount: data.amount, lastUpdate: date }
+    const newState: InstructorPrice = await db.instructorPrice.update({
+      where: { id: Number(id) },
+      data: {
+        active: !oldPriceInstructor?.active
+      }
     })
 
-    return new Response(JSONbig.stringify(res), {
+    return new Response(JSONbig.stringify(newState), {
       status: 200
     })
   } catch (error) {
