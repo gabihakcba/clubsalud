@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { duration } from 'moment'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
-import { createInstructorPayment, getInstructorPrice } from 'queries/instructorPayments'
+import {
+  createInstructorPayment
+} from 'queries/instructorPayments'
 import { getInstructors } from 'queries/instructors'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
@@ -17,7 +18,10 @@ import {
 } from 'utils/types'
 
 const getWorkedHours = (attendances: AttendanceInstructor[]): number => {
-  const hours = attendances.reduce((acc, curr) => acc + (curr.class?.duration ?? 0), 0)
+  const hours = attendances.reduce(
+    (acc, curr) => acc + (curr.class?.duration ?? 0),
+    0
+  )
   return hours
 }
 
@@ -26,13 +30,17 @@ const getInstructor = (id: number, instructors: Instructor[]): Instructor => {
   return instructors[index]
 }
 
-const getAttendances = (instructor: Instructor):AttendanceInstructor[] | undefined => {
+const getAttendances = (
+  instructor: Instructor
+): AttendanceInstructor[] | undefined => {
   const attendances = instructor.attendanceInstructor
   return attendances
 }
 
 export default function CreateInstructorPaymentForm(): ReactElement {
-  const [selectedInstructor, setSelectedInstructor] = useState<number | null>(null)
+  const [selectedInstructor, setSelectedInstructor] = useState<number | null>(
+    null
+  )
 
   const query = useQueryClient()
 
@@ -43,14 +51,14 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     }
   })
 
-  const { data: prices, isPending: isLoadingPrices } = useQuery({
-    queryKey: ['prices'],
-    queryFn: async () => {
-      const prices = await getInstructorPrice()
-      console.log(prices)
-      return prices
-    }
-  })
+  // const { data: prices, isPending: isLoadingPrices } = useQuery({
+  //   queryKey: ['prices'],
+  //   queryFn: async () => {
+  //     const prices = await getInstructorPrice()
+  //     console.log(prices)
+  //     return prices
+  //   }
+  // })
 
   const {
     mutate: create,
@@ -77,10 +85,10 @@ export default function CreateInstructorPaymentForm(): ReactElement {
   } = useForm()
 
   useEffect(() => {
-    if(selectedInstructor && instructors) {
+    if (selectedInstructor && instructors) {
       const instructor = getInstructor(selectedInstructor, instructors)
       const attendances = getAttendances(instructor)
-      if(attendances) {
+      if (attendances) {
         console.log(getWorkedHours(attendances))
       }
     }
@@ -113,7 +121,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
           filter
           invalid={errors?.instructorId !== undefined}
           onChange={(e) => {
-            setSelectedInstructor(e.value)
+            setSelectedInstructor(e.value as number)
             setValue('instructorId', e.value)
           }}
           loading={isLoadingInstructors}
@@ -183,7 +191,6 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         <small className='text-sm text-yellow-600'>Creando...</small>
       )}
       {isError && <small className='text-sm text-red-600'>Error!</small>}
-
     </form>
   )
 }
