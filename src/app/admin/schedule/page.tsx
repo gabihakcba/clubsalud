@@ -1,8 +1,12 @@
 'use client'
 
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import HasRole from 'components/HasRole'
+import ScheduleInscription from 'components/scheduleInscription/ScheduleInscription'
 import ClassAssign from 'components/schedules/ClassAssign'
 import InstructorAssign from 'components/schedules/InstructorAssign'
+import { Button } from 'primereact/button'
+import { ButtonGroup } from 'primereact/buttongroup'
 import { Card } from 'primereact/card'
 import { Chip } from 'primereact/chip'
 import { Column } from 'primereact/column'
@@ -10,9 +14,10 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { Tag } from 'primereact/tag'
-import { getSchedules } from 'queries/schedules'
+import { clearSchedule, getSchedules } from 'queries/schedules'
 import { useState, type ReactElement } from 'react'
-import { type Schedule } from 'utils/types'
+import { hasPermission } from 'utils/auth'
+import { Permissions, type Schedule } from 'utils/types'
 import { useModal } from 'utils/useModal'
 
 const formatHour = (hour: number): string => {
@@ -64,58 +69,128 @@ const formatScheduler = (schedules: Schedule[]): any[] => {
 }
 
 export default function Schelude(): ReactElement {
-  const [selectedSchedule, setSelectedSchedule] = useState<any>(null)
+  const [selectedSchedule, setSelectedSchedule] = useState<any>(undefined)
   const [assignClass, openAssingClass, closeAssignClass] = useModal(false)
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
+  const [showOptions, openShowOptions, closeShowOptions] = useModal(false)
+  const [
+    membersInscripted,
+    openMembersInscripted,
+    closeMembersInscripted
+  ] = useModal(false)
 
   const queryClient = useQueryClient()
   void queryClient.invalidateQueries({ queryKey: ['sch'] })
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['sch'],
     queryFn: async (): Promise<Schedule[]> => {
       return await getSchedules()
     }
   })
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: clearSchedule,
+    onSuccess: async () => {
+      await refetch()
+    }
+  })
+
   return (
     <Card className='h-full'>
-      <Dialog
-        visible={assignClass}
-        onHide={closeAssignClass}
-        header='Asignar Clase'
-      >
-        <ClassAssign schedule={selectedSchedule} />
-      </Dialog>
-      <Dialog
-        visible={assignInstructor}
-        onHide={closeAssignInstructor}
-        header='Asignar Profesor'
-      >
-        <InstructorAssign schedule={selectedSchedule} />
-      </Dialog>
-      <ConfirmDialog />
+      <HasRole required={[Permissions.ADM, Permissions.OWN]}>
+        <Dialog
+          visible={assignClass}
+          onHide={closeAssignClass}
+          header='Asignar Clase'
+        >
+          <ClassAssign schedule={selectedSchedule} />
+        </Dialog>
+        <Dialog
+          visible={assignInstructor}
+          onHide={closeAssignInstructor}
+          header='Asignar Profesor'
+        >
+          <InstructorAssign schedule={selectedSchedule} />
+        </Dialog>
+        <Dialog
+          visible={membersInscripted}
+          onHide={closeMembersInscripted}
+          header='Alumnos inscriptos'
+        >
+          <ScheduleInscription schedule={selectedSchedule}/>
+        </Dialog>
+        <Dialog
+          visible={showOptions}
+          onHide={closeShowOptions}
+          header='Opciones'
+        >
+          <ButtonGroup>
+            <Button
+              label='Clase'
+              size='small'
+              outlined
+              icon='pi pi-calendar-plus'
+              iconPos='right'
+              onClick={openAssingClass}
+            />
+            <Button
+              label='Profesor'
+              size='small'
+              outlined
+              icon='pi pi-user'
+              iconPos='right'
+              onClick={openAssignInstructor}
+            />
+            <Button
+              label='Alumnos'
+              size='small'
+              outlined
+              icon='pi pi-users'
+              iconPos='right'
+              onClick={openMembersInscripted}
+            />
+            <Button
+              label='Limpiar'
+              size='small'
+              outlined
+              icon='pi pi-trash'
+              iconPos='right'
+              severity='danger'
+              loading={isPending}
+              onClick={() => {
+                confirmDialog({
+                  message: 'Seguro que quieres resetear este horario?',
+                  header: 'Confirmación',
+                  icon: 'pi pi-info-circle',
+                  defaultFocus: 'reject',
+                  acceptClassName: 'p-button-danger',
+                  acceptLabel: 'Si',
+                  rejectLabel: 'No',
+                  accept: () => {
+                    mutate(selectedSchedule.id as number)
+                  }
+                })
+              }}
+            />
+          </ButtonGroup>
+        </Dialog>
+        <ConfirmDialog />
+      </HasRole>
+
       <DataTable
         value={formatScheduler(data ?? [])}
         scrollable
         scrollHeight='80vh'
         cellSelection
         selectionMode='single'
-        onSelectionChange={(e) => {
-          setSelectedSchedule(e.value.rowData.classes[e.value.cellIndex - 1])
-          confirmDialog({
-            header: 'Asignar ...',
-            message: 'Seleccione que desea asignar',
-            acceptLabel: 'Clase',
-            rejectLabel: 'Profesor',
-            accept() {
-              openAssingClass()
-            },
-            reject() {
-              openAssignInstructor()
-            }
-          })
+        onSelectionChange={async (e) => {
+          const selected = e.value.rowData.classes[e.value.cellIndex - 1]
+          setSelectedSchedule(selected)
+          if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
+            openShowOptions()
+          }
         }}
         header={() => <h2>Horarios</h2>}
       >
@@ -138,8 +213,17 @@ export default function Schelude(): ReactElement {
           body={(sch) => {
             return (
               <div className='flex align-items-center gap-2'>
-                <p>{sch.classes[0]?.class?.name ?? sch.classes[0]?.day}</p>
-                <Chip label={sch.classes[0]?.charge?.name ?? 'Profesor'} />
+                {sch.classes[0]?.class?.name && (
+                  <Tag
+                    value={sch.classes[0]?.class?.name}
+                    severity='success'
+                  />
+                )}
+                {!sch.classes[0]?.class?.name && <p>{sch.classes[0]?.day}</p>}
+                {sch.classes[0]?.charge?.name && (
+                  <Tag value={sch.classes[0]?.charge?.name} />
+                )}
+                {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
               </div>
             )
           }}
@@ -148,8 +232,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[1]?.class?.name ?? sch.classes[1]?.day}</p>
-              <Chip label={sch.classes[1]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[1]?.class?.name && (
+                <Tag
+                  value={sch.classes[1]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[1]?.class?.name && <p>{sch.classes[1]?.day}</p>}
+              {sch.classes[1]?.charge?.name && (
+                <Tag value={sch.classes[1]?.charge?.name} />
+              )}
+              {!sch.classes[1]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Martes'
@@ -157,8 +250,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[2]?.class?.name ?? sch.classes[2]?.day}</p>
-              <Chip label={sch.classes[2]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[2]?.class?.name && (
+                <Tag
+                  value={sch.classes[2]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[2]?.class?.name && <p>{sch.classes[2]?.day}</p>}
+              {sch.classes[2]?.charge?.name && (
+                <Tag value={sch.classes[2]?.charge?.name} />
+              )}
+              {!sch.classes[2]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Miércoles'
@@ -166,8 +268,17 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[3]?.class?.name ?? sch.classes[3]?.day}</p>
-              <Chip label={sch.classes[3]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[3]?.class?.name && (
+                <Tag
+                  value={sch.classes[3]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[3]?.class?.name && <p>{sch.classes[3]?.day}</p>}
+              {sch.classes[3]?.charge?.name && (
+                <Tag value={sch.classes[3]?.charge?.name} />
+              )}
+              {!sch.classes[3]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Jueves'
@@ -175,17 +286,29 @@ export default function Schelude(): ReactElement {
         <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[4]?.class?.name ?? sch.classes[4]?.day}</p>
-              <Chip label={sch.classes[4]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[4]?.class?.name && (
+                <Tag
+                  value={sch.classes[4]?.class?.name}
+                  severity='success'
+                />
+              )}
+              {!sch.classes[4]?.class?.name && <p>{sch.classes[4]?.day}</p>}
+              {sch.classes[4]?.charge?.name && (
+                <Tag value={sch.classes[4]?.charge?.name} />
+              )}
+              {!sch.classes[4]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Viernes'
         />
-        <Column
+        {/* <Column
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
               <p>{sch.classes[5]?.class?.name ?? sch.classes[5]?.day}</p>
-              <Chip label={sch.classes[5]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[0]?.charge?.name && (
+                <Tag value={sch.classes[0]?.charge?.name} />
+              )}
+              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Sábado'
@@ -194,11 +317,14 @@ export default function Schelude(): ReactElement {
           body={(sch) => (
             <div className='flex align-items-center gap-2'>
               <p>{sch.classes[6]?.class?.name ?? sch.classes[6]?.day}</p>
-              <Chip label={sch.classes[6]?.charge?.name ?? 'Profesor'} />
+              {sch.classes[0]?.charge?.name && (
+                <Tag value={sch.classes[0]?.charge?.name} />
+              )}
+              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Domingo'
-        />
+        /> */}
       </DataTable>
     </Card>
   )
