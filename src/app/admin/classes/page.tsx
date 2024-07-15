@@ -1,10 +1,15 @@
 'use client'
 
-import { useState, type ReactElement } from 'react'
+import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from '../../../utils/useModal'
 import CreateClassForm from 'components/classes/CreateClassForm'
 import CreatePromotionForm from 'components/promotions/CreatePromotionForm'
-import { type Class_, type Promotion } from 'utils/types'
+import {
+  Permissions,
+  type Class_,
+  type Promotion,
+  type Account
+} from 'utils/types'
 import SubscriptionForm from 'components/subscriptions/SubscriptionForm'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
@@ -17,6 +22,9 @@ import { Dialog } from 'primereact/dialog'
 import ClassForm from 'components/classes/ClassForm'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import UpdatePromotionForm from 'components/promotions/UpdatePromotionForm'
+import HasRole from 'components/HasRole'
+import { type FieldValues } from 'react-hook-form'
+import { getMemberById } from 'queries/members'
 
 export default function Classes(): ReactElement {
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
@@ -30,6 +38,17 @@ export default function Classes(): ReactElement {
     useModal(false)
 
   const query = useQueryClient()
+
+  const { data: member } = useQuery({
+    queryKey: ['member'],
+    queryFn: async () => {
+      const userInfo = localStorage.getItem('user')
+      if (userInfo) {
+        const user = JSON.parse(userInfo) as Account
+        return await getMemberById(user.id)
+      }
+    }
+  })
 
   const { data: classes } = useQuery({
     queryKey: ['classes'],
@@ -65,7 +84,6 @@ export default function Classes(): ReactElement {
   const { mutate: delPromotion, isPending } = useMutation({
     mutationFn: deletePromotion,
     onSuccess: async (variables) => {
-      console.log(variables)
       await query.setQueryData(['promotions'], (oldData: Promotion[]) => {
         const index = oldData.findIndex((promotion: Promotion) => {
           return promotion.id === variables.id
@@ -76,6 +94,32 @@ export default function Classes(): ReactElement {
       })
     }
   })
+
+  const { mutate: subscribe, isPending: isPendingSubscription } = useMutation({
+    mutationFn: async ({
+      id,
+      promotion
+    }: {
+      id: string
+      promotion: FieldValues
+    }) => {
+      // const memberId = Number(id)
+      try {
+        // return await setSubscription({
+        //   memberId,
+        //   promotion: promotion as Promotion
+        // })
+      } catch (error) {
+        console.log(error)
+        alert('No se pudo adherir a la suscripción')
+      }
+    },
+    onSuccess: () => {
+      alert('Inscipción hecha')
+    }
+  })
+
+  useEffect(() => {}, [])
 
   return (
     <Card className='min-h-full flex flex-column'>
@@ -134,14 +178,16 @@ export default function Classes(): ReactElement {
         header={() => (
           <div className='flex gap-4 align-items-center'>
             <h2>Clases</h2>
-            <Button
-              className='h-max'
-              label='Crear Clase'
-              size='small'
-              icon='pi pi-plus'
-              iconPos='right'
-              onClick={openCreateClass}
-            />
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
+              <Button
+                className='h-max'
+                label='Crear Clase'
+                size='small'
+                icon='pi pi-plus'
+                iconPos='right'
+                onClick={openCreateClass}
+              />
+            </HasRole>
           </div>
         )}
       >
@@ -159,7 +205,7 @@ export default function Classes(): ReactElement {
         />
         <Column
           body={(class_) => (
-            <>
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
               <Button
                 label='Editar'
                 size='small'
@@ -171,12 +217,12 @@ export default function Classes(): ReactElement {
                   openEditClass()
                 }}
               />
-            </>
+            </HasRole>
           )}
         />
         <Column
           body={(class_) => (
-            <>
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
               <Button
                 label='Eliminar'
                 size='small'
@@ -199,21 +245,19 @@ export default function Classes(): ReactElement {
                   })
                 }}
               />
-            </>
+            </HasRole>
           )}
         />
         <Column
           body={() => (
-            <>
-              <Button
-                label='Información'
-                size='small'
-                icon='pi pi-info-circle'
-                iconPos='right'
-                link
-                disabled
-              />
-            </>
+            <Button
+              label='Información'
+              size='small'
+              icon='pi pi-info-circle'
+              iconPos='right'
+              link
+              disabled
+            />
           )}
         />
       </DataTable>
@@ -231,20 +275,22 @@ export default function Classes(): ReactElement {
         header={() => (
           <div className='flex gap-4 align-items-center'>
             <h2>Planes</h2>
-            <Button
-              label='Crear Plan'
-              size='small'
-              icon='pi pi-plus'
-              iconPos='right'
-              onClick={openCreatePromotion}
-            />
-            <Button
-              label='Inscribir'
-              size='small'
-              icon='pi pi-plus-circle'
-              iconPos='right'
-              onClick={openCreateSubscription}
-            />
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
+              <Button
+                label='Crear Plan'
+                size='small'
+                icon='pi pi-plus'
+                iconPos='right'
+                onClick={openCreatePromotion}
+              />
+              <Button
+                label='Inscribir'
+                size='small'
+                icon='pi pi-plus-circle'
+                iconPos='right'
+                onClick={openCreateSubscription}
+              />
+            </HasRole>
           </div>
         )}
       >
@@ -270,7 +316,7 @@ export default function Classes(): ReactElement {
         />
         <Column
           body={(promotion) => (
-            <>
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
               <Button
                 label='Editar'
                 size='small'
@@ -282,12 +328,12 @@ export default function Classes(): ReactElement {
                   openEditPromotion()
                 }}
               />
-            </>
+            </HasRole>
           )}
         />
         <Column
           body={(promotion) => (
-            <>
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
               <Button
                 label='Eliminar'
                 size='small'
@@ -297,7 +343,6 @@ export default function Classes(): ReactElement {
                 outlined
                 loading={isPending}
                 onClick={() => {
-                  console.log(promotion)
                   setSelectedClass(promotion)
                   confirmDialog({
                     message: 'Confirmación de acción',
@@ -312,7 +357,29 @@ export default function Classes(): ReactElement {
                   })
                 }}
               />
-            </>
+            </HasRole>
+          )}
+        />
+        <Column
+          body={(promotion: FieldValues) => (
+            <HasRole required={[Permissions.MEM]}>
+              <Button
+                label='Inscribirme'
+                size='small'
+                icon='pi pi-check-square'
+                iconPos='right'
+                outlined
+                loading={
+                  isPendingSubscription && selectedPromotion.id === promotion.id
+                }
+                onClick={async () => {
+                  setSelectedPromotion(promotion)
+                  if (member) {
+                    subscribe({ id: String(member.id), promotion })
+                  }
+                }}
+              />
+            </HasRole>
           )}
         />
       </DataTable>

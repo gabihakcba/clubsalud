@@ -43,18 +43,18 @@ export const createInstructorPrice = async (
   return response.data
 }
 
-export const updateInstructorPrice = async (
-  data: InstructorPrice
-): Promise<InstructorPrice> => {
-  const response = await axios.post(`${path()}/api/instructorPrice`, data)
-  return response.data
-}
-
 export const deleteInstructorPrice = async (
   id: number
 ): Promise<InstructorPrice> => {
   const response = await axios.delete(`${path()}/api/instructorPrice`, {
     data: id
   })
+  return response.data
+}
+
+export const changeStateInstructorPrice = async (
+  id: number
+): Promise<InstructorPrice> => {
+  const response = await axios.patch(`${path()}/api/instructorPrice`, id)
   return response.data
 }

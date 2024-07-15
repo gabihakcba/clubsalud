@@ -83,6 +83,7 @@ export interface LogIn {
 
 export interface Member extends CreateMember {
   id: number
+  scheduleInscription?: ScheduleInscription[]
   memberSubscription?: Subscription[]
   payment?: Payment[]
   planSubscribed?: HealthPlanSubscribed[]
@@ -125,6 +126,7 @@ export interface Instructor extends CreateInstructor {
   instructorPayment?: InstructorPayment[]
   scheduleInCharge?: Schedule[]
   scheduleSubstitute?: Schedule[]
+  attendanceInstructor?: AttendanceInstructor[]
 }
 
 export interface CreateInstructor {
@@ -160,6 +162,8 @@ export interface Schedule {
   classId?: number
   charge?: Instructor
   class?: Class_
+  attendance?: Attendance
+  scheduleInscription?: ScheduleInscription[]
 }
 
 export interface Promotion extends CreatePromotion {
@@ -184,6 +188,10 @@ export interface CreateSubscription {
   paid: boolean
   remaining: number
   total: number
+  initialDate: Date
+  expirationDate: Date
+  remainingClasses: number
+  active: boolean
   promotionId: number
   memberId: number
 }
@@ -291,7 +299,8 @@ export interface InstructorPrice extends CreateInstructorPrice {
 
 export interface CreateInstructorPrice {
   degree: boolean
-  amount: bigint
+  amount: number
+  active: number
   lastUpdate: Date
 }
 
@@ -303,6 +312,52 @@ export interface CreateExtraCost {
   amount: number
   date: Date
   description: string
+}
+
+export interface OpenClass extends CreateOpenClass {
+  id: number
+}
+
+export interface CreateOpenClass {
+  date: Date
+  given: boolean
+  instructorId: number
+  classId: number
+}
+
+export interface AttendanceInstructor extends CreateAttendanceInstructor {
+  id: number
+  class?: Class_
+  instructor?: Instructor
+}
+
+export interface CreateAttendanceInstructor {
+  date: Date
+  classId: number
+  instructorId: number
+}
+
+export interface Attendance extends CreateAttendance {
+  id: number
+}
+
+export interface CreateAttendance {
+  date: Date
+  classId: number
+  memberId: number
+  member?: Member
+  class_?: Class_
+}
+
+export interface ScheduleInscription extends CreateScheduleInscription {
+  id: number
+  schedule: Schedule
+  member: Member
+}
+
+export interface CreateScheduleInscription {
+  scheduleId: number
+  memberId: number
 }
 
 export interface priceType {
