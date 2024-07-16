@@ -5,7 +5,8 @@ import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import {
-  createInstructorPayment
+  createInstructorPayment,
+  getInstructorPrice
 } from 'queries/instructorPayments'
 import { getInstructors } from 'queries/instructors'
 import { useEffect, useState, type ReactElement } from 'react'
@@ -14,8 +15,21 @@ import {
   type AttendanceInstructor,
   type Instructor,
   type CreateInstructorPayment,
-  type InstructorPayment
+  type InstructorPayment,
+  type InstructorPrice
 } from 'utils/types'
+
+const getPrePayment = (
+  prices: {
+    degree: number
+    nodegree: number
+  },
+  instructor: Instructor,
+  workedHours: number
+): number => {
+  const price = instructor.degree ? prices.degree : prices.nodegree
+  return workedHours * price
+}
 
 const getWorkedHours = (attendances: AttendanceInstructor[]): number => {
   const hours = attendances.reduce(
@@ -41,6 +55,11 @@ export default function CreateInstructorPaymentForm(): ReactElement {
   const [selectedInstructor, setSelectedInstructor] = useState<number | null>(
     null
   )
+  const [price, setPrice] = useState<{
+    degree: number
+    nodegree: number
+  }>({ degree: 0, nodegree: 0 })
+  const [prePayment, setPrePayment] = useState<number>(0)
 
   const query = useQueryClient()
 
@@ -51,14 +70,12 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     }
   })
 
-  // const { data: prices, isPending: isLoadingPrices } = useQuery({
-  //   queryKey: ['prices'],
-  //   queryFn: async () => {
-  //     const prices = await getInstructorPrice()
-  //     console.log(prices)
-  //     return prices
-  //   }
-  // })
+  const { data: prices } = useQuery({
+    queryKey: ['prices'],
+    queryFn: async () => {
+      return await getInstructorPrice()
+    }
+  })
 
   const {
     mutate: create,
@@ -89,10 +106,27 @@ export default function CreateInstructorPaymentForm(): ReactElement {
       const instructor = getInstructor(selectedInstructor, instructors)
       const attendances = getAttendances(instructor)
       if (attendances) {
-        console.log(getWorkedHours(attendances))
+        const workedHours = getWorkedHours(attendances)
+        const pre = getPrePayment(price, instructor, workedHours)
+        setPrePayment(pre)
       }
     }
   }, [selectedInstructor])
+
+  useEffect(() => {
+    if (prices) {
+      const degreePrice = prices.filter(
+        (price: InstructorPrice) => price.active && price.degree
+      )
+      const nodegreePrice = prices.filter(
+        (price: InstructorPrice) => price.active && !price.degree
+      )
+      setPrice({
+        degree: degreePrice[0].amount,
+        nodegree: nodegreePrice[0].amount
+      })
+    }
+  }, [])
 
   return (
     <form
@@ -177,6 +211,13 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         />
         <label htmlFor=''>Fecha de pago</label>
       </FloatLabel>
+
+      <Button
+        disabled
+        iconPos='right'
+        label={`$ ${prePayment}`}
+        loading={!selectedInstructor}
+      />
 
       <Button
         loading={isPending}
