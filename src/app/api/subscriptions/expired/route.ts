@@ -2,8 +2,11 @@ import { type Subscription, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import moment from 'moment'
+import { revalidatePath } from 'next/cache'
 
 const db: PrismaClient = prisma
+
+export const fetchCache = 'force-no-store'
 
 export async function GET(): Promise<Response> {
   const today = moment()
@@ -31,6 +34,7 @@ export async function GET(): Promise<Response> {
       (mem: any) => mem.memberSubscription?.length > 0
     )
 
+    revalidatePath('api/subscriptions')
     return new Response(JSONbig.stringify(memberWith), { status: 200 })
   } catch (error) {
     console.log(error)
