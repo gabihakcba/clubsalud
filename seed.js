@@ -1131,13 +1131,47 @@ const cSche = async () => {
 const dAll = async () => {
   console.log('Deleting all ...')
   try {
-    await db.account.deleteMany()
-    await db.class.deleteMany()
-    await db.schedule.deleteMany()
+    await db.extraCost.deleteMany()
+
+    await db.registrationForm.deleteMany()
+    await db.followUpForm.deleteMany()
+
     await db.promotion.deleteMany()
-    await db.subscription.deleteMany()
+
+    await db.notification.deleteMany()
+
+    await db.scheduleInscription.deleteMany()
+    await db.schedule.deleteMany()
+
+    await db.derivation.deleteMany()
+    await db.doctor.deleteMany()
+
+    await db.medicalRecord.deleteMany()
+    await db.attendance.deleteMany()
     await db.payment.deleteMany()
-    // await db.$queryRaw`DROP TABLE "Account" CASCADE`
+    await db.billedConsultation.deleteMany()
+    await db.healthPlanSubscribed.deleteMany()
+    await db.healthPlan.deleteMany()
+    await db.derivation.deleteMany()
+    await db.subscription.deleteMany()
+    await db.member.deleteMany()
+
+    await db.employeePayment.deleteMany()
+    await db.employee.deleteMany()
+
+    await db.scheduleInscription.deleteMany()
+    await db.schedule.deleteMany()
+
+    await db.instructorPrice.deleteMany()
+    await db.attendanceInstructor.deleteMany()
+    await db.instructorPayment.deleteMany()
+    await db.instructor.deleteMany()
+
+    await db.notification.deleteMany()
+
+    await db.class.deleteMany()
+    
+    await db.account.deleteMany()
   } catch (error) {
     console.log('Failed to deleting all :(')
     console.log(error)
