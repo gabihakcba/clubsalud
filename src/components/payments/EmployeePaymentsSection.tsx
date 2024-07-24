@@ -17,8 +17,8 @@ import {
 import { FilterMatchMode } from 'primereact/api'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
-import moment from 'moment'
 import HasRole from 'components/HasRole'
+import { argGetMonth, argGetYear } from 'utils/dates'
 
 const getAccounting = (payments: EmployeePayment[], setPaid): void => {
   const paid = payments.reduce(
@@ -70,8 +70,8 @@ export function EmployeePaymentsSection(): ReactElement {
       setFilterPayments(
         employeePayments.filter(
           (pay: EmployeePayment) =>
-            moment(pay.date).month() === selectedDate.month &&
-            moment(pay.date).year() === selectedDate.year
+            argGetMonth(pay.date) === selectedDate.month &&
+            argGetYear(pay.date) === selectedDate.year
         )
       )
     } else if (employeePayments) {
@@ -109,8 +109,8 @@ export function EmployeePaymentsSection(): ReactElement {
                 dateFormat='mm/yy'
                 onChange={(e) => {
                   setSelectedDate({
-                    month: moment(e.value).month(),
-                    year: moment(e.value).year()
+                    month: argGetMonth(e.value as Date),
+                    year: argGetYear(e.value as Date)
                   })
                 }}
               />

@@ -14,6 +14,7 @@ import { useState, type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import FormInstructorPrice from './FormInstructorPrice'
 import { type InstructorPrice } from 'utils/types'
+import { arg2Date } from 'utils/dates'
 
 export function InstructorPriceTable(): ReactElement {
   const [createPrice, openPrice, closePrice] = useModal(false)
@@ -118,7 +119,7 @@ export function InstructorPriceTable(): ReactElement {
           body={(e) => {
             return (
               <Calendar
-                value={new Date(e.lastUpdate as Date)}
+                value={arg2Date(e.lastUpdate as Date)}
                 disabled
               />
             )

@@ -5,8 +5,8 @@ import {
 } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
-import moment from 'moment'
 import { type NextRequest } from 'next/server'
+import { argDate, isSameDay } from 'utils/dates'
 
 const db: PrismaClient = prisma
 
@@ -29,7 +29,7 @@ export async function GET(): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
-    const today = new Date()
+    const today = argDate()
 
     const attendances = await db.attendance.findMany({
       where: {
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     })
 
     const todayAttendances = attendances.filter((att: Attendance) =>
-      moment(att.date).isSame(moment(today), 'day')
+      isSameDay(att.date, today)
     )
 
     if (todayAttendances.length > 0) {
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       if (subs) {
         const sub: Subscription = subs[subs?.length - 1]
 
-        if (moment(sub.expirationDate).isSame(moment(), 'day')) {
+        if (isSameDay(sub.expirationDate, argDate())) {
           await db.subscription.update({
             where: {
               id: sub.id

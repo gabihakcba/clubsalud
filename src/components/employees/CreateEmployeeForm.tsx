@@ -56,7 +56,6 @@ export default function CreateEmployeeForm(): ReactElement {
       return await createEmployee(data as CreateEmployee)
     },
     onSuccess: (data) => {
-      console.log(data)
       query.setQueryData(['employees'], (oldData: Employee[]) => [
         ...oldData,
         data
@@ -64,7 +63,6 @@ export default function CreateEmployeeForm(): ReactElement {
     },
     onError: async () => {
       if (newAccount) {
-        console.log('delte: ', newAccount)
         await deleteAccount(newAccount.id)
       }
     }
@@ -78,14 +76,11 @@ export default function CreateEmployeeForm(): ReactElement {
   } = useMutation({
     mutationFn: async (data: FieldValues) => {
       const res = await createAccount(data as CreateAccount)
-      console.log(res)
       return res
     },
     onSuccess: async (data) => {
       const dataForm = getValues()
-      console.log(data)
       const newAccountParsed = parseData({ data: dataForm, id: data.id })
-      console.log(newAccountParsed)
       create(newAccountParsed)
     }
   })
@@ -108,7 +103,6 @@ export default function CreateEmployeeForm(): ReactElement {
     <form
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
-        console.log(data)
         mutateCreateAccoount({
           username: data.username,
           password: data.password,

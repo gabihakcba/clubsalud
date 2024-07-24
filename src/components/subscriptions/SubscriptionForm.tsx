@@ -1,5 +1,4 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import moment from 'moment'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
@@ -9,6 +8,7 @@ import { getPromotions } from 'queries/promotions'
 import { setSubscription } from 'queries/subscriptions'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
+import { argAddMonths, argDate } from 'utils/dates'
 import { type CreateSubscription } from 'utils/types'
 
 const calculateFinalPrice = (price, discount): number => {
@@ -71,17 +71,15 @@ export default function SubscriptionForm(): ReactElement {
           selectedType
         )
         const total = remaining
-        const initialDate = moment().toISOString()
-        const expirationDate = moment()
-          .add(data.months as moment.DurationInputArg1, 'months')
-          .toISOString()
+        const initialDate = argDate()
+        const expirationDate = argAddMonths(initialDate, data.months as number)
         const subscription: CreateSubscription = {
-          date: new Date(),
+          date: argDate(),
           paid: false,
           remaining,
           total,
-          initialDate: new Date(initialDate),
-          expirationDate: new Date(expirationDate),
+          initialDate: initialDate,
+          expirationDate: expirationDate,
           remainingClasses,
           promotionId: data.promotion.id,
           memberId: data.memberId,

@@ -28,8 +28,8 @@ import { InstructorPriceTable } from './InstructorPriceTable'
 import { getSchedules } from 'queries/schedules'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
-import moment from 'moment'
 import HasRole from 'components/HasRole'
+import { argGetMonth, argGetYear } from 'utils/dates'
 
 const paidAndRemaining = (
   payments: InstructorPayment[],
@@ -157,8 +157,8 @@ export function InstructorPaymentsSection(): ReactElement {
       setFilterPayments(
         instructorPayments.filter(
           (pay: InstructorPayment) =>
-            moment(pay.paymentDate).month() === selectedDate.month &&
-            moment(pay.paymentDate).year() === selectedDate.year
+            argGetMonth(pay.paymentDate) === selectedDate.month &&
+            argGetYear(pay.paymentDate) === selectedDate.year
         )
       )
     } else if (instructorPayments) {
@@ -229,8 +229,8 @@ export function InstructorPaymentsSection(): ReactElement {
                 dateFormat='mm/yy'
                 onChange={(e) => {
                   setSelectedDate({
-                    month: moment(e.value).month(),
-                    year: moment(e.value).year()
+                    month: argGetMonth(e.value as Date),
+                    year: argGetYear(e.value as Date)
                   })
                 }}
               />

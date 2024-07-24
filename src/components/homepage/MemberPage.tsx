@@ -1,7 +1,7 @@
-import moment from 'moment'
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
 import { type ReactElement } from 'react'
+import { arg2Date, argDate2Format } from 'utils/dates'
 import { type Account } from 'utils/types'
 
 const classesAndInstructors = (acc: Account | undefined): ReactElement => {
@@ -36,7 +36,7 @@ const lastSubs = (acc: Account | undefined): ReactElement => {
     <div className='flex flex-column'>
       <p>Promoción: {sub?.promotion?.title}</p>
       <p>Clases restantes: {sub?.remainingClasses}</p>
-      <p>Vencimiento: {moment(sub?.expirationDate).format('DD-MM-YY')} </p>
+      <p>Vencimiento: {argDate2Format(arg2Date(sub?.expirationDate))} </p>
     </div>
   )
 }
