@@ -72,10 +72,12 @@ export default function BillsTable(): ReactElement {
             view='month'
             dateFormat='mm/yy'
             onChange={(e) => {
-              setSelectedDate({
-                month: argGetMonth(arg2Date(e.value as Date)),
-                year: argGetYear(arg2Date(e.value as Date))
-              })
+              if (e.value) {
+                setSelectedDate({
+                  month: argGetMonth(arg2Date(e.value)),
+                  year: argGetYear(arg2Date(e.value))
+                })
+              }
             }}
           />
           <Button

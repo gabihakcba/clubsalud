@@ -228,10 +228,12 @@ export function InstructorPaymentsSection(): ReactElement {
                 view='month'
                 dateFormat='mm/yy'
                 onChange={(e) => {
-                  setSelectedDate({
-                    month: argGetMonth(e.value as Date),
-                    year: argGetYear(e.value as Date)
-                  })
+                  if (e.value) {
+                    setSelectedDate({
+                      month: argGetMonth(e.value),
+                      year: argGetYear(e.value)
+                    })
+                  }
                 }}
               />
               <Button
