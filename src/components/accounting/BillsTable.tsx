@@ -1,6 +1,5 @@
 'use client'
 
-import moment from 'moment'
 import { useQuery } from '@tanstack/react-query'
 import { Calendar } from 'primereact/calendar'
 import { Column } from 'primereact/column'
@@ -11,6 +10,7 @@ import { useState, type ReactElement, useEffect } from 'react'
 import { type dateType, type Subscription } from 'utils/types'
 import { Button } from 'primereact/button'
 import { FilterMatchMode } from 'primereact/api'
+import { arg2Date, argGetMonth, argGetYear } from 'utils/dates'
 
 const totalRemaining = (subscriptions: Subscription[]): number => {
   return subscriptions.reduce(
@@ -55,8 +55,8 @@ export default function BillsTable(): ReactElement {
       setFilterSubscription(
         subscriptions.filter(
           (subscription: Subscription) =>
-            moment(subscription.date).month() === selectedDate.month &&
-            moment(subscription.date).year() === selectedDate.year
+            argGetMonth(subscription.date) === selectedDate.month &&
+            argGetYear(subscription.date) === selectedDate.year
         )
       )
     } else if (subscriptions) {
@@ -72,10 +72,12 @@ export default function BillsTable(): ReactElement {
             view='month'
             dateFormat='mm/yy'
             onChange={(e) => {
-              setSelectedDate({
-                month: moment(e.value).month(),
-                year: moment(e.value).year()
-              })
+              if (e.value) {
+                setSelectedDate({
+                  month: argGetMonth(arg2Date(e.value)),
+                  year: argGetYear(arg2Date(e.value))
+                })
+              }
             }}
           />
           <Button

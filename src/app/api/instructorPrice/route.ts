@@ -1,6 +1,7 @@
 import { type InstructorPrice, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
+import { argDate } from 'utils/dates'
 import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
@@ -25,7 +26,7 @@ export async function GET(): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
-    data.lastUpdate = new Date()
+    data.lastUpdate = argDate()
     const res: InstructorPrice = await db.instructorPrice.create({ data })
     return new Response(JSONbig.stringify(res), {
       status: 200
