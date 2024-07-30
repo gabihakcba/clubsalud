@@ -138,21 +138,23 @@ export default function Reports(): ReactElement {
   const { data: prices, isFetching: isFetchingPrices } = useQuery({
     queryKey: ['ins'],
     queryFn: async () => {
-      return await getInstructorPrice()
+      const res = await getInstructorPrice()
+      console.log(res)
+      return res
     }
   })
 
   useEffect(() => {
     if (prices) {
       const lastIndexWithTitle = prices.findIndex(
-        (price: InstructorPrice) => price.degree
+        (price: InstructorPrice) => price.degree && price.active
       )
       const lastIndexWithNoTitle = prices.findIndex(
-        (price: InstructorPrice) => !price.degree
+        (price: InstructorPrice) => !price.degree && price.active
       )
       setPrice({
-        title: Number(prices[lastIndexWithTitle].amount),
-        notitle: Number(prices[lastIndexWithNoTitle].amount)
+        title: Number(prices[lastIndexWithTitle]?.amount),
+        notitle: Number(prices[lastIndexWithNoTitle]?.amount)
       })
     }
   }, [prices])
