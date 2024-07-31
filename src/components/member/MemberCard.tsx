@@ -18,6 +18,7 @@ import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
 import { MultiSelect } from 'primereact/multiselect'
 import { confirmDialog } from 'primereact/confirmdialog'
+import { arg2Date } from 'utils/dates'
 
 const update = async ({
   id,
@@ -48,10 +49,10 @@ export default function MemberCard({ member }: param): ReactElement {
     setValue('cuit', member.cuit ?? null)
     setValue('phoneNumber', member.phoneNumber)
     setValue('address', member.address)
-    setValue('inscriptionDate', new Date(member.inscriptionDate))
+    setValue('inscriptionDate', arg2Date(member.inscriptionDate))
     setValue(
       'cancelationDate',
-      member.cancelationDate ? new Date(member.cancelationDate) : null
+      member.cancelationDate ? arg2Date(member.cancelationDate) : null
     )
     setValue('cancelationReason', member.cancelationReason ?? null)
     setValue('derivedBy', member.derivedBy)
@@ -267,7 +268,7 @@ export default function MemberCard({ member }: param): ReactElement {
                   id='inscriptionDate'
                   // form={`member${member.id}`}
                   value={
-                    watch('inscriptionDate') ?? new Date(member.inscriptionDate)
+                    watch('inscriptionDate') ?? arg2Date(member.inscriptionDate)
                   }
                   {...register('inscriptionDate', {
                     required: {
@@ -293,7 +294,7 @@ export default function MemberCard({ member }: param): ReactElement {
                   value={
                     watch('cancelationDate') ??
                     (member.cancelationDate &&
-                      new Date(member.cancelationDate)) ??
+                      arg2Date(member.cancelationDate)) ??
                     null
                   }
                   {...register('cancelationDate')}

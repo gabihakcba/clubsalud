@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
 import { updateEmployee } from 'queries/employees'
+import { arg2Date, argDate } from 'utils/dates'
 
 interface param {
   employee: Employee
@@ -70,7 +71,7 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
         }
 
         if (Number(data.salary) !== Number(employee.salary)) {
-          parsed.lastSalaryUpdate = new Date()
+          parsed.lastSalaryUpdate = argDate()
         }
         mutateU(parsed)
       })}
@@ -273,7 +274,7 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
         <Calendar
           value={
             employee.lastSalaryUpdate
-              ? new Date(employee.lastSalaryUpdate)
+              ? arg2Date(employee.lastSalaryUpdate)
               : undefined
           }
           disabled

@@ -1,15 +1,15 @@
 import { type Subscription, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
-import moment from 'moment'
 import { revalidatePath } from 'next/cache'
+import { argDate, diffDate } from 'utils/dates'
 
 const db: PrismaClient = prisma
 
 export const fetchCache = 'force-no-store'
 
 export async function GET(): Promise<Response> {
-  const today = moment()
+  const today = argDate()
   try {
     const members = await db.member.findMany({
       include: { memberSubscription: { include: { promotion: true } } }
@@ -22,8 +22,8 @@ export async function GET(): Promise<Response> {
           } else if (sub2.active) {
             return 1
           } else {
-            const sub1diff = today.diff(moment(sub1.expirationDate))
-            const sub2diff = today.diff(moment(sub2.expirationDate))
+            const sub1diff = diffDate(today, sub1.expirationDate)
+            const sub2diff = diffDate(today, sub2.expirationDate)
             return sub1diff - sub2diff
           }
         }

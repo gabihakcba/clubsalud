@@ -1,6 +1,7 @@
 import { type PrismaClient, type EmployeePayment } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
+import { arg2Date, argString2Date } from 'utils/dates'
 import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
@@ -30,8 +31,8 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const newEmployeePayment = {
     amount: Number(data.amount),
-    monthPayment: new Date(data.monthPayment as string),
-    date: new Date(data.date as string),
+    monthPayment: argString2Date(data.monthPayment as string),
+    date: argString2Date(data.date as string),
     hoursWorked: data.hoursWorked ?? null
   }
 
@@ -65,8 +66,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
 
   const newEmployeePayment = {
     amount: Number(data.amount),
-    monthPayment: new Date(data.monthPayment),
-    date: new Date(data.date),
+    monthPayment: arg2Date(data.monthPayment),
+    date: arg2Date(data.date),
     hoursWorked: data.hoursWorked ?? null
   }
 
