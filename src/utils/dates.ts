@@ -1,13 +1,26 @@
-import moment, { type Moment } from 'moment'
+// import moment, { type Moment } from 'moment'
+import moment, { type Moment } from 'moment-timezone'
+
+moment.locale('es')
 
 export const argDate = (): Date => {
-  return moment().local().toDate()
+  // Get the current date and time in Argentina
+  const argentineTime = moment.tz('America/Argentina/Buenos_Aires')
+
+  // Convert to JavaScript Date object
+  const argentineDate = argentineTime.toDate()
+  return argentineDate
 }
 
 export const arg2Date = (date: Date): Date => {
   return moment(date).toDate()
 }
 
+/**
+ *
+ * @param date (MM-DD-YY)
+ * @returns
+ */
 export const argString2Date = (date: string): Date => {
   return moment(date).toDate()
 }
@@ -37,5 +50,7 @@ export const argGetYear = (date: Date): number => {
 }
 
 export const argAddMonths = (dateA: Date, months: number): Date => {
-  return moment(dateA).add(months as moment.DurationInputArg1, 'months').toDate()
+  return moment(dateA)
+    .add(months as moment.DurationInputArg1, 'months')
+    .toDate()
 }

@@ -33,7 +33,7 @@ export default function AttendanceInstructorForm(): ReactElement {
   const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
     mutationFn: createAttendanceInstructor,
     onSuccess: async () => {
-      await query.refetchQueries({ queryKey: ['attendancesInstructor'] })
+      await query.refetchQueries({ queryKey: ['instructors'] })
     },
     onError: (data) => {
       console.log('error: ', data)

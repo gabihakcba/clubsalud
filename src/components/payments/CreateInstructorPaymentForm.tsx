@@ -108,6 +108,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
       if (attendances) {
         const workedHours = getWorkedHours(attendances)
         const pre = getPrePayment(price, instructor, workedHours)
+        console.log(pre)
         setPrePayment(pre)
       }
     }
