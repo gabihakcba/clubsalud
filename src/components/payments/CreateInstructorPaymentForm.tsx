@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import moment from 'moment'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Dropdown } from 'primereact/dropdown'
@@ -19,36 +20,41 @@ import {
   type InstructorPrice
 } from 'utils/types'
 
-const getPrePayment = (
-  prices: {
-    degree: number
-    nodegree: number
-  },
-  instructor: Instructor,
-  workedHours: number
-): number => {
-  const price = instructor.degree ? prices.degree : prices.nodegree
-  return workedHours * price
-}
-
-const getWorkedHours = (attendances: AttendanceInstructor[]): number => {
-  const hours = attendances.reduce(
-    (acc, curr) => acc + (curr.class?.duration ?? 0),
-    0
-  )
-  return hours
-}
-
 const getInstructor = (id: number, instructors: Instructor[]): Instructor => {
   const index = instructors.findIndex((ins: Instructor) => ins.id === id)
   return instructors[index]
 }
 
-const getAttendances = (
-  instructor: Instructor
-): AttendanceInstructor[] | undefined => {
-  const attendances = instructor.attendanceInstructor
-  return attendances
+const getInstructorPayment = (
+  instructor: Instructor,
+  date,
+  setWorkedHours,
+  setAmount,
+  setValue,
+  price: {
+    degree: number
+    nodegree: number
+  }
+): void => {
+  const attendances: AttendanceInstructor[] | undefined =
+    instructor.attendanceInstructor?.filter(
+      (att: AttendanceInstructor) =>
+        moment(att.date).month() === moment(date as Date).month() &&
+        moment(att.date).year() === moment(date as Date).year()
+    )
+  const hours = attendances?.reduce(
+    (acc, curr) => (curr.class?.duration ?? 1) + acc,
+    0
+  )
+  setWorkedHours(hours)
+  const payment = instructor.degree
+    ? (hours ?? 0) * price.degree
+    : (hours ?? 0) * price.nodegree
+  setAmount(payment)
+
+  setValue('workedMonth', moment(date as Date).toDate())
+  setValue('workedHours', hours)
+  setValue('amount', payment)
 }
 
 export default function CreateInstructorPaymentForm(): ReactElement {
@@ -59,7 +65,9 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     degree: number
     nodegree: number
   }>({ degree: 0, nodegree: 0 })
-  const [prePayment, setPrePayment] = useState<number>(0)
+  const [date, setDate] = useState<any>(null)
+  const [workedHours, setWorkedHours] = useState<string>('')
+  const [amount, setAmount] = useState<string>('')
 
   const query = useQueryClient()
 
@@ -102,17 +110,11 @@ export default function CreateInstructorPaymentForm(): ReactElement {
   } = useForm()
 
   useEffect(() => {
-    if (selectedInstructor && instructors) {
+    if (selectedInstructor && instructors && prices && date) {
       const instructor = getInstructor(selectedInstructor, instructors)
-      const attendances = getAttendances(instructor)
-      if (attendances) {
-        const workedHours = getWorkedHours(attendances)
-        const pre = getPrePayment(price, instructor, workedHours)
-        console.log(pre)
-        setPrePayment(pre)
-      }
+      getInstructorPayment(instructor, date, setWorkedHours, setAmount, setValue, price)
     }
-  }, [selectedInstructor])
+  }, [selectedInstructor, date, price])
 
   useEffect(() => {
     if (prices) {
@@ -127,7 +129,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         nodegree: nodegreePrice[0].amount
       })
     }
-  }, [])
+  }, [prices])
 
   return (
     <form
@@ -166,28 +168,24 @@ export default function CreateInstructorPaymentForm(): ReactElement {
       </FloatLabel>
 
       <FloatLabel>
-        <InputText
-          type='number'
-          {...register('amount', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          invalid={errors?.amount !== undefined}
-        />
-        <label htmlFor=''>Cantidad</label>
-      </FloatLabel>
-
-      <FloatLabel>
         <Calendar
           {...register('workedMonth', {
             required: { value: true, message: 'Campo requerido' }
           })}
           invalid={errors?.workedMonth !== undefined}
+          value={date}
+          onChange={(e) => {
+            setDate(e.value)
+          }}
+          view='month'
+          dateFormat='mm/yy'
         />
         <label htmlFor=''>Mes trabajado</label>
       </FloatLabel>
 
       <FloatLabel>
         <InputText
+          value={workedHours}
           type='number'
           {...register('workedHours', {
             required: {
@@ -198,6 +196,18 @@ export default function CreateInstructorPaymentForm(): ReactElement {
           invalid={errors?.workedHours !== undefined}
         />
         <label htmlFor=''>Horas trabajadas</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <InputText
+          value={amount}
+          type='number'
+          {...register('amount', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.amount !== undefined}
+        />
+        <label htmlFor=''>Cantidad</label>
       </FloatLabel>
 
       <FloatLabel>
@@ -212,13 +222,6 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         />
         <label htmlFor=''>Fecha de pago</label>
       </FloatLabel>
-
-      <Button
-        disabled
-        iconPos='right'
-        label={`$ ${prePayment}`}
-        loading={!selectedInstructor}
-      />
 
       <Button
         loading={isPending}
