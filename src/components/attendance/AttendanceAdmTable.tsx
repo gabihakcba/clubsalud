@@ -3,20 +3,50 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
-import { getAttendances } from 'queries/attendance'
+import { getMembers } from '../../queries/members'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import AttendanceForm from './AttendanceForm'
+import { useState } from 'react'
+import { argDate2Format } from '../../utils/dates'
 
 export default function AttendanceAdmTable(): ReactElement {
   const [showAttendance, openAttendance, closeAttendace] = useModal(false)
+  const [expandedRows, setExpandedRows] = useState<any>(null)
 
-  const { data: attendances, isPending: loadingAttendances } = useQuery({
-    queryKey: ['attendances'],
+  const { data: members, isPending: loadingMembers } = useQuery({
+    queryKey: ['members'],
     queryFn: async () => {
-      return await getAttendances()
+      return await getMembers()
     }
   })
+
+  const allowExpansion = (rowData): boolean => {
+    return rowData.memberAttendance.length > 0
+  }
+
+  const rowExpansionTemplate = (data): ReactElement => {
+    return (
+      <DataTable
+        value={data.memberAttendance}
+        scrollable
+        scrollHeight='20dvh'
+      >
+        <Column
+          field='date'
+          header='Fecha'
+          body={(data) => <div>{argDate2Format(data.date as Date)}</div>}
+          sortable
+        />
+        <Column
+          field='class.name'
+          header='Clase'
+          sortable
+        />
+        <Column />
+      </DataTable>
+    )
+  }
 
   return (
     <>
@@ -36,26 +66,27 @@ export default function AttendanceAdmTable(): ReactElement {
             </div>
           )
         }}
-        value={attendances}
-        loading={loadingAttendances}
+        value={members}
+        loading={loadingMembers}
         scrollable
         scrollHeight='35dvh'
+        expandedRows={expandedRows}
+        onRowToggle={(e) => {
+          setExpandedRows(e.data)
+        }}
+        rowExpansionTemplate={rowExpansionTemplate}
       >
         <Column
-          field='class.name'
-          header='Clase'
+          expander={allowExpansion}
+          style={{ width: '5rem' }}
         />
         <Column
-          field='member.name'
-          header='Alumno'
+          field='name'
+          header='Nombre'
         />
         <Column
-          field='member.dni'
+          field='dni'
           header='DNI'
-        />
-        <Column
-          field='date'
-          header='Fecha'
         />
       </DataTable>
       <Dialog

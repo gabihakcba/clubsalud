@@ -6,17 +6,47 @@ import { Dialog } from 'primereact/dialog'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import AttendanceInstructorForm from './AttendanceInstructorForm'
-import { getAttendancesInstructor } from 'queries/attendanceInstructor'
+import { getInstructors } from 'queries/instructors'
+import { useState } from 'react'
+import { argDate2Format } from '../../utils/dates'
 
 export default function AttendanceAdmTable(): ReactElement {
   const [showAttendance, openAttendance, closeAttendace] = useModal(false)
+  const [expandedRows, setExpandedRows] = useState<any>(null)
 
-  const { data: attendances, isPending: loadingAttendances } = useQuery({
-    queryKey: ['attendancesInstructor'],
+  const { data: instructors, isPending: loadingInstructors } = useQuery({
+    queryKey: ['instructors'],
     queryFn: async () => {
-      return await getAttendancesInstructor()
+      return await getInstructors()
     }
   })
+
+  const allowExpansion = (rowData): boolean => {
+    return rowData.attendanceInstructor.length > 0
+  }
+
+  const rowExpansionTemplate = (data): ReactElement => {
+    return (
+      <DataTable
+        value={data.attendanceInstructor}
+        scrollable
+        scrollHeight='20dvh'
+      >
+        <Column
+          field='date'
+          header='Fecha'
+          body={(data) => <div>{argDate2Format(data.date as Date)}</div>}
+          sortable
+        />
+        <Column
+          field='class.name'
+          header='Clase'
+          sortable
+        />
+        <Column />
+      </DataTable>
+    )
+  }
 
   return (
     <>
@@ -36,26 +66,28 @@ export default function AttendanceAdmTable(): ReactElement {
             </div>
           )
         }}
-        value={attendances}
-        loading={loadingAttendances}
+        value={instructors}
+        loading={loadingInstructors}
         scrollable
         scrollHeight='35dvh'
+        expandedRows={expandedRows}
+        onRowToggle={(e) => {
+          setExpandedRows(e.data)
+        }}
+        rowExpansionTemplate={rowExpansionTemplate}
+        // dataKey="id"
       >
         <Column
-          field='class.name'
-          header='Clase'
+          expander={allowExpansion}
+          style={{ width: '5rem' }}
         />
         <Column
-          field='instructor.name'
-          header='Profesor'
+          field='name'
+          header='Nombre'
         />
         <Column
-          field='instructor.dni'
+          field='dni'
           header='DNI'
-        />
-        <Column
-          field='date'
-          header='Fecha'
         />
       </DataTable>
       <Dialog
