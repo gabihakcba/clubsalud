@@ -112,7 +112,14 @@ export default function CreateInstructorPaymentForm(): ReactElement {
   useEffect(() => {
     if (selectedInstructor && instructors && prices && date) {
       const instructor = getInstructor(selectedInstructor, instructors)
-      getInstructorPayment(instructor, date, setWorkedHours, setAmount, setValue, price)
+      getInstructorPayment(
+        instructor,
+        date,
+        setWorkedHours,
+        setAmount,
+        setValue,
+        price
+      )
     }
   }, [selectedInstructor, date, price])
 
@@ -193,6 +200,9 @@ export default function CreateInstructorPaymentForm(): ReactElement {
               message: 'Campo requerido'
             }
           })}
+          onChange={(e) => {
+            setWorkedHours(e.target.value)
+          }}
           invalid={errors?.workedHours !== undefined}
         />
         <label htmlFor=''>Horas trabajadas</label>
@@ -205,6 +215,9 @@ export default function CreateInstructorPaymentForm(): ReactElement {
           {...register('amount', {
             required: { value: true, message: 'Campo requerido' }
           })}
+          onChange={(e) => {
+            setAmount(e.target.value)
+          }}
           invalid={errors?.amount !== undefined}
         />
         <label htmlFor=''>Cantidad</label>
