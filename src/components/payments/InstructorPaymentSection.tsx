@@ -261,6 +261,8 @@ export function InstructorPaymentsSection(): ReactElement {
         )}
         filters={filters}
         filterDisplay='menu'
+        scrollable
+        scrollHeight='38dvh'
       >
         <Column
           field='id'
