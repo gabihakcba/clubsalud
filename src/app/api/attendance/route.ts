@@ -7,6 +7,7 @@ import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
 import { argDate, isSameDay } from 'utils/dates'
+import moment from 'moment'
 
 const db: PrismaClient = prisma
 
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
         const attendance: Attendance = await db.attendance.create({
           data: {
-            date: today,
+            date: moment(data.date as Date).toDate(),
             class: {
               connect: {
                 id: data.classId

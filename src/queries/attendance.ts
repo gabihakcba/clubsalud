@@ -4,14 +4,17 @@ import { type Attendance } from 'utils/types'
 
 export const createAttendance = async ({
   memberId,
-  classId
+  classId,
+  date
 }: {
   memberId: number
-  classId: number
+  classId: number,
+  date: Date
 }): Promise<Attendance> => {
   const response = await axios.post(`${path()}/api/attendance`, {
     memberId,
-    classId
+    classId,
+    date
   })
 
   return response.data
