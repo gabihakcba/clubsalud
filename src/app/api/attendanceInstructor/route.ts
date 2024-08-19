@@ -6,7 +6,6 @@ import {
 import prisma from 'utils/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { argDate } from 'utils/dates'
 
 const db: PrismaClient = prisma
 
@@ -29,12 +28,11 @@ export async function GET(): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
-    const today = argDate()
 
     const attendance: AttendanceInstructor =
       await db.attendanceInstructor.create({
         data: {
-          date: today,
+          date: data.date,
           class: {
             connect: {
               id: data.classId
