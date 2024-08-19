@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import ChartReport from 'components/report/ChartReport'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -18,7 +19,6 @@ import {
   type priceType,
   type reportType
 } from 'utils/types'
-import ChartReport from '../../../components/report/ChartReport'
 
 const fullReport = (price: priceType, title: boolean): reportType => {
   const hoursPerDay = 12
@@ -161,7 +161,7 @@ export default function Reports(): ReactElement {
   useEffect(() => {}, [schedules, price])
 
   return (
-    <Card className='min-h-full'>
+    <Card className='h-screen overflow-scroll'>
       <div className='flex flex-column gap-8'>
         <DataTable
           showGridlines
@@ -262,7 +262,7 @@ export default function Reports(): ReactElement {
               />
             ))}
         </DataTable>
-        <ChartReport />
+        <ChartReport/>
       </div>
     </Card>
   )
