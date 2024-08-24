@@ -1,6 +1,8 @@
 'use client'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import ChartMemberReport from 'components/report/ChartMemberReport'
+import ChartSubscriptionsReport from 'components/report/ChartSubscriptionsReport'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -138,9 +140,7 @@ export default function Reports(): ReactElement {
   const { data: prices, isFetching: isFetchingPrices } = useQuery({
     queryKey: ['ins'],
     queryFn: async () => {
-      const res = await getInstructorPrice()
-      console.log(res)
-      return res
+      return await getInstructorPrice()
     }
   })
 
@@ -159,107 +159,113 @@ export default function Reports(): ReactElement {
     }
   }, [prices])
 
+  useEffect(() => {}, [schedules, price])
+
   return (
-    <Card className='h-full flex flex-column gap-4'>
-      <DataTable
-        showGridlines
-        stripedRows
-        value={reports}
-        header={() => (
-          <div className='flex flex-row gap-4 align-items-center'>
-            <h2>Reportes</h2>
-            <Tag severity='success'>$/h título: ${price.title}</Tag>
-            <Tag severity='danger'>$/h sin título: ${price.notitle}</Tag>
-            <Button
-              label='Generar reportes'
-              icon={reports.length > 0 ? 'pi pi-refresh' : 'pi pi-calculator'}
-              iconPos='right'
-              size='small'
-              loading={isFetchingPrices || isFetchingSchedules}
-              onClick={async () => {
-                await query.refetchQueries({ queryKey: ['sche'] })
-                await query.refetchQueries({ queryKey: ['ins'] })
-                setReports([
-                  currentReport(schedules ?? [], price),
-                  fullReport(price, true),
-                  fullReport(price, false)
-                ])
-              }}
-            />
-            <label htmlFor=''>Mes</label>
-            <InputSwitch
-              checked={monthShow}
-              onChange={(e) => {
-                setMonthShow(e.value)
-              }}
-            />
-            <label htmlFor=''>Semana</label>
-            <InputSwitch
-              checked={weekShow}
-              onChange={(e) => {
-                setWeekShow(e.value)
-              }}
-            />
-          </div>
-        )}
-        headerColumnGroup={
-          <ColumnGroup>
-            <Row>
-              <Column
-                header='Reporte'
-                rowSpan={2}
+    <Card className='h-screen overflow-scroll'>
+      <div className='flex flex-column gap-8'>
+        <DataTable
+          showGridlines
+          stripedRows
+          value={reports}
+          header={() => (
+            <div className='flex flex-row gap-4 align-items-center'>
+              <h2>Reportes</h2>
+              <Tag severity='success'>$/h título: ${price.title}</Tag>
+              <Tag severity='danger'>$/h sin título: ${price.notitle}</Tag>
+              <Button
+                label='Generar reportes'
+                icon={reports.length > 0 ? 'pi pi-refresh' : 'pi pi-calculator'}
+                iconPos='right'
+                size='small'
+                loading={isFetchingPrices || isFetchingSchedules}
+                onClick={async () => {
+                  await query.refetchQueries({ queryKey: ['sche'] })
+                  await query.refetchQueries({ queryKey: ['ins'] })
+                  setReports([
+                    currentReport(schedules ?? [], price),
+                    fullReport(price, true),
+                    fullReport(price, false)
+                  ])
+                }}
               />
-              {monthShow && (
+              <label htmlFor=''>Mes</label>
+              <InputSwitch
+                checked={monthShow}
+                onChange={(e) => {
+                  setMonthShow(e.value)
+                }}
+              />
+              <label htmlFor=''>Semana</label>
+              <InputSwitch
+                checked={weekShow}
+                onChange={(e) => {
+                  setWeekShow(e.value)
+                }}
+              />
+            </div>
+          )}
+          headerColumnGroup={
+            <ColumnGroup>
+              <Row>
                 <Column
-                  header='Mes'
-                  colSpan={6}
+                  header='Reporte'
+                  rowSpan={2}
                 />
-              )}
-              {weekShow && (
-                <Column
-                  header='Semana'
-                  colSpan={6}
-                />
-              )}
-            </Row>
-            <Row>
-              {monthShow &&
-                titleColumns.map((col, index) => (
+                {monthShow && (
                   <Column
-                    header={col}
-                    key={index}
+                    header='Mes'
+                    colSpan={6}
                   />
-                ))}
-
-              {weekShow &&
-                titleColumns.map((col, index) => (
+                )}
+                {weekShow && (
                   <Column
-                    header={col}
-                    key={index}
+                    header='Semana'
+                    colSpan={6}
                   />
-                ))}
-            </Row>
-          </ColumnGroup>
-        }
-      >
-        <Column field='title' />
+                )}
+              </Row>
+              <Row>
+                {monthShow &&
+                  titleColumns.map((col, index) => (
+                    <Column
+                      header={col}
+                      key={index}
+                    />
+                  ))}
 
-        {monthShow &&
-          monthColumns.map((col, index) => (
-            <Column
-              key={index}
-              field={col}
-            />
-          ))}
+                {weekShow &&
+                  titleColumns.map((col, index) => (
+                    <Column
+                      header={col}
+                      key={index}
+                    />
+                  ))}
+              </Row>
+            </ColumnGroup>
+          }
+        >
+          <Column field='title' />
 
-        {weekShow &&
-          weekColumns.map((col, index) => (
-            <Column
-              key={index}
-              field={col}
-            />
-          ))}
-      </DataTable>
+          {monthShow &&
+            monthColumns.map((col, index) => (
+              <Column
+                key={index}
+                field={col}
+              />
+            ))}
+
+          {weekShow &&
+            weekColumns.map((col, index) => (
+              <Column
+                key={index}
+                field={col}
+              />
+            ))}
+        </DataTable>
+        <ChartMemberReport/>
+        <ChartSubscriptionsReport/>
+      </div>
     </Card>
   )
 }

@@ -68,44 +68,7 @@ export default function CreateEmployeePaymentForm({
         create(parsed)
       })}
     >
-      <div className='p-float-label'>
-        <InputText
-          type='number'
-          {...register('amount', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          invalid={errors?.amount !== undefined}
-        />
-        <label htmlFor='amount'>Cantidad</label>
-      </div>
       <FloatLabel>
-        <Calendar
-          {...register('monthPayment', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          inputId='monthPayment'
-          invalid={errors?.monthPayment !== undefined}
-        />
-        <label htmlFor='monthPayment'>Mes pagado</label>
-      </FloatLabel>
-      <div className='p-float-label'>
-        <InputText
-          type='number'
-          className='border-2 rounded text-end'
-          {...register('hoursWorked')}
-        />
-        <label htmlFor='hoursWorked'>Horas trabajadas</label>
-      </div>
-      <div className='p-float-label'>
-        <Calendar
-          {...register('date', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          invalid={errors?.date !== undefined}
-        />
-        <label htmlFor='date'>Fecha de pago</label>
-      </div>
-      <div className='p-float-label'>
         <Dropdown
           className='w-full'
           options={employees}
@@ -119,7 +82,49 @@ export default function CreateEmployeePaymentForm({
           }}
         />
         <label htmlFor=''>Empleado</label>
-      </div>
+      </FloatLabel>
+
+      <FloatLabel>
+        <Calendar
+          {...register('monthPayment', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          inputId='monthPayment'
+          invalid={errors?.monthPayment !== undefined}
+        />
+        <label htmlFor='monthPayment'>Mes trabajado</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <Calendar
+          {...register('date', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.date !== undefined}
+        />
+        <label htmlFor='date'>Fecha de pago</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <InputText
+          type='number'
+          className='border-2 rounded text-end'
+          {...register('hoursWorked')}
+        />
+        <label htmlFor='hoursWorked'>Horas trabajadas</label>
+      </FloatLabel>
+
+      <FloatLabel>
+        <InputText
+          type='number'
+          {...register('amount', {
+            required: { value: true, message: 'Campo requerido' }
+          })}
+          invalid={errors?.amount !== undefined}
+        />
+        <label htmlFor='amount'>Cantidad</label>
+      </FloatLabel>
+
       <Button
         loading={isPending}
         label='Enviar'
@@ -127,6 +132,7 @@ export default function CreateEmployeePaymentForm({
         icon='pi pi-upload'
         iconPos='right'
       />
+
       {isSuccess && <small className='text-sm text-green-600'>Listo!</small>}
       {isPending && (
         <small className='text-sm text-yellow-600'>Creando...</small>

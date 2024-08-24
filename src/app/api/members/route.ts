@@ -24,7 +24,9 @@ export async function GET(req: NextRequest): Promise<Response> {
       const members: Member[] = await db.member.findMany({
         include: {
           planSubscribed: { include: { plan: true } },
-          memberSubscription: { include: { promotion: true } }
+          memberSubscription: { include: { promotion: true } },
+          memberAttendance: { include: { class: true } },
+          payment: true
         }
       })
       return new Response(JSONbig.stringify(members), {

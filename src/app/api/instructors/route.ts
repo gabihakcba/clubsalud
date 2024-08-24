@@ -14,7 +14,10 @@ export async function GET(req: NextRequest): Promise<Response> {
     if (id) {
       instructors = await db.instructor.findMany({
         where: { id: Number(id) },
-        include: { instructorPayments: true }
+        include: {
+          instructorPayments: true,
+          attendanceInstructor: { include: { class: true } }
+        }
       })
     } else {
       instructors = await db.instructor.findMany({
