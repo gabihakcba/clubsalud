@@ -97,7 +97,7 @@ const totalHealthPayments = (
   return total
 }
 
-export default function ChartReport(): ReactElement {
+export default function ChartAccounting(): ReactElement {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
@@ -308,7 +308,7 @@ export default function ChartReport(): ReactElement {
   ])
 
   return (
-    <Card className='card min-w-full border-1'>
+    <Card className='card h-screen flex align-items-center'>
       <div className='flex flex-row gap-4 align-items-center'>
         <h2>Balances por mes</h2>
         <FloatLabel>

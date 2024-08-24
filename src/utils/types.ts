@@ -86,6 +86,7 @@ export interface Member extends CreateMember {
   scheduleInscription?: ScheduleInscription[]
   memberSubscription?: Subscription[]
   payment?: Payment[]
+  memberAttendance?: Attendance[]
   planSubscribed?: HealthPlanSubscribed[]
 }
 

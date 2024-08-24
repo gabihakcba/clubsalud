@@ -25,7 +25,8 @@ export async function GET(req: NextRequest): Promise<Response> {
         include: {
           planSubscribed: { include: { plan: true } },
           memberSubscription: { include: { promotion: true } },
-          memberAttendance: { include: { class: true } }
+          memberAttendance: { include: { class: true } },
+          payment: true
         }
       })
       return new Response(JSONbig.stringify(members), {
