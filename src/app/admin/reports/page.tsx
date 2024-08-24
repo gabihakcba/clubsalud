@@ -1,7 +1,8 @@
 'use client'
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import ChartReport from 'components/report/ChartReport'
+import ChartMemberReport from 'components/report/ChartMemberReport'
+import ChartSubscriptionsReport from 'components/report/ChartSubscriptionsReport'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
@@ -262,7 +263,8 @@ export default function Reports(): ReactElement {
               />
             ))}
         </DataTable>
-        <ChartReport/>
+        <ChartMemberReport/>
+        <ChartSubscriptionsReport/>
       </div>
     </Card>
   )
