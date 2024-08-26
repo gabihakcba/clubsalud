@@ -26,7 +26,7 @@ const getTypeAccount = (
       return { type: 'Profesor/a', severity: 'info' }
     } else if (acc.permissions.includes(Permissions.OWN)) {
       return { type: 'Propietario/a', severity: 'danger' }
-    } 
+    }
   }
   return { type: '', severity: 'success' }
 }
