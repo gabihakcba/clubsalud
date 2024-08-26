@@ -18,15 +18,17 @@ const getTypeAccount = (
   acc: Account | undefined
 ): { type: string; severity: string } => {
   if (acc) {
-    if (acc.memberAccount) {
+    if (acc.permissions.includes(Permissions.MEM)) {
       return { type: 'Alumna/o', severity: 'success' }
-    } else if (acc.employeeAccount) {
+    } else if (acc.permissions.includes(Permissions.ADM)) {
       return { type: 'Empleada/o', severity: 'warning' }
-    } else if (acc.instructorAccount) {
+    } else if (acc.permissions.includes(Permissions.INS)) {
       return { type: 'Profesor/a', severity: 'info' }
-    }
+    } else if (acc.permissions.includes(Permissions.OWN)) {
+      return { type: 'Propietario/a', severity: 'danger' }
+    } 
   }
-  return { type: 'Propietario/a', severity: 'danger' }
+  return { type: '', severity: 'success' }
 }
 
 const getName = (acc: Account | undefined): string => {
@@ -34,6 +36,7 @@ const getName = (acc: Account | undefined): string => {
     if (acc.memberAccount) return acc.memberAccount.name
     else if (acc.employeeAccount) return acc.employeeAccount.name
     else if (acc.instructorAccount) return acc.instructorAccount.name
+    else return acc.username
   }
   return ''
 }
