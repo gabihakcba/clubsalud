@@ -7,7 +7,7 @@ import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
 import { deletePlan, getPlan } from 'queries/plan'
 import { useState, type ReactElement } from 'react'
-import { Permissions, Plan } from 'utils/types'
+import { Permissions, type Plan } from 'utils/types'
 import { useModal } from 'utils/useModal'
 import { CreateOfferForm } from './CreateOfferForm'
 import { EditOfferForm } from './EditOfferForm'
@@ -30,7 +30,7 @@ export default function OffersTable(): ReactElement {
       return await deletePlan(id)
     },
     onSuccess: async () => {
-      refetch()
+      await refetch()
     }
   })
 
@@ -107,7 +107,7 @@ export default function OffersTable(): ReactElement {
                 iconPos='right'
                 outlined
                 onClick={() => {
-                  setSelectedOffer(offer)
+                  setSelectedOffer(offer as Plan)
                   openEditOffer()
                 }}
               />
@@ -126,7 +126,7 @@ export default function OffersTable(): ReactElement {
                 outlined
                 loading={isPending && selectedOffer?.id === offer.id}
                 onClick={() => {
-                  setSelectedOffer(offer)
+                  setSelectedOffer(offer as Plan)
                   confirmDialog({
                     message: 'Confirmación de acción',
                     header: 'Eliminar plan',

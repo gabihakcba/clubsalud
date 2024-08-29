@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext'
 import { createPlan } from 'queries/plan'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Plan } from 'utils/types'
+import { type Plan } from 'utils/types'
 
 export function CreateOfferForm(): ReactElement {
   const { register, handleSubmit, setValue } = useForm()

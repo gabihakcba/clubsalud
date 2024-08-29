@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext'
 import { updatePlan } from 'queries/plan'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { Plan } from 'utils/types'
+import { type CreatePlan, type Plan } from 'utils/types'
 
 export function EditOfferForm({ offer }: { offer: Plan | null }): ReactElement {
   const {
@@ -41,7 +41,7 @@ export function EditOfferForm({ offer }: { offer: Plan | null }): ReactElement {
     <form
       action=''
       onSubmit={handleSubmit((data) => {
-        update({...data, id: currentOffer.id} as Plan)
+        update({ ...(data as CreatePlan), id: currentOffer.id })
       })}
       className='flex flex-column justify-content-start align-items-end gap-4 pt-4'
     >
