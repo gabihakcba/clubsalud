@@ -355,6 +355,17 @@ model Subscription {
   billedConsultation BilledConsultation[] @relation(name: "consultationSubscription")
 }
 
+model Plan {
+  // Fields
+  id              Int         @id @default(autoincrement())
+  title           String
+  description     String
+  durationMonth   Int
+  discountPercent Float
+  // Relations
+  promotion       Promotion[] @relation(name: "promotionPlan")
+}
+
 model Promotion {
   // Fields
   id                  Int            @id @default(autoincrement())
@@ -363,6 +374,9 @@ model Promotion {
   amountWeeklyClasses Int
   amountPrice         Float
   lastPriceUpdate     DateTime       @default(now())
+  // ForeignKeys
+  planId              Int?
+  plan                Plan?           @relation(fields: [planId], references: [id], name: "promotionPlan", onDelete: Cascade)
   // Relations
   subscription        Subscription[] @relation(name: "subscriptionPromotion")
 }

@@ -179,6 +179,18 @@ export interface CreatePromotion {
   lastPriceUpdate?: Date
 }
 
+export interface Plan extends CreatePlan {
+  id: number
+  promotion?: Promotion[]
+}
+
+export interface CreatePlan {
+  title: string
+  description: string
+  durationMonth: number
+  discountPercent: number
+}
+
 export interface Subscription extends CreateSubscription {
   id: number
   promotion?: Promotion
