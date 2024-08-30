@@ -66,6 +66,11 @@ export default function SubscriptionTable({
         }}
       />
       <Column
+        field='plan.title'
+        header='Oferta'
+      />
+
+      <Column
         body={(e) => {
           return (
             <Button

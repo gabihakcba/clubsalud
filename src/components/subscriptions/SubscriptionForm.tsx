@@ -1,3 +1,5 @@
+'use client'
+
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
@@ -9,10 +11,15 @@ import { setSubscription } from 'queries/subscriptions'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { argAddMonths, argDate } from 'utils/dates'
-import { type CreateSubscription } from 'utils/types'
+import { getPlan } from 'queries/plan'
+import { type Plan, type CreateSubscription } from 'utils/types'
 
-const calculateFinalPrice = (price, discount): number => {
-  return price - (price * discount) / 100
+const calculateFinalPriceMonth = (price, plan: Plan): number => {
+  return (price - (price * plan?.discountPercent) / 100)
+}
+
+const calculateFinalPrice = (price, plan: Plan): number => {
+  return (price - (price * plan?.discountPercent) / 100) * plan?.durationMonth
 }
 
 export default function SubscriptionForm(): ReactElement {
@@ -34,13 +41,19 @@ export default function SubscriptionForm(): ReactElement {
     }
   })
 
+  const { data: offers, isPending: loadingOffers } = useQuery({
+    queryKey: ['offers'],
+    queryFn: async () => {
+      return await getPlan()
+    }
+  })
+
   const { mutate: subscribe, isPending } = useMutation({
     mutationFn: async (subscription: CreateSubscription) => {
       const subs = await setSubscription(subscription)
       return subs
     },
     onSuccess: (data) => {
-      console.log(data)
       alert('Inscipción hecha')
     },
     onError: () => {
@@ -68,7 +81,7 @@ export default function SubscriptionForm(): ReactElement {
         const remainingClasses = month * data.months
         const remaining = calculateFinalPrice(
           selectedPromotion?.amountPrice,
-          selectedType
+          selectedType as Plan
         )
         const total = remaining
         const initialDate = argDate()
@@ -83,7 +96,8 @@ export default function SubscriptionForm(): ReactElement {
           remainingClasses,
           promotionId: data.promotion.id,
           memberId: data.memberId,
-          active: true
+          active: true,
+          planId: selectedType.id
         }
         subscribe(subscription)
       })}
@@ -135,43 +149,27 @@ export default function SubscriptionForm(): ReactElement {
       </li>
       <FloatLabel>
         <Dropdown
+          options={offers}
+          value={selectedType}
+          optionLabel='title'
           {...register('type', {
             required: true
           })}
-          value={selectedType}
-          options={[
-            { name: 'Mensual', discount: 0 },
-            { name: 'Trimestral 15% OFF', discount: 15 },
-            { name: 'Semestral 25% OFF', discount: 25 },
-            { name: 'Anual 30% OFF', discount: 30 }
-          ]}
-          optionLabel='name'
-          optionValue='discount'
           onChange={(e) => {
-            const discount = e.value
-            setSelectedType(discount)
-            switch (discount) {
-              case 0:
-                setValue('months', 1)
-                break
-              case 15:
-                setValue('months', 3)
-                break
-              case 25:
-                setValue('months', 6)
-                break
-              case 30:
-                setValue('months', 12)
-                break
-              default:
-                break
-            }
+            setSelectedType(e.value)
+            setValue('months', e.value.durationMonth)
           }}
+          loading={loadingOffers}
+          className='w-full'
+          invalid={errors?.type !== undefined}
         />
         <label htmlFor=''>Tipo</label>
       </FloatLabel>
       <Tag severity='warning'>
-        ${calculateFinalPrice(selectedPromotion?.amountPrice, selectedType)}
+        Por mes ${calculateFinalPriceMonth(selectedPromotion?.amountPrice, selectedType as Plan)}
+      </Tag>
+      <Tag severity='danger'>
+        Total ${calculateFinalPrice(selectedPromotion?.amountPrice, selectedType as Plan)}
       </Tag>
       <Button
         type='submit'

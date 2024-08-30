@@ -181,7 +181,7 @@ export interface CreatePromotion {
 
 export interface Plan extends CreatePlan {
   id: number
-  promotion?: Promotion[]
+  subscription?: Subscription[]
 }
 
 export interface CreatePlan {
@@ -194,6 +194,7 @@ export interface CreatePlan {
 export interface Subscription extends CreateSubscription {
   id: number
   promotion?: Promotion
+  plan: Plan
 }
 
 export interface CreateSubscription {
@@ -207,6 +208,7 @@ export interface CreateSubscription {
   active: boolean
   promotionId: number
   memberId: number
+  planId: number
 }
 
 export interface Payment extends CreatePayment {

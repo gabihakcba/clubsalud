@@ -10,7 +10,8 @@ export async function GET(): Promise<Response> {
     const subscriptions = await db.subscription.findMany({
       include: {
         member: true,
-        promotion: true
+        promotion: true,
+        plan: true
       }
     })
     return new Response(JSONbig.stringify(subscriptions), {
@@ -90,11 +91,17 @@ export async function POST(req: NextRequest): Promise<Response> {
           connect: {
             id: Number(data.memberId)
           }
+        },
+        plan: {
+          connect: {
+            id: Number(data.planId)
+          }
         }
       },
       include: {
         member: true,
-        promotion: true
+        promotion: true,
+        plan: true
       }
     })
     return new Response(JSONbig.stringify(res), {
