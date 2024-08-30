@@ -345,9 +345,11 @@ model Subscription {
   expirationDate     DateTime             @default(now())
   remainingClasses   Int                  @default(0)
   active             Boolean              @default(false)
-  // Foreignkeys
+  // ForeignKeys
+  planId              Int?
   promotionId        Int
   memberId           Int
+  plan                Plan?           @relation(fields: [planId], references: [id], name: "subscriptionPlan", onDelete: Cascade)
   promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion", onDelete: Cascade)
   member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember", onDelete: Cascade)
   // Relations
@@ -363,7 +365,7 @@ model Plan {
   durationMonth   Int
   discountPercent Float
   // Relations
-  promotion       Promotion[] @relation(name: "promotionPlan")
+  subscription Subscription[] @relation(name: "subscriptionPlan")
 }
 
 model Promotion {
@@ -374,9 +376,6 @@ model Promotion {
   amountWeeklyClasses Int
   amountPrice         Float
   lastPriceUpdate     DateTime       @default(now())
-  // ForeignKeys
-  planId              Int?
-  plan                Plan?           @relation(fields: [planId], references: [id], name: "promotionPlan", onDelete: Cascade)
   // Relations
   subscription        Subscription[] @relation(name: "subscriptionPromotion")
 }
