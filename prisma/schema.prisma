@@ -345,14 +345,27 @@ model Subscription {
   expirationDate     DateTime             @default(now())
   remainingClasses   Int                  @default(0)
   active             Boolean              @default(false)
-  // Foreignkeys
+  // ForeignKeys
+  planId              Int?
   promotionId        Int
   memberId           Int
+  plan                Plan?           @relation(fields: [planId], references: [id], name: "subscriptionPlan", onDelete: Cascade)
   promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion", onDelete: Cascade)
   member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember", onDelete: Cascade)
   // Relations
   payment            Payment[]            @relation(name: "paymentSubscription")
   billedConsultation BilledConsultation[] @relation(name: "consultationSubscription")
+}
+
+model Plan {
+  // Fields
+  id              Int         @id @default(autoincrement())
+  title           String
+  description     String
+  durationMonth   Int
+  discountPercent Float
+  // Relations
+  subscription Subscription[] @relation(name: "subscriptionPlan")
 }
 
 model Promotion {

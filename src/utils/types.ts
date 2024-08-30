@@ -179,9 +179,22 @@ export interface CreatePromotion {
   lastPriceUpdate?: Date
 }
 
+export interface Plan extends CreatePlan {
+  id: number
+  subscription?: Subscription[]
+}
+
+export interface CreatePlan {
+  title: string
+  description: string
+  durationMonth: number
+  discountPercent: number
+}
+
 export interface Subscription extends CreateSubscription {
   id: number
   promotion?: Promotion
+  plan: Plan
 }
 
 export interface CreateSubscription {
@@ -195,6 +208,7 @@ export interface CreateSubscription {
   active: boolean
   promotionId: number
   memberId: number
+  planId: number
 }
 
 export interface Payment extends CreatePayment {
