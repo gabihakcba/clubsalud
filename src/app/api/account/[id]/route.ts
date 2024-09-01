@@ -45,6 +45,8 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log('API/ACCOUNT/ID')
+    console.log(error)
     return new Response(JSONbig.stringify('No user with this id'), {
       status: 400
     })
