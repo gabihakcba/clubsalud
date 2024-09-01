@@ -346,10 +346,10 @@ model Subscription {
   remainingClasses   Int                  @default(0)
   active             Boolean              @default(false)
   // ForeignKeys
-  planId              Int?
+  planId             Int?
   promotionId        Int
   memberId           Int
-  plan                Plan?           @relation(fields: [planId], references: [id], name: "subscriptionPlan", onDelete: Cascade)
+  plan               Plan?                @relation(fields: [planId], references: [id], name: "subscriptionPlan", onDelete: Cascade)
   promotion          Promotion            @relation(fields: [promotionId], references: [id], name: "subscriptionPromotion", onDelete: Cascade)
   member             Member               @relation(fields: [memberId], references: [id], name: "subscriptionMember", onDelete: Cascade)
   // Relations
@@ -359,13 +359,13 @@ model Subscription {
 
 model Plan {
   // Fields
-  id              Int         @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   title           String
   description     String
   durationMonth   Int
   discountPercent Float
   // Relations
-  subscription Subscription[] @relation(name: "subscriptionPlan")
+  subscription    Subscription[] @relation(name: "subscriptionPlan")
 }
 
 model Promotion {
