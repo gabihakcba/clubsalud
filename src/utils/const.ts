@@ -1,20 +1,51 @@
-export const APP = 60
-
-export enum ACCOUNTTYPE {
-  'ACCOUNT',
-  'MEMBER',
-  'INSTRUCTOR'
+export const registrationFormTranslation = {
+  professorId: 'Profesor',
+  studentId: 'Alumno',
+  evaluationDate: 'Fecha de Evaluación',
+  evaluationNumber: 'Número de Evaluación',
+  hasHypertension: 'Hipertensión',
+  hasDiabetes: 'Diabetes',
+  hasHypercholesterolemia: 'Hipercolesterolemia',
+  hasHypertriglyceridemia: 'Hipertrigliceridemia',
+  hasStableHeartFailure: 'Insuficiencia Cardíaca Estable',
+  hasStableIschemicHeartDisease: 'Cardiopatía Isquémica Estable',
+  hasChronicObstructivePulmonaryDisease: 'Enfermedad Pulmonar Obstructiva Crónica',
+  hasAsthma: 'Asma',
+  hasOncologicalDisease: 'Enfermedad Oncológica',
+  oncologicalDiseaseStatus: 'Estado de Enfermedad Oncológica',
+  hasChronicKidneyFailure: 'Insuficiencia Renal Crónica',
+  hasObesity: 'Obesidad',
+  hasRecentTrauma: 'Traumatismo Reciente',
+  traumaLocation: 'Sitio del Traumatismo',
+  traumaDate: 'Fecha del Traumatismo',
+  hasRecentSurgery: 'Cirugía Reciente',
+  surgeryLocation: 'Sitio de la Cirugía',
+  surgeryDate: 'Fecha de la Cirugía',
+  hasSarcopenia: 'Sarcopenia',
+  isUnderweight: 'Bajo Peso',
+  hasFallsLastSixMonths: 'Caídas en los Últimos Seis Meses',
+  fallsPerMonth: 'Cantidad de Caídas por Mes',
+  otherConditions: 'Otros'
 }
 
-export const calculatePages = (
-  registers: number,
-  regPerPage: number
-): number => {
-  return Math.ceil(registers / regPerPage)
+export const followUpFormTranslation = {
+  rombergTest: 'Test de Romberg',
+  dixonRuffierTest: 'Test de Dixon Ruffier',
+  modifiedBorgScale: 'Escala de Borg Modificada',
+  memberId: 'ID de Miembro',
+  instructorId: 'ID de Instructor',
+  member: 'Miembro',
+  instructor: 'Instructor',
+  sixMinuteWalkTest: 'Marcha de Seis Minutos'
 }
 
-export const formatDate = (date: string = ''): string => {
-  const [YEAR, MONTH, DAY] = date.split('T')[0].split('-')
-  const res = `${DAY}-${MONTH}-${YEAR}`
-  return res
+export const sixMinuteWalkTestTranslation = {
+  initialDyspneaBorgScale: 'Escala de Borg de Disnea Inicial',
+  finalDyspneaBorgScale: 'Escala de Borg de Disnea Final',
+  initialFatigueBorgScale: 'Escala de Borg de Fatiga Inicial',
+  finalFatigueBorgScale: 'Escala de Borg de Fatiga Final',
+  initialBloodPressure: 'Tensión Arterial Inicial',
+  finalBloodPressure: 'Tensión Arterial Final',
+  initialHeartRate: 'Frecuencia Cardiaca Inicial',
+  finalHeartRate: 'Frecuencia Cardiaca Final'
 }

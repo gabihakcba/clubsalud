@@ -1,7 +1,6 @@
 'use client'
 
 import { type ReactElement } from 'react'
-import { formatDate } from 'utils/const'
 import { type BilledConsultation } from 'utils/types'
 
 interface params {
@@ -53,7 +52,7 @@ export default function BilledConsultationCard({
           Fecha
         </label>
         <div className='bg-gray-200 grow text-center'>
-          {formatDate(billed.date.toString())}
+          {billed.date.toString()}
         </div>
       </div>
     </div>

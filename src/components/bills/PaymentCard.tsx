@@ -1,7 +1,6 @@
 'use client'
 
 import { type ReactElement } from 'react'
-import { formatDate } from 'utils/const'
 import { type Payment } from 'utils/types'
 
 interface params {
@@ -40,7 +39,7 @@ export default function PaymentCard({ payment }: params): ReactElement {
           Fecha
         </label>
         <div className='bg-gray-200 grow text-center'>
-          {formatDate(payment.date.toString())}
+          {payment.date.toString()}
         </div>
       </div>
     </div>
