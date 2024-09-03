@@ -1,6 +1,4 @@
 export const registrationFormTranslation = {
-  professorId: 'Profesor',
-  studentId: 'Alumno',
   evaluationDate: 'Fecha de Evaluación',
   evaluationNumber: 'Número de Evaluación',
   hasHypertension: 'Hipertensión',
@@ -32,10 +30,6 @@ export const followUpFormTranslation = {
   rombergTest: 'Test de Romberg',
   dixonRuffierTest: 'Test de Dixon Ruffier',
   modifiedBorgScale: 'Escala de Borg Modificada',
-  memberId: 'ID de Miembro',
-  instructorId: 'ID de Instructor',
-  member: 'Miembro',
-  instructor: 'Instructor',
   sixMinuteWalkTest: 'Marcha de Seis Minutos'
 }
 

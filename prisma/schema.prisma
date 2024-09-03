@@ -115,8 +115,8 @@ model Instructor {
   scheduleInCharge     Schedule[]             @relation(name: "instructorInCharge")
   scheduleSubstitute   Schedule[]             @relation(name: "instructorSubstitute")
   attendanceInstructor AttendanceInstructor[] @relation(name: "attendanceInstructorInstructor")
-  registrationForm     RegistrationForm?      @relation(name: "registrationFormInstructor")
-  followUpForm         FollowUpForm?          @relation(name: "followUpFormInstructor")
+  registrationForm     RegistrationForm[]     @relation(name: "registrationFormInstructor")
+  followUpForm         FollowUpForm[]         @relation(name: "followUpFormInstructor")
 }
 
 model Member {
@@ -148,7 +148,7 @@ model Member {
   payment             Payment[]              @relation(name: "paymentMember")
   derivation          Derivation[]           @relation(name: "derivationMember")
   registrationForm    RegistrationForm?      @relation(name: "registrationFormMember")
-  followUpForm        FollowUpForm?          @relation(name: "followUpFormMember")
+  followUpForm        FollowUpForm[]         @relation(name: "followUpFormMember")
 }
 
 model InstructorPayment {
@@ -439,7 +439,7 @@ model RegistrationForm {
 
   // ForeignKeys
   memberId     Int @unique // Cambio 'alumno' a 'studentId' para claridad
-  instructorId Int @unique // Cambio 'profesor' a 'professor' para estandarizar en inglés
+  instructorId Int // Cambio 'profesor' a 'professor' para estandarizar en inglés
 
   member     Member     @relation(fields: [memberId], references: [id], name: "registrationFormMember", onDelete: Cascade)
   instructor Instructor @relation(fields: [instructorId], references: [id], name: "registrationFormInstructor", onDelete: Cascade)
@@ -447,14 +447,15 @@ model RegistrationForm {
 
 model FollowUpForm {
   // Fields
-  id                Int     @id @default(autoincrement())
+  id                Int      @id @default(autoincrement())
+  followUpDate      DateTime
   rombergTest       Boolean // Cambio 'test_de_romberg' a 'rombergTest'
   dixonRuffierTest  Int // Cambio 'test_de_dixon_ruffier' a 'dixonRuffierTest' (entre 0 y 20)
   modifiedBorgScale Int // Cambio 'escala_de_borg_modificada' a 'modifiedBorgScale' (entre 0 y 10)
 
   // ForeignKeys
-  memberId     Int @unique // Cambio 'memberId' a 'memberId'
-  instructorId Int @unique // Cambio 'instructorId' a 'instructorId'
+  memberId     Int // Cambio 'memberId' a 'memberId'
+  instructorId Int // Cambio 'instructorId' a 'instructorId'
 
   member     Member     @relation(fields: [memberId], references: [id], name: "followUpFormMember", onDelete: Cascade)
   instructor Instructor @relation(fields: [instructorId], references: [id], name: "followUpFormInstructor", onDelete: Cascade)
@@ -465,7 +466,7 @@ model FollowUpForm {
 
 model SixMinuteWalkTest {
   // Fields
-  id Int @id @default(autoincrement())
+  id                      Int @id @default(autoincrement())
   initialDyspneaBorgScale Int // Cambio 'escala_de_borg_disnea_inicial' a 'initialDyspneaBorgScale'
   finalDyspneaBorgScale   Int // Cambio 'escala_de_borg_disnea_final' a 'finalDyspneaBorgScale'
   initialFatigueBorgScale Int // Cambio 'escala_de_borg_fatiga_inicial' a 'initialFatigueBorgScale'
