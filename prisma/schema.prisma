@@ -422,20 +422,20 @@ model RegistrationForm {
 
   hasAsthma                Boolean // Cambio 'asma' a 'hasAsthma'
   hasOncologicalDisease    Boolean // Cambio 'enfermedad_oncologica' a 'hasOncologicalDisease'
-  oncologicalDiseaseStatus OncologicalDiseaseStatus // Cambio 'estado_enfermedad_oncologica' a 'oncologicalDiseaseStatus'
+  oncologicalDiseaseStatus OncologicalDiseaseStatus? // Cambio 'estado_enfermedad_oncologica' a 'oncologicalDiseaseStatus'
   hasChronicKidneyFailure  Boolean // Cambio 'insuficiencia_renal_cronica' a 'hasChronicKidneyFailure'
   hasObesity               Boolean // Cambio 'obesidad' a 'hasObesity'
   hasRecentTrauma          Boolean // Cambio 'traumatismo_reciente' a 'hasRecentTrauma'
-  traumaLocation           String // Cambio 'sitio_traumatismo' a 'traumaLocation'
-  traumaDate               DateTime // Cambio 'fecha_traumatismo' a 'traumaDate'
+  traumaLocation           String? // Cambio 'sitio_traumatismo' a 'traumaLocation'
+  traumaDate               DateTime? // Cambio 'fecha_traumatismo' a 'traumaDate'
   hasRecentSurgery         Boolean // Cambio 'cirujia_reciente' a 'hasRecentSurgery'
-  surgeryLocation          String // Cambio 'sitio_cirujia' a 'surgeryLocation'
-  surgeryDate              DateTime // Cambio 'fecha_cirujia' a 'surgeryDate'
+  surgeryLocation          String? // Cambio 'sitio_cirujia' a 'surgeryLocation'
+  surgeryDate              DateTime? // Cambio 'fecha_cirujia' a 'surgeryDate'
   hasSarcopenia            Boolean // Cambio 'sarcopenia' a 'hasSarcopenia'
   isUnderweight            Boolean // Cambio 'bajo_peso' a 'isUnderweight'
   hasFallsLastSixMonths    Boolean // Cambio 'caidas_ultimos_seis_meses' a 'hasFallsLastSixMonths'
   fallsPerMonth            Int // Cambio 'cantidad_de_caidas_por_mes' a 'fallsPerMonth'
-  otherConditions          String // Cambio 'otros' a 'otherConditions'
+  otherConditions          String? // Cambio 'otros' a 'otherConditions'
 
   // ForeignKeys
   memberId     Int @unique // Cambio 'alumno' a 'studentId' para claridad
