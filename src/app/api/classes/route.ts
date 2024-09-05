@@ -75,6 +75,8 @@ export async function DELETE(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log(error)
+
     return new Response('No se pudo eliminar la clase', {
       status: 400
     })
