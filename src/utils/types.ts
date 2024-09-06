@@ -49,6 +49,11 @@ export enum HealthPlanType {
   'OTHER' = 'OTHER'
 }
 
+export enum OncologicalDiseaseStatus {
+  'RESOLVED' = 'RESOLVED',
+  'ACTIVE' = 'ACTIVE'
+}
+
 export interface Account {
   id: number
   username: string
@@ -88,6 +93,8 @@ export interface Member extends CreateMember {
   payment?: Payment[]
   memberAttendance?: Attendance[]
   planSubscribed?: HealthPlanSubscribed[]
+  registrationForm?: RegistrationForm
+  followUpForm?: FollowUpForm[]
 }
 
 export interface CreateMember {
@@ -373,6 +380,75 @@ export interface ScheduleInscription extends CreateScheduleInscription {
 export interface CreateScheduleInscription {
   scheduleId: number
   memberId: number
+}
+
+export interface RegistrationForm extends CreateRegistrationForm {
+  id: number
+  member?: Member
+  instructor?: Instructor
+  evaluationNumber: number
+}
+
+export interface CreateRegistrationForm {
+  evaluationDate: Date
+  hasHypertension: boolean
+  hasDiabetes: boolean
+  hasHypercholesterolemia: boolean
+  hasHypertriglyceridemia: boolean
+  hasStableHeartFailure: boolean
+  hasStableIschemicHeartDisease: boolean
+  hasChronicObstructivePulmonaryDisease: boolean
+  hasAsthma: boolean
+  hasOncologicalDisease: boolean
+  oncologicalDiseaseStatus?: OncologicalDiseaseStatus
+  hasChronicKidneyFailure: boolean
+  hasObesity: boolean
+  hasRecentTrauma: boolean
+  traumaLocation?: string
+  traumaDate?: Date
+  hasRecentSurgery: boolean
+  surgeryLocation?: string
+  surgeryDate?: Date
+  hasSarcopenia: boolean
+  isUnderweight: boolean
+  hasFallsLastSixMonths: boolean
+  fallsPerMonth?: number
+  otherConditions?: string
+  memberId: number
+  instructorId: number
+}
+
+export interface FollowUpForm extends CreateFollowUpForm {
+  id: number
+  member?: Member
+  instructor?: Instructor
+  sixMinuteWalkTest?: SixMinuteWalkTest
+}
+
+export interface CreateFollowUpForm {
+  followUpDate: Date
+  rombergTest: boolean
+  dixonRuffierTest: number
+  modifiedBorgScale: number
+  memberId: number
+  instructorId: number
+}
+
+export interface SixMinuteWalkTest extends CreateSixMinuteWalkTest {
+  id: number
+  followUpForm: FollowUpForm
+}
+
+export interface CreateSixMinuteWalkTest {
+  initialDyspneaBorgScale: number
+  finalDyspneaBorgScale: number
+  initialFatigueBorgScale: number
+  finalFatigueBorgScale: number
+  initialBloodPressure: number
+  finalBloodPressure: number
+  initialHeartRate: number
+  finalHeartRate: number
+  followUpFormId: number
 }
 
 export interface priceType {

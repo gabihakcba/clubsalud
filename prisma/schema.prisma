@@ -59,6 +59,11 @@ enum HealthPlanType {
   OTHER
 }
 
+enum OncologicalDiseaseStatus {
+  RESOLVED
+  ACTIVE
+}
+
 model Account {
   // Fields
   id                   Int                  @id @default(autoincrement())
@@ -110,6 +115,8 @@ model Instructor {
   scheduleInCharge     Schedule[]             @relation(name: "instructorInCharge")
   scheduleSubstitute   Schedule[]             @relation(name: "instructorSubstitute")
   attendanceInstructor AttendanceInstructor[] @relation(name: "attendanceInstructorInstructor")
+  registrationForm     RegistrationForm[]     @relation(name: "registrationFormInstructor")
+  followUpForm         FollowUpForm[]         @relation(name: "followUpFormInstructor")
 }
 
 model Member {
@@ -140,6 +147,8 @@ model Member {
   planSubscribed      HealthPlanSubscribed[] @relation(name: "planMember")
   payment             Payment[]              @relation(name: "paymentMember")
   derivation          Derivation[]           @relation(name: "derivationMember")
+  registrationForm    RegistrationForm?      @relation(name: "registrationFormMember")
+  followUpForm        FollowUpForm[]         @relation(name: "followUpFormMember")
 }
 
 model InstructorPayment {
@@ -390,6 +399,7 @@ model InstructorPrice {
 }
 
 model ExtraCost {
+  // Fields
   id          Int      @id @default(autoincrement())
   amount      Int
   date        DateTime @default(now())
@@ -397,9 +407,76 @@ model ExtraCost {
 }
 
 model RegistrationForm {
-  id Int @id @default(autoincrement())
+  // Fields
+  id               Int      @id @default(autoincrement())
+  evaluationDate   DateTime
+  evaluationNumber Int      @default(autoincrement()) // Cambio 'numero_de_evaluacion' a 'evaluationNumber'
+
+  hasHypertension                       Boolean // Cambio 'hipertension' a 'hasHypertension' para claridad en booleanos
+  hasDiabetes                           Boolean // Cambio 'diabetes' a 'hasDiabetes'
+  hasHypercholesterolemia               Boolean // Cambio 'hipercolesterolemia' a 'hasHypercholesterolemia'
+  hasHypertriglyceridemia               Boolean // Cambio 'hipertrigliceridemia' a 'hasHypertriglyceridemia'
+  hasStableHeartFailure                 Boolean // Cambio 'insuficiencia_cardiaca_estable' a 'hasStableHeartFailure'
+  hasStableIschemicHeartDisease         Boolean // Cambio 'cardiopatia_isquemica_estable' a 'hasStableIschemicHeartDisease'
+  hasChronicObstructivePulmonaryDisease Boolean // Cambio 'enfermedad_pulmonar_obstructiva_cronica' a 'hasChronicObstructivePulmonaryDisease'
+
+  hasAsthma                Boolean // Cambio 'asma' a 'hasAsthma'
+  hasOncologicalDisease    Boolean // Cambio 'enfermedad_oncologica' a 'hasOncologicalDisease'
+  oncologicalDiseaseStatus OncologicalDiseaseStatus? // Cambio 'estado_enfermedad_oncologica' a 'oncologicalDiseaseStatus'
+  hasChronicKidneyFailure  Boolean // Cambio 'insuficiencia_renal_cronica' a 'hasChronicKidneyFailure'
+  hasObesity               Boolean // Cambio 'obesidad' a 'hasObesity'
+  hasRecentTrauma          Boolean // Cambio 'traumatismo_reciente' a 'hasRecentTrauma'
+  traumaLocation           String? // Cambio 'sitio_traumatismo' a 'traumaLocation'
+  traumaDate               DateTime? // Cambio 'fecha_traumatismo' a 'traumaDate'
+  hasRecentSurgery         Boolean // Cambio 'cirujia_reciente' a 'hasRecentSurgery'
+  surgeryLocation          String? // Cambio 'sitio_cirujia' a 'surgeryLocation'
+  surgeryDate              DateTime? // Cambio 'fecha_cirujia' a 'surgeryDate'
+  hasSarcopenia            Boolean // Cambio 'sarcopenia' a 'hasSarcopenia'
+  isUnderweight            Boolean // Cambio 'bajo_peso' a 'isUnderweight'
+  hasFallsLastSixMonths    Boolean // Cambio 'caidas_ultimos_seis_meses' a 'hasFallsLastSixMonths'
+  fallsPerMonth            Int? // Cambio 'cantidad_de_caidas_por_mes' a 'fallsPerMonth'
+  otherConditions          String? // Cambio 'otros' a 'otherConditions'
+
+  // ForeignKeys
+  memberId     Int @unique // Cambio 'alumno' a 'studentId' para claridad
+  instructorId Int // Cambio 'profesor' a 'professor' para estandarizar en inglés
+
+  member     Member     @relation(fields: [memberId], references: [id], name: "registrationFormMember", onDelete: Cascade)
+  instructor Instructor @relation(fields: [instructorId], references: [id], name: "registrationFormInstructor", onDelete: Cascade)
 }
 
 model FollowUpForm {
-  id Int @id @default(autoincrement())
+  // Fields
+  id                Int      @id @default(autoincrement())
+  followUpDate      DateTime
+  rombergTest       Boolean // Cambio 'test_de_romberg' a 'rombergTest'
+  dixonRuffierTest  Int // Cambio 'test_de_dixon_ruffier' a 'dixonRuffierTest' (entre 0 y 20)
+  modifiedBorgScale Int // Cambio 'escala_de_borg_modificada' a 'modifiedBorgScale' (entre 0 y 10)
+
+  // ForeignKeys
+  memberId     Int // Cambio 'memberId' a 'memberId'
+  instructorId Int // Cambio 'instructorId' a 'instructorId'
+
+  member     Member     @relation(fields: [memberId], references: [id], name: "followUpFormMember", onDelete: Cascade)
+  instructor Instructor @relation(fields: [instructorId], references: [id], name: "followUpFormInstructor", onDelete: Cascade)
+
+  // Relations
+  sixMinuteWalkTest SixMinuteWalkTest? @relation(name: "sixMinuteWalkTestFollowUpForm")
+}
+
+model SixMinuteWalkTest {
+  // Fields
+  id                      Int @id @default(autoincrement())
+  initialDyspneaBorgScale Int // Cambio 'escala_de_borg_disnea_inicial' a 'initialDyspneaBorgScale'
+  finalDyspneaBorgScale   Int // Cambio 'escala_de_borg_disnea_final' a 'finalDyspneaBorgScale'
+  initialFatigueBorgScale Int // Cambio 'escala_de_borg_fatiga_inicial' a 'initialFatigueBorgScale'
+  finalFatigueBorgScale   Int // Cambio 'escala_de_borg_fatiga_final' a 'finalFatigueBorgScale'
+  initialBloodPressure    Int // Cambio 'tension_arterial_inicial' a 'initialBloodPressure'
+  finalBloodPressure      Int // Cambio 'tension_arterial_final' a 'finalBloodPressure'
+  initialHeartRate        Int // Cambio 'frecuencua_cargiaca_inicial' a 'initialHeartRate'
+  finalHeartRate          Int // Cambio 'frecuencua_cargiaca_final' a 'finalHeartRate'
+
+  // ForeignKeys
+  followUpFormId Int           @unique
+  followUpForm   FollowUpForm? @relation(fields: [followUpFormId], references: [id], name: "sixMinuteWalkTestFollowUpForm")
 }
