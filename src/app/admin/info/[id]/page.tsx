@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query'
 import AccountInfo from 'components/account/AccountInfo'
-import RegistrationForm from 'components/medicalReports/RegistrationForm'
 import { Card } from 'primereact/card'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { getAccountById } from 'queries/accounts'
@@ -29,7 +28,6 @@ export default function AccountPage({ params }: params): ReactElement {
       <Card className='min-h-full w-full'>
         {account && <>
           <AccountInfo account={account}></AccountInfo>
-          <RegistrationForm />
         </>}
       </Card>
     </ScrollPanel>

@@ -93,6 +93,8 @@ export interface Member extends CreateMember {
   payment?: Payment[]
   memberAttendance?: Attendance[]
   planSubscribed?: HealthPlanSubscribed[]
+  registrationForm?: RegistrationForm
+  followUpForm?: FollowUpForm[]
 }
 
 export interface CreateMember {
@@ -384,11 +386,11 @@ export interface RegistrationForm extends CreateRegistrationForm {
   id: number
   member?: Member
   instructor?: Instructor
+  evaluationNumber: number
 }
 
 export interface CreateRegistrationForm {
   evaluationDate: Date
-  evaluationNumber: number
   hasHypertension: boolean
   hasDiabetes: boolean
   hasHypercholesterolemia: boolean
@@ -405,12 +407,12 @@ export interface CreateRegistrationForm {
   traumaLocation?: string
   traumaDate?: Date
   hasRecentSurgery: boolean
-  surgeryLocation: string
+  surgeryLocation?: string
   surgeryDate?: Date
   hasSarcopenia: boolean
   isUnderweight: boolean
   hasFallsLastSixMonths: boolean
-  fallsPerMonth: number
+  fallsPerMonth?: number
   otherConditions?: string
   memberId: number
   instructorId: number

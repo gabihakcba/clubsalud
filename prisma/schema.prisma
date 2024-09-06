@@ -434,7 +434,7 @@ model RegistrationForm {
   hasSarcopenia            Boolean // Cambio 'sarcopenia' a 'hasSarcopenia'
   isUnderweight            Boolean // Cambio 'bajo_peso' a 'isUnderweight'
   hasFallsLastSixMonths    Boolean // Cambio 'caidas_ultimos_seis_meses' a 'hasFallsLastSixMonths'
-  fallsPerMonth            Int // Cambio 'cantidad_de_caidas_por_mes' a 'fallsPerMonth'
+  fallsPerMonth            Int? // Cambio 'cantidad_de_caidas_por_mes' a 'fallsPerMonth'
   otherConditions          String? // Cambio 'otros' a 'otherConditions'
 
   // ForeignKeys
