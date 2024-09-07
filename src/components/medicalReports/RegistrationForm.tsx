@@ -22,6 +22,8 @@ import {
 } from 'utils/types'
 import { Toast } from 'primereact/toast'
 import { useRef } from 'react'
+import { useMountEffect } from 'primereact/hooks'
+import { Messages } from 'primereact/messages'
 
 export default function RegistrationMemberForm({
   member
@@ -124,10 +126,7 @@ export default function RegistrationMemberForm({
     }
   })
 
-  const {
-    mutate: newForm,
-    isPending: pendingCreate
-  } = useMutation({
+  const { mutate: newForm, isPending: pendingCreate } = useMutation({
     mutationFn: async (form: CreateRegistrationForm) => {
       return await createRegistrationForm(form)
     },
@@ -139,10 +138,7 @@ export default function RegistrationMemberForm({
     }
   })
 
-  const {
-    mutate: updateForm,
-    isPending: pedingUpdate
-  } = useMutation({
+  const { mutate: updateForm, isPending: pedingUpdate } = useMutation({
     mutationFn: async (form: RegistrationForm) => {
       return await updateRegistrationForm(form)
     },
@@ -174,6 +170,31 @@ export default function RegistrationMemberForm({
     })
   }
 
+  const msgs = useRef<Messages>(null)
+
+  useMountEffect(() => {
+    msgs.current?.clear()
+    if (member?.registrationForm) {
+      msgs.current?.show({
+        id: '1',
+        sticky: true,
+        severity: 'success',
+        summary: 'Estado',
+        detail: 'Formulario de inscripción hecho',
+        closable: false
+      })
+    } else {
+      msgs.current?.show({
+        id: '1',
+        sticky: true,
+        severity: 'error',
+        summary: 'Estado',
+        detail: 'Formulario de inscripción faltante',
+        closable: false
+      })
+    }
+  })
+
   useEffect(() => {
     setMemberId(member?.id ?? null)
     setEditForm(member?.registrationForm === null)
@@ -182,6 +203,7 @@ export default function RegistrationMemberForm({
   return (
     <>
       <Toast ref={toast} />
+      <Messages ref={msgs} />
       <form
         action=''
         className='relative rounded h-max w-max flex flex-row p-3 gap-4 pt-4'
