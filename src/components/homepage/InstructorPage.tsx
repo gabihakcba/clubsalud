@@ -1,3 +1,4 @@
+import RegistrationFormSelector from 'components/medicalReports/RegistrationFormSelector'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, type ReactElement, useState } from 'react'
@@ -37,6 +38,9 @@ export default function InstructorPage({
 
   return (
     <div className='flex flex-column gap-2'>
+      <nav className='flex justify-content-end gap-4'>
+        <RegistrationFormSelector/>
+      </nav>
       <DataTable
         value={charges
           ?.filter((sche: Schedule) => sche.start % 100 === 0)
