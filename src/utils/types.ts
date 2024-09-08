@@ -355,6 +355,7 @@ export interface AttendanceInstructor extends CreateAttendanceInstructor {
 
 export interface CreateAttendanceInstructor {
   date: Date
+  hours: number
   classId: number
   instructorId: number
 }

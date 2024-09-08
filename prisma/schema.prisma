@@ -180,6 +180,7 @@ model AttendanceInstructor {
   // Fields
   id           Int        @id @default(autoincrement())
   date         DateTime   @default(now())
+  hours        Int        @default(1)
   // Foreignkeys
   classId      Int
   instructorId Int

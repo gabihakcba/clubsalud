@@ -21,16 +21,19 @@ export const getAttendancesInstructorById = async (
 export const createAttendanceInstructor = async ({
   instructorId,
   classId,
-  date
+  date,
+  hours
 }: {
   instructorId: number
   classId: number,
-  date: Date
+  date: Date,
+  hours: number
 }): Promise<AttendanceInstructor> => {
   const response = await axios.post(`${path()}/api/attendanceInstructor`, {
     instructorId,
     classId,
-    date
+    date,
+    hours
   })
 
   return response.data
