@@ -6,6 +6,8 @@ import { CreateInstructorForm } from 'components/instructor/CreateInstructorForm
 import { Button } from 'primereact/button'
 import { ButtonGroup } from 'primereact/buttongroup'
 import { Dialog } from 'primereact/dialog'
+import HasRole from 'components/HasRole'
+import { Permissions } from 'utils/types'
 
 export default function AccountTopbar(): ReactElement {
   const [createAcc, openAcc, closeAcc] = useModal(false)
@@ -15,13 +17,15 @@ export default function AccountTopbar(): ReactElement {
   return (
     <div className='flex flex-row gap-2'>
       <ButtonGroup>
-        <Button
-          label='Cuenta'
-          icon='pi pi-plus'
-          onClick={() => {
-            openAcc()
-          }}
-        />
+        <HasRole required={[Permissions.OWN]}>
+          <Button
+            label='Cuenta'
+            icon='pi pi-plus'
+            onClick={() => {
+              openAcc()
+            }}
+          />
+        </HasRole>
         <Button
           label='Profesor'
           icon='pi pi-plus'
