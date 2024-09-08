@@ -7,13 +7,21 @@ import { Dialog } from 'primereact/dialog'
 import { getOrderedSubscriptions } from 'queries/subscriptions'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
+import AttendanceInstructorForm from 'components/attendanceInstructor/AttendanceInstructorForm'
+import RegistrationFormSelector from 'components/medicalReports/RegistrationFormSelector'
 
 export default function AdminPage(): ReactElement {
-  const [showAttendance, openAttendance, closeAttendace] = useModal(false)
+  const [showMemberAttendance, openMemberAttendance, closeMemberAttendace] =
+    useModal(false)
+  const [
+    showInstructorAttendance,
+    openInstructorAttendance,
+    closeInstructorAttendace
+  ] = useModal(false)
   const [create, openCreate, closeCreate] = useModal(false)
 
-  const { data: members } = useQuery({
-    queryKey: ['members'],
+  const { data: membersSubs } = useQuery({
+    queryKey: ['membersSubs'],
     queryFn: async () => {
       const mems = await getOrderedSubscriptions()
       return mems
@@ -23,11 +31,18 @@ export default function AdminPage(): ReactElement {
   return (
     <div className='flex flex-column'>
       <Dialog
-        visible={showAttendance}
-        onHide={closeAttendace}
-        header='Asistencia'
+        visible={showMemberAttendance}
+        onHide={closeMemberAttendace}
+        header='Asistencia Alumno'
       >
         <AttendanceForm />
+      </Dialog>
+      <Dialog
+        visible={showInstructorAttendance}
+        onHide={closeInstructorAttendace}
+        header='Asistencia Profesor'
+      >
+        <AttendanceInstructorForm />
       </Dialog>
       <Dialog
         visible={create}
@@ -37,13 +52,22 @@ export default function AdminPage(): ReactElement {
         <CreateNotificationForm />
       </Dialog>
       <nav className='flex justify-content-end gap-4'>
+        <RegistrationFormSelector />
         <Button
-          label='Cargar asistencia'
+          label='Cargar Asistencia Alumno'
           size='small'
           outlined
           icon='pi pi-plus'
           iconPos='right'
-          onClick={openAttendance}
+          onClick={openMemberAttendance}
+        />
+        <Button
+          label='Cargar Asistencia Profesor'
+          size='small'
+          outlined
+          icon='pi pi-plus'
+          iconPos='right'
+          onClick={openInstructorAttendance}
         />
         <Button
           label='Crear Notificación'
@@ -55,7 +79,7 @@ export default function AdminPage(): ReactElement {
         />
       </nav>
       <main>
-        <MemberSubsTable members={members} />
+        <MemberSubsTable members={membersSubs} />
       </main>
     </div>
   )
