@@ -1170,7 +1170,7 @@ const dAll = async () => {
     await db.notification.deleteMany()
 
     await db.class.deleteMany()
-    
+
     await db.account.deleteMany()
   } catch (error) {
     console.log('Failed to deleting all :(')
@@ -1402,6 +1402,19 @@ const deleteDB = async (args) => {
   }
 }
 
+const clearDB = async () => {
+  const migrationName = '20240908054840_integrity_restriction' // Cambia esto por el nombre de tu migración
+
+  await db.$executeRawUnsafe(`
+    DELETE FROM "_prisma_migrations"
+    WHERE migration_name = '${migrationName}'
+  `)
+  /**
+   * ejecutar npx prisma db push despues de esto
+   */
+  console.log(`Migración '${migrationName}' eliminada con éxito.`)
+}
+
 const main = async (args) => {
   switch (args[0]) {
     case '-c':
@@ -1410,6 +1423,13 @@ const main = async (args) => {
 
     case '-d':
       deleteDB(args.slice(1))
+      break
+
+    case '-k':
+      clearDB().catch((e) => {
+        console.error(e)
+        process.exit(1)
+      })
       break
 
     default:
