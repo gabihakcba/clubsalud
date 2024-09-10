@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { InputText } from 'primereact/inputtext'
@@ -11,10 +11,15 @@ export default function HealthPlanList({
 }: {
   member: Member
 }): ReactElement {
+  const query = useQueryClient()
+
   const [selectedHealth, setSelectedHealth] = useState<number | null>(null)
   const { mutate: deletePlan, isPending: deletingHealth } = useMutation({
     mutationFn: async (id: number) => {
       return await deleteHealthSubscribed(id)
+    },
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['account'] })
     }
   })
 
@@ -32,6 +37,10 @@ export default function HealthPlanList({
             />
             <InputText
               value={planS?.plan?.name}
+              disabled
+            />
+            <InputText
+              value={planS?.afiliateNumber}
               disabled
             />
             <Button

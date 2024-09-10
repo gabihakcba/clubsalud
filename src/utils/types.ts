@@ -240,6 +240,7 @@ export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
 export interface CreateHealthPlanSubscribed {
   memberId: number
   planId: number
+  afiliateNumber: string
 }
 
 export interface HealthPlan extends CreateHealthPlan {

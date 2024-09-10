@@ -3,6 +3,8 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
+import { InputText } from 'primereact/inputtext'
 import { getHealthPlans } from 'queries/health'
 import { createHealthSubscribed } from 'queries/healthSus'
 import { getMembers } from 'queries/members'
@@ -37,7 +39,8 @@ export default function HealthAssignForm(): ReactElement {
     mutationFn: async (data: FieldValues): Promise<HealthPlanSubscribed> => {
       return await createHealthSubscribed({
         memberId: Number(data.memberId),
-        planId: Number(data.planId)
+        planId: Number(data.planId),
+        afiliateNumber: String(data.afiliateNumber)
       })
     }
   })
@@ -55,8 +58,11 @@ export default function HealthAssignForm(): ReactElement {
       className='flex flex-column pt-4 gap-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        console.log(data)
-        create({ memberId: data.memberId, planId: data.planId })
+        create({
+          memberId: data.memberId,
+          planId: data.planId,
+          afiliateNumber: data.afiliateNumber
+        })
       })}
     >
       <div className='p-float-label'>
@@ -101,6 +107,10 @@ export default function HealthAssignForm(): ReactElement {
         />
         <label htmlFor='planId'>Obra social</label>
       </div>
+      <FloatLabel>
+        <InputText {...register('afiliateNumber', { required: true })} />
+        <label htmlFor=''>Número de afiliado</label>
+      </FloatLabel>
       <Button
         type='submit'
         label='Enviar'

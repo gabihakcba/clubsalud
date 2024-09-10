@@ -314,10 +314,12 @@ model BilledConsultation {
 
 model HealthPlanSubscribed {
   // Fields
-  id                 Int                  @id @default(autoincrement())
+  id Int @id @default(autoincrement())
   // Foreignkeys
+
   memberId           Int
   planId             Int
+  afiliateNumber     String               @default("0")
   member             Member               @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
   plan               HealthPlan           @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
   //Relations
