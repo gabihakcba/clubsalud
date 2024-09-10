@@ -313,6 +313,7 @@ export interface CreateBilledConsultation {
   amount: number
   date: Date
   subscriptionId: number
+  autorizationNumber: string
   healthSubscribedPlanId: number
 }
 

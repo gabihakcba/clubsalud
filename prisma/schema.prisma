@@ -305,6 +305,7 @@ model BilledConsultation {
   id                     Int                  @id @default(autoincrement())
   amount                 Float
   date                   DateTime             @default(now())
+  autorizationNumber     String               @default("0")
   // Foreignkeys
   subscriptionId         Int
   healthSubscribedPlanId Int

@@ -5,7 +5,6 @@ import {
 } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { argDate } from 'utils/dates'
 import prisma from 'utils/prisma'
 
 const db: PrismaClient = prisma
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const newPayment = {
     amount: Number(data.amount),
-    date: argDate()
+    date: data.date
   }
 
   try {
