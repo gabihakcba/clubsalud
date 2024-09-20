@@ -76,10 +76,8 @@ export default function CreatePaymentForm(): ReactElement {
     mutationFn: setParticularPayment,
     onSuccess: async (data: Payment) => {
       await query.refetchQueries({ queryKey: ['members'] })
-      query.setQueryData(['payments'], (oldData: Payment[]) => [
-        ...oldData,
-        data
-      ])
+      await query.refetchQueries({ queryKey: ['payments'] })
+      await query.refetchQueries({ queryKey: ['billed'] })
     }
   })
 
@@ -92,7 +90,8 @@ export default function CreatePaymentForm(): ReactElement {
     mutationFn: setPlanPayment,
     onSuccess: async (data: Payment) => {
       await query.refetchQueries({ queryKey: ['members'] })
-      query.setQueryData(['billed'], (oldData: Payment[]) => [...oldData, data])
+      await query.refetchQueries({ queryKey: ['payments'] })
+      await query.refetchQueries({ queryKey: ['billed'] })
     }
   })
 

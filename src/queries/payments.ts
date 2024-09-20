@@ -43,3 +43,13 @@ export const setPlanPayment = async ({
   })
   return response.data
 }
+
+export const deleteParticularPayment = async (id: number): Promise<Payment> => {
+  const response = await axios.delete(`${path()}/api/payments`, { data: id })
+  return response.data
+}
+
+export const deletePlanPayment = async (id: number): Promise<Payment> => {
+  const response = await axios.delete(`${path()}/api/planPayments`, { data: id })
+  return response.data
+}

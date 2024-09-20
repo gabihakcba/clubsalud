@@ -1,8 +1,4 @@
-import {
-  type BilledConsultation,
-  type PrismaClient,
-  type Subscription
-} from '@prisma/client'
+import { type BilledConsultation, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
 import prisma from 'utils/prisma'
@@ -28,6 +24,7 @@ export async function GET(req: NextRequest): Promise<Response> {
           }
         }
       })
+
     return new Response(JSONbig.stringify(billedConsultations), {
       status: 200
     })
@@ -78,32 +75,30 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
       })
 
-    const subscription: Subscription | null = await db.subscription.findUnique({
-      where: {
-        id: Number(data.subscriptionId)
-      }
-    })
-
-    const oldRemaining = subscription?.remaining ?? 0
-    const newRemaining = oldRemaining - Number(data.amount)
-    const isNotPaid = newRemaining > 0
-
-    await db.subscription.update({
-      where: {
-        id: Number(data.subscriptionId)
-      },
-      data: {
-        remaining: { decrement: Number(data.amount) },
-        paid: !isNotPaid
-      }
-    })
-
     return new Response(JSONbig.stringify(billedConsultation), {
       status: 200
     })
   } catch (error) {
     console.log(error)
 
+    return new Response(JSONbig.stringify('Internal Server Error :('), {
+      status: 500
+    })
+  }
+}
+
+export async function DELETE(req: NextRequest): Promise<Response> {
+  const data = await req.json()
+  try {
+    const result = await db.billedConsultation.delete({
+      where: { id: data }
+    })
+
+    return new Response(JSONbig.stringify(result), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
     })
