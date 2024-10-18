@@ -202,6 +202,8 @@ export interface Subscription extends CreateSubscription {
   id: number
   promotion?: Promotion
   plan: Plan
+  payment?: Payment[]
+  billedConsultation?: BilledConsultation[]
 }
 
 export interface CreateSubscription {

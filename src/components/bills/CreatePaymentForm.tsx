@@ -14,8 +14,17 @@ import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Subscription, type Member, type Payment } from 'utils/types'
 
-const hasSubs = (member): boolean => {
-  return member?.memberSubscription.some((subs) => !subs.paid)
+const hasSubs = (member: Member): boolean => {
+  const subs: Subscription[] | undefined = member?.memberSubscription
+
+  return (
+    subs !== undefined &&
+    (subs.some((sub) => {
+      const bills = sub.billedConsultation?.length
+      return bills !== undefined && bills < 2
+    }) ||
+      subs.some((sub) => !sub.paid))
+  )
 }
 
 const selectMember = (members, id: number): Member => {
@@ -74,7 +83,7 @@ export default function CreatePaymentForm(): ReactElement {
     isSuccess: isSuccessP
   } = useMutation({
     mutationFn: setParticularPayment,
-    onSuccess: async (data: Payment) => {
+    onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['members'] })
       await query.refetchQueries({ queryKey: ['payments'] })
       await query.refetchQueries({ queryKey: ['billed'] })
@@ -152,7 +161,14 @@ export default function CreatePaymentForm(): ReactElement {
           options={selectMember(
             members,
             Number(watch('memberId'))
-          )?.memberSubscription?.filter((subs: Subscription) => !subs.paid)}
+          )?.memberSubscription?.filter((subs: Subscription) => {
+            if (ishealth) {
+              const bills = subs.billedConsultation?.length
+              return bills !== undefined && bills < subs.plan.durationMonth * 2
+            } else {
+              return !subs.paid
+            }
+          })}
           value={selectedSubscription}
           optionLabel='promotion.title'
           optionValue='id'

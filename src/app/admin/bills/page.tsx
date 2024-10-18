@@ -12,7 +12,7 @@ import BillTable from 'components/bills/BillTable'
 export default function Page(): ReactElement {
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   return (
-    <Card className='flex flex-column h-full'>
+    <Card className='flex flex-column h-auto'>
       <Dialog
         header='Generar Cobro'
         visible={createBill}
@@ -26,9 +26,14 @@ export default function Page(): ReactElement {
         label='Generar Cobro'
         icon='pi pi-plus'
         iconPos='right'
+        className='fixed z-5'
       />
-      <BillTable />
-      <HealthPlanBillTable />
+      <Card style={{ height: '100dvh' }}>
+        <BillTable />
+      </Card>
+      <Card style={{ height: '100dvh' }}>
+        <HealthPlanBillTable />
+      </Card>
     </Card>
   )
 }
