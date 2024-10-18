@@ -134,6 +134,7 @@ export default function CreatePaymentForm(): ReactElement {
     >
       <div className='p-float-label'>
         <Dropdown
+          filterBy='dni'
           options={members}
           value={selectedMember}
           optionLabel='name'
