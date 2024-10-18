@@ -45,6 +45,7 @@ export default function RegistrationFormSelector(): ReactElement {
         optionLabel='name'
         optionValue='id'
         filter
+        filterBy='dni'
         showClear
         onChange={(e) => {
           setSelectedMemberId(e.value as number)
