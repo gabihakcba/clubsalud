@@ -69,6 +69,8 @@ export default function AttendanceInstructorForm(): ReactElement {
       })}
     >
       <Dropdown
+        filter
+        filterBy='dni'
         {...register('instructor', { required: true })}
         value={selectedMember}
         options={instructors}
@@ -108,7 +110,7 @@ export default function AttendanceInstructorForm(): ReactElement {
             setValue('hours', e.value)
           }}
         />
-        <label htmlFor="">Horas</label>
+        <label htmlFor=''>Horas</label>
       </FloatLabel>
 
       <FloatLabel>
