@@ -130,6 +130,8 @@ export default function BillTable(): ReactElement {
           header='Vencimiento'
           sortable
         />
+        <Column header='Oferta' field='plan.title'/>
+        <Column header='Plan' field='promotion.title'/>
         <Column
           field='paid'
           header='Pagado'

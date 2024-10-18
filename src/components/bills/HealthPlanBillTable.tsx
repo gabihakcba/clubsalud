@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import HasRole from 'components/HasRole'
 import { FilterMatchMode } from 'primereact/api'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
@@ -8,16 +9,21 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/members'
 import { deletePlanPayment } from 'queries/payments'
 import { useState, type ReactElement } from 'react'
-import { type BilledConsultation, type Member, type Subscription } from 'utils/types'
+import {
+  Permissions,
+  type BilledConsultation,
+  type Member,
+  type Subscription
+} from 'utils/types'
 
 export default function HealthPlanBillTable(): ReactElement {
   const query = useQueryClient()
 
   const [selected, setSelected] = useState<number | null>(null)
   const [expandedRows, setExpandedRows] = useState<Subscription[]>([])
-  const [expandedRowsPayments, setExpandedRowsPayments] = useState<BilledConsultation[]>(
-    []
-  )
+  const [expandedRowsPayments, setExpandedRowsPayments] = useState<
+  BilledConsultation[]
+  >([])
 
   const filters = {
     dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -59,15 +65,17 @@ export default function HealthPlanBillTable(): ReactElement {
     return (
       <>
         <ConfirmDialog />
-        <DataTable value={data.payment}>
+        <DataTable value={data.billedConsultation}>
           <Column
             field='id'
             header='ID'
           />
-          <Column
-            field='amount'
-            header='Cantidad'
-          />
+          <HasRole required={[Permissions.OWN]}>
+            <Column
+              field='amount'
+              header='Cantidad'
+            />
+          </HasRole>
           <Column
             field='date'
             header='Fecha'
@@ -137,6 +145,8 @@ export default function HealthPlanBillTable(): ReactElement {
           header='Vencimiento'
           sortable
         />
+        <Column header='Oferta' field='plan.title'/>
+        <Column header='Plan' field='promotion.title'/>
         <Column
           field='paid'
           header='Pagado'

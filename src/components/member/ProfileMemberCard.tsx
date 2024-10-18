@@ -328,7 +328,7 @@ export default function ProfileMemberCard({
               disabled={!editF}
               invalid={errors?.afiliateNumber !== undefined}
             />
-            <label className='font-semibold'>Número de afiliado</label>
+            <label className='font-semibold'>Número de historia clínica (ID)</label>
           </li>
 
           <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
