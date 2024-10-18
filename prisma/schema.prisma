@@ -180,6 +180,7 @@ model AttendanceInstructor {
   // Fields
   id           Int        @id @default(autoincrement())
   date         DateTime   @default(now())
+  hours        Int        @default(1)
   // Foreignkeys
   classId      Int
   instructorId Int
@@ -304,6 +305,7 @@ model BilledConsultation {
   id                     Int                  @id @default(autoincrement())
   amount                 Float
   date                   DateTime             @default(now())
+  autorizationNumber     String               @default("0")
   // Foreignkeys
   subscriptionId         Int
   healthSubscribedPlanId Int
@@ -313,10 +315,12 @@ model BilledConsultation {
 
 model HealthPlanSubscribed {
   // Fields
-  id                 Int                  @id @default(autoincrement())
+  id Int @id @default(autoincrement())
   // Foreignkeys
+
   memberId           Int
   planId             Int
+  afiliateNumber     String               @default("0")
   member             Member               @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
   plan               HealthPlan           @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
   //Relations

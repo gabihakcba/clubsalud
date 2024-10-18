@@ -20,3 +20,14 @@ export const deleteHealthSubscribed = async (
   })
   return response.data
 }
+
+export const editHealthSubscribed = async (
+  id: number,
+  afiliateNumber: number | string
+): Promise<HealthPlanSubscribed> => {
+  const response = await axios.patch(`${path()}/api/healthSubscribed`, {
+    id,
+    afiliateNumber
+  })
+  return response.data
+}

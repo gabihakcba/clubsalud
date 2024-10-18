@@ -43,6 +43,11 @@ export default function AttendanceAdmTable(): ReactElement {
           header='Clase'
           sortable
         />
+        <Column
+          field='hours'
+          header='Horas'
+          sortable
+        />
         <Column />
       </DataTable>
     )

@@ -33,6 +33,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       await db.attendanceInstructor.create({
         data: {
           date: data.date,
+          hours: data.hours,
           class: {
             connect: {
               id: data.classId

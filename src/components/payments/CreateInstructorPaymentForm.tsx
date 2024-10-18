@@ -43,7 +43,7 @@ const getInstructorPayment = (
         moment(att.date).year() === moment(date as Date).year()
     )
   const hours = attendances?.reduce(
-    (acc, curr) => (curr.class?.duration ?? 1) + acc,
+    (acc, curr) => (curr.hours) + acc,
     0
   )
   setWorkedHours(hours)

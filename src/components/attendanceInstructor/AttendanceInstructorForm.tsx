@@ -10,6 +10,7 @@ import { createAttendanceInstructor } from 'queries/attendanceInstructor'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Calendar } from 'primereact/calendar'
 import moment from 'moment'
+import { InputNumber } from 'primereact/inputnumber'
 
 export default function AttendanceInstructorForm(): ReactElement {
   const query = useQueryClient()
@@ -59,10 +60,17 @@ export default function AttendanceInstructorForm(): ReactElement {
       className='flex flex-column gap-4'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        createAtt({ instructorId: data.instructorId, classId: data.classId, date: data.date })
+        createAtt({
+          instructorId: data.instructorId,
+          classId: data.classId,
+          date: data.date,
+          hours: data.hours
+        })
       })}
     >
       <Dropdown
+        filter
+        filterBy='dni'
         {...register('instructor', { required: true })}
         value={selectedMember}
         options={instructors}
@@ -91,6 +99,21 @@ export default function AttendanceInstructorForm(): ReactElement {
       />
 
       <FloatLabel>
+        <InputNumber
+          {...register('hours', {
+            required: true
+          })}
+          invalid={errors?.hours !== undefined}
+          max={99}
+          min={1}
+          onChange={(e) => {
+            setValue('hours', e.value)
+          }}
+        />
+        <label htmlFor=''>Horas</label>
+      </FloatLabel>
+
+      <FloatLabel>
         <Calendar
           {...register('date', {
             required: true
@@ -98,7 +121,6 @@ export default function AttendanceInstructorForm(): ReactElement {
           invalid={errors?.date !== undefined}
           value={selectedDate}
           onChange={(e) => {
-            console.log(e.value)
             setValue('date', moment(e.value).toDate())
             setSelectedDate(moment(e.value).toDate())
           }}

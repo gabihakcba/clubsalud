@@ -1,18 +1,30 @@
 'use client'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import moment from 'moment'
 import { Button } from 'primereact/button'
+import { Calendar } from 'primereact/calendar'
 import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
+import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { getMembers } from 'queries/members'
 import { setParticularPayment, setPlanPayment } from 'queries/payments'
-import { useState, type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Subscription, type Member, type Payment } from 'utils/types'
 
-const hasSubs = (member): boolean => {
-  return member?.memberSubscription.some((subs) => !subs.paid)
+const hasSubs = (member: Member): boolean => {
+  const subs: Subscription[] | undefined = member?.memberSubscription
+
+  return (
+    subs !== undefined &&
+    (subs.some((sub) => {
+      const bills = sub.billedConsultation?.length
+      return bills !== undefined && bills < 2
+    }) ||
+      subs.some((sub) => !sub.paid))
+  )
 }
 
 const selectMember = (members, id: number): Member => {
@@ -42,6 +54,7 @@ export default function CreatePaymentForm(): ReactElement {
   const [selectedSubscription, setSelectedSubscription] = useState<any>(null)
   const [ishealth, setIshealth] = useState<boolean>(false)
   const [amountToPay, setAmountToPay] = useState<number>(0)
+  const [selectedDate, setSelectedDate] = useState<Date>(moment().toDate())
 
   const query = useQueryClient()
 
@@ -70,12 +83,10 @@ export default function CreatePaymentForm(): ReactElement {
     isSuccess: isSuccessP
   } = useMutation({
     mutationFn: setParticularPayment,
-    onSuccess: async (data: Payment) => {
+    onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['members'] })
-      query.setQueryData(['payments'], (oldData: Payment[]) => [
-        ...oldData,
-        data
-      ])
+      await query.refetchQueries({ queryKey: ['payments'] })
+      await query.refetchQueries({ queryKey: ['billed'] })
     }
   })
 
@@ -88,9 +99,14 @@ export default function CreatePaymentForm(): ReactElement {
     mutationFn: setPlanPayment,
     onSuccess: async (data: Payment) => {
       await query.refetchQueries({ queryKey: ['members'] })
-      query.setQueryData(['billed'], (oldData: Payment[]) => [...oldData, data])
+      await query.refetchQueries({ queryKey: ['payments'] })
+      await query.refetchQueries({ queryKey: ['billed'] })
     }
   })
+
+  useEffect(() => {
+    setValue('date', moment().toDate())
+  }, [])
 
   return (
     <form
@@ -102,19 +118,23 @@ export default function CreatePaymentForm(): ReactElement {
           planPayment({
             amount: data.amountPlan,
             subscriptionId: data.subscriptionId,
-            healthSubscribedPlanId: data.healthId
+            healthSubscribedPlanId: data.healthId,
+            autorizationNumber: data.autorizationNumber,
+            date: data.date
           })
         } else {
           particularPayment({
             memberId: data.memberId,
             subscriptionId: data.subscriptionId,
-            amount: data.amountParticular
+            amount: data.amountParticular,
+            date: data.date
           })
         }
       })}
     >
       <div className='p-float-label'>
         <Dropdown
+          filterBy='dni'
           options={members}
           value={selectedMember}
           optionLabel='name'
@@ -142,7 +162,14 @@ export default function CreatePaymentForm(): ReactElement {
           options={selectMember(
             members,
             Number(watch('memberId'))
-          )?.memberSubscription?.filter((subs: Subscription) => !subs.paid)}
+          )?.memberSubscription?.filter((subs: Subscription) => {
+            if (ishealth) {
+              const bills = subs.billedConsultation?.length
+              return bills !== undefined && bills < subs.plan.durationMonth * 2
+            } else {
+              return !subs.paid
+            }
+          })}
           value={selectedSubscription}
           optionLabel='promotion.title'
           optionValue='id'
@@ -172,34 +199,43 @@ export default function CreatePaymentForm(): ReactElement {
         />
       </div>
       {ishealth && (
-        <div className='p-float-label'>
-          <Dropdown
-            id='health'
-            {...register('health', {
-              required: {
-                value: true,
-                message: 'Campo requerido'
-              }
-            })}
-            className='w-full'
-            value={selectedPlan}
-            options={plansMemberSelected}
-            optionLabel='plan.name'
-            optionValue='id'
-            onChange={(e) => {
-              setSelectedPlan(e.value)
-              setValue('healthId', e.value)
-              setValue(
-                'amountPlan',
-                amountByPlan(members, getValues('memberId'), e.value)
-              )
-              setAmountToPay(
-                amountByPlan(members, getValues('memberId'), e.value) ?? 0
-              )
-            }}
-          />
-          <label htmlFor='health'>Obra social</label>
-        </div>
+        <>
+          <div className='p-float-label'>
+            <Dropdown
+              id='health'
+              {...register('health', {
+                required: {
+                  value: true,
+                  message: 'Campo requerido'
+                }
+              })}
+              className='w-full'
+              value={selectedPlan}
+              options={plansMemberSelected}
+              optionLabel='plan.name'
+              optionValue='id'
+              onChange={(e) => {
+                setSelectedPlan(e.value)
+                setValue('healthId', e.value)
+                setValue(
+                  'amountPlan',
+                  amountByPlan(members, getValues('memberId'), e.value)
+                )
+                setAmountToPay(
+                  amountByPlan(members, getValues('memberId'), e.value) ?? 0
+                )
+              }}
+            />
+            <label htmlFor='health'>Obra social</label>
+          </div>
+          <FloatLabel>
+            <InputText
+              {...register('autorizationNumber', { required: true })}
+              invalid={errors.autorizationNumber !== undefined}
+            />
+            <label htmlFor=''>Número de autorización</label>
+          </FloatLabel>
+        </>
       )}
       <div className='p-float-label'>
         {ishealth && (
@@ -227,6 +263,22 @@ export default function CreatePaymentForm(): ReactElement {
         )}
         <label htmlFor=''>Monto</label>
       </div>
+      <FloatLabel>
+        <Calendar
+          {...register('date', {
+            required: true
+          })}
+          invalid={errors?.date !== undefined}
+          value={selectedDate}
+          onChange={(e) => {
+            console.log(e.value)
+            setValue('date', moment(e.value).toDate())
+            setSelectedDate(moment(e.value).toDate())
+          }}
+          dateFormat='dd/mm/yy'
+        />
+        <label htmlFor=''>Fecha</label>
+      </FloatLabel>
       <div className='p-float-label'>
         <InputText
           value={String(

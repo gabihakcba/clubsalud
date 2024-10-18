@@ -68,7 +68,7 @@ export default function HealthCreateForm(): ReactElement {
           {...register('description')}
           autoComplete='off'
         />
-        <label htmlFor='description'>Descripción</label>
+        <label htmlFor='description'>Plan</label>
       </div>
       <div className='p-float-label'>
         <Dropdown

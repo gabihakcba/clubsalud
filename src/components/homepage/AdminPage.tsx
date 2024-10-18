@@ -9,8 +9,11 @@ import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import AttendanceInstructorForm from 'components/attendanceInstructor/AttendanceInstructorForm'
 import RegistrationFormSelector from 'components/medicalReports/RegistrationFormSelector'
+import HealthAssignForm from 'components/healthPlans/HealthAssignForm'
 
 export default function AdminPage(): ReactElement {
+  const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
+    useModal(false)
   const [showMemberAttendance, openMemberAttendance, closeMemberAttendace] =
     useModal(false)
   const [
@@ -30,6 +33,13 @@ export default function AdminPage(): ReactElement {
 
   return (
     <div className='flex flex-column'>
+      <Dialog
+        visible={showAssignHealthPlan}
+        onHide={closeAssignHealthPlan}
+        header='Asignar Obra Social'
+      >
+        <HealthAssignForm/>
+      </Dialog>
       <Dialog
         visible={showMemberAttendance}
         onHide={closeMemberAttendace}
@@ -53,6 +63,14 @@ export default function AdminPage(): ReactElement {
       </Dialog>
       <nav className='flex justify-content-end gap-4'>
         <RegistrationFormSelector />
+        <Button
+          label='Asignar Obra Social'
+          size='small'
+          outlined
+          icon='pi pi-plus'
+          iconPos='right'
+          onClick={openAssignHealthPlan}
+        />
         <Button
           label='Cargar Asistencia Alumno'
           size='small'

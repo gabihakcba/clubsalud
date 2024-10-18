@@ -202,6 +202,8 @@ export interface Subscription extends CreateSubscription {
   id: number
   promotion?: Promotion
   plan: Plan
+  payment?: Payment[]
+  billedConsultation?: BilledConsultation[]
 }
 
 export interface CreateSubscription {
@@ -240,6 +242,7 @@ export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
 export interface CreateHealthPlanSubscribed {
   memberId: number
   planId: number
+  afiliateNumber: string
 }
 
 export interface HealthPlan extends CreateHealthPlan {
@@ -312,6 +315,7 @@ export interface CreateBilledConsultation {
   amount: number
   date: Date
   subscriptionId: number
+  autorizationNumber: string
   healthSubscribedPlanId: number
 }
 
@@ -355,6 +359,7 @@ export interface AttendanceInstructor extends CreateAttendanceInstructor {
 
 export interface CreateAttendanceInstructor {
   date: Date
+  hours: number
   classId: number
   instructorId: number
 }

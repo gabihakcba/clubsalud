@@ -11,6 +11,7 @@ import { type dateType, type Subscription } from 'utils/types'
 import { Button } from 'primereact/button'
 import { FilterMatchMode } from 'primereact/api'
 import { arg2Date, argGetMonth, argGetYear } from 'utils/dates'
+import { FloatLabel } from 'primereact/floatlabel'
 
 const totalRemaining = (subscriptions: Subscription[]): number => {
   return subscriptions.reduce(
@@ -68,18 +69,21 @@ export default function BillsTable(): ReactElement {
     <DataTable
       header={() => (
         <div className='flex align-items-center justify-content-end gap-4'>
-          <Calendar
-            view='month'
-            dateFormat='mm/yy'
-            onChange={(e) => {
-              if (e.value) {
-                setSelectedDate({
-                  month: argGetMonth(arg2Date(e.value)),
-                  year: argGetYear(arg2Date(e.value))
-                })
-              }
-            }}
-          />
+          <FloatLabel>
+            <Calendar
+              view='month'
+              dateFormat='mm/yy'
+              onChange={(e) => {
+                if (e.value) {
+                  setSelectedDate({
+                    month: argGetMonth(arg2Date(e.value)),
+                    year: argGetYear(arg2Date(e.value))
+                  })
+                }
+              }}
+            />
+            <label htmlFor=''>Filtrar por mes</label>
+          </FloatLabel>
           <Button
             icon='pi pi-filter-slash'
             onClick={() => {
