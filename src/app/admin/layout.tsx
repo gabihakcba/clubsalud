@@ -136,7 +136,7 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-heart',
       template: itemRenderer,
       url: '/admin/healthPlan',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: await hasPermission([Permissions.OWN])
     },
     {
       label: 'Balances',

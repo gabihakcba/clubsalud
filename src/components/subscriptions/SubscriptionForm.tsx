@@ -163,7 +163,7 @@ export default function SubscriptionForm(): ReactElement {
           className='w-full'
           invalid={errors?.type !== undefined}
         />
-        <label htmlFor=''>Tipo</label>
+        <label htmlFor=''>Oferta</label>
       </FloatLabel>
       <Tag severity='warning'>
         Por mes ${calculateFinalPriceMonth(selectedPromotion?.amountPrice, selectedType as Plan)}

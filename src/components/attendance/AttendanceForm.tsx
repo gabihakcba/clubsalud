@@ -68,6 +68,8 @@ export default function AttendanceForm(): ReactElement {
       })}
     >
       <Dropdown
+        filter
+        filterBy='dni'
         {...register('member', { required: true })}
         invalid={errors?.member !== undefined}
         value={selectedMember}

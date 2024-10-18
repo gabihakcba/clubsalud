@@ -35,7 +35,9 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
                 schedule: { include: { charge: true, class: true } },
                 member: true
               }
-            }
+            },
+            registrationForm: true,
+            followUpForm: true
           }
         },
         employeeAccount: true

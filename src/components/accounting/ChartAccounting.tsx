@@ -136,9 +136,7 @@ export default function ChartAccounting(): ReactElement {
   const { data: healthPayments } = useQuery({
     queryKey: ['healthpayments'],
     queryFn: async () => {
-      const data = await getBilled()
-      console.log(data)
-      return data
+      return await getBilled()
     }
   })
 

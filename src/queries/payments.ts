@@ -15,12 +15,14 @@ export const getBilled = async (): Promise<BilledConsultation[]> => {
 export const setParticularPayment = async ({
   memberId,
   subscriptionId,
-  amount
+  amount,
+  date
 }): Promise<Payment> => {
   const response = await axios.post(`${path()}/api/payments`, {
     memberId: Number(memberId),
     subscriptionId: Number(subscriptionId),
-    amount: Number(amount)
+    amount: Number(amount),
+    date
   })
   return response.data
 }
@@ -28,12 +30,26 @@ export const setParticularPayment = async ({
 export const setPlanPayment = async ({
   amount,
   subscriptionId,
-  healthSubscribedPlanId
+  healthSubscribedPlanId,
+  autorizationNumber,
+  date
 }): Promise<Payment> => {
   const response = await axios.post(`${path()}/api/planPayments`, {
     subscriptionId: Number(subscriptionId),
     amount: Number(amount),
-    healthSubscribedPlanId: Number(healthSubscribedPlanId)
+    healthSubscribedPlanId: Number(healthSubscribedPlanId),
+    autorizationNumber: String(autorizationNumber),
+    date
   })
+  return response.data
+}
+
+export const deleteParticularPayment = async (id: number): Promise<Payment> => {
+  const response = await axios.delete(`${path()}/api/payments`, { data: id })
+  return response.data
+}
+
+export const deletePlanPayment = async (id: number): Promise<Payment> => {
+  const response = await axios.delete(`${path()}/api/planPayments`, { data: id })
   return response.data
 }

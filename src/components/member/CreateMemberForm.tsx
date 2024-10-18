@@ -295,7 +295,7 @@ export function CreateMemberForm(): ReactElement {
           autoComplete='off'
           invalid={errors?.afiliateNumber !== undefined}
         ></InputText>
-        <label htmlFor='afiliateNumber'>Número de afiliado</label>
+        <label htmlFor='afiliateNumber'>Número de historia clínica (ID)</label>
       </div>
 
       <div className='flex flex-column gap-0'>
