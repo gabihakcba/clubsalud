@@ -11,21 +11,21 @@ import { Button } from 'primereact/button'
 import { useModal } from 'utils/useModal'
 import { Dialog } from 'primereact/dialog'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
+import HealthUpdatePrice from './HealthUpdatePrice'
 
 export default function PromotionSection(): ReactElement {
   const [planSelected, setPlanSelected] = useState<any>(null)
   const [editPlan, openEditPlan, closeEditPlan] = useModal(false)
+  const [updatePrice, openUpdatePrice, closeUpdatePrice] = useModal(false)
 
   const query = useQueryClient()
 
-  const { mutate: deleteH } = useMutation({
+  const { mutate: deleteH, isPending: isDeleting } = useMutation({
     mutationFn: async (id: number | string): Promise<HealthPlan> => {
       return await deleteHealthPlan(id)
     },
-    onSuccess: (data) => {
-      query.setQueryData(['health'], (oldData: HealthPlan[]) => {
-        return oldData.filter((health) => Number(health.id) !== Number(data.id))
-      })
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['health'] })
     }
   })
 
@@ -71,9 +71,26 @@ export default function PromotionSection(): ReactElement {
               size='small'
               icon='pi pi-pen-to-square'
               iconPos='right'
+              outlined
               onClick={() => {
                 setPlanSelected(row)
                 openEditPlan()
+              }}
+            />
+          )}
+        />
+        <Column
+          body={(row) => (
+            <Button
+              label='Actualizar Precio'
+              size='small'
+              icon='pi pi-dollar'
+              iconPos='right'
+              outlined
+              severity='warning'
+              onClick={() => {
+                setPlanSelected(row)
+                openUpdatePrice()
               }}
             />
           )}
@@ -87,7 +104,9 @@ export default function PromotionSection(): ReactElement {
               outlined
               iconPos='right'
               severity='danger'
+              loading={planSelected?.id === row.id && isDeleting}
               onClick={() => {
+                setPlanSelected(row)
                 confirmDialog({
                   message: 'Eliminar?',
                   header: 'Confirmación de acción',
@@ -109,6 +128,13 @@ export default function PromotionSection(): ReactElement {
         onHide={closeEditPlan}
       >
         <HealthCard plan={planSelected} />
+      </Dialog>
+      <Dialog
+        header='Actualizar Precio'
+        visible={updatePrice}
+        onHide={closeUpdatePrice}
+      >
+        <HealthUpdatePrice healthPlan={planSelected}/>
       </Dialog>
     </>
   )
