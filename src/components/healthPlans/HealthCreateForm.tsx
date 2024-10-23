@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext'
 import { createHealthPlan } from 'queries/health'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type HealthPlan, type CreateHealthPlan } from 'utils/types'
+import { type CreateHealthPlan } from 'utils/types'
 import { HealthPlanType } from 'utils/types'
 
 const plansOptions = (): any[] => {
@@ -24,10 +24,7 @@ export default function HealthCreateForm(): ReactElement {
   const { mutate, isPending } = useMutation({
     mutationFn: createHealthPlan,
     onSuccess: async (data) => {
-      query.setQueryData(['health'], (oldData: HealthPlan[]) => [
-        ...oldData,
-        data
-      ])
+      await query.refetchQueries({ queryKey: ['health'] })
       reset()
     }
   })
