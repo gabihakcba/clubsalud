@@ -11,7 +11,7 @@ export const createHealthPlan = async (
   data: CreateHealthPlan
 ): Promise<HealthPlan> => {
   const response = await axios.post(`${path()}/api/health`, data)
-  return response.data
+  return response.data.healthPlan
 }
 
 export const updateHealthPlan = async (

@@ -248,6 +248,7 @@ export interface CreateHealthPlanSubscribed {
 export interface HealthPlan extends CreateHealthPlan {
   id: number
   planSubscription?: HealthPlanSubscribed[]
+  record?: HealthPlanRecord[]
 }
 
 export interface CreateHealthPlan {
@@ -255,6 +256,14 @@ export interface CreateHealthPlan {
   description?: string
   type: HealthPlanType
   paymentPerConsultation: number
+}
+
+export interface HealthPlanRecord {
+  id: number
+  date: Date
+  amount: number
+  healthPlanId: number
+  healthPlan: HealthPlan
 }
 
 export interface Notification extends CreateNotification {

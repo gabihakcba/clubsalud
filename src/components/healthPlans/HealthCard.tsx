@@ -1,4 +1,4 @@
-import { useState, type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import {
   HealthPlanType,
   type HealthPlan,
@@ -50,9 +50,15 @@ export default function HealthCard({ plan }: params): ReactElement {
     }
   })
 
+  useEffect(() => {
+    setSelectedHealthPlan(HealthPlanType[plan.type])
+    setValue('type', HealthPlanType[plan.type])
+  }, [])
+
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors }
   } = useForm()
 
@@ -105,23 +111,10 @@ export default function HealthCard({ plan }: params): ReactElement {
           onChange={(e) => {
             setSelectedHealthPlan(e.value)
           }}
-          defaultValue={plan.type}
         />
         <label htmlFor='type'>Tipo</label>
       </div>
-      <div className='p-float-label'>
-        <InputText
-          type='number'
-          {...register('paymentPerConsultation', {
-            required: {
-              value: true,
-              message: 'Campo requerido'
-            }
-          })}
-          defaultValue={plan.paymentPerConsultation}
-        />
-        <label htmlFor='paymentPerConsultation'>Pago por consulta</label>
-      </div>
+
       <Button
         label='Enviar'
         icon='pi pi-upload'
@@ -131,16 +124,3 @@ export default function HealthCard({ plan }: params): ReactElement {
     </form>
   )
 }
-
-/* <button
-          onClick={() => {
-            deleteH(plan.id)
-          }}
-        >
-          <Image
-            src={delete_}
-            alt='E'
-            width={20}
-            height={20}
-          ></Image>
-        </button> */

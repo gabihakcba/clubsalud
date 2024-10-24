@@ -316,14 +316,13 @@ model BilledConsultation {
 model HealthPlanSubscribed {
   // Fields
   id Int @id @default(autoincrement())
+  afiliateNumber     String               @default("0")
   // Foreignkeys
-
   memberId           Int
   planId             Int
-  afiliateNumber     String               @default("0")
+  // Relations
   member             Member               @relation(fields: [memberId], references: [id], name: "planMember", onDelete: Cascade)
   plan               HealthPlan           @relation(fields: [planId], references: [id], name: "planPlan", onDelete: Cascade)
-  //Relations
   billedConsultation BilledConsultation[] @relation(name: "consultationPlan")
 }
 
@@ -336,6 +335,17 @@ model HealthPlan {
   paymentPerConsultation Float
   // Relations
   planSubscription       HealthPlanSubscribed[] @relation(name: "planPlan")
+  record HealthPlanRecord[] @relation(name: "healthPlanRecord")
+}
+
+model HealthPlanRecord {
+  id  Int @id @default(autoincrement())
+  date DateTime @default(now())
+  amount Float
+  // Foreignkeys
+  healthPlanId Int
+  // Relations
+  healthPlan HealthPlan @relation(fields: [healthPlanId], references: [id], name: "healthPlanRecord", onDelete: Cascade)
 }
 
 model MedicalRecord {
