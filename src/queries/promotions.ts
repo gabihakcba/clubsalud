@@ -18,7 +18,7 @@ export const createPromotion = async (
   promotion: CreatePromotion
 ): Promise<Promotion> => {
   const response = await axios.post(`${path()}/api/promotions`, promotion)
-  return response.data
+  return response.data.promotion
 }
 
 export const updatePromotion = async (
