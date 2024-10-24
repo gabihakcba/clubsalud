@@ -175,7 +175,8 @@ export interface Schedule {
 }
 
 export interface Promotion extends CreatePromotion {
-  id: number
+  id: number,
+  record?: PromotionRecord[]
 }
 
 export interface CreatePromotion {
@@ -184,6 +185,14 @@ export interface CreatePromotion {
   amountWeeklyClasses: number
   amountPrice: number
   lastPriceUpdate?: Date
+}
+
+export interface PromotionRecord {
+  id: number
+  date: Date
+  price: number
+  promotionId: number
+  promotion: Promotion
 }
 
 export interface Plan extends CreatePlan {

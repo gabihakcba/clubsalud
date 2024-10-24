@@ -401,6 +401,18 @@ model Promotion {
   lastPriceUpdate     DateTime       @default(now())
   // Relations
   subscription        Subscription[] @relation(name: "subscriptionPromotion")
+  record PromotionRecord[] @relation(name: "promotionRecord")
+}
+
+model PromotionRecord {
+  // Fields
+  id Int @id @default(autoincrement())
+  date DateTime
+  price Float
+  // ForeignKeys
+  promotionId Int
+  // Relations
+  promotion Promotion @relation(fields: [promotionId], references: [id], name: "promotionRecord", onDelete: Cascade)
 }
 
 model InstructorPrice {

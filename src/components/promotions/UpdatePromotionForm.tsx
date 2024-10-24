@@ -24,14 +24,7 @@ export default function UpdatePromotionForm({
     mutationFn: updatePromotion,
     async onSuccess(data: Promotion) {
       reset()
-      await query.setQueryData(['promotions'], (oldData: Promotion[]) => {
-        const index = oldData.findIndex((element: Promotion) => {
-          return promotion.id === element.id
-        })
-        const newData = [...oldData]
-        newData.splice(index, 1, data)
-        return newData
-      })
+      await query.refetchQueries({ queryKey: ['promotions'] })
     }
   })
 
@@ -98,23 +91,6 @@ export default function UpdatePromotionForm({
         />
         <label>Cantidad de veces por semana</label>
       </li>
-      <li className='p-float-label'>
-        <InputText
-          type='number'
-          id='amountPrice'
-          form={'promotion'}
-          defaultValue={promotion.amountPrice}
-          {...register('amountPrice', {
-            required: {
-              value: true,
-              message: 'El campo es requerido'
-            }
-          })}
-          invalid={errors?.amountPrice !== undefined}
-        />
-        <label>Precio</label>
-      </li>
-
       <Button
         type='submit'
         label='Enviar'
