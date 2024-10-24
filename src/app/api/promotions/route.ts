@@ -1,14 +1,19 @@
-import { type PrismaClient, type Promotion } from '@prisma/client'
+import {
+  type PromotionRecord,
+  type PrismaClient,
+  type Promotion
+} from '@prisma/client'
 import prisma from 'utils/prisma'
 import { type NextRequest } from 'next/server'
 import JSONbig from 'json-bigint'
-import { type CreatePromotion } from 'utils/types'
+import moment from 'moment'
 
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const promotions: Promotion[] = await db.promotion.findMany({
-    orderBy: { amountPrice: 'asc' }
+    orderBy: { amountPrice: 'asc' },
+    include: { record: true }
   })
   return new Response(JSONbig.stringify(promotions), {
     status: 200
@@ -36,16 +41,33 @@ export async function DELETE(req: NextRequest): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
-    const parsed: CreatePromotion = {
+    const parsed = {
       title: data.title,
       description: data.description,
       amountWeeklyClasses: Number(data.amountWeeklyClasses),
       amountPrice: Number(data.amountPrice)
     }
-    const res: Promotion = await db.promotion.create({
-      data: parsed
+
+    const [promotion, record] = await db.$transaction(async (db) => {
+      const promotion: Promotion = await db.promotion.create({
+        data: parsed
+      })
+
+      const record: PromotionRecord = await db.promotionRecord.create({
+        data: {
+          date: moment().toDate(),
+          price: Number(data.price),
+          promotion: {
+            connect: {
+              id: promotion.id
+            }
+          }
+        }
+      })
+      return [promotion, record]
     })
-    return new Response(JSONbig.stringify(res), {
+
+    return new Response(JSONbig.stringify({ promotion, record }), {
       status: 200
     })
   } catch (error) {
@@ -58,11 +80,10 @@ export async function POST(req: NextRequest): Promise<Response> {
 export async function PATCH(req: NextRequest): Promise<Response> {
   try {
     const data: Promotion = await req.json()
-    const parsed: CreatePromotion = {
+    const parsed = {
       title: data.title,
       description: data.description,
-      amountWeeklyClasses: Number(data.amountWeeklyClasses),
-      amountPrice: Number(data.amountPrice)
+      amountWeeklyClasses: Number(data.amountWeeklyClasses)
     }
     const id: number = Number(data.id)
     const res: Promotion = await db.promotion.update({

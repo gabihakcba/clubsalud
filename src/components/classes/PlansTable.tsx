@@ -12,6 +12,7 @@ import { deletePromotion, getPromotions } from 'queries/promotions'
 import { type ReactElement, useState } from 'react'
 import { type Promotion, Permissions } from 'utils/types'
 import { useModal } from 'utils/useModal'
+import UpdatePromotionPrice from './UpdatePromotionPrice'
 
 export default function PlansTable(): ReactElement {
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
@@ -20,6 +21,7 @@ export default function PlansTable(): ReactElement {
     useModal(false)
   const [createSubscription, openCreateSubscription, closeCreateSubscription] =
     useModal(false)
+  const [updatePrice, openUpdatePrice, closeUpdatePrice] = useModal(false)
 
   const query = useQueryClient()
 
@@ -82,6 +84,14 @@ export default function PlansTable(): ReactElement {
 
   return (
     <>
+      <Dialog
+        header='Actualizar Precio'
+        visible={updatePrice}
+        onHide={closeUpdatePrice}
+      >
+        <UpdatePromotionPrice promotion={selectedPromotion}/>
+      </Dialog>
+
       <Dialog
         header='Editar Plan'
         visible={editPromotion}
@@ -170,6 +180,24 @@ export default function PlansTable(): ReactElement {
                 onClick={() => {
                   setSelectedPromotion(promotion)
                   openEditPromotion()
+                }}
+              />
+            </HasRole>
+          )}
+        />
+        <Column
+          body={(row) => (
+            <HasRole required={[Permissions.ADM, Permissions.OWN]}>
+              <Button
+                label='Actualizar Precio'
+                size='small'
+                severity='warning'
+                icon='pi pi-dollar'
+                iconPos='right'
+                outlined
+                onClick={() => {
+                  setSelectedPromotion(row)
+                  openUpdatePrice()
                 }}
               />
             </HasRole>
