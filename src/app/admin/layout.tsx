@@ -190,7 +190,7 @@ export default function AdminLayout({ children }: any): ReactElement {
   const [items, setItems] = useState<MenuItem[]>([])
 
   useEffect(() => {
-    const cookies: Record<string, string> = parse(document.cookie || '')
+    const cookies: Record<string, string | undefined> = parse(document.cookie || '')
     if (!cookies.auth) {
       router.push('/')
     }

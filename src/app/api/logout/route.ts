@@ -6,7 +6,7 @@ import JSONbig from 'json-bigint'
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const cookie: RequestCookies = req.cookies
-    const cookies: Record<string, string> = parse(cookie.toString() || '')
+    const cookies: Record<string, string | undefined> = parse(cookie.toString() || '')
     if (cookies.auth) {
       return new Response(null, {
         status: 200,
