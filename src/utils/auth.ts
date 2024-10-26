@@ -12,7 +12,7 @@ export const hasPermission = async (
 }
 
 export const setNewUser = async (
-  token: Record<string, string>,
+  token: Record<string, string | undefined>,
   setUser
 ): Promise<void> => {
   const newUser = await verifyToken(token)
@@ -21,18 +21,18 @@ export const setNewUser = async (
   }
 }
 
-export const getUserToken = (): Record<string, string> => {
-  const token: Record<string, string> = parse(document.cookie || '')
+export const getUserToken = (): Record<string, string | undefined> => {
+  const token: Record<string, string | undefined> = parse(document.cookie || '')
   return token
 }
 
 export const verifyToken = async (
-  token: Record<string, string>
+  token: Record<string, string | undefined>
 ): Promise<Account | null> => {
   try {
     const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
     const response: JWTVerifyResult<JWTPayload> = await jwtVerify(
-      token.auth,
+      token.auth ?? '',
       new TextEncoder().encode(secret)
     )
     const payload = response.payload

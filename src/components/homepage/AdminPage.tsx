@@ -10,6 +10,7 @@ import { useModal } from 'utils/useModal'
 import AttendanceInstructorForm from 'components/attendanceInstructor/AttendanceInstructorForm'
 import RegistrationFormSelector from 'components/medicalReports/RegistrationFormSelector'
 import HealthAssignForm from 'components/healthPlans/HealthAssignForm'
+import MembersList from 'components/member/MembersList'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -21,6 +22,7 @@ export default function AdminPage(): ReactElement {
     openInstructorAttendance,
     closeInstructorAttendace
   ] = useModal(false)
+  const [membersList, openMembersList, closeMembersList] = useModal(false)
   const [create, openCreate, closeCreate] = useModal(false)
 
   const { data: membersSubs } = useQuery({
@@ -33,6 +35,13 @@ export default function AdminPage(): ReactElement {
 
   return (
     <div className='flex flex-column'>
+      <Dialog
+        visible={membersList}
+        onHide={closeMembersList}
+        header='Listado de alumnos'
+      >
+        <MembersList/>
+      </Dialog>
       <Dialog
         visible={showAssignHealthPlan}
         onHide={closeAssignHealthPlan}
@@ -63,6 +72,15 @@ export default function AdminPage(): ReactElement {
       </Dialog>
       <nav className='flex justify-content-end gap-4'>
         <RegistrationFormSelector />
+        <Button
+          label='Listado de alumnos'
+          size='small'
+          outlined
+          icon='pi pi-list'
+          iconPos='right'
+          severity='success'
+          onClick={openMembersList}
+        />
         <Button
           label='Asignar Obra Social'
           size='small'
