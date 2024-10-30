@@ -11,6 +11,7 @@ import { useForm, type FieldValues } from 'react-hook-form'
 import { getUserToken, setNewUser } from 'utils/auth'
 
 export default function CreateNotificationForm(): ReactElement {
+  const [acc, setAcc] = useState<any[]>([])
   const [user, setUser] = useState<Member | undefined>(undefined)
   const [selectedAccount, setSelectedAccount] = useState<any>(null)
 
@@ -38,7 +39,6 @@ export default function CreateNotificationForm(): ReactElement {
     mutationFn: createNotification,
     onSuccess: (data) => {
       reset()
-      console.log(data)
       query.setQueriesData(
         { queryKey: ['notifications'] },
         (oldNot: Notification[]) => [...oldNot, data]
@@ -53,6 +53,23 @@ export default function CreateNotificationForm(): ReactElement {
     reset,
     setValue
   } = useForm()
+
+  useEffect(() => {
+    const tmp = accounts?.map((account) => ({
+      ...account,
+      displayName:
+        account.memberAccount?.name ??
+        account.instructorAccount?.name ??
+        account.employeeAccount?.name ??
+        account.username,
+      dni:
+        account.memberAccount?.dni ??
+        account.instructorAccount?.dni ??
+        account.employeeAccount?.dni ??
+        999
+    }))
+    tmp && setAcc(tmp)
+  }, accounts)
 
   return (
     <form
@@ -71,10 +88,10 @@ export default function CreateNotificationForm(): ReactElement {
     >
       <FloatLabel>
         <Dropdown
-          options={accounts}
+          options={acc}
           loading={loadingAccounts}
           value={selectedAccount}
-          optionLabel='username'
+          optionLabel='displayName'
           optionValue='id'
           {...register('receiverUsername', { required: true })}
           onChange={(e) => {
@@ -84,6 +101,7 @@ export default function CreateNotificationForm(): ReactElement {
           invalid={errors?.receiverUsername !== undefined}
           className='w-full'
           filter
+          filterBy='dni'
         />
         <label htmlFor=''>Para</label>
       </FloatLabel>
