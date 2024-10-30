@@ -62,7 +62,9 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='sender.username'
+          body={(data) => {
+            return <div>{JSON.stringify(data)}</div>
+          }}
           header='De'
         />
         <Column
@@ -90,11 +92,25 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          field='sender.username'
+          body={(data: Notification) => {
+            return (
+              data.sender?.memberAccount?.name ??
+              data.sender?.instructorAccount?.name ??
+              data.sender?.employeeAccount?.name ??
+              data.sender.username
+            )
+          }}
           header='De'
         />
         <Column
-          field='receiver.username'
+          body={(data) => {
+            return (
+              data.receiver?.instructorAccount?.name ??
+              data.receiver?.memberAccount?.name ??
+              data.receiver?.employeeAccount?.name ??
+              data.receiver.username
+            )
+          }}
           header='Para'
         />
         <Column

@@ -14,8 +14,20 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
         OR: [{ receiverId: id }, { senderId: id }]
       },
       include: {
-        sender: true,
-        receiver: true
+        sender: {
+          include: {
+            memberAccount: true,
+            instructorAccount: true,
+            employeeAccount: true
+          }
+        },
+        receiver: {
+          include: {
+            memberAccount: true,
+            instructorAccount: true,
+            employeeAccount: true
+          }
+        }
       }
     })
     return new Response(JSONbig.stringify(notifications), {
