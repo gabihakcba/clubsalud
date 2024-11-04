@@ -132,8 +132,8 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         (price: InstructorPrice) => price.active && !price.degree
       )
       setPrice({
-        degree: degreePrice[0].amount,
-        nodegree: nodegreePrice[0].amount
+        degree: degreePrice[0]?.amount,
+        nodegree: nodegreePrice[0]?.amount
       })
     }
   }, [prices])
