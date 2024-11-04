@@ -158,7 +158,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     ]
 
     employees.forEach((employee: Employee) => {
-      const row = instructorsSheet.addRow({
+      const row = employeesSheet.addRow({
         id: employee.id,
         name: employee.name,
         lastName: employee.lastName,
@@ -190,6 +190,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     instructorPaymentSheet.columns = [
       { header: 'ID', key: 'id', width: 30 },
       { header: 'Profesor', key: 'name', width: 30 },
+      { header: 'DNI', key: 'dni', width: 30 },
       { header: 'Cantidad', key: 'amount', width: 30 },
       { header: 'Precio por hora', key: 'pricePerHour', width: 30 },
       { header: 'Mes', key: 'workedMonth', width: 30 },
@@ -206,6 +207,7 @@ export async function GET(req: NextRequest): Promise<Response> {
         id: payment.id,
         name: instructor?.name ?? '',
         amount: payment.amount.toString(),
+        dni: instructor?.dni.toString(),
         pricePerHour: payment.pricePerHoour.toString(),
         workedMonth: payment.workedMonth.toString(),
         paymentDate: payment.paymentDate
@@ -231,6 +233,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     employeePaymentSheet.columns = [
       { header: 'ID', key: 'id', width: 30 },
       { header: 'Empleado', key: 'name', width: 30 },
+      { header: 'DNI', key: 'dni', width: 30 },
       { header: 'Cantidad', key: 'amount', width: 30 },
       { header: 'Mes', key: 'workedMonth', width: 30 },
       { header: 'Fecha de pago', key: 'paymentDate', width: 30 },
@@ -242,9 +245,10 @@ export async function GET(req: NextRequest): Promise<Response> {
         (employee: Employee) => employee.id === payment.employeeId
       )
 
-      const row = instructorPaymentSheet.addRow({
+      const row = employeePaymentSheet.addRow({
         id: payment.id,
         name: employee?.name ?? '',
+        dni: employee?.dni.toString(),
         amount: payment.amount.toString(),
         workedMonth: payment.monthPayment.toString(),
         paymentDate: payment.date
@@ -272,6 +276,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       { header: 'Cantidad', key: 'amount', width: 30 },
       { header: 'Fecha', key: 'date', width: 30 },
       { header: 'Alumno', key: 'name', width: 30 },
+      { header: 'DNI', key: 'dni', width: 30 },
       { header: 'Perfil Alumno (link)', key: 'memberId', width: 30 }
     ]
 
@@ -280,11 +285,12 @@ export async function GET(req: NextRequest): Promise<Response> {
         (member: Member) => member.id === payment.memeberId
       )
 
-      const row = instructorPaymentSheet.addRow({
+      const row = paymentsSheet.addRow({
         id: payment.id,
         amount: payment.amount.toString(),
         date: payment.date,
-        name: member?.name ?? ''
+        name: member?.name ?? '',
+        dni: member?.dni.toString()
       })
 
       const accountRowIndex =
@@ -305,6 +311,7 @@ export async function GET(req: NextRequest): Promise<Response> {
     billedConsultationSheet.columns = [
       { header: 'ID', key: 'id', width: 30 },
       { header: 'Alumno', key: 'name', width: 30 },
+      { header: 'DNI', key: 'dni', width: 30 },
       { header: 'Cantidad', key: 'amount', width: 30 },
       { header: 'Fecha', key: 'date', width: 30 },
       { header: 'Numero de autorización', key: 'autorizationNumber', width: 30 },
@@ -318,11 +325,13 @@ export async function GET(req: NextRequest): Promise<Response> {
         (member: Member) => member.id === subscription?.memberId
       )
 
-      const row = instructorPaymentSheet.addRow({
+      const row = billedConsultationSheet.addRow({
         id: billed.id,
+        name: member?.name ?? '',
+        dni: member?.dni.toString(),
         amount: billed.amount.toString(),
-        date: billed.date,
-        name: member?.name ?? ''
+        autorizationNumber: billed.autorizationNumber.toString(),
+        date: billed.date
       })
 
       const accountRowIndex =
