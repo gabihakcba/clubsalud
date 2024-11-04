@@ -166,6 +166,13 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
+      label: 'Herramientas',
+      icon: 'pi pi-wrench',
+      template: itemRenderer,
+      url: '/admin/tools',
+      show: await hasPermission([Permissions.OWN])
+    },
+    {
       label: 'Salir',
       icon: 'pi pi-sign-out',
       template: itemRenderer,
@@ -190,7 +197,9 @@ export default function AdminLayout({ children }: any): ReactElement {
   const [items, setItems] = useState<MenuItem[]>([])
 
   useEffect(() => {
-    const cookies: Record<string, string | undefined> = parse(document.cookie || '')
+    const cookies: Record<string, string | undefined> = parse(
+      document.cookie || ''
+    )
     if (!cookies.auth) {
       router.push('/')
     }
