@@ -34,7 +34,7 @@ const parseData = ({
     position: data.position,
     contractType: data.contractType,
     salary: Number(data.salary),
-    cbu: data.cbu !== '' ? BigInt(Number(data.cbu)) : undefined,
+    cbu: data.cbu,
     alias: data.alias !== '' ? String(data.alias) : undefined,
     accountId: id
   }

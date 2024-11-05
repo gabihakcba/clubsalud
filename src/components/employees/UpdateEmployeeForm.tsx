@@ -63,10 +63,7 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
           contractType: ContractType[data.contractType],
           alias: data.alias !== '' ? data.alias : undefined,
           email: String(data.email),
-          cbu:
-            data.cbu && String(data.cbu) !== ''
-              ? BigInt(data.cbu as number)
-              : undefined,
+          cbu: data.cbu,
           salary: parseFloat(data.salary as string)
         }
 
@@ -250,10 +247,9 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
 
       <li className='p-float-label'>
         <InputText
-          type='number'
           id='cbu'
           form={`employee${employee?.id}`}
-          defaultValue={employee?.cbu ? Number(employee?.cbu) : undefined}
+          defaultValue={employee?.cbu ?? ''}
           {...register('cbu')}
         />
         <label>CBU</label>
