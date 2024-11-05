@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
+import { Password } from 'primereact/password'
 
 const formToMember = (data: FieldValues, id: number): CreateMember => {
   return {
@@ -112,14 +113,14 @@ export function CreateMemberForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.username !== undefined}
+          className='w-full'
         />
         <label htmlFor='username'>Nombre de usuario</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='password'
-          type='password'
           {...register('password', {
             required: {
               value: true,
@@ -129,14 +130,16 @@ export function CreateMemberForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.password !== undefined}
+          className='w-full'
+          toggleMask
+          feedback={false}
         />
         <label htmlFor='password'>Contraseña</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='repeatpassword'
-          type='password'
           {...register('repeatpassword', {
             required: {
               value: true,
@@ -151,6 +154,9 @@ export function CreateMemberForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.repeatpassword !== undefined}
+          className='w-full'
+          toggleMask
+          feedback={false}
         />
         <label htmlFor='repeatpassword'>Repetir Contraseña</label>
       </div>
@@ -160,6 +166,7 @@ export function CreateMemberForm(): ReactElement {
           {...register('permissions')}
           disabled
           value={Permissions.MEM}
+          className='w-full'
         />
         <label htmlFor='permissions'>Permisos</label>
       </div>
@@ -180,6 +187,7 @@ export function CreateMemberForm(): ReactElement {
           type='text'
           autoComplete='off'
           invalid={errors?.name !== undefined}
+          className='w-full'
         />
         <label htmlFor='name'>Nombre</label>
       </div>
@@ -195,6 +203,7 @@ export function CreateMemberForm(): ReactElement {
           type='text'
           autoComplete='off'
           invalid={errors?.lastName !== undefined}
+          className='w-full'
         />
         <label htmlFor='lastName'>Apellido</label>
       </div>
@@ -210,6 +219,7 @@ export function CreateMemberForm(): ReactElement {
           type='number'
           autoComplete='off'
           invalid={errors?.dni !== undefined}
+          className='w-full'
         />
         <label htmlFor='dni'>DNI</label>
       </div>
@@ -218,6 +228,7 @@ export function CreateMemberForm(): ReactElement {
           {...register('cuit')}
           form='createForm'
           type='number'
+          className='w-full'
         />
         <label htmlFor='cuit'>CUIT</label>
       </div>
@@ -232,6 +243,7 @@ export function CreateMemberForm(): ReactElement {
           form='createForm'
           type='number'
           invalid={errors?.phoneNumber !== undefined}
+          className='w-full'
         />
         <label htmlFor='phoneNumber'>Número de teléfono</label>
       </div>
@@ -247,6 +259,7 @@ export function CreateMemberForm(): ReactElement {
           type='text'
           autoComplete='off'
           invalid={errors?.address !== undefined}
+          className='w-full'
         />
         <label htmlFor='address'>Dirección</label>
       </div>
@@ -264,6 +277,7 @@ export function CreateMemberForm(): ReactElement {
           dateFormat='dd/mm/yy'
           placeholder='Fecha de inscripción'
           invalid={errors?.inscriptionDate !== undefined}
+          className='w-full'
         />
         <label htmlFor='inscriptionDate'>Fecha de inscripción</label>
       </div>
@@ -279,6 +293,7 @@ export function CreateMemberForm(): ReactElement {
           type='text'
           autoComplete='off'
           invalid={errors?.derivedBy !== undefined}
+          className='w-full'
         />
         <label htmlFor='derivedBy'>Derivado por</label>
       </div>
@@ -294,7 +309,8 @@ export function CreateMemberForm(): ReactElement {
           type='number'
           autoComplete='off'
           invalid={errors?.afiliateNumber !== undefined}
-        ></InputText>
+          className='w-full'
+        />
         <label htmlFor='afiliateNumber'>Número de historia clínica (ID)</label>
       </div>
 
@@ -306,6 +322,7 @@ export function CreateMemberForm(): ReactElement {
           icon='pi pi-upload'
           iconPos='right'
           loading={isPendingMember || isPendingAccount}
+          className='w-full'
         />
         <small>
           {isSuccessMember && <p className='w-max text-green-400'>OK</p>}

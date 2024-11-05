@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
+import { Password } from 'primereact/password'
 import { createAccount, deleteAccount } from 'queries/accounts'
 import { createEmployee } from 'queries/employees'
 import { useEffect, type ReactElement, useState } from 'react'
@@ -129,14 +130,14 @@ export default function CreateEmployeeForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.username !== undefined}
+          className='w-full'
         />
         <label htmlFor='username'>Nombre de usuario</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='password'
-          type='password'
           {...register('password', {
             required: {
               value: true,
@@ -146,14 +147,16 @@ export default function CreateEmployeeForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.password !== undefined}
+          className='w-full'
+          toggleMask
+          feedback={false}
         />
         <label htmlFor='password'>Contraseña</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='repeatpassword'
-          type='password'
           {...register('repeatpassword', {
             required: {
               value: true,
@@ -168,6 +171,9 @@ export default function CreateEmployeeForm(): ReactElement {
           autoComplete='off'
           form='createForm'
           invalid={errors?.repeatpassword !== undefined}
+          className='w-full'
+          toggleMask
+          feedback={false}
         />
         <label htmlFor='repeatpassword'>Repetir Contraseña</label>
       </div>
@@ -177,6 +183,7 @@ export default function CreateEmployeeForm(): ReactElement {
           {...register('permissions')}
           disabled
           value={Permissions.ADM}
+          className='w-full'
         />
         <label htmlFor='permissions'>Permisos</label>
       </div>
@@ -194,6 +201,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.name !== undefined}
+          className='w-full'
         />
         <label htmlFor='name'>Nombre</label>
       </div>
@@ -208,6 +216,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.lastName !== undefined}
+          className='w-full'
         />
         <label htmlFor='lastName'>Apellido</label>
       </div>
@@ -222,6 +231,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.dni !== undefined}
+          className='w-full'
         />
         <label>DNI</label>
       </div>
@@ -230,6 +240,7 @@ export default function CreateEmployeeForm(): ReactElement {
         <InputText
           type='number'
           {...register('cuit')}
+          className='w-full'
         />
         <label>CUIT</label>
       </div>
@@ -244,6 +255,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.phoneNumber !== undefined}
+          className='w-full'
         />
         <label>Teléfono</label>
       </div>
@@ -258,6 +270,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.email !== undefined}
+          className='w-full'
         />
         <label>E-mail</label>
       </div>
@@ -272,6 +285,7 @@ export default function CreateEmployeeForm(): ReactElement {
             }
           })}
           invalid={errors?.salary !== undefined}
+          className='w-full'
         />
         <label>Salario</label>
       </div>
@@ -280,6 +294,7 @@ export default function CreateEmployeeForm(): ReactElement {
         <InputText
           type='number'
           {...register('cbu')}
+          className='w-full'
         />
         <label>CBU:</label>
       </div>
@@ -288,6 +303,7 @@ export default function CreateEmployeeForm(): ReactElement {
         <InputText
           type='text'
           {...register('alias')}
+          className='w-full'
         />
         <label>Alias</label>
       </div>
@@ -347,6 +363,7 @@ export default function CreateEmployeeForm(): ReactElement {
         iconPos='right'
         size='small'
         loading={isPending || isPendingAccount}
+        className='w-full'
       />
       {isPending && (
         <small className='text-sm text-yellow-500'>Creando...</small>
