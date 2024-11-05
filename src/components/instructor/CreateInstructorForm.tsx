@@ -22,7 +22,7 @@ const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
     address: data.address,
     email: data.email,
     degree: data.degree,
-    cbu: data?.cbu ? data.cbu : null,
+    cbu: data?.cbu,
     alias: data?.alias ? data.alias : null,
     accountId: id
   }

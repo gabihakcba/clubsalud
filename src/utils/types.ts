@@ -146,7 +146,7 @@ export interface CreateInstructor {
   address: string
   email: string
   degree: boolean
-  cbu?: bigint | null
+  cbu?: string | null
   alias?: string | null
   accountId: number
 }
@@ -305,7 +305,7 @@ export interface CreateEmployee {
   position: JobPosition
   contractType: ContractType
   salary: number
-  cbu?: bigint
+  cbu?: string
   alias?: string
   accountId?: number
 }

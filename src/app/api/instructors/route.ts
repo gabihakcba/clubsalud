@@ -50,7 +50,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       address: data.address,
       email: data.email,
       degree: data.degree,
-      cbu: data?.cbu ? BigInt(data.cbu) : null,
+      cbu: data?.cbu,
       alias: data?.alias ? data.alias : null
     }
     const res: Instructor = await db.instructor.create({
@@ -104,8 +104,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       address: data.address,
       email: data.email,
       degree: data.degree,
-      cbu: data?.cbu ? BigInt(data.cbu) : null,
-      alias: data?.alias ? data.alias : null
+      cbu: data?.cbu,
+      alias: data?.alias
     }
     const id: number = Number(data.id)
     const res: Instructor = await db.instructor.update({
