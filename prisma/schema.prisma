@@ -105,7 +105,7 @@ model Instructor {
   address              String
   email                String
   degree               Boolean                @default(false)
-  cbu                  BigInt?                @db.BigInt
+  cbu                  String?
   alias                String?
   // Foreignkeys
   accountId            Int                    @unique
@@ -278,7 +278,7 @@ model Employee {
   position         JobPosition
   contractType     ContractType
   salary           Float
-  cbu              BigInt?           @db.BigInt
+  cbu              String?
   alias            String?
   lastSalaryUpdate DateTime          @default(now())
   // Foreignkeys
@@ -315,7 +315,7 @@ model BilledConsultation {
 
 model HealthPlanSubscribed {
   // Fields
-  id Int @id @default(autoincrement())
+  id                 Int                  @id @default(autoincrement())
   afiliateNumber     String               @default("0")
   // Foreignkeys
   memberId           Int
@@ -335,17 +335,17 @@ model HealthPlan {
   paymentPerConsultation Float
   // Relations
   planSubscription       HealthPlanSubscribed[] @relation(name: "planPlan")
-  record HealthPlanRecord[] @relation(name: "healthPlanRecord")
+  record                 HealthPlanRecord[]     @relation(name: "healthPlanRecord")
 }
 
 model HealthPlanRecord {
-  id  Int @id @default(autoincrement())
-  date DateTime @default(now())
-  amount Float
+  id           Int        @id @default(autoincrement())
+  date         DateTime   @default(now())
+  amount       Float
   // Foreignkeys
   healthPlanId Int
   // Relations
-  healthPlan HealthPlan @relation(fields: [healthPlanId], references: [id], name: "healthPlanRecord", onDelete: Cascade)
+  healthPlan   HealthPlan @relation(fields: [healthPlanId], references: [id], name: "healthPlanRecord", onDelete: Cascade)
 }
 
 model MedicalRecord {
@@ -393,26 +393,26 @@ model Plan {
 
 model Promotion {
   // Fields
-  id                  Int            @id @default(autoincrement())
+  id                  Int               @id @default(autoincrement())
   title               String
   description         String
   amountWeeklyClasses Int
   amountPrice         Float
-  lastPriceUpdate     DateTime       @default(now())
+  lastPriceUpdate     DateTime          @default(now())
   // Relations
-  subscription        Subscription[] @relation(name: "subscriptionPromotion")
-  record PromotionRecord[] @relation(name: "promotionRecord")
+  subscription        Subscription[]    @relation(name: "subscriptionPromotion")
+  record              PromotionRecord[] @relation(name: "promotionRecord")
 }
 
 model PromotionRecord {
   // Fields
-  id Int @id @default(autoincrement())
-  date DateTime
-  price Float
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  price       Float
   // ForeignKeys
   promotionId Int
   // Relations
-  promotion Promotion @relation(fields: [promotionId], references: [id], name: "promotionRecord", onDelete: Cascade)
+  promotion   Promotion @relation(fields: [promotionId], references: [id], name: "promotionRecord", onDelete: Cascade)
 }
 
 model InstructorPrice {

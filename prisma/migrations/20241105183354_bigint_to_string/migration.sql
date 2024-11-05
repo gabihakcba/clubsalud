@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Employee" ALTER COLUMN "cbu" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "Instructor" ALTER COLUMN "cbu" SET DATA TYPE TEXT;

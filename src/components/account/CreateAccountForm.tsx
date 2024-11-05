@@ -8,6 +8,7 @@ import { useState, type ReactElement, useEffect } from 'react'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { MultiSelect } from 'primereact/multiselect'
+import { Password } from 'primereact/password'
 
 interface params {
   account?: Account
@@ -112,6 +113,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
         <InputText
           id='username'
           type='text'
+          className='w-full'
           {...register('username', {
             required: {
               value: true,
@@ -122,14 +124,13 @@ export function CreateAccountForm({ account }: params): ReactElement {
           form='createForm'
           invalid={errors?.username !== undefined}
           defaultValue={account?.username}
-        ></InputText>
+        />
         <label htmlFor='username'>Nombre de usuario</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='password'
-          type='password'
           {...register('password', {
             required: {
               value: true,
@@ -140,14 +141,16 @@ export function CreateAccountForm({ account }: params): ReactElement {
           form='createForm'
           invalid={errors?.password !== undefined}
           defaultValue={account?.password}
-        ></InputText>
+          className='w-full'
+          toggleMask
+          feedback={false}
+        />
         <label htmlFor='password'>Contraseña</label>
       </div>
 
       <div className='p-float-label'>
-        <InputText
+        <Password
           id='repeatpassword'
-          type='password'
           {...register('repeatpassword', {
             required: {
               value: true,
@@ -163,7 +166,10 @@ export function CreateAccountForm({ account }: params): ReactElement {
           form='createForm'
           invalid={errors?.repeatpassword !== undefined}
           defaultValue={account?.password}
-        ></InputText>
+          className='w-full'
+          toggleMask
+          feedback={false}
+        />
         <label htmlFor='repeatpassword'>Repetir Contraseña</label>
       </div>
 
