@@ -132,6 +132,9 @@ export function CreateInstructorForm(): ReactElement {
               message: 'La contraseña es requerida'
             }
           })}
+          onChange={(e) => {
+            setValue('password', e.target.value)
+          }}
           autoComplete='off'
           form='createForm'
           invalid={errors?.password !== undefined}
@@ -156,6 +159,9 @@ export function CreateInstructorForm(): ReactElement {
               )
             }
           })}
+          onChange={(e) => {
+            setValue('repeatpassword', e.target.value)
+          }}
           autoComplete='off'
           form='createForm'
           invalid={errors?.repeatpassword !== undefined}
