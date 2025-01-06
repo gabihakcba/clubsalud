@@ -8,14 +8,23 @@ import { ButtonGroup } from 'primereact/buttongroup'
 import { Dialog } from 'primereact/dialog'
 import HasRole from 'components/HasRole'
 import { Permissions } from 'utils/types'
+import MembersList from 'components/member/MembersList'
 
 export default function AccountTopbar(): ReactElement {
+  const [membersList, openMembersList, closeMembersList] = useModal(false)
   const [createAcc, openAcc, closeAcc] = useModal(false)
   const [createMem, openMem, closeMem] = useModal(false)
   const [createIns, openIns, closeIns] = useModal(false)
 
   return (
     <div className='flex flex-row gap-2'>
+      <Dialog
+        visible={membersList}
+        onHide={closeMembersList}
+        header='Listado de alumnos'
+      >
+        <MembersList />
+      </Dialog>
       <ButtonGroup>
         <HasRole required={[Permissions.OWN]}>
           <Button
@@ -41,6 +50,15 @@ export default function AccountTopbar(): ReactElement {
           }}
         />
       </ButtonGroup>
+      <Button
+        label='Listado de alumnos'
+        size='small'
+        outlined
+        icon='pi pi-list'
+        iconPos='right'
+        severity='success'
+        onClick={openMembersList}
+      />
       <Dialog
         header='Crear Cuenta'
         visible={createAcc}

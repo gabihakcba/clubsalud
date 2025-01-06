@@ -126,6 +126,7 @@ export default function MembersList(): ReactElement {
         outlined
         icon='pi pi-download'
         iconPos='right'
+        loading={isPending}
         onClick={() => {
           generatePdf(members ?? [], setPdf)
           openPdf()
