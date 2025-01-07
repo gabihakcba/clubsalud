@@ -306,7 +306,7 @@ export default function ChartAccounting(): ReactElement {
   ])
 
   return (
-    <Card className='card h-screen flex align-items-center'>
+    <Card className='card h-screen flex'>
       <div className='flex flex-row gap-4 align-items-center'>
         <h2>Balances por mes</h2>
         <FloatLabel>
