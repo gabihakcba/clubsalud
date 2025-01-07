@@ -208,6 +208,7 @@ export function InstructorPaymentsSection(): ReactElement {
         header={() => (
           <nav className='flex flex-row gap-2 justify-content-between'>
             <div className='flex align-items-center gap-4'>
+              <h3>Profesores</h3>
               <Button
                 onClick={openPayment}
                 label='Generar Pago'

@@ -96,13 +96,16 @@ export function EmployeePaymentsSection(): ReactElement {
         value={filterPayments}
         header={() => (
           <nav className='flex gap-4 align-items-center justify-content-between'>
-            <Button
-              onClick={openPayment}
-              label='Generar Pago'
-              size='small'
-              icon='pi pi-plus'
-              iconPos='right'
-            />
+            <div className='flex align-items-center gap-4'>
+              <h3>Empleados</h3>
+              <Button
+                onClick={openPayment}
+                label='Generar Pago'
+                size='small'
+                icon='pi pi-plus'
+                iconPos='right'
+              />
+            </div>
             <div className='flex gap-4'>
               <Calendar
                 view='month'
