@@ -9,11 +9,13 @@ import { InstructorPaymentsSection } from 'components/payments/InstructorPayment
 import { EmployeePaymentsSection } from 'components/payments/EmployeePaymentsSection'
 import ExtraCostSection from 'components/extraCost/ExtraCostSection'
 import ChartAccounting from 'components/accounting/ChartAccounting'
+import OldTable from 'components/accounting/OldTable'
 
 export default function Accounting(): ReactElement {
   return (
     <Card className='h-screen overflow-scroll'>
       <ConfirmDialog />
+      <ChartAccounting />
       <Card className='min-h-screen'>
         <TabView className='min-h-full'>
           <TabPanel header='Suscripciones'>
@@ -34,7 +36,7 @@ export default function Accounting(): ReactElement {
           </TabPanel>
         </TabView>
       </Card>
-      <ChartAccounting />
+      <OldTable />
     </Card>
   )
 }
