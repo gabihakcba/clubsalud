@@ -164,6 +164,8 @@ export default function Reports(): ReactElement {
   return (
     <Card className='h-screen overflow-scroll'>
       <div className='flex flex-column gap-8'>
+        <ChartMemberReport/>
+        <ChartSubscriptionsReport/>
         <DataTable
           showGridlines
           stripedRows
@@ -263,8 +265,6 @@ export default function Reports(): ReactElement {
               />
             ))}
         </DataTable>
-        <ChartMemberReport/>
-        <ChartSubscriptionsReport/>
       </div>
     </Card>
   )
