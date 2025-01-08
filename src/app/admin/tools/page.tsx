@@ -1,12 +1,17 @@
 'use client'
 
 import { useMutation } from '@tanstack/react-query'
+import MembersList from 'components/member/MembersList'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
+import { Dialog } from 'primereact/dialog'
 import { getExcel } from 'queries/excel'
 import { type ReactElement } from 'react'
+import { useModal } from 'utils/useModal'
 
 export default function Tools(): ReactElement {
+  const [membersList, openMembersList, closeMembersList] = useModal(false)
+
   const { mutate: createExcel } = useMutation({
     mutationFn: async () => {
       return await getExcel()
@@ -21,7 +26,14 @@ export default function Tools(): ReactElement {
 
   return (
     <Card className='h-full flex flex-column gap-4'>
-      <div className='flex flex-column gap-4'>
+      <Dialog
+        visible={membersList}
+        onHide={closeMembersList}
+        header='Listado de alumnos'
+      >
+        <MembersList />
+      </Dialog>
+      <div className='flex gap-4'>
         <Button
           type='button'
           label='Obtener excel'
@@ -37,6 +49,16 @@ export default function Tools(): ReactElement {
             console.log('123')
           }}
         />
+        <Button
+            label='Listado de alumnos'
+            size='small'
+            outlined
+            icon='pi pi-list'
+            iconPos='right'
+            className='w-max'
+            severity='success'
+            onClick={openMembersList}
+          />
       </div>
     </Card>
   )
