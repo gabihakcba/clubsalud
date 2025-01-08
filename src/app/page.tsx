@@ -56,10 +56,10 @@ export default function Home(): ReactElement {
       >
         <Image
           src={logo}
-          height={70}
+          height={150}
           alt='Club Salud'
-          className='m-2'
-        ></Image>
+          className='m-2 border-round-lg'
+        />
         <div className='p-float-label'>
           <InputText
             id='username'

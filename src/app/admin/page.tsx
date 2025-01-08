@@ -84,7 +84,7 @@ export default function PersonalAccount(): ReactElement {
           <Image
             alt='Card'
             src={logo}
-            className='w-20rem h-7rem'
+            className='w-20rem h-7rem border-round-lg'
           />
         </div>
       )}

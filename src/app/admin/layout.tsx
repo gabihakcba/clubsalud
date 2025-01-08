@@ -218,7 +218,7 @@ export default function AdminLayout({ children }: any): ReactElement {
                   src={logo}
                   height={80}
                   alt='Club Salud'
-                  className='align-self-center my-1'
+                  className='align-self-center my-1  border-round-lg'
                 />
                 <PanelMenu
                   model={items}
