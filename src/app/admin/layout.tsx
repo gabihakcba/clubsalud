@@ -150,7 +150,7 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-chart-bar',
       template: itemRenderer,
       url: '/admin/reports',
-      show: await hasPermission([Permissions.OWN])
+      show: await hasPermission([Permissions.OWN, Permissions.ADM])
     },
     {
       label: 'Perfil',
