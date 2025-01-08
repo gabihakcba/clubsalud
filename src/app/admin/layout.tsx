@@ -16,6 +16,7 @@ import { Badge } from 'primereact/badge'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { hasPermission } from 'utils/auth'
 import { type MenuItem } from 'primereact/menuitem'
+
 const client = new QueryClient()
 
 const logOut = async (router: AppRouterInstance): Promise<void> => {
@@ -212,13 +213,13 @@ export default function AdminLayout({ children }: any): ReactElement {
         <div className='flex-grow-1 h-screen z-0'>{children}</div>
         <div className='md:relative absolute'>
           {drop && (
-            <ScrollPanel className='max-h-screen h-screen bg-primary-reverse'>
+            <ScrollPanel className='max-h-screen h-screen'>
               <div className='p-2 rounded flex flex-column'>
                 <Image
                   src={logo}
                   height={80}
                   alt='Club Salud'
-                  className='align-self-center my-1  border-round-lg'
+                  className='align-self-center my-1 border-round-lg'
                 />
                 <PanelMenu
                   model={items}

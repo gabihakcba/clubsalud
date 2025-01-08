@@ -1,16 +1,17 @@
-import { useQuery } from '@tanstack/react-query'
 import AttendanceForm from 'components/attendance/AttendanceForm'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
-import MemberSubsTable from 'components/subscriptions/MemberSubsTable'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
-import { getOrderedSubscriptions } from 'queries/subscriptions'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/useModal'
 import AttendanceInstructorForm from 'components/attendanceInstructor/AttendanceInstructorForm'
 import RegistrationFormSelector from 'components/medicalReports/RegistrationFormSelector'
 import HealthAssignForm from 'components/healthPlans/HealthAssignForm'
-import MembersList from 'components/member/MembersList'
+import SubscriptionForm from 'components/subscriptions/SubscriptionForm'
+import { Fieldset } from 'primereact/fieldset'
+import CreatePaymentForm from 'components/bills/CreatePaymentForm'
+import CreateEmployeePaymentForm from 'components/payments/CreateEmployeePaymentForm'
+import CreateInstructorPaymentForm from 'components/payments/CreateInstructorPaymentForm'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -22,32 +23,20 @@ export default function AdminPage(): ReactElement {
     openInstructorAttendance,
     closeInstructorAttendace
   ] = useModal(false)
-  const [membersList, openMembersList, closeMembersList] = useModal(false)
   const [create, openCreate, closeCreate] = useModal(false)
-
-  const { data: membersSubs } = useQuery({
-    queryKey: ['membersSubs'],
-    queryFn: async () => {
-      const mems = await getOrderedSubscriptions()
-      return mems
-    }
-  })
+  const [createSubscription, openCreateSubscription, closeCreateSubscription] =
+    useModal(false)
+  const [createBill, openCreateBill, closeCreateBill] = useModal(false)
+  const [createPayment, openPayment, closePayment] = useModal(false)
 
   return (
     <div className='flex flex-column'>
-      <Dialog
-        visible={membersList}
-        onHide={closeMembersList}
-        header='Listado de alumnos'
-      >
-        <MembersList/>
-      </Dialog>
       <Dialog
         visible={showAssignHealthPlan}
         onHide={closeAssignHealthPlan}
         header='Asignar Obra Social'
       >
-        <HealthAssignForm/>
+        <HealthAssignForm />
       </Dialog>
       <Dialog
         visible={showMemberAttendance}
@@ -70,52 +59,113 @@ export default function AdminPage(): ReactElement {
       >
         <CreateNotificationForm />
       </Dialog>
-      <nav className='flex justify-content-end gap-4'>
+      <Dialog
+        header='Inscripción'
+        visible={createSubscription}
+        onHide={closeCreateSubscription}
+      >
+        <SubscriptionForm />
+      </Dialog>
+      <Dialog
+        header='Generar Cobro'
+        visible={createBill}
+        onHide={closeCreateBill}
+      >
+        <CreatePaymentForm />
+      </Dialog>
+      <Dialog
+        visible={createPayment}
+        onHide={closePayment}
+        header='Generar Pago'
+      >
+        <CreateEmployeePaymentForm closeModal={closePayment} />
+      </Dialog>
+      <Dialog
+        visible={createPayment}
+        onHide={closePayment}
+        header='Generar Pago'
+      >
+        <CreateInstructorPaymentForm />
+      </Dialog>
+
+      <main className='flex flex-column justify-content-center gap-4'>
         <RegistrationFormSelector />
-        <Button
-          label='Listado de alumnos'
-          size='small'
-          outlined
-          icon='pi pi-list'
-          iconPos='right'
-          severity='success'
-          onClick={openMembersList}
-        />
-        <Button
-          label='Asignar Obra Social'
-          size='small'
-          outlined
-          icon='pi pi-plus'
-          iconPos='right'
-          onClick={openAssignHealthPlan}
-        />
-        <Button
-          label='Cargar Asistencia Alumno'
-          size='small'
-          outlined
-          icon='pi pi-plus'
-          iconPos='right'
-          onClick={openMemberAttendance}
-        />
-        <Button
-          label='Cargar Asistencia Profesor'
-          size='small'
-          outlined
-          icon='pi pi-plus'
-          iconPos='right'
-          onClick={openInstructorAttendance}
-        />
-        <Button
-          label='Crear Notificación'
-          size='small'
-          outlined
-          icon='pi pi-plus'
-          iconPos='right'
-          onClick={openCreate}
-        />
-      </nav>
-      <main>
-        <MemberSubsTable members={membersSubs} />
+        <Fieldset legend='Asistencias'>
+          <section className='flex gap-4'>
+            <Button
+              label='Cargar Asistencia Alumno'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+              onClick={openMemberAttendance}
+            />
+            <Button
+              label='Cargar Asistencia Profesor'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+              onClick={openInstructorAttendance}
+            />
+          </section>
+        </Fieldset>
+        <Fieldset legend='Cobros y pagos'>
+          <section className='flex gap-4'>
+            <Button
+              onClick={openCreateBill}
+              size='small'
+              outlined
+              label='Generar Cobro'
+              icon='pi pi-plus'
+              iconPos='right'
+            />
+            <Button
+              onClick={openPayment}
+              label='Generar Pago Profesor'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+            />
+            <Button
+              onClick={openPayment}
+              label='Generar Pago Empleado'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+            />
+          </section>
+        </Fieldset>
+        <Fieldset legend='Extras'>
+          <section className='flex gap-4'>
+            <Button
+              label='Asignar Obra Social'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+              onClick={openAssignHealthPlan}
+            />
+            <Button
+              label='Inscribir'
+              size='small'
+              outlined
+              icon='pi pi-plus-circle'
+              iconPos='right'
+              onClick={openCreateSubscription}
+            />
+            <Button
+              label='Crear Notificación'
+              size='small'
+              outlined
+              icon='pi pi-plus'
+              iconPos='right'
+              onClick={openCreate}
+            />
+          </section>
+        </Fieldset>
       </main>
     </div>
   )

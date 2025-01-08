@@ -58,7 +58,7 @@ export default function Home(): ReactElement {
           src={logo}
           height={150}
           alt='Club Salud'
-          className='m-2 border-round-lg'
+          className='m-6 p-2 border-round-lg'
         />
         <div className='p-float-label'>
           <InputText
