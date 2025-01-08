@@ -182,7 +182,7 @@ export default function ChartSubscriptionsReport(): ReactElement {
   return (
     <div className='card'>
       <div className='flex flex-row gap-4 align-items-center'>
-        <h2>Subscripciones</h2>
+        <h2>Suscripciones</h2>
         <FloatLabel>
           <Calendar
             value={date}

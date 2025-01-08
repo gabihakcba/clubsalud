@@ -2,6 +2,7 @@ import './globals.css'
 import Head from 'next/head'
 import { PrimeReactProvider, PrimeReactContext } from 'primereact/api'
 import 'primereact/resources/themes/lara-dark-cyan/theme.css'
+// import 'primereact/resources/themes/lara-light-purple/theme.css'
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
 
@@ -15,11 +16,11 @@ export default function RootLayout({ children }) {
     <PrimeReactProvider>
       <html lang='en'>
         <Head>
-          <link
+          {/* <link
             id='app-theme'
             rel='stylesheet'
-            href='/themes/lara-dark-blue/theme.css'
-          />
+            href='/themes/lara-light-blue/theme.css'
+          /> */}
         </Head>
         <body>{children}</body>
       </html>
