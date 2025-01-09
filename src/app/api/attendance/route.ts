@@ -30,6 +30,7 @@ export async function GET(): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
+
     const today = argDate()
 
     const attendances = await db.attendance.findMany({
@@ -45,10 +46,9 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     if (todayAttendances.length > 0) {
       return new Response(
-        JSON.stringify({
-          message:
-            'Ya tiene una asistencia este dia, a esta clase, en este horario'
-        }),
+        JSON.stringify(
+          'Ya tiene una asistencia este dia, a esta clase, en este horario'
+        ),
         {
           status: 300
         }
@@ -74,14 +74,9 @@ export async function POST(req: NextRequest): Promise<Response> {
             }
           })
 
-          return new Response(
-            JSON.stringify({
-              message: 'Su suscripción ha vencido'
-            }),
-            {
-              status: 300
-            }
-          )
+          return new Response(JSON.stringify('Su suscripción ha vencido'), {
+            status: 300
+          })
         }
 
         const newRemaining = sub.remainingClasses - 1
@@ -96,9 +91,7 @@ export async function POST(req: NextRequest): Promise<Response> {
           })
 
           return new Response(
-            JSON.stringify({
-              message: 'No tiene más clases disponibles'
-            }),
+            JSON.stringify('No tiene más clases disponibles'),
             {
               status: 300
             }
@@ -114,7 +107,7 @@ export async function POST(req: NextRequest): Promise<Response> {
           }
         })
 
-        const attendance: Attendance = await db.attendance.create({
+        await db.attendance.create({
           data: {
             date: moment(data.date as Date).toDate(),
             class: {
@@ -135,20 +128,15 @@ export async function POST(req: NextRequest): Promise<Response> {
         })
 
         return new Response(
-          JSONbig.stringify({ attendance, subscription: subUpdated }),
+          JSONbig.stringify(`Le quedan ${subUpdated.remainingClasses} clases`),
           {
             status: 200
           }
         )
       } else {
-        return new Response(
-          JSON.stringify({
-            message: 'No tiene suscripciones vigentes'
-          }),
-          {
-            status: 300
-          }
-        )
+        return new Response(JSON.stringify('No tiene suscripciones vigentes'), {
+          status: 300
+        })
       }
     }
   } catch (error) {
@@ -175,7 +163,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
   } catch (error) {
     console.log(error)
 
-    return new Response('No se pudo editar la clase', {
+    return new Response('No se pudo editar la asistencia', {
       status: 400
     })
   }
