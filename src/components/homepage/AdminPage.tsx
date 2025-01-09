@@ -1,4 +1,3 @@
-import AttendanceForm from 'components/attendance/AttendanceForm'
 import CreateNotificationForm from 'components/notifications/CreateNotificationForm'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
@@ -12,17 +11,12 @@ import { Fieldset } from 'primereact/fieldset'
 import CreatePaymentForm from 'components/bills/CreatePaymentForm'
 import CreateEmployeePaymentForm from 'components/payments/CreateEmployeePaymentForm'
 import CreateInstructorPaymentForm from 'components/payments/CreateInstructorPaymentForm'
+import { Card } from 'primereact/card'
+import NewAttendanceMember from 'components/attendance/NewAttendanceMember'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
     useModal(false)
-  const [showMemberAttendance, openMemberAttendance, closeMemberAttendace] =
-    useModal(false)
-  const [
-    showInstructorAttendance,
-    openInstructorAttendance,
-    closeInstructorAttendace
-  ] = useModal(false)
   const [create, openCreate, closeCreate] = useModal(false)
   const [createSubscription, openCreateSubscription, closeCreateSubscription] =
     useModal(false)
@@ -30,27 +24,13 @@ export default function AdminPage(): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
 
   return (
-    <div className='flex flex-column'>
+    <Card className='flex flex-column'>
       <Dialog
         visible={showAssignHealthPlan}
         onHide={closeAssignHealthPlan}
         header='Asignar Obra Social'
       >
         <HealthAssignForm />
-      </Dialog>
-      <Dialog
-        visible={showMemberAttendance}
-        onHide={closeMemberAttendace}
-        header='Asistencia Alumno'
-      >
-        <AttendanceForm />
-      </Dialog>
-      <Dialog
-        visible={showInstructorAttendance}
-        onHide={closeInstructorAttendace}
-        header='Asistencia Profesor'
-      >
-        <AttendanceInstructorForm />
       </Dialog>
       <Dialog
         visible={create}
@@ -91,23 +71,9 @@ export default function AdminPage(): ReactElement {
       <main className='flex flex-column justify-content-center gap-4'>
         <RegistrationFormSelector />
         <Fieldset legend='Asistencias'>
-          <section className='flex gap-4'>
-            <Button
-              label='Cargar Asistencia Alumno'
-              size='small'
-              outlined
-              icon='pi pi-plus'
-              iconPos='right'
-              onClick={openMemberAttendance}
-            />
-            <Button
-              label='Cargar Asistencia Profesor'
-              size='small'
-              outlined
-              icon='pi pi-plus'
-              iconPos='right'
-              onClick={openInstructorAttendance}
-            />
+          <section className='flex gap-8'>
+            <NewAttendanceMember/>
+            <AttendanceInstructorForm />
           </section>
         </Fieldset>
         <Fieldset legend='Cobros y pagos'>
@@ -167,6 +133,6 @@ export default function AdminPage(): ReactElement {
           </section>
         </Fieldset>
       </main>
-    </div>
+    </Card>
   )
 }

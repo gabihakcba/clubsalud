@@ -6,20 +6,57 @@ import { getClasses } from 'queries/classes'
 import { getMembers } from 'queries/members'
 import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Member, type Class_ } from '../../utils/types'
+import { type Member, type Class_, type Schedule } from '../../utils/types'
 import { Calendar } from 'primereact/calendar'
 import { FloatLabel } from 'primereact/floatlabel'
 import moment from 'moment'
-import { Toast } from 'primereact/toast'
+import { InputNumber } from 'primereact/inputnumber'
+import { getSchedules } from 'queries/schedules'
 import { type AxiosError } from 'axios'
+import { Toast } from 'primereact/toast'
 
-export default function AttendanceForm(): ReactElement {
+const days = [
+  'MONDAY',
+  'TUESDAY',
+  'WEDNESDAY',
+  'THURSDAY',
+  'FRIDAY',
+  'SATURDAY',
+  'SUNDAY'
+]
+
+const getClass = (schedules: Schedule[] | undefined): Class_ | undefined => {
+  const day = days[moment().day() - 1]
+  const hour = moment().hour()
+  const minute = moment().minute()
+  const schedule = schedules?.find(
+    (schedule) =>
+      schedule.start < Number(`${hour}${minute}`) &&
+      schedule.end > Number(`${hour}${minute}`) &&
+      schedule.day === day
+  )
+  return schedule?.class
+}
+
+const getMember = (dni: number, members: Member[]): Member | undefined =>
+  members.find((member: Member) => member.dni.toString() === dni.toString())
+
+export default function NewAttendanceMember(): ReactElement {
   const toast = useRef<Toast>(null)
+
   const query = useQueryClient()
 
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
-  const [selectedClass, setSelectedClass] = useState<Class_ | null>(null)
+  const [selectedMember, setSelectedMember] = useState<Member | undefined>(
+    undefined
+  )
+  const [defaultClass, setDefaultClass] = useState<Class_ | undefined>(
+    undefined
+  )
+  const [selectedClass, setSelectedClass] = useState<Class_ | undefined>(
+    undefined
+  )
   const [selectedDate, setSelectedDate] = useState<Date>(moment().toDate())
+  const [label, setLabel] = useState('DNI')
 
   const {
     register,
@@ -42,8 +79,22 @@ export default function AttendanceForm(): ReactElement {
     }
   })
 
+  const { data: schedule } = useQuery({
+    queryKey: ['sche'],
+    queryFn: async () => {
+      const res = await getSchedules()
+      return res
+    }
+  })
+
   const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
-    mutationFn: createAttendance,
+    mutationFn: async (data: {
+      memberId: number
+      classId: number
+      date: Date
+    }) => {
+      return await createAttendance(data)
+    },
     onSuccess: async (data) => {
       await query.refetchQueries({ queryKey: ['attendances'] })
       if (toast.current) {
@@ -71,7 +122,19 @@ export default function AttendanceForm(): ReactElement {
 
   useEffect(() => {
     setValue('date', moment().toDate())
-  }, [])
+    const class_ = getClass(schedule)
+    setDefaultClass(class_)
+  }, [schedule])
+
+  useEffect(() => {
+    setSelectedClass(defaultClass)
+    setValue('class', defaultClass?.name)
+    setValue('classId', defaultClass?.id)
+  }, [defaultClass])
+
+  useEffect(() => {
+    setLabel(selectedMember?.name ?? 'DNI')
+  }, [selectedMember])
 
   return (
     <form
@@ -80,7 +143,7 @@ export default function AttendanceForm(): ReactElement {
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         const params = {
-          memberId: data.memberId,
+          memberId: Number(selectedMember?.id),
           classId: data.classId,
           date: data.date
         }
@@ -89,22 +152,18 @@ export default function AttendanceForm(): ReactElement {
     >
       <Toast ref={toast} position='top-left'/>
       <div className='flex flex-column gap-4'>
-        <Dropdown
-          filter
-          filterBy='dni,name'
-          {...register('member', { required: true })}
-          invalid={errors?.member !== undefined}
-          value={selectedMember}
-          options={members}
-          optionLabel='name'
-          optionValue='id'
-          placeholder='Alumno'
-          loading={loadingMembers}
-          onChange={(e) => {
-            setSelectedMember(e.value as Member)
-            setValue('memberId', e.value as number)
-          }}
-        />
+        <FloatLabel>
+          <InputNumber
+            disabled={loadingMembers}
+            onChange={(e) => {
+              if (e.value) {
+                const member = getMember(e.value, members ?? [])
+                setSelectedMember(member)
+              }
+            }}
+          />
+          <label htmlFor=''>{label}</label>
+        </FloatLabel>
 
         <Dropdown
           {...register('class', { required: true })}
@@ -112,12 +171,11 @@ export default function AttendanceForm(): ReactElement {
           value={selectedClass}
           options={classes}
           optionLabel='name'
-          optionValue='id'
           placeholder='Clase'
           loading={loadingClasses}
           onChange={(e) => {
             setSelectedClass(e.value as Class_)
-            setValue('classId', e.value as number)
+            setValue('classId', e.value.id as number)
           }}
         />
 
@@ -138,14 +196,16 @@ export default function AttendanceForm(): ReactElement {
         </FloatLabel>
       </div>
 
-      <Button
-        label='Enviar'
-        icon='pi pi-upload'
-        iconPos='right'
-        outlined
-        size='small'
-        loading={isPendingAtt}
-      />
+      <div className='flex flex-column gap-2'>
+        <Button
+          label='Enviar'
+          icon='pi pi-upload'
+          iconPos='right'
+          outlined
+          size='small'
+          loading={isPendingAtt}
+        />
+      </div>
     </form>
   )
 }

@@ -78,7 +78,7 @@ export default function PersonalAccount(): ReactElement {
 
   return (
     <Card
-      className='h-full w-full'
+      className='h-screen overflow-scroll w-full'
       header={() => (
         <div className='flex align-items-center justify-content-center gap-8 p-2'>
           <Image
