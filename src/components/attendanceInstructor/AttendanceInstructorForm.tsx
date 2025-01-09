@@ -46,7 +46,6 @@ export default function AttendanceInstructorForm(): ReactElement {
       await query.refetchQueries({ queryKey: ['instructors'] })
     },
     onError: (data) => {
-      console.log('error: ', data)
     }
   })
 
@@ -57,7 +56,7 @@ export default function AttendanceInstructorForm(): ReactElement {
   return (
     <form
       action=''
-      className='flex flex-column gap-4'
+      className='flex flex-column gap-4 justify-content-between'
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         createAtt({
@@ -68,66 +67,68 @@ export default function AttendanceInstructorForm(): ReactElement {
         })
       })}
     >
-      <Dropdown
-        filter
-        filterBy='dni'
-        {...register('instructor', { required: true })}
-        value={selectedMember}
-        options={instructors}
-        optionLabel='name'
-        optionValue='id'
-        placeholder='Profesor'
-        loading={loadingInstructors}
-        onChange={(e) => {
-          setSelectedMember(e.value as Member)
-          setValue('instructorId', e.value as number)
-        }}
-      />
-
-      <Dropdown
-        {...register('class', { required: true })}
-        value={selectedClass}
-        options={classes}
-        optionLabel='name'
-        optionValue='id'
-        placeholder='Clase'
-        loading={loadingClasses}
-        onChange={(e) => {
-          setSelectedClass(e.value as Class_)
-          setValue('classId', e.value as number)
-        }}
-      />
-
-      <FloatLabel>
-        <InputNumber
-          {...register('hours', {
-            required: true
-          })}
-          invalid={errors?.hours !== undefined}
-          max={99}
-          min={1}
+      <div className='flex flex-column gap-4'>
+        <Dropdown
+          filter
+          filterBy='dni'
+          {...register('instructor', { required: true })}
+          value={selectedMember}
+          options={instructors}
+          optionLabel='name'
+          optionValue='id'
+          placeholder='Profesor'
+          loading={loadingInstructors}
           onChange={(e) => {
-            setValue('hours', e.value)
+            setSelectedMember(e.value as Member)
+            setValue('instructorId', e.value as number)
           }}
         />
-        <label htmlFor=''>Horas</label>
-      </FloatLabel>
 
-      <FloatLabel>
-        <Calendar
-          {...register('date', {
-            required: true
-          })}
-          invalid={errors?.date !== undefined}
-          value={selectedDate}
+        <Dropdown
+          {...register('class', { required: true })}
+          value={selectedClass}
+          options={classes}
+          optionLabel='name'
+          optionValue='id'
+          placeholder='Clase'
+          loading={loadingClasses}
           onChange={(e) => {
-            setValue('date', moment(e.value).toDate())
-            setSelectedDate(moment(e.value).toDate())
+            setSelectedClass(e.value as Class_)
+            setValue('classId', e.value as number)
           }}
-          dateFormat='dd/mm/yy'
         />
-        <label htmlFor=''>Fecha</label>
-      </FloatLabel>
+
+        <FloatLabel>
+          <InputNumber
+            {...register('hours', {
+              required: true
+            })}
+            invalid={errors?.hours !== undefined}
+            max={99}
+            min={1}
+            onChange={(e) => {
+              setValue('hours', e.value)
+            }}
+          />
+          <label htmlFor=''>Horas</label>
+        </FloatLabel>
+
+        <FloatLabel>
+          <Calendar
+            {...register('date', {
+              required: true
+            })}
+            invalid={errors?.date !== undefined}
+            value={selectedDate}
+            onChange={(e) => {
+              setValue('date', moment(e.value).toDate())
+              setSelectedDate(moment(e.value).toDate())
+            }}
+            dateFormat='dd/mm/yy'
+          />
+          <label htmlFor=''>Fecha</label>
+        </FloatLabel>
+      </div>
 
       <Button
         label='Enviar'
