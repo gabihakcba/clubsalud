@@ -1,6 +1,6 @@
 import { type PrismaClient, type Schedule } from '@prisma/client'
 import { type NextRequest } from 'next/server'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma

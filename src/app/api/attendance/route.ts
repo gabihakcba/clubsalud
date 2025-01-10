@@ -3,10 +3,10 @@ import {
   type PrismaClient,
   type Subscription
 } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { argDate, isSameDay } from 'utils/dates'
+import { argDate, isSameDay } from 'utils/ClubSalud/dates'
 import moment from 'moment'
 
 const db: PrismaClient = prisma

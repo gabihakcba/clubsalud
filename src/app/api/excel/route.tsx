@@ -10,7 +10,7 @@ import {
   type BilledConsultation
 } from '@prisma/client'
 import ExcelJS from 'exceljs'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import { type NextRequest } from 'next/server'
 
 const db: PrismaClient = prisma

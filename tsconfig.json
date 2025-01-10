@@ -33,7 +33,7 @@
     "src/app/layout.jsx",
     "src/app/layout.jsx",
     "src/app/layout.jsx"
-  ],
+, "src/app/clubsalud/layout.js"  ],
   "exclude": [
     "node_modules"
   ]

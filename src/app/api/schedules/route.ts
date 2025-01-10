@@ -1,5 +1,5 @@
 import { type Schedule, type PrismaClient } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 import { revalidatePath } from 'next/cache'
 import { type NextRequest } from 'next/server'

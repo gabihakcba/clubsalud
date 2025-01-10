@@ -1,7 +1,7 @@
 import { type Notification, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 // import socket from 'utils/websocket'
 
 const db: PrismaClient = prisma

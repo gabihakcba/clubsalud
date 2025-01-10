@@ -23,7 +23,10 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/fav') ||
-    pathname.startsWith('/api/login')
+    pathname.startsWith('/api/login') ||
+    pathname.endsWith('/') ||
+    pathname.endsWith('/clubsalud') ||
+    pathname.endsWith('/clubsalud-info')
   ) {
     return NextResponse.next()
   }
@@ -31,15 +34,20 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const cookie: RequestCookie | undefined = req.cookies.get('auth')
   const verifiedCookie = await verifyCookie(cookie)
 
-  if (!verifiedCookie && pathname !== loginPath) {
-    return NextResponse.redirect(new URL('/', req.url))
-  } else if (verifiedCookie && pathname === loginPath) {
-    return NextResponse.redirect(new URL('/admin', req.url))
-  } else if (!verifiedCookie && pathname === loginPath) {
-    return NextResponse.next()
-  } else if (verifiedCookie && pathname !== loginPath) {
-    return NextResponse.next()
+  if (pathname.startsWith('/clubsalud')) {
+    if (!verifiedCookie && pathname !== loginPath) {
+      return NextResponse.redirect(new URL('/', req.url))
+    } else if (verifiedCookie && pathname === loginPath) {
+      return NextResponse.redirect(new URL('/clubsalud/admin', req.url))
+    }
   }
+
+  // else if (!verifiedCookie && pathname === loginPath) {
+  //   return NextResponse.next()
+  // }
+  // else if (verifiedCookie && pathname !== loginPath) {
+  //   return NextResponse.next()
+  // }
 
   return NextResponse.next()
 }
