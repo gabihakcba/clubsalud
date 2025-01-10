@@ -163,6 +163,7 @@ export default function CreateInstructorPaymentForm(): ReactElement {
             required: { value: true, message: 'Campo requerido' }
           })}
           filter
+          filterBy='dni,name'
           invalid={errors?.instructorId !== undefined}
           onChange={(e) => {
             setSelectedInstructor(e.value as number)

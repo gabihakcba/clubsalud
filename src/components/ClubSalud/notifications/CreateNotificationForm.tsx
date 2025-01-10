@@ -101,7 +101,7 @@ export default function CreateNotificationForm(): ReactElement {
           invalid={errors?.receiverUsername !== undefined}
           className='w-full'
           filter
-          filterBy='dni'
+          filterBy='dni,displayName'
         />
         <label htmlFor=''>Para</label>
       </FloatLabel>
