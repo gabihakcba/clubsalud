@@ -3,7 +3,7 @@ import {
   type Attendance,
   type PrismaClient
 } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
 
