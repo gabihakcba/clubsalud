@@ -109,7 +109,7 @@ export default function SubscriptionForm(): ReactElement {
           optionLabel='name'
           optionValue='id'
           filter
-          filterBy='dni'
+          filterBy='dni,name'
           {...register('memberName', {
             required: {
               value: true,

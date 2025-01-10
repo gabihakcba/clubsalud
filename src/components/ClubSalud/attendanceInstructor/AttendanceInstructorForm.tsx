@@ -70,7 +70,7 @@ export default function AttendanceInstructorForm(): ReactElement {
       <div className='flex flex-column gap-4'>
         <Dropdown
           filter
-          filterBy='dni'
+          filterBy='dni,name'
           {...register('instructor', { required: true })}
           value={selectedMember}
           options={instructors}

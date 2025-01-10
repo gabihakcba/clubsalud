@@ -71,7 +71,7 @@ export default function HealthAssignForm(): ReactElement {
           optionLabel='name'
           optionValue='id'
           filter
-          filterBy='dni'
+          filterBy='dni,name'
           id='memberId'
           className='w-full'
           value={selectedMember}

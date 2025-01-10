@@ -76,6 +76,7 @@ export default function CreateEmployeePaymentForm({
           optionValue='id'
           loading={loadingEmployees}
           filter
+          filterBy='dni,name'
           value={selectedEmployee}
           onChange={(e) => {
             setSelectedEmployee(e.value)

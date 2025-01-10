@@ -22,6 +22,7 @@ export default function AdminPage(): ReactElement {
     useModal(false)
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const [createPayment, openPayment, closePayment] = useModal(false)
+  const [createEmployeePayment, openEmployeePayment, closeEmployeePayment] = useModal(false)
 
   return (
     <Card className='flex flex-column'>
@@ -54,8 +55,8 @@ export default function AdminPage(): ReactElement {
         <CreatePaymentForm />
       </Dialog>
       <Dialog
-        visible={createPayment}
-        onHide={closePayment}
+        visible={createEmployeePayment}
+        onHide={closeEmployeePayment}
         header='Generar Pago'
       >
         <CreateEmployeePaymentForm closeModal={closePayment} />
@@ -95,7 +96,7 @@ export default function AdminPage(): ReactElement {
               iconPos='right'
             />
             <Button
-              onClick={openPayment}
+              onClick={openEmployeePayment}
               label='Generar Pago Empleado'
               size='small'
               outlined
