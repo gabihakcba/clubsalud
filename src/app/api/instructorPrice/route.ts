@@ -1,8 +1,8 @@
 import { type InstructorPrice, type PrismaClient } from '@prisma/client'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { argDate } from 'utils/dates'
-import prisma from 'utils/prisma'
+import { argDate } from 'utils/ClubSalud/dates'
+import prisma from 'utils/ClubSalud/prisma'
 
 const db: PrismaClient = prisma
 

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 import { type NextRequest } from 'next/server'
 import { type PrismaClient, type Account } from '@prisma/client'
-import { type LogIn } from 'utils/types'
-import prisma from 'utils/prisma'
+import { type LogIn } from 'utils/ClubSalud/types'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 
 const db: PrismaClient = prisma

@@ -1,8 +1,8 @@
 import { type Class, type PrismaClient } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
-import { type Class_, type CreateClass_ } from 'utils/types'
+import { type Class_, type CreateClass_ } from 'utils/ClubSalud/types'
 
 const db: PrismaClient = prisma
 

@@ -1,5 +1,5 @@
 import { type PrismaClient, type Member, MemberState } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import { type NextRequest } from 'next/server'
 import JSONbig from 'json-bigint'
 

@@ -3,7 +3,7 @@ import {
   type HealthPlan,
   type HealthPlanRecord
 } from '@prisma/client'
-import prisma from 'utils/prisma'
+import prisma from 'utils/ClubSalud/prisma'
 import { type NextRequest } from 'next/server'
 import JSONbig from 'json-bigint'
 import moment from 'moment'
