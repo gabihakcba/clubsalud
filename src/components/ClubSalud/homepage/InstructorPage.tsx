@@ -3,6 +3,10 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, type ReactElement, useState } from 'react'
 import { type Schedule, type Account } from 'utils/ClubSalud/types'
+import AttendanceInstructorForm from '../attendanceInstructor/AttendanceInstructorForm'
+import { useModal } from 'utils/ClubSalud/useModal'
+import { Dialog } from 'primereact/dialog'
+import { Button } from 'primereact/button'
 
 export default function InstructorPage({
   account
@@ -11,6 +15,7 @@ export default function InstructorPage({
 }): ReactElement {
   const [expandedRows, setExpandedRows] = useState<any>(undefined)
   const [charges, setCharges] = useState<Schedule[] | undefined>(undefined)
+  const [attendance, openAttendance, closeAttendace] = useModal(false)
 
   useEffect(() => {
     if (account) {
@@ -23,7 +28,11 @@ export default function InstructorPage({
     const scheduleInscription = schedule?.scheduleInscription?.map((sch) => sch)
     const members = scheduleInscription?.map((sche) => sche.member)
     return (
-      <DataTable value={members} scrollable scrollHeight='20vh'>
+      <DataTable
+        value={members}
+        scrollable
+        scrollHeight='20vh'
+      >
         <Column
           field='dni'
           header='DNI'
@@ -39,7 +48,14 @@ export default function InstructorPage({
   return (
     <div className='flex flex-column gap-2'>
       <nav className='flex justify-content-end gap-4'>
-        <RegistrationFormSelector/>
+        <RegistrationFormSelector />
+        <Button label='Marcar Asistencia' size='small' outlined onClick={openAttendance}/>
+        <Dialog
+          onHide={closeAttendace}
+          visible={attendance}
+        >
+          <AttendanceInstructorForm instructor={account?.instructorAccount} />
+        </Dialog>
       </nav>
       <DataTable
         value={charges

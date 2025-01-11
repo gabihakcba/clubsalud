@@ -4,7 +4,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { getClasses } from 'queries/ClubSalud/classes'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Member, type Class_ } from '../../../utils/ClubSalud/types'
+import { type Class_, type Instructor } from '../../../utils/ClubSalud/types'
 import { getInstructors } from 'queries/ClubSalud/instructors'
 import { createAttendanceInstructor } from 'queries/ClubSalud/attendanceInstructor'
 import { FloatLabel } from 'primereact/floatlabel'
@@ -12,10 +12,16 @@ import { Calendar } from 'primereact/calendar'
 import moment from 'moment'
 import { InputNumber } from 'primereact/inputnumber'
 
-export default function AttendanceInstructorForm(): ReactElement {
+export default function AttendanceInstructorForm({
+  instructor
+}: {
+  instructor?: Instructor
+}): ReactElement {
   const query = useQueryClient()
 
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const [selectedInstructor, setSelectedInstructor] = useState<
+  Instructor | undefined
+  >(instructor)
   const [selectedClass, setSelectedClass] = useState<Class_ | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date>(moment().toDate())
 
@@ -45,13 +51,13 @@ export default function AttendanceInstructorForm(): ReactElement {
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['instructors'] })
     },
-    onError: (data) => {
-    }
+    onError: (data) => {}
   })
 
   useEffect(() => {
     setValue('date', moment().toDate())
-  }, [])
+    setSelectedInstructor(instructor)
+  }, [instructor])
 
   return (
     <form
@@ -60,7 +66,7 @@ export default function AttendanceInstructorForm(): ReactElement {
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         createAtt({
-          instructorId: data.instructorId,
+          instructorId: Number(selectedInstructor?.id),
           classId: data.classId,
           date: data.date,
           hours: data.hours
@@ -68,21 +74,21 @@ export default function AttendanceInstructorForm(): ReactElement {
       })}
     >
       <div className='flex flex-column gap-4'>
-        <Dropdown
-          filter
-          filterBy='dni,name'
-          {...register('instructor', { required: true })}
-          value={selectedMember}
-          options={instructors}
-          optionLabel='name'
-          optionValue='id'
-          placeholder='Profesor'
-          loading={loadingInstructors}
-          onChange={(e) => {
-            setSelectedMember(e.value as Member)
-            setValue('instructorId', e.value as number)
-          }}
-        />
+        {!instructor && (
+          <Dropdown
+            filter
+            filterBy='dni,name'
+            value={selectedInstructor}
+            options={instructors}
+            optionLabel='name'
+            placeholder='Profesor'
+            loading={loadingInstructors}
+            invalid={selectedInstructor === undefined}
+            onChange={(e) => {
+              setSelectedInstructor(e.value as Instructor)
+            }}
+          />)
+        }
 
         <Dropdown
           {...register('class', { required: true })}
@@ -107,7 +113,7 @@ export default function AttendanceInstructorForm(): ReactElement {
             max={99}
             min={1}
             onChange={(e) => {
-              setValue('hours', e.value)
+              setValue('hours', Number(e.value))
             }}
           />
           <label htmlFor=''>Horas</label>
@@ -136,6 +142,7 @@ export default function AttendanceInstructorForm(): ReactElement {
         iconPos='right'
         outlined
         size='small'
+        disabled={!selectedInstructor}
         loading={isPendingAtt}
       />
     </form>
