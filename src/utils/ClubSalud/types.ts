@@ -92,7 +92,6 @@ export interface Member extends CreateMember {
   memberSubscription?: Subscription[]
   payment?: Payment[]
   memberAttendance?: Attendance[]
-  planSubscribed?: HealthPlanSubscribed[]
   registrationForm?: RegistrationForm
   followUpForm?: FollowUpForm[]
 }
@@ -112,6 +111,7 @@ export interface CreateMember {
   state: MemberSate
   remainingClasses?: bigint | null
   accountId: number
+  planSubscribed?: HealthPlanSubscribed[]
 }
 
 export interface InstructorPayment extends CreateInstructorPayment {

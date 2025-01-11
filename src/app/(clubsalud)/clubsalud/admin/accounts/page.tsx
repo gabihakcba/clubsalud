@@ -156,7 +156,7 @@ export default function Accounts(): ReactElement {
               iconPos='right'
               size='small'
               onClick={() => {
-                router.push(`/admin/info/${account.id}`)
+                router.push(`/clubsalud/admin/info/${account.id}`)
               }}
             />
           )}
