@@ -2,7 +2,7 @@ import { type ReactElement } from 'react'
 import QRCode from 'react-qr-code'
 
 export default function AdminPage(): ReactElement {
-  const url = 'localhost:3000/clubsalud/admin/qr-attendance'
+  const url = `${process.env.NEXT_PUBLIC_NODE_PATH}/clubsalud/admin/qr-attendance`
 
   return (
     <div className='flex flex-column justify-content-center align-items-center'>
