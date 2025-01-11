@@ -24,9 +24,7 @@ export const getTotalPagesM = async (): Promise<GetMemResponse> => {
 export const createMember = async (
   newMember: CreateMember
 ): Promise<Member> => {
-  const response = await axios.post(`${path()}/api/members`, {
-    ...newMember
-  })
+  const response = await axios.post(`${path()}/api/members`, newMember)
   return response.data
 }
 

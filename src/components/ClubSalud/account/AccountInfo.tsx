@@ -30,9 +30,10 @@ export default function AccountInfo({ account }: params): ReactElement {
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['acc'] })
-      router.push('/admin/accounts')
+      router.push('/clubsalud/admin/accounts')
     }
   })
+
   return (
     <div className='flex flex-column gap-2 w-full h-full'>
       <div className='flex flex-row align-items-center gap-4'>

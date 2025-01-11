@@ -13,6 +13,7 @@ import CreateEmployeePaymentForm from 'components/ClubSalud/payments/CreateEmplo
 import CreateInstructorPaymentForm from 'components/ClubSalud/payments/CreateInstructorPaymentForm'
 import { Card } from 'primereact/card'
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
+import QRInstructorAttendance from '../QR/QRInstructorAttendance'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -22,6 +23,8 @@ export default function AdminPage(): ReactElement {
     useModal(false)
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const [createPayment, openPayment, closePayment] = useModal(false)
+  const [createEmployeePayment, openEmployeePayment, closeEmployeePayment] = useModal(false)
+  const [qr, openQR, closeQR] = useModal(false)
 
   return (
     <Card className='flex flex-column'>
@@ -54,8 +57,8 @@ export default function AdminPage(): ReactElement {
         <CreatePaymentForm />
       </Dialog>
       <Dialog
-        visible={createPayment}
-        onHide={closePayment}
+        visible={createEmployeePayment}
+        onHide={closeEmployeePayment}
         header='Generar Pago'
       >
         <CreateEmployeePaymentForm closeModal={closePayment} />
@@ -67,8 +70,12 @@ export default function AdminPage(): ReactElement {
       >
         <CreateInstructorPaymentForm />
       </Dialog>
+      <Dialog onHide={closeQR} visible={qr} header='Escanea el código'>
+        <QRInstructorAttendance/>
+      </Dialog>
 
       <main className='flex flex-column justify-content-center gap-4'>
+        <Button label='Asistencia QR' onClick={openQR}/>
         <RegistrationFormSelector />
         <Fieldset legend='Asistencias'>
           <section className='flex gap-8'>
@@ -95,7 +102,7 @@ export default function AdminPage(): ReactElement {
               iconPos='right'
             />
             <Button
-              onClick={openPayment}
+              onClick={openEmployeePayment}
               label='Generar Pago Empleado'
               size='small'
               outlined
