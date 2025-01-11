@@ -1,21 +1,26 @@
-import { useEffect, type ReactElement } from 'react'
+'use client'
+
+import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import {
   type CreateMember,
   MemberSate,
   Permissions,
-  type CreateAccount
+  type CreateAccount,
+  type HealthPlan
 } from 'utils/ClubSalud/types'
 import { createAccount, deleteAccount } from 'queries/ClubSalud/accounts'
 import { createMember } from 'queries/ClubSalud/members'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
 import { Password } from 'primereact/password'
+import { MultiSelect } from 'primereact/multiselect'
+import { getHealthPlans } from 'queries/ClubSalud/health'
 
 const formToMember = (data: FieldValues, id: number): CreateMember => {
-  return {
+  const dataParsed = {
     name: data.name,
     lastName: data.lastName,
     dni: data.dni,
@@ -26,12 +31,18 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
     derivedBy: data.derivedBy,
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
-    accountId: id
+    accountId: id,
+    planSubscribed: data.plans
   }
+  return dataParsed
 }
 
 export function CreateMemberForm(): ReactElement {
   const query = useQueryClient()
+
+  const [planSelected, setPlanSelected] = useState<HealthPlan | undefined>(
+    undefined
+  )
 
   const {
     register,
@@ -72,11 +83,17 @@ export function CreateMemberForm(): ReactElement {
       await query.refetchQueries({ queryKey: ['acc'] })
     },
     onError: async () => {
-      console.log('newAccount: ', newAccount)
       if (newAccount) {
-        const deleted = await deleteAccount(newAccount.id)
-        console.log('deleted: ', deleted)
+        await deleteAccount(newAccount.id)
       }
+    }
+  })
+
+  const { data: plans } = useQuery({
+    queryKey: ['health'],
+    queryFn: async () => {
+      const data = await getHealthPlans()
+      return data
     }
   })
 
@@ -318,6 +335,25 @@ export function CreateMemberForm(): ReactElement {
           className='w-full'
         />
         <label htmlFor='afiliateNumber'>Número de historia clínica (ID)</label>
+      </div>
+      <div className='p-float-label'>
+        <MultiSelect
+          className='w-full'
+          {...register('plans', {
+            required: true
+          })}
+          options={plans}
+          optionLabel='name'
+          optionValue='id'
+          value={planSelected}
+          display='chip'
+          onChange={(e) => {
+            setPlanSelected(e.value as HealthPlan)
+            setValue('plans', e.value)
+          }}
+          invalid={errors?.plans !== undefined}
+        />
+        <label htmlFor='plans'>Obra Social</label>
       </div>
 
       <div className='flex flex-column gap-0'>
