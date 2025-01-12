@@ -213,6 +213,7 @@ export interface Subscription extends CreateSubscription {
   plan: Plan
   payment?: Payment[]
   billedConsultation?: BilledConsultation[]
+  member: Member
 }
 
 export interface CreateSubscription {

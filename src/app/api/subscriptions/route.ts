@@ -9,7 +9,16 @@ export async function GET(): Promise<Response> {
   try {
     const subscriptions = await db.subscription.findMany({
       include: {
-        member: true,
+        member: {
+          include: {
+            memberSubscription: {
+              include: {
+                plan: true,
+                promotion: true
+              }
+            }
+          }
+        },
         promotion: true,
         plan: true
       }
