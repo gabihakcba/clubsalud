@@ -16,7 +16,7 @@ export default function Blog({
       lactanciamaterna.«Apoyar la lactancia materna para un planeta más
       saludable» ha sido seleccionado por la Alianza Mundial para la Lactancia 
       aterna (WABA) [...]`,
-      image: '/images/sin-imagen.jpg'
+      image: '/images/no-image.png'
     },
     {
       title: 'Alcohol - Consumo responsable',
@@ -35,7 +35,7 @@ export default function Blog({
       “duros”, como el accidente cerebrovascular y el infarto de miocardio
       según sugiere una investigación reciente. Entre más de 400,000 encuestados
       mayores de 18 años de [...]`,
-      image: '/images/sin-imagen.jpg'
+      image: '/images/no-image.png'
     },
     {
       title: 'Los cigarrillos electrónicos',
@@ -45,7 +45,7 @@ export default function Blog({
       conciencia y estimular la acción sobre temas relacionados con la
       lactanciamaterna.«Apoyar la lactancia materna para un planeta más
       saludable» ha sido seleccionado por la Alianza Mundial para la Lactancia Materna (WABA) [...]`,
-      image: '/images/sin-imagen.jpg'
+      image: '/images/no-image.png'
     },
     {
       title: 'Los cigarrillos electrónicos',
@@ -55,7 +55,7 @@ export default function Blog({
       conciencia y estimular la acción sobre temas relacionados con la
       lactanciamaterna.«Apoyar la lactancia materna para un planeta más
       saludable» ha sido seleccionado por la Alianza Mundial para la Lactancia Materna (WABA) [...]`,
-      image: '/images/sin-imagen.jpg'
+      image: '/images/no-image.png'
     }
   ]
   return (

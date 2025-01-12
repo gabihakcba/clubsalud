@@ -14,13 +14,14 @@ export default function RootLayout({ children }: { children: any }): ReactElemen
   return (
     <PrimeReactProvider>
       <html lang='en'>
-        {/* <Head>
-          <link
+        <head>
+          {/* <link
             id='app-theme'
             rel='stylesheet'
             href='/themes/lara-light-blue/theme.css'
-          />
-        </Head> */}
+          /> */}
+          <link rel="icon" href="/logos/medintt_positivo_square.png" type="image/x-icon"></link>
+        </head>
         <body className=''>{children}</body>
       </html>
     </PrimeReactProvider>

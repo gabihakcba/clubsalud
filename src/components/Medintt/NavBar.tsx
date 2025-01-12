@@ -4,7 +4,7 @@ import { TabMenu } from 'primereact/tabmenu'
 import { useEffect, useState, type ReactElement } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import logo from '../../../public/logos/logo-medint-small.png'
+import logo from '../../../public/logos/medintt_positivo_square.png'
 
 export default function NavBar({
   className
