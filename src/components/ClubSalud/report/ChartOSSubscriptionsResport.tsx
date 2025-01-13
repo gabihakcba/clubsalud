@@ -11,7 +11,7 @@ import { getSubscriptions } from 'queries/ClubSalud/subscriptions'
 import { Button } from 'primereact/button'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
-import Debtors from './Debtors'
+import PendingOSBills from './PendingOSBills'
 
 moment.locale('es')
 
@@ -35,7 +35,7 @@ const subscriptionsPaid = (
     (subs: Subscription) =>
       moment(subs.initialDate).year() === moment(date).year() &&
       moment(subs.initialDate).month() <= moment(date).month() &&
-      subs.paid
+      (subs.billedConsultation?.length ?? 0) > 1
   )
   return current
 }
@@ -48,7 +48,7 @@ const subsciptionsNotPaid = (
     (subs: Subscription) =>
       moment(subs.initialDate).year() === moment(date).year() &&
       moment(subs.initialDate).month() <= moment(date).month() &&
-      !subs.paid
+      (subs.billedConsultation?.length ?? 0) < 2
   )
   return current
 }
@@ -58,7 +58,7 @@ const getDebtors = (subscriptionsNotPaid: Subscription[]): Member[] => {
   return debtorsList
 }
 
-export default function ChartSubscriptionsReport(): ReactElement {
+export default function ChartOSSubscriptionsReport(): ReactElement {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
@@ -198,10 +198,10 @@ export default function ChartSubscriptionsReport(): ReactElement {
         onHide={closeDebtorsList}
         visible={debtorsList}
       >
-        <Debtors debtors={debtors} />
+        <PendingOSBills debtors={debtors} />
       </Dialog>
       <div className='flex flex-row gap-4 align-items-center'>
-        <h2>Suscripciones - Cobros Particulares</h2>
+        <h2>Suscripciones - Cobros Obras Sociales</h2>
         <FloatLabel>
           <Calendar
             value={date}
@@ -227,7 +227,7 @@ export default function ChartSubscriptionsReport(): ReactElement {
           ]}
         />
         <Button
-          label='Lista de deudores'
+          label='Lista OS faltantes'
           size='small'
           outlined
           onClick={openDebtorsList}
