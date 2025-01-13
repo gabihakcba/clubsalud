@@ -204,6 +204,7 @@ export default function NewAttendanceMember(): ReactElement {
           outlined
           size='small'
           loading={isPendingAtt}
+          disabled={!selectedMember}
         />
       </div>
     </form>
