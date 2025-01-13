@@ -70,7 +70,7 @@ export default function AdminPage(): ReactElement {
       </Dialog>
 
       <main className='flex flex-column justify-content-center gap-4'>
-        <div className='flex w-full gap-4 border-2'>
+        <div className='flex w-full gap-4'>
           <RegistrationFormSelector />
           <Button
             label='Abrir asistencia'
