@@ -20,7 +20,8 @@ export async function GET(): Promise<Response> {
           }
         },
         promotion: true,
-        plan: true
+        plan: true,
+        billedConsultation: true
       }
     })
     return new Response(JSONbig.stringify(subscriptions), {
