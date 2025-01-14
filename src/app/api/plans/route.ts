@@ -21,14 +21,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   const data = await req.json()
-  console.log(data)
   try {
     const plan: Plan = await db.plan.create({
       data: {
         ...data
       }
     })
-    console.log(plan)
     return new Response(JSONbig.stringify(plan), {
       status: 200
     })

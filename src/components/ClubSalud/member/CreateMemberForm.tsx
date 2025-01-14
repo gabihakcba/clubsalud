@@ -339,9 +339,7 @@ export function CreateMemberForm(): ReactElement {
       <div className='p-float-label'>
         <MultiSelect
           className='w-full'
-          {...register('plans', {
-            required: true
-          })}
+          {...register('plans')}
           options={plans}
           optionLabel='name'
           optionValue='id'
