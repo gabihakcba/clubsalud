@@ -56,7 +56,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       const record: PromotionRecord = await db.promotionRecord.create({
         data: {
           date: moment().toDate(),
-          price: Number(data.price),
+          price: Number(data.amountPrice),
           promotion: {
             connect: {
               id: promotion.id
@@ -71,6 +71,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify(error), {
       status: 400
     })
