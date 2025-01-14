@@ -64,7 +64,7 @@ export function CreateOfferForm(): ReactElement {
       <FloatLabel>
         <InputNumber
           value={discountPercent}
-          {...register('discountPercent', { required: true, min: 0, max: 60 })}
+          {...register('discountPercent', { required: true, min: 0, max: 100 })}
           min={0}
           max={99999}
           minFractionDigits={0}

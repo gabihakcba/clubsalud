@@ -52,7 +52,7 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data: Member & { planSubscribed: number[] } = await req.json()
+    const data: Member & { planSubscribed?: number[] } = await req.json()
     const parsed = {
       name: data.name,
       lastName: data.lastName,
@@ -76,12 +76,14 @@ export async function POST(req: NextRequest): Promise<Response> {
         }
       }
     })
-    await prisma.healthPlanSubscribed.createMany({
-      data: data.planSubscribed.map((planId) => ({
-        memberId: res.id,
-        planId
-      }))
-    })
+    if (data.planSubscribed) {
+      await prisma.healthPlanSubscribed?.createMany({
+        data: data.planSubscribed.map((planId) => ({
+          memberId: res.id,
+          planId
+        }))
+      })
+    }
     return new Response(JSONbig.stringify(res), {
       status: 200
     })
