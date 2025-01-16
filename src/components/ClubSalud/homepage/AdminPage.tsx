@@ -13,6 +13,7 @@ import CreateEmployeePaymentForm from 'components/ClubSalud/payments/CreateEmplo
 import CreateInstructorPaymentForm from 'components/ClubSalud/payments/CreateInstructorPaymentForm'
 import { Card } from 'primereact/card'
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
+import AttendanceDaily from '../attendance/AttendanceDaily'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -86,6 +87,7 @@ export default function AdminPage(): ReactElement {
           <section className='flex gap-8'>
             <NewAttendanceMember />
             <AttendanceInstructorForm />
+            <AttendanceDaily/>
           </section>
         </Fieldset>
         <Fieldset legend='Cobros y pagos'>
