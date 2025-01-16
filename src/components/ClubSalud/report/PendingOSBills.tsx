@@ -8,12 +8,20 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { argDate2Format } from 'utils/ClubSalud/dates'
+import { Tag } from 'primereact/tag'
 
 const subsciptionsNotPaid = (member: Member | null): Subscription[] => {
   const current = member?.memberSubscription?.filter(
     (subs: Subscription) => (subs.billedConsultation?.length ?? 0) < 2
   )
   return current ?? []
+}
+
+const getDebts = (member: Member): number => {
+  return subsciptionsNotPaid(member).reduce(
+    (curr, arr) => curr + (2 - (arr.billedConsultation?.length ?? 0)),
+    0
+  )
 }
 
 export default function PendingOSBills({
@@ -53,6 +61,15 @@ export default function PendingOSBills({
               header='Oferta'
               field='plan.title'
             />
+            <Column
+              header='Deuda'
+              body={(s) => {
+                const debts = 2 - (s.billedConsultation?.length ?? 0)
+                return (
+                  <Tag severity={debts > 1 ? 'danger' : 'warning'}>{debts}</Tag>
+                )
+              }}
+            />
           </DataTable>
         </Card>
       </Dialog>
@@ -79,11 +96,13 @@ export default function PendingOSBills({
             field='phoneNumber'
           />
           <Column
-            header='Ultima deuda'
+            header='Deuda'
             body={(member: Member) => {
+              const total = getDebts(member)
+              const severity = total > 1 ? 'danger' : 'warning'
               return (
                 <div className='flex gap-2 align-items-center justify-content-center'>
-                  <b className='bg-red-400 p-1 border-round'>{2 - (subsciptionsNotPaid(member)[0]?.billedConsultation?.length ?? 0)}</b>
+                  <Tag severity={severity}>{total}</Tag>
                   <Button
                     label='Ver todas las deudas'
                     size='small'
