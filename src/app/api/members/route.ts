@@ -23,6 +23,7 @@ export async function GET(req: NextRequest): Promise<Response> {
        */
       const members: Member[] = await db.member.findMany({
         include: {
+          account: true,
           planSubscribed: { include: { plan: true } },
           memberSubscription: {
             include: {

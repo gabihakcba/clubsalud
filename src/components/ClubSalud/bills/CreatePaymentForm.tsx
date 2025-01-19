@@ -8,11 +8,20 @@ import { Checkbox } from 'primereact/checkbox'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
+import { Password } from 'primereact/password'
 import { getMembers } from 'queries/ClubSalud/members'
-import { setParticularPayment, setPlanPayment } from 'queries/ClubSalud/payments'
+import {
+  setParticularPayment,
+  setPlanPayment
+} from 'queries/ClubSalud/payments'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Subscription, type Member, type Payment } from 'utils/ClubSalud/types'
+import { argDate2Format } from 'utils/ClubSalud/dates'
+import {
+  type Subscription,
+  type Member,
+  type Payment
+} from 'utils/ClubSalud/types'
 
 const hasSubs = (member: Member): boolean => {
   const subs: Subscription[] | undefined = member?.memberSubscription
@@ -45,6 +54,26 @@ const getRemaining = (members, sId, mId): number => {
   const member = members?.find((member) => member.id === mId)
   const subs = member?.memberSubscription?.find((subs) => subs.id === sId)
   return subs?.remaining
+}
+
+const getRemainingBills = (
+  members: Member[],
+  sId: number,
+  mId: number
+): number => {
+  const member = members?.find((member: Member) => member.id === mId)
+  const subs = member?.memberSubscription?.find(
+    (subs: Subscription) => subs.id === sId
+  )
+  return ((subs?.plan?.durationMonth ?? 0) * 2) - (subs?.billedConsultation?.length ?? 0)
+}
+
+const optionSubscriptionTemplate = (subs: Subscription): ReactElement => {
+  return (
+    <div className='flex align-items-center'>
+      <div>{`${subs?.promotion?.title} | ${argDate2Format(subs?.date)}`}</div>
+    </div>
+  )
 }
 
 export default function CreatePaymentForm(): ReactElement {
@@ -173,6 +202,7 @@ export default function CreatePaymentForm(): ReactElement {
           value={selectedSubscription}
           optionLabel='promotion.title'
           optionValue='id'
+          itemTemplate={optionSubscriptionTemplate}
           {...register('subscription', {
             required: { value: true, message: 'Campo requerido' }
           })}
@@ -209,6 +239,7 @@ export default function CreatePaymentForm(): ReactElement {
                   message: 'Campo requerido'
                 }
               })}
+              invalid={errors?.health !== undefined}
               className='w-full'
               value={selectedPlan}
               options={plansMemberSelected}
@@ -238,29 +269,26 @@ export default function CreatePaymentForm(): ReactElement {
         </>
       )}
       <div className='p-float-label'>
-        {ishealth && (
-          <InputText
+          <Password
             type='number'
             id='amountPlan'
             {...register('amountPlan')}
             value={String(amountToPay)}
             disabled
             invalid={errors?.amountPlan !== undefined}
+            hidden={!ishealth}
           />
-        )}
-        {!ishealth && (
           <InputText
-            type='number'
             id='amountParticular'
             {...register('amountParticular', {
               required: {
-                value: ishealth,
+                value: !ishealth,
                 message: 'Campo requerido particular'
               }
             })}
-            invalid={errors?.amountParticular !== undefined}
+            invalid={errors?.amountParticular !== undefined && !ishealth}
+            hidden={ishealth}
           />
-        )}
         <label htmlFor=''>Monto</label>
       </div>
       <FloatLabel>
@@ -271,7 +299,6 @@ export default function CreatePaymentForm(): ReactElement {
           invalid={errors?.date !== undefined}
           value={selectedDate}
           onChange={(e) => {
-            console.log(e.value)
             setValue('date', moment(e.value).toDate())
             setSelectedDate(moment(e.value).toDate())
           }}
@@ -280,16 +307,30 @@ export default function CreatePaymentForm(): ReactElement {
         <label htmlFor=''>Fecha</label>
       </FloatLabel>
       <div className='p-float-label'>
-        <InputText
-          value={String(
-            getRemaining(
-              members,
-              Number(getValues('subscriptionId')),
-              Number(getValues('memberId'))
-            )
-          )}
-          disabled
-        />
+        {ishealth && (
+          <InputText
+            value={String(
+              getRemainingBills(
+                members ?? [],
+                Number(getValues('subscriptionId')),
+                Number(getValues('memberId'))
+              )
+            )}
+            disabled
+          />
+        )}
+        {!ishealth && (
+          <InputText
+            value={String(
+              getRemaining(
+                members,
+                Number(getValues('subscriptionId')),
+                Number(getValues('memberId'))
+              )
+            )}
+            disabled
+          />
+        )}
 
         <label htmlFor=''>Faltante</label>
       </div>
