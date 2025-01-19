@@ -8,7 +8,11 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/ClubSalud/members'
 import { deleteParticularPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
-import { type Payment, type Member, type Subscription } from 'utils/ClubSalud/types'
+import {
+  type Payment,
+  type Member,
+  type Subscription
+} from 'utils/ClubSalud/types'
 
 export default function BillTable(): ReactElement {
   const query = useQueryClient()
@@ -20,6 +24,8 @@ export default function BillTable(): ReactElement {
 
   const filters = {
     dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    lastName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'subscription.member.dni': {
       value: null,
       matchMode: FilterMatchMode.STARTS_WITH
@@ -130,8 +136,14 @@ export default function BillTable(): ReactElement {
           header='Vencimiento'
           sortable
         />
-        <Column header='Oferta' field='plan.title'/>
-        <Column header='Plan' field='promotion.title'/>
+        <Column
+          header='Oferta'
+          field='plan.title'
+        />
+        <Column
+          header='Plan'
+          field='promotion.title'
+        />
         <Column
           field='paid'
           header='Pagado'
@@ -186,7 +198,7 @@ export default function BillTable(): ReactElement {
       value={members}
       header={() => <h2>Cobros Particulares</h2>}
       filters={filters}
-      filterDisplay='menu'
+      filterDisplay='row'
       emptyMessage='Sin Datos'
       expandedRows={expandedRows}
       onRowToggle={(e) => {
@@ -199,19 +211,18 @@ export default function BillTable(): ReactElement {
         style={{ width: '5rem' }}
       />
       <Column
-        field='id'
-        header='ID'
-        sortable
-      />
-      <Column
         field='name'
         header='Alumno'
         sortable
+        filter
+        filterPlaceholder='Nombre'
       />
       <Column
         field='lastName'
         header='Apellido'
         sortable
+        filter
+        filterPlaceholder='Apellido'
       />
       <Column
         field='dni'

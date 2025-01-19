@@ -9,7 +9,6 @@ const db: PrismaClient = prisma
 
 export async function POST(req: NextRequest): Promise<Response> {
   const body: LogIn = await req.json()
-  // console.log(body)
 
   try {
     const userMatch: Account | null = await db.account.findFirst({
@@ -52,7 +51,8 @@ export async function POST(req: NextRequest): Promise<Response> {
         status: 400
       })
     }
-  } catch {
+  } catch (error) {
+    console.log(error)
     return new Response('error', {
       status: 500
     })
