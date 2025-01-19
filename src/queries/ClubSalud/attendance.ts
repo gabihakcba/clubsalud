@@ -8,7 +8,7 @@ export const createAttendance = async ({
   date
 }: {
   memberId: number
-  classId: number,
+  classId: number
   date: Date
 }): Promise<Attendance> => {
   const response = await axios.post(`${path()}/api/attendance`, {
@@ -22,5 +22,10 @@ export const createAttendance = async ({
 
 export const getAttendances = async (): Promise<Attendance[]> => {
   const response = await axios.get(`${path()}/api/attendance`)
+  return response.data
+}
+
+export const getDailyAttendance = async (date: Date): Promise<Attendance[]> => {
+  const response = await axios.get(`${path()}/api/attendance?date=${date.toISOString()}`)
   return response.data
 }

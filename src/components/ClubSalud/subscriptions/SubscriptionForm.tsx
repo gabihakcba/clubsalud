@@ -12,10 +12,14 @@ import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { argAddMonths, argDate } from 'utils/ClubSalud/dates'
 import { getPlan } from 'queries/ClubSalud/plan'
-import { type Plan, type CreateSubscription } from 'utils/ClubSalud/types'
+import {
+  type Plan,
+  type CreateSubscription,
+  type Member
+} from 'utils/ClubSalud/types'
 
 const calculateFinalPriceMonth = (price, plan: Plan): number => {
-  return (price - (price * plan?.discountPercent) / 100)
+  return price - (price * plan?.discountPercent) / 100
 }
 
 const calculateFinalPrice = (price, plan: Plan): number => {
@@ -68,6 +72,14 @@ export default function SubscriptionForm(): ReactElement {
     formState: { errors }
   } = useForm()
 
+  const optionMemberTemplate = (member: Member): ReactElement => {
+    return (
+      <div className='flex align-items-center'>
+        <div>{`${member?.name} ${member?.dni}`}</div>
+      </div>
+    )
+  }
+
   return (
     <form
       action=''
@@ -106,10 +118,11 @@ export default function SubscriptionForm(): ReactElement {
         <Dropdown
           options={members}
           value={selectedMember}
-          optionLabel='name'
           optionValue='id'
+          itemTemplate={optionMemberTemplate}
+          optionLabel='name'
           filter
-          filterBy='dni,name'
+          filterBy='dni,name,account.username'
           {...register('memberName', {
             required: {
               value: true,
@@ -167,10 +180,18 @@ export default function SubscriptionForm(): ReactElement {
         <label htmlFor=''>Oferta</label>
       </FloatLabel>
       <Tag severity='warning'>
-        Por mes ${calculateFinalPriceMonth(selectedPromotion?.amountPrice, selectedType as Plan)}
+        Por mes $
+        {calculateFinalPriceMonth(
+          selectedPromotion?.amountPrice,
+          selectedType as Plan
+        )}
       </Tag>
       <Tag severity='danger'>
-        Total ${calculateFinalPrice(selectedPromotion?.amountPrice, selectedType as Plan)}
+        Total $
+        {calculateFinalPrice(
+          selectedPromotion?.amountPrice,
+          selectedType as Plan
+        )}
       </Tag>
       <Button
         type='submit'

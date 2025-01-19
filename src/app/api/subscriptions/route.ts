@@ -14,7 +14,8 @@ export async function GET(): Promise<Response> {
             memberSubscription: {
               include: {
                 plan: true,
-                promotion: true
+                promotion: true,
+                billedConsultation: true
               }
             }
           }

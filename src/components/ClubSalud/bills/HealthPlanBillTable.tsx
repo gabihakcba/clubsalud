@@ -27,6 +27,8 @@ export default function HealthPlanBillTable(): ReactElement {
 
   const filters = {
     dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    lastName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     'subscription.member.dni': {
       value: null,
       matchMode: FilterMatchMode.STARTS_WITH
@@ -36,9 +38,7 @@ export default function HealthPlanBillTable(): ReactElement {
   const { data: members } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
-      const res = await getMembers()
-      console.log(res)
-      return res
+      return await getMembers()
     }
   })
 
@@ -201,7 +201,7 @@ export default function HealthPlanBillTable(): ReactElement {
       value={members}
       header={() => <h2>Cobros Consultas</h2>}
       filters={filters}
-      filterDisplay='menu'
+      filterDisplay='row'
       emptyMessage='Sin Datos'
       expandedRows={expandedRows}
       onRowToggle={(e) => {
@@ -214,19 +214,18 @@ export default function HealthPlanBillTable(): ReactElement {
         style={{ width: '5rem' }}
       />
       <Column
-        field='id'
-        header='ID'
-        sortable
-      />
-      <Column
         field='name'
         header='Alumno'
         sortable
+        filter
+        filterPlaceholder='Nombre'
       />
       <Column
         field='lastName'
         header='Apellido'
         sortable
+        filter
+        filterPlaceholder='Apellido'
       />
       <Column
         field='dni'

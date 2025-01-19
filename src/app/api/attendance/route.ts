@@ -11,12 +11,22 @@ import moment from 'moment'
 
 const db: PrismaClient = prisma
 
-export async function GET(): Promise<Response> {
+export async function GET(req: NextRequest): Promise<Response> {
+  const searchParams = req.nextUrl.searchParams
+  const date = searchParams.get('date')
   try {
     const attendances = await db.attendance.findMany({
       include: { class: true, member: true }
     })
-    return new Response(JSONbig.stringify(attendances), {
+    let ret
+    if (date) {
+      ret = attendances.filter((att) => {
+        return (moment(date).isSame(att.date, 'day'))
+      })
+    } else {
+      ret = attendances
+    }
+    return new Response(JSONbig.stringify(ret), {
       status: 200
     })
   } catch (error) {
@@ -140,6 +150,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       }
     }
   } catch (error) {
+    console.log(error)
     return new Response(JSONbig.stringify(error), {
       status: 500
     })
