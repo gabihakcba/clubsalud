@@ -14,6 +14,6 @@ export default function DerivationList(): ReactElement {
     <Column header='ID' field='id'/>
     <Column header='Nombre' field='name'/>
     <Column header='Apellido' field='lastName'/>
-    <Column header='Derivacion' field='derivatedBy'/>
+    <Column header='Derivacion' field='derivedBy'/>
   </DataTable>
 }
