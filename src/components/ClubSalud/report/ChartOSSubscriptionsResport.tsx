@@ -35,7 +35,7 @@ const subscriptionsPaid = (
     (subs: Subscription) =>
       moment(subs.initialDate).year() === moment(date).year() &&
       moment(subs.initialDate).month() <= moment(date).month() &&
-      (subs.billedConsultation?.length ?? 0) > 1
+      (subs.billedConsultation?.length ?? 0) >= subs.plan.durationMonth * 2
   )
   return current
 }
@@ -48,13 +48,15 @@ const subsciptionsNotPaid = (
     (subs: Subscription) =>
       moment(subs.initialDate).year() === moment(date).year() &&
       moment(subs.initialDate).month() <= moment(date).month() &&
-      (subs.billedConsultation?.length ?? 0) < 2
+      (subs.billedConsultation?.length ?? 0) < subs.plan.durationMonth * 2
   )
   return current
 }
 
 const getDebtors = (subscriptionsNotPaid: Subscription[]): Member[] => {
-  const debtorsList = subscriptionsNotPaid.filter((subscription) => !!subscription.member).map((subscription) => subscription.member)
+  const debtorsList = subscriptionsNotPaid
+    .filter((subscription) => !!subscription.member)
+    .map((subscription) => subscription.member)
   return debtorsList
 }
 

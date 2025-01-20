@@ -87,8 +87,14 @@ export async function POST(req: NextRequest): Promise<Response> {
       total: data.total,
       initialDate: data.initialDate,
       expirationDate: data.expirationDate,
-      remainingClasses: data.remainingClasses
+      remainingClasses: data.remainingClasses,
+      active: true
     }
+
+    await db.subscription.updateMany({
+      where: { active: true },
+      data: { active: false }
+    })
 
     const res: Subscription = await db.subscription.create({
       data: {

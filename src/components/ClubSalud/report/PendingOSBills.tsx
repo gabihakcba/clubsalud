@@ -12,14 +12,17 @@ import { Tag } from 'primereact/tag'
 
 const subsciptionsNotPaid = (member: Member | null): Subscription[] => {
   const current = member?.memberSubscription?.filter(
-    (subs: Subscription) => (subs.billedConsultation?.length ?? 0) < 2
+    (subs: Subscription) =>
+      (subs.billedConsultation?.length ?? 0) < subs.plan.durationMonth * 2
   )
   return current ?? []
 }
 
 const getDebts = (member: Member): number => {
   return subsciptionsNotPaid(member).reduce(
-    (curr, arr) => curr + (2 - (arr.billedConsultation?.length ?? 0)),
+    (curr, sub) =>
+      curr +
+      (sub.plan.durationMonth * 2 - (sub.billedConsultation?.length ?? 0)),
     0
   )
 }
