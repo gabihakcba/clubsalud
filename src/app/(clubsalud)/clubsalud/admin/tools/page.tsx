@@ -2,6 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query'
 import MembersList from 'components/ClubSalud/member/MembersList'
+import DerivationList from 'components/ClubSalud/tools/DerivationsList'
 import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Dialog } from 'primereact/dialog'
@@ -11,13 +12,14 @@ import { useModal } from 'utils/ClubSalud/useModal'
 
 export default function Tools(): ReactElement {
   const [membersList, openMembersList, closeMembersList] = useModal(false)
+  const [derivationList, openDerivationList, closeDerivationList] =
+    useModal(false)
 
   const { mutate: createExcel } = useMutation({
     mutationFn: async () => {
       return await getExcel()
     },
-    onSuccess: async (data) => {
-    },
+    onSuccess: async (data) => {},
     onError: (error) => {
       console.log('error tonto')
       console.log(error)
@@ -32,6 +34,13 @@ export default function Tools(): ReactElement {
         header='Listado de alumnos'
       >
         <MembersList />
+      </Dialog>
+      <Dialog
+        visible={derivationList}
+        onHide={closeDerivationList}
+        header='Listado de derivaciones'
+      >
+        <DerivationList />
       </Dialog>
       <div className='flex gap-4'>
         <Button
@@ -50,15 +59,25 @@ export default function Tools(): ReactElement {
           }}
         />
         <Button
-            label='Listado de alumnos'
-            size='small'
-            outlined
-            icon='pi pi-list'
-            iconPos='right'
-            className='w-max'
-            severity='success'
-            onClick={openMembersList}
-          />
+          label='Listado de alumnos'
+          size='small'
+          outlined
+          icon='pi pi-list'
+          iconPos='right'
+          className='w-max'
+          severity='success'
+          onClick={openMembersList}
+        />
+        <Button
+          label='Listado de derivaciones'
+          size='small'
+          outlined
+          icon='pi pi-list'
+          iconPos='right'
+          className='w-max'
+          severity='success'
+          onClick={openDerivationList}
+        />
       </div>
     </Card>
   )
