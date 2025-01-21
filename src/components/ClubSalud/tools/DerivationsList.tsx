@@ -3,6 +3,7 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { getMembers } from 'queries/ClubSalud/members'
 import { type ReactElement } from 'react'
+import { type Member } from 'utils/ClubSalud/types'
 
 export default function DerivationList(): ReactElement {
   const { data: members, isLoading } = useQuery({
@@ -10,10 +11,31 @@ export default function DerivationList(): ReactElement {
     queryFn: async () => await getMembers()
   })
 
-  return <DataTable value={members} loading={isLoading}>
-    <Column header='ID' field='id'/>
-    <Column header='Nombre' field='name'/>
-    <Column header='Apellido' field='lastName'/>
-    <Column header='Derivacion' field='derivedBy'/>
-  </DataTable>
+  const getList = (members: Member[]): any => {
+    return Object.values(
+      members.reduce((acc, item) => {
+        if (!acc[item.derivedBy]) {
+          acc[item.derivedBy] = { derivedBy: item.derivedBy, total: 0 }
+        }
+        acc[item.derivedBy].total++
+        return acc
+      }, {})
+    )
+  }
+
+  return (
+    <DataTable
+      value={getList(members ?? [])}
+      loading={isLoading}
+    >
+      <Column
+        header='Derivado por'
+        field='derivedBy'
+      />
+      <Column
+        header='Total'
+        field='total'
+      />
+    </DataTable>
+  )
 }
