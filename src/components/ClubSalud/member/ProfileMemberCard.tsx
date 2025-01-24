@@ -205,6 +205,25 @@ export default function ProfileMemberCard({
           </li>
 
           <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
+            <Calendar
+              id='birthday'
+              value={
+                watch('birthday') ?? arg2Date(member.birthday)
+              }
+              {...register('birthday', {
+                required: {
+                  value: true,
+                  message: 'Fecha es requerida'
+                }
+              })}
+              disabled={!editF}
+              invalid={errors?.birthday !== undefined}
+              dateFormat='dd/mm/yy'
+            />
+            <label className='font-semibold'>Fecha de nacimiento</label>
+          </li>
+
+          <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
             <InputText
               type='number'
               id='phoneNumber'

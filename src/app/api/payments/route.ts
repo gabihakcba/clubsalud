@@ -14,14 +14,15 @@ const db: PrismaClient = prisma
 export const fetchCache = 'force-no-store'
 
 export async function GET(req: NextRequest): Promise<Response> {
-  revalidatePath('api/schedules')
+  revalidatePath('api/payments')
   try {
     const payments: Payment[] = await db.payment.findMany({
       include: {
         member: true,
         subscription: {
           include: {
-            promotion: true
+            promotion: true,
+            plan: true
           }
         }
       }
@@ -43,7 +44,8 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const newPayment = {
     amount: Number(data.amount),
-    date: data.date
+    date: data.date,
+    isCash: data.isCash
   }
 
   try {
@@ -148,6 +150,36 @@ export async function DELETE(req: NextRequest): Promise<Response> {
     console.log(error)
     return new Response(JSONbig.stringify('Internal Server Error :('), {
       status: 500
+    })
+  }
+}
+
+export async function PATCH(req: NextRequest): Promise<Response> {
+  const id = await req.json()
+
+  try {
+    const oldPayment: Payment | null = await db.payment.findUnique({
+      where: { id }
+    })
+
+    console.log('oldPayment', oldPayment)
+
+    const payment: Payment = await db.payment.update({
+      where: {
+        id
+      },
+      data: {
+        isCash: !oldPayment?.isCash
+      }
+    })
+
+    return new Response(JSONbig.stringify(payment), {
+      status: 200
+    })
+  } catch (error) {
+    console.log(error)
+    return new Response(JSONbig.stringify('Internal Server Error :('), {
+      status: 333
     })
   }
 }

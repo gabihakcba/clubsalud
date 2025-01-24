@@ -16,13 +16,15 @@ export const setParticularPayment = async ({
   memberId,
   subscriptionId,
   amount,
-  date
+  date,
+  isCash
 }): Promise<Payment> => {
   const response = await axios.post(`${path()}/api/payments`, {
     memberId: Number(memberId),
     subscriptionId: Number(subscriptionId),
     amount: Number(amount),
-    date
+    date,
+    isCash
   })
   return response.data
 }
@@ -50,6 +52,13 @@ export const deleteParticularPayment = async (id: number): Promise<Payment> => {
 }
 
 export const deletePlanPayment = async (id: number): Promise<Payment> => {
-  const response = await axios.delete(`${path()}/api/planPayments`, { data: id })
+  const response = await axios.delete(`${path()}/api/planPayments`, {
+    data: id
+  })
+  return response.data
+}
+
+export const changeMethod = async (id: number): Promise<Payment> => {
+  const response = await axios.patch(`${path()}/api/payments`, id)
   return response.data
 }

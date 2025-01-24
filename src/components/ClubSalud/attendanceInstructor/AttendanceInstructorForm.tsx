@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { getClasses } from 'queries/ClubSalud/classes'
-import { useEffect, useState, type ReactElement } from 'react'
+import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Class_, type Instructor } from '../../../utils/ClubSalud/types'
 import { getInstructors } from 'queries/ClubSalud/instructors'
@@ -11,6 +11,8 @@ import { FloatLabel } from 'primereact/floatlabel'
 import { Calendar } from 'primereact/calendar'
 import moment from 'moment'
 import { InputNumber } from 'primereact/inputnumber'
+import { Toast } from 'primereact/toast'
+import { type AxiosError } from 'axios'
 
 export default function AttendanceInstructorForm({
   instructor
@@ -18,6 +20,7 @@ export default function AttendanceInstructorForm({
   instructor?: Instructor
 }): ReactElement {
   const query = useQueryClient()
+  const toast = useRef<Toast>(null)
 
   const [selectedInstructor, setSelectedInstructor] = useState<
   Instructor | undefined
@@ -50,8 +53,25 @@ export default function AttendanceInstructorForm({
     mutationFn: createAttendanceInstructor,
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['instructors'] })
+      if (toast.current) {
+        toast.current.show({
+          severity: 'success',
+          summary: 'Asistencia marcada correctamente',
+          life: 3000,
+          sticky: true
+        })
+      }
     },
-    onError: (data) => {}
+    onError: (data: AxiosError) => {
+      if (toast.current) {
+        toast.current.show({
+          severity: 'error',
+          summary: 'Error al crear pago',
+          life: 3000,
+          sticky: true
+        })
+      }
+    }
   })
 
   useEffect(() => {
@@ -73,6 +93,7 @@ export default function AttendanceInstructorForm({
         })
       })}
     >
+      <Toast ref={toast} position='top-left'/>
       <div className='flex flex-column gap-4'>
         {!instructor && (
           <Dropdown

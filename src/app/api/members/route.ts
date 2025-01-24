@@ -53,18 +53,19 @@ export async function GET(req: NextRequest): Promise<Response> {
 
 export async function POST(req: NextRequest): Promise<Response> {
   try {
-    const data: Member & { planSubscribed?: number[] } = await req.json()
+    const data = await req.json()
     const parsed = {
       name: data.name,
       lastName: data.lastName,
-      dni: BigInt(data.dni),
-      cuit: data.cuit ? BigInt(data.cuit) : null,
-      phoneNumber: BigInt(data.phoneNumber),
+      dni: BigInt(data.dni as number),
+      cuit: data.cuit ? BigInt(data.cuit as number) : null,
+      phoneNumber: BigInt(data.phoneNumber as number),
       address: data.address,
       inscriptionDate: data.inscriptionDate,
       derivedBy: data.derivedBy,
-      afiliateNumber: BigInt(data.afiliateNumber),
-      state: MemberState.ACTIVE
+      afiliateNumber: BigInt(data.afiliateNumber as number),
+      state: MemberState.ACTIVE,
+      birthday: data.birthday
     }
 
     const res: Member = await db.member.create({
@@ -78,13 +79,23 @@ export async function POST(req: NextRequest): Promise<Response> {
       }
     })
     if (data.planSubscribed) {
-      await prisma.healthPlanSubscribed?.createMany({
-        data: data.planSubscribed.map((planId) => ({
-          memberId: res.id,
-          planId
-        }))
+      await prisma.healthPlanSubscribed?.create({
+        data: {
+          afiliateNumber: data.afiliateNumberOS,
+          member: {
+            connect: {
+              id: res.id
+            }
+          },
+          plan: {
+            connect: {
+              id: data.planSubscribed
+            }
+          }
+        }
       })
     }
+
     return new Response(JSONbig.stringify(res), {
       status: 200
     })
@@ -129,7 +140,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       cancelationReason: data?.cancelationReason ?? null,
       derivedBy: data.derivedBy,
       afiliateNumber: Number(data.afiliateNumber),
-      state: MemberState[data.state]
+      state: MemberState[data.state],
+      birthday: data.birthday
     }
     const id: number = Number(data.id)
     const res: Member = await db.member.update({

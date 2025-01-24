@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Member" ADD COLUMN     "birthday" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+-- AlterTable
+ALTER TABLE "Payment" ALTER COLUMN "isCash" SET DEFAULT true;

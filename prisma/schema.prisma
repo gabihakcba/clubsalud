@@ -135,6 +135,7 @@ model Member {
   afiliateNumber      BigInt                 @db.BigInt
   state               MemberState
   remainingClasses    BigInt?                @db.BigInt
+  birthday            DateTime               @default(now())
   // Foreignkeys
   accountId           Int                    @unique
   medicalRecordId     Int?                   @unique
@@ -234,6 +235,7 @@ model Payment {
   id             Int          @id @default(autoincrement())
   amount         Float
   date           DateTime     @default(now())
+  isCash         Boolean      @default(true)
   // Foreignkeys
   memeberId      Int
   subscriptionId Int
