@@ -112,6 +112,7 @@ export interface CreateMember {
   remainingClasses?: bigint | null
   accountId: number
   planSubscribed?: HealthPlanSubscribed[]
+  birthday: Date
 }
 
 export interface InstructorPayment extends CreateInstructorPayment {
@@ -175,7 +176,7 @@ export interface Schedule {
 }
 
 export interface Promotion extends CreatePromotion {
-  id: number,
+  id: number
   record?: PromotionRecord[]
 }
 

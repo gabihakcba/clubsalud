@@ -18,6 +18,7 @@ import { Button } from 'primereact/button'
 import { Password } from 'primereact/password'
 import { MultiSelect } from 'primereact/multiselect'
 import { getHealthPlans } from 'queries/ClubSalud/health'
+import { FloatLabel } from 'primereact/floatlabel'
 
 const formToMember = (data: FieldValues, id: number): CreateMember => {
   const dataParsed = {
@@ -32,7 +33,8 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
     accountId: id,
-    planSubscribed: data.plans
+    planSubscribed: data.plans,
+    birthday: data.birthday
   }
   return dataParsed
 }
@@ -255,6 +257,24 @@ export function CreateMemberForm(): ReactElement {
         />
         <label htmlFor='cuit'>CUIT</label>
       </div>
+      <FloatLabel>
+        <Calendar
+          value={watch('birthday')}
+          {...register('birthday', {
+            required: {
+              value: true,
+              message: 'Fecha de nacimiento es requerida'
+            }
+          })}
+          name='birthday'
+          id='birthday'
+          dateFormat='dd/mm/yy'
+          placeholder='Fecha de nacimiento'
+          invalid={errors?.birthday !== undefined}
+          className='w-full'
+        />
+        <label htmlFor=''>Fecha de nacimiento</label>
+      </FloatLabel>
       <div className='p-float-label'>
         <InputText
           {...register('phoneNumber', {
