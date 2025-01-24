@@ -64,7 +64,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       inscriptionDate: data.inscriptionDate,
       derivedBy: data.derivedBy,
       afiliateNumber: BigInt(data.afiliateNumber),
-      state: MemberState.ACTIVE
+      state: MemberState.ACTIVE,
+      birthday: data.birthday
     }
 
     const res: Member = await db.member.create({
@@ -129,7 +130,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
       cancelationReason: data?.cancelationReason ?? null,
       derivedBy: data.derivedBy,
       afiliateNumber: Number(data.afiliateNumber),
-      state: MemberState[data.state]
+      state: MemberState[data.state],
+      birthday: data.birthday
     }
     const id: number = Number(data.id)
     const res: Member = await db.member.update({

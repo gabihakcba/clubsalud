@@ -135,6 +135,7 @@ model Member {
   afiliateNumber      BigInt                 @db.BigInt
   state               MemberState
   remainingClasses    BigInt?                @db.BigInt
+  birthday            DateTime               @default(now())
   // Foreignkeys
   accountId           Int                    @unique
   medicalRecordId     Int?                   @unique
