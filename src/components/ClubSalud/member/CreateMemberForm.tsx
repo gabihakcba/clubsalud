@@ -6,8 +6,7 @@ import {
   type CreateMember,
   MemberSate,
   Permissions,
-  type CreateAccount,
-  type HealthPlan
+  type CreateAccount
 } from 'utils/ClubSalud/types'
 import { createAccount, deleteAccount } from 'queries/ClubSalud/accounts'
 import { createMember } from 'queries/ClubSalud/members'
@@ -16,9 +15,9 @@ import { InputText } from 'primereact/inputtext'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
 import { Password } from 'primereact/password'
-import { MultiSelect } from 'primereact/multiselect'
 import { getHealthPlans } from 'queries/ClubSalud/health'
 import { FloatLabel } from 'primereact/floatlabel'
+import { Dropdown } from 'primereact/dropdown'
 
 const formToMember = (data: FieldValues, id: number): CreateMember => {
   const dataParsed = {
@@ -33,16 +32,18 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
     accountId: id,
-    planSubscribed: data.plans,
-    birthday: data.birthday
+    planSubscribed: data.planID,
+    birthday: data.birthday,
+    afiliateNumberOS: data.afiliateNumberOS
   }
+
   return dataParsed
 }
 
 export function CreateMemberForm(): ReactElement {
   const query = useQueryClient()
 
-  const [planSelected, setPlanSelected] = useState<HealthPlan | undefined>(
+  const [planSelected, setPlanSelected] = useState<number | undefined>(
     undefined
   )
 
@@ -345,7 +346,7 @@ export function CreateMemberForm(): ReactElement {
           {...register('afiliateNumber', {
             required: {
               value: true,
-              message: 'Número de afiliado requerido'
+              message: 'Número de afiliado de OS requerido'
             }
           })}
           form='createForm'
@@ -354,25 +355,41 @@ export function CreateMemberForm(): ReactElement {
           invalid={errors?.afiliateNumber !== undefined}
           className='w-full'
         />
-        <label htmlFor='afiliateNumber'>Número de historia clínica (ID)</label>
+        <label htmlFor=''>Número de historia clínica (ID)</label>
       </div>
+
       <div className='p-float-label'>
-        <MultiSelect
+        <Dropdown
           className='w-full'
           {...register('plans')}
           options={plans}
           optionLabel='name'
           optionValue='id'
           value={planSelected}
-          display='chip'
           onChange={(e) => {
-            setPlanSelected(e.value as HealthPlan)
-            setValue('plans', e.value)
+            setPlanSelected(e.value as number)
+            setValue('planID', e.value)
           }}
           invalid={errors?.plans !== undefined}
         />
         <label htmlFor='plans'>Obra Social</label>
       </div>
+
+      {watch('plans') && <div className='p-float-label'>
+        <InputText
+          {...register('afiliateNumberOS', {
+            required: {
+              value: true,
+              message: 'Número de afiliado requerido'
+            }
+          })}
+          form='createForm'
+          autoComplete='off'
+          invalid={errors?.afiliateNumberOS !== undefined}
+          className='w-full'
+        />
+        <label htmlFor='afiliateNumberOS'>Número de afiliado de OS</label>
+      </div>}
 
       <div className='flex flex-column gap-0'>
         <Button

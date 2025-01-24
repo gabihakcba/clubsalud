@@ -5,10 +5,12 @@ import { Dropdown } from 'primereact/dropdown'
 import { InputText } from 'primereact/inputtext'
 import { createEmployeePayment } from 'queries/ClubSalud/employeePayments'
 import { getEmployees } from 'queries/ClubSalud/employees'
-import { useState, type ReactElement } from 'react'
+import { useRef, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type EmployeePayment, type CreateEmployeePayment } from 'utils/ClubSalud/types'
 import { FloatLabel } from 'primereact/floatlabel'
+import { Toast } from 'primereact/toast'
+import { type AxiosError } from 'axios'
 
 interface params {
   closeModal: () => void
@@ -16,6 +18,7 @@ interface params {
 export default function CreateEmployeePaymentForm({
   closeModal
 }: params): ReactElement {
+  const toast = useRef<Toast>(null)
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null)
 
   const query = useQueryClient()
@@ -39,8 +42,26 @@ export default function CreateEmployeePaymentForm({
         ...oldData,
         data
       ])
+      if (toast.current) {
+        toast.current.show({
+          severity: 'success',
+          summary: 'Pago hecho correctamente',
+          life: 3000,
+          sticky: true
+        })
+      }
       reset()
       setTimeout(closeModal, 250)
+    },
+    onError: (data: AxiosError) => {
+      if (toast.current) {
+        toast.current.show({
+          severity: 'error',
+          summary: 'Error al crear pago',
+          life: 3000,
+          sticky: true
+        })
+      }
     }
   })
 
@@ -68,6 +89,7 @@ export default function CreateEmployeePaymentForm({
         create(parsed)
       })}
     >
+      <Toast ref={toast} position='top-left'/>
       <FloatLabel>
         <Dropdown
           className='w-full'
