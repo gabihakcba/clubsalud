@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
+import { RadioButton } from 'primereact/radiobutton'
 import { getMembers } from 'queries/ClubSalud/members'
 import {
   setParticularPayment,
@@ -65,7 +66,10 @@ const getRemainingBills = (
   const subs = member?.memberSubscription?.find(
     (subs: Subscription) => subs.id === sId
   )
-  return ((subs?.plan?.durationMonth ?? 0) * 2) - (subs?.billedConsultation?.length ?? 0)
+  return (
+    (subs?.plan?.durationMonth ?? 0) * 2 -
+    (subs?.billedConsultation?.length ?? 0)
+  )
 }
 
 const optionSubscriptionTemplate = (subs: Subscription): ReactElement => {
@@ -84,6 +88,7 @@ export default function CreatePaymentForm(): ReactElement {
   const [ishealth, setIshealth] = useState<boolean>(false)
   const [amountToPay, setAmountToPay] = useState<number>(0)
   const [selectedDate, setSelectedDate] = useState<Date>(moment().toDate())
+  const [isCash, setIsCash] = useState<boolean>(true)
 
   const query = useQueryClient()
 
@@ -156,7 +161,8 @@ export default function CreatePaymentForm(): ReactElement {
             memberId: data.memberId,
             subscriptionId: data.subscriptionId,
             amount: data.amountParticular,
-            date: data.date
+            date: data.date,
+            isCash
           })
         }
       })}
@@ -228,6 +234,46 @@ export default function CreatePaymentForm(): ReactElement {
           onBlur={() => {}} /** Do not remove this line, make no fail Checkbox with {...register} */
         />
       </div>
+      <div className='flex gap-4'>
+        {!ishealth && (
+          <div className='flex flex-wrap gap-3'>
+            <div className='flex align-items-center'>
+              <RadioButton
+                inputId='isCash'
+                name='Efectivo'
+                value={true}
+                onChange={(e) => {
+                  setIsCash(e.value as boolean)
+                }}
+                checked={isCash}
+              />
+              <label
+                htmlFor='isCash'
+                className='ml-2'
+              >
+                Efectivo
+              </label>
+            </div>
+            <div className='flex align-items-center'>
+              <RadioButton
+                inputId='noIsCash'
+                name='Transferencia'
+                value={false}
+                onChange={(e) => {
+                  setIsCash(e.value as boolean)
+                }}
+                checked={!isCash}
+              />
+              <label
+                htmlFor='ingredient2'
+                className='ml-2'
+              >
+                Transferencia
+              </label>
+            </div>
+          </div>
+        )}
+      </div>
       {ishealth && (
         <>
           <div className='p-float-label'>
@@ -269,26 +315,26 @@ export default function CreatePaymentForm(): ReactElement {
         </>
       )}
       <div className='p-float-label'>
-          <Password
-            type='number'
-            id='amountPlan'
-            {...register('amountPlan')}
-            value={String(amountToPay)}
-            disabled
-            invalid={errors?.amountPlan !== undefined}
-            hidden={!ishealth}
-          />
-          <InputText
-            id='amountParticular'
-            {...register('amountParticular', {
-              required: {
-                value: !ishealth,
-                message: 'Campo requerido particular'
-              }
-            })}
-            invalid={errors?.amountParticular !== undefined && !ishealth}
-            hidden={ishealth}
-          />
+        <Password
+          type='number'
+          id='amountPlan'
+          {...register('amountPlan')}
+          value={String(amountToPay)}
+          disabled
+          invalid={errors?.amountPlan !== undefined}
+          hidden={!ishealth}
+        />
+        <InputText
+          id='amountParticular'
+          {...register('amountParticular', {
+            required: {
+              value: !ishealth,
+              message: 'Campo requerido particular'
+            }
+          })}
+          invalid={errors?.amountParticular !== undefined && !ishealth}
+          hidden={ishealth}
+        />
         <label htmlFor=''>Monto</label>
       </div>
       <FloatLabel>

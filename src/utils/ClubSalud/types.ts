@@ -241,6 +241,7 @@ export interface CreatePayment {
   date: Date
   memberId: number
   subscriptionId: number
+  isCash: boolean
 }
 
 export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
