@@ -3,7 +3,7 @@ import { type ReactElement } from 'react'
 
 export default function Whoweare(): ReactElement {
   return (
-    <div className='flex flex-column align-items-center align-self-center  mt-6 gap-8 max-w-full h-screen'>
+    <div className='flex flex-column align-items-center align-self-center mt-6 gap-8 max-w-full h-screen'>
       <span className='font-bold text-2xl text-green-500'>¿Quienes somos?</span>
       <Divider className='m-1'/>
       <span className='font-bold'>
