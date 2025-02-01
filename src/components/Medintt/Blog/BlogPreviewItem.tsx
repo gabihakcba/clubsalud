@@ -22,9 +22,8 @@ export default function BlogPreviewItem({ item }: { item: any }): ReactElement {
       <Button
         label='Ver más'
         link
-        disabled
         onClick={() => {
-          router.push(`blog/${item.id}`)
+          router.push(`blog/${item.HTML}`)
         }}
       />
     </div>

@@ -7,7 +7,7 @@ export default function BlogMedintt(): ReactElement {
     <div className='flex flex-column align-items-center justify-content-center'>
       <span className='font-bold text-2xl text-green-500 my-6'>Blog</span>
       <div className='flex gap-6 justify-content-center flex-wrap'>
-        {blog?.map((b) => <BlogPreviewItem key={b.title} item={b} />)}
+        {blog?.map((b, i) => <BlogPreviewItem key={`${b.title}${i}`} item={b} />)}
       </div>
     </div>
   )

@@ -7,8 +7,8 @@ import 'primeicons/primeicons.css'
 import { type ReactElement } from 'react'
 
 export const metadata = {
-  title: 'Club Salud',
-  description: 'Gimnasio con seguimiento médico'
+  title: 'Medintt - Tu salud nuestra especialidad',
+  description: 'Centro Médico Privado'
 }
 
 export default function RootLayout({
