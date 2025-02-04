@@ -1,6 +1,5 @@
 import {
   type AttendanceInstructor,
-  type Attendance,
   type PrismaClient
 } from '@prisma/client'
 import prisma from 'utils/ClubSalud/prisma'
@@ -66,7 +65,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
   try {
     const data = await req.json()
 
-    const res: Attendance = await db.attendance.update({
+    const res = await db.attendanceInstructor.update({
       where: {
         id: data.id
       },
@@ -79,7 +78,7 @@ export async function PATCH(req: NextRequest): Promise<Response> {
   } catch (error) {
     console.log(error)
 
-    return new Response('No se pudo editar la clase', {
+    return new Response('No se pudo editar la asistencia', {
       status: 400
     })
   }
@@ -87,10 +86,11 @@ export async function PATCH(req: NextRequest): Promise<Response> {
 
 export async function DELETE(req: NextRequest): Promise<Response> {
   try {
-    const data = await req.json()
-    const res: Attendance = await db.attendance.delete({
+    const id = await req.json()
+
+    const res = await db.attendanceInstructor.delete({
       where: {
-        id: data.id
+        id
       }
     })
 
@@ -98,7 +98,8 @@ export async function DELETE(req: NextRequest): Promise<Response> {
       status: 200
     })
   } catch (error) {
-    return new Response('No se pudo eliminar la clase', {
+    console.log(error)
+    return new Response('No se pudo eliminar la asistencia', {
       status: 400
     })
   }
