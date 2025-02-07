@@ -1,20 +1,37 @@
 :root {
     font-family: "Geist Medium", sans-serif !important;
     --font-family: "Geist Medium", sans-serif !important;
-  }
-  
-  @font-face {
+}
+
+@font-face {
     font-family: "Geist Medium" !important;
     font-weight: 500 !important;
     font-display: swap !important;
     font-style: normal !important;
     src: url("./fonts/Geist-Medium.woff2") format("woff2") !important;
-  }
-  
-  @font-face {
+}
+
+@font-face {
     font-family: "Host Grotesk Regular" !important;
     font-weight: 400 !important;
     font-display: swap !important;
     font-style: normal !important;
     src: url("./fonts/Host-Grotesk-Regular.woff2") format("woff2") !important;
-  }
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th,
+td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f5f5f5;
+}
