@@ -19,13 +19,6 @@ export default function RootLayout({
   return (
     <PrimeReactProvider>
       <html lang='en'>
-        {/* <Head>
-          <link
-            id='app-theme'
-            rel='stylesheet'
-            href='/themes/lara-light-blue/theme.css'
-          />
-        </Head> */}
         <body className=''>
           <NavBar className='mb-1 sticky w-screen top-0 z-5 flex justify-content-center filled bg-white shadow-2' />
           {children}

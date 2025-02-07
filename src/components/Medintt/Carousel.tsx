@@ -1,3 +1,5 @@
+'use client'
+
 import { type ReactElement } from 'react'
 import { Carousel } from 'primereact/carousel'
 import Image from 'next/image'

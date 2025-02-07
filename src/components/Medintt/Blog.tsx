@@ -1,13 +1,13 @@
 import { type ReactElement } from 'react'
 import BlogPreviewItem from './Blog/BlogPreviewItem'
-import blog from '../../utils/Medintt/ddbb/blog.json'
+import { getAllFilesMetadata } from 'utils/Medintt/mdx'
 
 export default function Blog({
   preview = false
 }: {
   preview: boolean
 }): ReactElement {
-  const items = blog
+  const items = getAllFilesMetadata()
 
   return (
     <div className='bg-gray-100 flex flex-column gap-4 justify-content-center align-items-center p-4'>

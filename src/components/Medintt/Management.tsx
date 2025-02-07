@@ -1,3 +1,5 @@
+'use client'
+
 import { type ReactElement } from 'react'
 import ManagementProfile from './ManagementProfile'
 import oscar from '../../../public/images/oscar.jpg'

@@ -1,5 +1,3 @@
-'use client'
-
 import { type ReactElement } from 'react'
 import CarouselMedintt from 'components/Medintt/Carousel'
 import Appointment from 'components/Medintt/Appointment'

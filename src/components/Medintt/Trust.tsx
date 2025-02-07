@@ -1,3 +1,5 @@
+'use client'
+
 import { Carousel } from 'primereact/carousel'
 import { type ReactElement } from 'react'
 

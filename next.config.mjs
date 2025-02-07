@@ -1,22 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true
+  reactStrictMode: true,
+  // Opcional: Configuración para cargar archivos estáticos desde /public
+  async headers() {
+    return [
+      {
+        source: "/blogs/:path*",
+        headers: [
+          { 
+            key: "Cache-Control", 
+            value: "public, max-age=31536000, immutable" 
+          }
+        ]
+      }
+    ]
+  }
 }
 
-// module.exports = {
-//   async headers() {
-//     return [
-//       {
-//         source: '/:path*{/}?',
-//         headers: [
-//           {
-//             key: 'x-custom-header',
-//             value: 'my custom header value for all pages',
-//           },
-//         ],
-//       },
-//     ]
-//   },
-// }
-
-export default nextConfig
+export default nextConfig;
