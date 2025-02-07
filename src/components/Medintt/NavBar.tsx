@@ -67,12 +67,12 @@ export default function NavBar({
     {
       label: 'Blog',
       icon: 'pi pi-book',
-      url: 'blog'
+      url: '/blog'
     },
     {
       label: 'Contacto',
       icon: 'pi pi-address-book',
-      url: 'contact'
+      url: '/contact'
     }
   ]
 
