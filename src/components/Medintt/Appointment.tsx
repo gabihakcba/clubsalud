@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from 'primereact/button'
 import { type ReactElement } from 'react'
 
@@ -22,6 +24,12 @@ export default function Appointment(): ReactElement {
         label='SOLICITAR TURNO'
         size='small'
         rounded
+        onClick={() => {
+          window.open(
+            'https://api.whatsapp.com/send/?phone=%2B5492994587079&text&type=phone_number&app_absent=0',
+            '_blank'
+          )
+        }}
       />
     </section>
   )

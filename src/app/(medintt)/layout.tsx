@@ -1,9 +1,9 @@
-import '../globals.css'
 import { PrimeReactProvider } from 'primereact/api'
 import NavBar from 'components/Medintt/NavBar'
 import 'primereact/resources/themes/lara-light-green/theme.css'
 import 'primeflex/primeflex.css'
 import 'primeicons/primeicons.css'
+import './theme/medintt.css'
 import { type ReactElement } from 'react'
 
 export const metadata = {
