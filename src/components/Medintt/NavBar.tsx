@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactElement } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../../public/logos/medintt_positivo_square.png'
+import { Button } from 'primereact/button'
 
 export default function NavBar({
   className
@@ -73,6 +74,40 @@ export default function NavBar({
       label: 'Contacto',
       icon: 'pi pi-address-book',
       url: '/contact'
+    },
+    {
+      template: () => (
+        <div className='flex gap-2 p-menuitem-link justify-content-center align-items-center align-self-center'>
+          <Button
+            link
+            onClick={() => {
+              window.open('https://www.instagram.com/medinttcentromedico', '_blank')
+            }}
+            icon='pi pi-instagram'
+          />
+          <Button
+            link
+            onClick={() => {
+              window.open('https://www.facebook.com/medintt', '_blank')
+            }}
+            icon='pi pi-facebook'
+          />
+          <Button
+            link
+            onClick={() => {
+              window.open('https://www.linkedin.com/company/medintt-salud-ocupacional-integral', '_blank')
+            }}
+            icon='pi pi-linkedin'
+          />
+          <Button
+            link
+            onClick={() => {
+              window.open('https://api.whatsapp.com/send/?phone=%2B5492994587079&text&type=phone_number&app_absent=0', '_blank')
+            }}
+            icon='pi pi-whatsapp'
+          />
+        </div>
+      )
     }
   ]
 
