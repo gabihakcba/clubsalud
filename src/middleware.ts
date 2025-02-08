@@ -17,7 +17,6 @@ const verifyCookie = async (
 }
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
-  const loginPath: string = '/'
   const pathname: string = req.nextUrl.pathname
 
   if (
@@ -34,20 +33,17 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   const cookie: RequestCookie | undefined = req.cookies.get('auth')
   const verifiedCookie = await verifyCookie(cookie)
 
-  if (pathname.startsWith('/clubsalud')) {
-    if (!verifiedCookie && pathname !== loginPath) {
-      return NextResponse.redirect(new URL('/', req.url))
-    } else if (verifiedCookie && pathname === loginPath) {
-      return NextResponse.redirect(new URL('/clubsalud/admin', req.url))
-    }
+  if (pathname.startsWith('/clubsalud/admin') && !verifiedCookie) {
+    return NextResponse.redirect(new URL('/clubsalud', req.url))
   }
 
-  // else if (!verifiedCookie && pathname === loginPath) {
-  //   return NextResponse.next()
-  // }
-  // else if (verifiedCookie && pathname !== loginPath) {
-  //   return NextResponse.next()
-  // }
+  if (pathname.startsWith('/api') && !verifiedCookie) {
+    return NextResponse.redirect(new URL('/clubsalud', req.url))
+  }
+
+  if (pathname.endsWith('/clubsalud') && verifiedCookie) {
+    return NextResponse.redirect(new URL('/clubsalud/admin', req.url))
+  }
 
   return NextResponse.next()
 }
