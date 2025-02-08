@@ -15,7 +15,8 @@ const io = new SocketIOServer(httpServer, {
     origin: [
       'http://localhost:3000',
       'https://clubsalud.vercel.app',
-      'https://www.centromedicomedintt.com'
+      'https://www.centromedicomedintt.com',
+      'https://medintt.com',
     ],
     methods: ['GET', 'POST']
   }
