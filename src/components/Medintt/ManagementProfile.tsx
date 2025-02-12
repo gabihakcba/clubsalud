@@ -1,6 +1,7 @@
 import { type ReactElement } from 'react'
 import Image from 'next/image'
 import { Button } from 'primereact/button'
+import Span from './Span'
 
 export default function ManagementProfile({
   src,
@@ -21,8 +22,8 @@ export default function ManagementProfile({
         alt=''
         className='border-circle'
       />
-      <span className='text-blue-700 text-lg'>{name}</span>
-      <span className='text-sm text-700'>{description}</span>
+      <Span type='primary' className='text-lg'>{name}</Span>
+      <Span type='secondary' className='text-sm'>{description}</Span>
       <section className='flex'>
         {socialmedia.map((item, index) => (
           <Button

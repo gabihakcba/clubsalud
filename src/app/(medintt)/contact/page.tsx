@@ -1,5 +1,6 @@
 'use client'
 
+import Span from '../../../components/Medintt/Span'
 import { Button } from 'primereact/button'
 import { Divider } from 'primereact/divider'
 import { type ReactElement } from 'react'
@@ -7,11 +8,11 @@ import { type ReactElement } from 'react'
 export default function Contact(): ReactElement {
   return (
     <div className='flex flex-column align-items-center justify-content-center'>
-      <span className='font-bold text-2xl text-green-500 my-6'>Contacto</span>
+      <Span type='primary' className='font-bold text-2xl my-6'>Contacto</Span>
       <Divider />
       <p>Av Alem 1431 (Alem y Psje. Rawson)</p>
       <p>Cipolletti, Rio Negro – Argentina</p>
-      <span className='font-bold text-2xl text-primary my-6'>Turnos</span>
+      <Span type='primary' className='font-bold text-2xl my-6'>Turnos</Span>
       <p>Lunes a Viernes de 8:30 a 20:30 hs.</p>
       <p>Sólo mensajes de Whtasapp.</p>
       <Button

@@ -2,6 +2,7 @@
 
 import { Carousel } from 'primereact/carousel'
 import { type ReactElement } from 'react'
+import Span from './Span'
 
 export default function Trust(): ReactElement {
   const products = [
@@ -90,14 +91,11 @@ export default function Trust(): ReactElement {
 
   return (
     <div className='flex flex-column justify-content-center align-items-center gap-4 p-4'>
-      <span className='font-bold text-2xl text-purple-700'>
-        Ya confian en nosotros
-      </span>
+      <Span type='primary' className='font-bold text-2xl'>Ya confían en nosotros</Span>
       <Carousel
         value={products}
         numVisible={1}
         numScroll={1}
-        // responsiveOptions={responsiveOptions}
         className='custom-carousel'
         circular
         autoplayInterval={3000}

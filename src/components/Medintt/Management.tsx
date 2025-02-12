@@ -5,13 +5,12 @@ import ManagementProfile from './ManagementProfile'
 import oscar from '../../../public/images/oscar.jpg'
 import cecilia from '../../../public/images/cecilia.jpg'
 import sergio from '../../../public/images/sergio.jpg'
+import Span from './Span'
 
 export default function Management(): ReactElement {
   return (
     <div className='flex flex-column p-4 justify-content-center align-items-center gap-4'>
-      <text className='text-purple-700 text-2xl font-bold'>
-        Nuestra Dirección
-      </text>
+      <Span type='primary' className='text-2xl font-bold'>Nuestra Dirección</Span>
       <div className='flex flex-wrap gap-6 justify-content-center align-items-start'>
         <ManagementProfile
           src={oscar}

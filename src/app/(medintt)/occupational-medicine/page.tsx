@@ -3,14 +3,18 @@ import { type ReactElement } from 'react'
 import img from '../../../../public/images/medicina-laboral-fondo-1.jpg'
 import Image from 'next/image'
 import AccordionOccupational from 'components/Medintt/occupational/AccordionOccupational'
+import Span from 'components/Medintt/Span'
 
 export default function OccupationalMedicine(): ReactElement {
   return (
     <div className='mx-8 px-8'>
       <div className='flex flex-column align-items-center justify-content-center mx-8 px-8'>
-        <span className='font-bold text-2xl text-green-500 my-6'>
+        <Span
+          className='font-bold text-2xl my-6'
+          type='primary'
+        >
           Medicina Laboral
-        </span>
+        </Span>
         <Divider className='m-0 p-0' />
         <p className='font-bold text-center'>
           Con más de 10 años de experiencia, Medintt asesora y acompaña
