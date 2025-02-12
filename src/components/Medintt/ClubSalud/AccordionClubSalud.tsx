@@ -3,6 +3,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Button } from 'primereact/button'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
+import Span from '../Span'
 
 export default function AccordionClubSalud(): ReactElement {
   const router: AppRouterInstance = useRouter()
@@ -11,7 +12,7 @@ export default function AccordionClubSalud(): ReactElement {
     <Accordion activeIndex={0}>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>Beneficios de ser socios</span>
+          <Span type='primary'>Beneficios de ser socios</Span>
         )}
       >
         <ul className='m-0'>
@@ -24,7 +25,7 @@ export default function AccordionClubSalud(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>Club Salud en tu empresa</span>
+          <Span type='primary'>Club Salud en tu empresa</Span>
         )}
       >
         <p className='m-0'>
@@ -39,9 +40,9 @@ export default function AccordionClubSalud(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>
+          <Span type='primary'>
             Asistencia, docencia e investigación
-          </span>
+          </Span>
         )}
       >
         <p className='m-0'>
@@ -54,7 +55,7 @@ export default function AccordionClubSalud(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>Objetivos Club Salud</span>
+          <Span type='primary'>Objetivos Club Salud</Span>
         )}
       >
         <ul className='m-0'>
@@ -78,14 +79,14 @@ export default function AccordionClubSalud(): ReactElement {
         </ul>
       </AccordionTab>
       <AccordionTab
-        header={() => <span className='text-blue-500'>Valores Club Salud</span>}
+        header={() => <Span type='primary'>Valores Club Salud</Span>}
       >
         <ul
           className='m-0'
           style={{ listStyle: 'none' }}
         >
           <li>
-            <span className='font-bold'>SALUD INTEGRAL</span>
+            <Span type='' className='font-bold'>SALUD INTEGRAL</Span>
             <p>
               En Club Salud medicina y deporte se interrelacionan
               constantemente. Sostenemos que la actividad física es salud. De
@@ -96,7 +97,7 @@ export default function AccordionClubSalud(): ReactElement {
             </p>
           </li>
           <li>
-            <span className='font-bold'>SALUD INCLUSIVA</span>
+            <Span type='' className='font-bold'>SALUD INCLUSIVA</Span>
             <p>
               La salud inclusiva abarca una gama de enfoques que incluyen el
               abordaje y la disminución del estigma y de las actitudes de
@@ -105,7 +106,7 @@ export default function AccordionClubSalud(): ReactElement {
             </p>
           </li>
           <li>
-            <span className='font-bold'>ÉTICA Y CALIDAD PROFESIONAL</span>
+            <Span type='' className='font-bold'>ÉTICA Y CALIDAD PROFESIONAL</Span>
             <p>
               Club Salud surge de una formación constante en un equipo
               multidisciplinario, que se encarga de dar respaldo y seguimiento
@@ -118,7 +119,7 @@ export default function AccordionClubSalud(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>¡Quiero unirme a Club Salud!</span>
+          <Span type='primary'>¡Quiero unirme a Club Salud!</Span>
         )}
       >
         <Button

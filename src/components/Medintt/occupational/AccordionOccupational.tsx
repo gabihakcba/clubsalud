@@ -2,13 +2,14 @@
 
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { type ReactElement } from 'react'
+import Span from '../Span'
 
 export default function AccordionOccupational(): ReactElement {
   return (
     <Accordion activeIndex={0}>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>Exámenes para empresas y ART</span>
+          <Span type='primary'>Exámenes para empresas y ART</Span>
         )}
       >
         <p>
@@ -31,9 +32,9 @@ export default function AccordionOccupational(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>
+          <Span type='primary'>
             Accidentología y atención médica
-          </span>
+          </Span>
         )}
       >
         <p className='m-0'>
@@ -47,7 +48,7 @@ export default function AccordionOccupational(): ReactElement {
         </p>
       </AccordionTab>
       <AccordionTab
-        header={() => <span className='text-blue-500'>Ausentismo</span>}
+        header={() => <Span type='primary'>Ausentismo</Span>}
       >
         <p className='m-0'>
           Nuestra gestión del ausentismo incluye la verificación formal de las
@@ -67,9 +68,9 @@ export default function AccordionOccupational(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>
+          <Span type='primary'>
             Capacitaciones virtuales/presenciales
-          </span>
+          </Span>
         )}
       >
         <p>
@@ -96,9 +97,9 @@ export default function AccordionOccupational(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>
+          <Span type='primary'>
             Capacitaciones en higiene y seguridad
-          </span>
+          </Span>
         )}
       >
         <p>
@@ -150,7 +151,7 @@ export default function AccordionOccupational(): ReactElement {
         </ul>
       </AccordionTab>
       <AccordionTab
-        header={() => <span className='text-blue-500'>Salud psicolaboral</span>}
+        header={() => <Span type='primary'>Salud psicolaboral</Span>}
       >
         <p>
           Asesoramos y acompañamos a las organizaciones en gestión de
@@ -197,7 +198,7 @@ export default function AccordionOccupational(): ReactElement {
       </AccordionTab>
       <AccordionTab
         header={() => (
-          <span className='text-blue-500'>Asesoramiento legal previsional</span>
+          <Span type='primary'>Asesoramiento legal previsional</Span>
         )}
       >
         <p>

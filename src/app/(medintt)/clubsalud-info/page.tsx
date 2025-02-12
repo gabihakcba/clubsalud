@@ -7,6 +7,7 @@ import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 import { Divider } from 'primereact/divider'
 import CarouselClubSalud from 'components/Medintt/ClubSalud/CarouselClubSalud'
 import AccordionClubSalud from 'components/Medintt/ClubSalud/AccordionClubSalud'
+import Span from '../../../components/Medintt/Span'
 
 export default function ClubSaludInfo(): ReactElement {
   const router: AppRouterInstance = useRouter()
@@ -22,7 +23,7 @@ export default function ClubSaludInfo(): ReactElement {
         }}
       />
       <div>
-        <span className='font-bold text-2xl text-green-500'>Club Salud</span>
+        <Span type='primary' className='font-bold text-2xl'>Club Salud</Span>
         <Divider />
         <p>
           Club Salud es un gimnasio dentro de Medintt dirigido a recuperar,
@@ -38,9 +39,9 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <span className='font-bold text-2xl text-green-500'>
+        <Span type='primary' className='font-bold text-2xl'>
           Sobre nuestra empresa
-        </span>
+        </Span>
         <Divider />
         <p>
           Club salud es un programa de ejercicio físico adaptado bajo
@@ -50,9 +51,9 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <span className='font-bold text-2xl text-green-500'>
+        <Span type='primary' className='font-bold text-2xl'>
           Club Salud en acción
-        </span>
+        </Span>
         <Divider />
         <p>
           Club Salud surge de la necesidad de promover la salud a través de las
@@ -65,9 +66,9 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <span className='font-bold text-2xl text-green-500'>
+        <Span type='primary' className='font-bold text-2xl'>
           Nueva Sucursal
-        </span>
+        </Span>
         <Divider />
         <p>
           Nuestro nuevo gimnasio se encuentra en Confluencia esquina Puerto
