@@ -3,9 +3,9 @@
 import { type ReactElement } from 'react'
 import { Carousel } from 'primereact/carousel'
 import Image from 'next/image'
-import img1 from '../../../public/images/01.jpg'
-import img2 from '../../../public/images/02.jpg'
-import img3 from '../../../public/images/03.jpg'
+import img1 from '../../../public/images/01.png'
+import img2 from '../../../public/images/02.png'
+import img3 from '../../../public/images/03.png'
 
 export default function CarouselMedintt(): ReactElement {
   const products = [

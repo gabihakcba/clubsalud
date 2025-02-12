@@ -1,10 +1,13 @@
 import { type ReactElement } from 'react'
 import specialties from '../../../utils/Medintt/ddbb/specialties.json'
+import Span from 'components/Medintt/Span'
+import { Divider } from 'primereact/divider'
 
 export default function Specialties(): ReactElement {
   return (
     <div className='flex flex-column align-items-center justify-content-center'>
-      <span className='font-bold text-2xl text-green-500 my-6'>Especialidades</span>
+      <Span className='text-2xl my-6 font-bold' type='primary'>Especialidades</Span>
+      <Divider/>
       <div className='flex gap-6 justify-content-around'>
         <div className='flex flex-column gap-2 w-3 align-items-center'>
           {specialties?.slice(0, 5).map((specialtie) => (

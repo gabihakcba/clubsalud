@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Button } from 'primereact/button'
 import { useRouter } from 'next/navigation'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import Span from '../Span'
 
 export default function BlogPreviewItem({
   item,
@@ -29,7 +30,7 @@ export default function BlogPreviewItem({
         width={300}
         alt=''
       />
-      <span className='font-bold text-center text-xl'>{item.title}</span>
+      <Span className='font-bold text-center text-xl' type=''>{item.title}</Span>
       <Button
         className='b-0'
         label='Ver más'
