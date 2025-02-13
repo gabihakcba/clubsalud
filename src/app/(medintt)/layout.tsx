@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <PrimeReactProvider>
       <html lang='en'>
-        <body className=''>
+        <body className='m-0 p-0'>
           <NavBar />
           {children}
         </body>

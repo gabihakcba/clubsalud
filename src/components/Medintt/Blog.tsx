@@ -12,20 +12,27 @@ export default function Blog({
 
   return (
     <div className='bg-gray-100 flex flex-column gap-4 justify-content-center align-items-center p-4'>
-      <Span type='primary' className='text-2xl font-bold'>Blog</Span>
-      <div className='flex flex-wrap gap-6 justify-content-center'>
-        {preview && items.slice(0, 3).map((item, index) => (
-          <BlogPreviewItem
-            key={index}
-            item={item}
-          />
-        ))}
-        {!preview && items.map((item, index) => (
-          <BlogPreviewItem
-            key={index}
-            item={item}
-          />
-        ))}
+      <Span
+        type='primary'
+        className='text-2xl font-bold'
+      >
+        Blog
+      </Span>
+      <div className='flex flex-wrap justify-content-around md:justify-content-center align-items-center gap-4'>
+        {preview &&
+          items.slice(0, 3).map((item, index) => (
+            <BlogPreviewItem
+              key={index}
+              item={item}
+            />
+          ))}
+        {!preview &&
+          items.map((item, index) => (
+            <BlogPreviewItem
+              key={index}
+              item={item}
+            />
+          ))}
       </div>
     </div>
   )

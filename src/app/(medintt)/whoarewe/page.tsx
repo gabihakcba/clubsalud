@@ -7,13 +7,13 @@ export default function Whoweare(): ReactElement {
     <div className='flex flex-column align-items-center align-self-center mt-6 gap-8 max-w-full h-screen'>
       <Span className='font-bold text-2xl' type='primary'>¿Quienes somos?</Span>
       <Divider className='m-1'/>
-      <span className='font-bold'>
+      <span className='font-bold text-center px-4'>
         Basados en el concepto moderno de la integración de las especialidades
         médicas y optimizando la visión integral del paciente desarrollamos
         MEDINTT.
       </span>
-      <section className='flex gap-4 px-8 mx-8'>
-        <span className='flex flex-column align-items-center gap-4 w-25rem'>
+      <section className='flex lg:flex-row flex-column gap-8 px-4'>
+        <span className='flex flex-column align-items-center gap-4 max-w-25rem text-center'>
           <Span className='font-blod text-2xl' type='primary'>Misión</Span>
           <span>
             Enfocados en tu bienestar, brindamos atención médica de calidad con
@@ -21,7 +21,7 @@ export default function Whoweare(): ReactElement {
             especialidad.
           </span>
         </span>
-        <span className='flex flex-column align-items-center gap-4 w-25rem'>
+        <span className='flex flex-column align-items-center gap-4 max-w-25rem text-center'>
           <Span className='font-blod text-2xl' type='primary'>Visión</Span>
           <span>
             Ser el líder en la promoción de la salud integral en la región.
@@ -30,7 +30,7 @@ export default function Whoweare(): ReactElement {
             medicina con la calidad humana de nuestros profesionales.
           </span>
         </span>
-        <span className='flex flex-column align-items-center gap-4 w-25rem'>
+        <span className='flex flex-column align-items-center gap-4 max-w-25rem'>
           <Span className='font-blod text-2xl' type='primary'>Valores</Span>
           <ul>
             <li>Mejora continua y calidad en los procesos.</li>

@@ -63,7 +63,7 @@ export default function CarouselMedintt(): ReactElement {
       numVisible={1}
       numScroll={1}
       responsiveOptions={responsiveOptions}
-      className='custom-carousel'
+      className='custom-carousel mt-2'
       circular
       autoplayInterval={3000}
       itemTemplate={productTemplate}
