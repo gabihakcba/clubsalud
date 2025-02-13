@@ -12,7 +12,7 @@ import Span from '../../../components/Medintt/Span'
 export default function ClubSaludInfo(): ReactElement {
   const router: AppRouterInstance = useRouter()
   return (
-    <div className='flex flex-column justify-content-center mt-6 mx-8 px-8 gap-4'>
+    <div className='flex flex-column justify-content-center mt-6 mx-2 px-2 md:mx-4 md:px-4 lg:mx-8 lg:px-8 gap-4'>
       <Button
         label='Ingresar'
         link
@@ -23,7 +23,12 @@ export default function ClubSaludInfo(): ReactElement {
         }}
       />
       <div>
-        <Span type='primary' className='font-bold text-2xl'>Club Salud</Span>
+        <Span
+          type='primary'
+          className='font-bold text-2xl'
+        >
+          Club Salud
+        </Span>
         <Divider />
         <p>
           Club Salud es un gimnasio dentro de Medintt dirigido a recuperar,
@@ -39,7 +44,10 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <Span type='primary' className='font-bold text-2xl'>
+        <Span
+          type='primary'
+          className='font-bold text-2xl'
+        >
           Sobre nuestra empresa
         </Span>
         <Divider />
@@ -51,7 +59,10 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <Span type='primary' className='font-bold text-2xl'>
+        <Span
+          type='primary'
+          className='font-bold text-2xl'
+        >
           Club Salud en acción
         </Span>
         <Divider />
@@ -66,7 +77,10 @@ export default function ClubSaludInfo(): ReactElement {
         </p>
       </div>
       <div>
-        <Span type='primary' className='font-bold text-2xl'>
+        <Span
+          type='primary'
+          className='font-bold text-2xl'
+        >
           Nueva Sucursal
         </Span>
         <Divider />
@@ -85,14 +99,14 @@ export default function ClubSaludInfo(): ReactElement {
         <li>Instagram: Club Salud</li>
       </ul>
 
-      <div className='flex justify-content-center align-items-start w-full'>
+      <div className='flex flex-column align-items-center lg:align-items-start lg:flex-row w-full'>
         <div
-          className=''
+          className='w-20rem md:w-25rem lg:w-500px'
           style={{ width: '500px' }}
         >
           <CarouselClubSalud />
         </div>
-        <div className='w-30rem'>
+        <div className='w-20rem md:w-25rem lg:w-30rem my-4 lg:my-0'>
           <AccordionClubSalud />
         </div>
       </div>
