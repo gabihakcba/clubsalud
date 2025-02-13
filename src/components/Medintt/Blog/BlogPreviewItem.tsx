@@ -18,7 +18,7 @@ export default function BlogPreviewItem({
 
   return (
     <div
-      className={`w-26rem flex flex-column gap-4 justify-content-start align-items-center px-3 ${className}`}
+      className={`flex flex-column justify-content-center align-items-center gap-2 ${className}`}
     >
       <Image
         src={
@@ -26,8 +26,8 @@ export default function BlogPreviewItem({
             ? `/blogs/${item.slug}/${item.image}`
             : '/images/no-image.png'
         }
-        height={150}
-        width={300}
+        height={100}
+        width={200}
         alt=''
       />
       <Span className='font-bold text-center text-xl' type=''>{item.title}</Span>
