@@ -7,10 +7,10 @@ import Span from 'components/Medintt/Span'
 
 export default function OccupationalMedicine(): ReactElement {
   return (
-    <div className='mx-8 px-8'>
-      <div className='flex flex-column align-items-center justify-content-center mx-8 px-8'>
+    <div className='mx-4 px-4 lg:mx-8 lg:px-8'>
+      <div className='flex flex-column align-items-center justify-content-center'>
         <Span
-          className='font-bold text-2xl my-6'
+          className='font-bold text-2xl my-6 text-center'
           type='primary'
         >
           Medicina Laboral
@@ -22,17 +22,17 @@ export default function OccupationalMedicine(): ReactElement {
           potencial y respaldar la capacidad productiva de su personal y
           colaboradores.
         </p>
-        <div className='flex justify-content-center align-items-start w-full'>
-          <div className=''>
-            <Image
-              src={img}
-              height={500}
-              alt=''
-              // fill
-              style={{ objectFit: 'contain' }} // Opciones: 'cover', 'contain', etc.
-            />
-          </div>
-          <div className='w-30rem'>
+        <Divider className='m-2 p-0' />
+        <div className='flex flex-column align-items-center lg:flex-row lg:justify-content-center lg:align-items-start w-full mt-4'>
+          <Image
+            src={img}
+            height={350}
+            alt=''
+            className='w-20rem md:w-25rem lg:w-auto'
+            // fill
+            style={{ objectFit: 'contain' }} // Opciones: 'cover', 'contain', etc.
+          />
+          <div className='w-20rem md:w-25rem lg:w-30rem my-4 lg:my-0'>
             <AccordionOccupational />
           </div>
         </div>

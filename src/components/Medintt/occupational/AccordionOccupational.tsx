@@ -201,7 +201,7 @@ export default function AccordionOccupational(): ReactElement {
           <Span type='primary'>Asesoramiento legal previsional</Span>
         )}
       >
-        <p>
+        <p className='text-wrap'>
           Asesoramos integralmente a las empresas en el campo de la Medicina
           Legal del Trabajo, Previsional y del Seguro. Analizamos cuidadosamente
           cada situación en particular y diseñamos las mejores alternativas a

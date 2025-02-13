@@ -5,10 +5,16 @@ import Span from 'components/Medintt/Span'
 
 export default function BlogMedintt(): ReactElement {
   const blogs = getAllFilesMetadata()
+
   return (
     <div className='flex flex-column align-items-center justify-content-center mx-5'>
-      <Span className='font-bold text-2xl my-6' type='primary'>Blog</Span>
-      <div className='flex justify-content-center flex-wrap mx-8'>
+      <Span
+        className='font-bold text-2xl my-6'
+        type='primary'
+      >
+        Blog
+      </Span>
+      <div className='grid'>
         {blogs
           ?.sort(
             (a: { slug: any; pos: number }, b: { slug: any; pos: number }) =>
@@ -16,10 +22,12 @@ export default function BlogMedintt(): ReactElement {
           )
           .map((b, i) => {
             return (
-              <BlogPreviewItem
+              <div
+                className='col-12 md:col-6 lg:col-4'
                 key={i}
-                item={b}
-              />
+              >
+                <BlogPreviewItem item={b} />
+              </div>
             )
           })}
       </div>

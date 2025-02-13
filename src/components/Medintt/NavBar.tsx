@@ -67,7 +67,7 @@ export default function NavBar(): ReactElement {
   return (
     <MegaMenu
       model={items}
-      className='m-0 sticky top-0 z-5 flex lg:justify-content-center filled shadow-2'
+      className='m-0 sticky top-0 z-5 flex w-screen lg:justify-content-center filled shadow-2'
       orientation='horizontal'
       breakpoint='1000px'
     />
