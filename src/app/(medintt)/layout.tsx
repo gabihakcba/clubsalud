@@ -20,7 +20,7 @@ export default function RootLayout({
     <PrimeReactProvider>
       <html lang='en'>
         <body className=''>
-          <NavBar className='mb-1 sticky w-screen top-0 z-5 flex justify-content-center filled bg-white shadow-2' />
+          <NavBar />
           {children}
         </body>
       </html>

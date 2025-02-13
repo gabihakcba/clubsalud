@@ -1,19 +1,12 @@
 'use client'
 
-import { TabMenu } from 'primereact/tabmenu'
-import { useEffect, useState, type ReactElement } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { type ReactElement } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../../public/logos/medintt_positivo_square.png'
-import { Button } from 'primereact/button'
+import { MegaMenu } from 'primereact/megamenu'
 
-export default function NavBar({
-  className
-}: {
-  className: string
-}): ReactElement {
-  const [activeIndex, setActiveIndex] = useState<number>(0)
-  const pathname = usePathname()
+export default function NavBar(): ReactElement {
   const router = useRouter()
 
   const itemRenderer = (item, itemIndex: number): ReactElement => (
@@ -21,7 +14,6 @@ export default function NavBar({
       className='p-menuitem-link flex align-items-center gap-2'
       onClick={() => {
         router.push('/')
-        setActiveIndex(itemIndex)
       }}
     >
       <Image
@@ -29,14 +21,9 @@ export default function NavBar({
         src={logo}
         height={45}
       />
-      <span className='font-bold'>{item.name}</span>
+      <span className='font-bold block lg:hidden'>{item.name}</span>
     </a>
   )
-
-  useEffect(() => {
-    const currentIndex = items.findIndex((item) => item.url === pathname)
-    setActiveIndex(currentIndex)
-  }, [pathname])
 
   const items = [
     {
@@ -74,53 +61,15 @@ export default function NavBar({
       label: 'Contacto',
       icon: 'pi pi-address-book',
       url: '/contact'
-    },
-    {
-      template: () => (
-        <div className='flex gap-2 p-menuitem-link justify-content-center align-items-center align-self-center'>
-          <Button
-            link
-            onClick={() => {
-              window.open('https://www.instagram.com/medinttcentromedico', '_blank')
-            }}
-            icon='pi pi-instagram'
-          />
-          <Button
-            link
-            onClick={() => {
-              window.open('https://www.facebook.com/medintt', '_blank')
-            }}
-            icon='pi pi-facebook'
-          />
-          <Button
-            link
-            onClick={() => {
-              window.open('https://www.linkedin.com/company/medintt-salud-ocupacional-integral', '_blank')
-            }}
-            icon='pi pi-linkedin'
-          />
-          <Button
-            link
-            onClick={() => {
-              window.open('https://api.whatsapp.com/send/?phone=%2B5492994587079&text&type=phone_number&app_absent=0', '_blank')
-            }}
-            icon='pi pi-whatsapp'
-          />
-        </div>
-      )
     }
   ]
 
   return (
-    <>
-      <TabMenu
-        model={items}
-        className={className}
-        activeIndex={activeIndex}
-        onTabChange={(e) => {
-          setActiveIndex(e.index)
-        }}
-      />
-    </>
+    <MegaMenu
+      model={items}
+      className='m-0 sticky top-0 z-5 flex lg:justify-content-center filled shadow-2'
+      orientation='horizontal'
+      breakpoint='1000px'
+    />
   )
 }
