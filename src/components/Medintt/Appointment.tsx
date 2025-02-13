@@ -6,8 +6,8 @@ import Span from './Span'
 
 export default function Appointment(): ReactElement {
   return (
-    <section className='w-screen bg-gray-100 p-6 flex gap-8 justify-content-center align-items-center'>
-      <div className='flex flex-column gap-4 align-items-center justify-content-center'>
+    <section className='w-screen bg-gray-100 p-6 flex flex-column md:flex-row gap-8 justify-content-center align-items-center'>
+      <div className='flex flex-column gap-4 align-items-center justify-content-center text-center'>
         <Span
           type='primary'
           className='text-2xl'
@@ -21,8 +21,8 @@ export default function Appointment(): ReactElement {
           <i className='pi pi-whatsapp'></i>
           <b>2994 58-7079</b>
         </span>
-        <span className='flex flex-column gap-2 justify-content-center align-items-center'>
-          <Span type='secondary'>Lunes a Viernes de 8:30 a 20:30 hs.</Span>
+        <span className='flex flex-column gap-2 justify-content-center align-items-center text-center'>
+          <Span type='secondary'>Lunes a Viernes de 8:30 a 20:30</Span>
           <Span type='secondary'>Sólo mensajes de Whtasapp.</Span>
         </span>
       </div>
