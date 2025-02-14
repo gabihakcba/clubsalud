@@ -6,7 +6,7 @@ import Span from './Span'
 
 export default function Appointment(): ReactElement {
   return (
-    <section className='w-screen bg-gray-100 p-6 flex flex-column md:flex-row gap-8 justify-content-center align-items-center'>
+    <section className='w-screen surface-section p-6 flex flex-column md:flex-row gap-8 justify-content-center align-items-center'>
       <div className='flex flex-column gap-4 align-items-center justify-content-center text-center'>
         <Span
           type='primary'
@@ -18,8 +18,8 @@ export default function Appointment(): ReactElement {
       </div>
       <div className='flex flex-column gap-4 align-items-center justify-content-center'>
         <span className='flex justify-content-center align-items-center gap-2'>
-          <i className='pi pi-whatsapp'></i>
-          <b>2994 58-7079</b>
+          <i className='pi pi-whatsapp' style={{ color: 'var(--primary-color)' }}></i>
+          <Span type='primary'>2994 58-7079</Span>
         </span>
         <span className='flex flex-column gap-2 justify-content-center align-items-center text-center'>
           <Span type='secondary'>Lunes a Viernes de 8:30 a 20:30</Span>
@@ -27,8 +27,8 @@ export default function Appointment(): ReactElement {
         </span>
       </div>
       <Button
-        label='SOLICITAR TURNO'
-        size='small'
+        label='Solicitar Turno'
+        size='large'
         rounded
         onClick={() => {
           window.open(
