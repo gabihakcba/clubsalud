@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import logo from '../../../public/logos/medintt_positivo_square.png'
 import { MegaMenu } from 'primereact/megamenu'
+import Span from './Span'
+import { Button } from 'primereact/button'
 
 export default function NavBar(): ReactElement {
   const router = useRouter()
@@ -21,9 +23,34 @@ export default function NavBar(): ReactElement {
         src={logo}
         height={45}
       />
-      <span className='font-bold block lg:hidden'>{item.name}</span>
+      <Span
+        type='primary'
+        className='lg:hidden'
+      >
+        {item.label}
+      </Span>
     </a>
   )
+
+  const itemTemplate = (item: {
+    label: string
+    icon: string
+    url: string
+  }): ReactElement => {
+    return (
+      <Button
+        className='flex flex-align-center'
+        text
+        // link
+        label={item.label}
+        icon={item.icon}
+        iconPos='right'
+        onClick={() => {
+          router.push(item.url)
+        }}
+      />
+    )
+  }
 
   const items = [
     {
@@ -35,32 +62,38 @@ export default function NavBar(): ReactElement {
     {
       label: 'Quienes Somos',
       icon: 'pi pi-question',
-      url: '/whoarewe'
+      url: '/whoarewe',
+      template: itemTemplate
     },
     {
       label: 'Especialidades',
       icon: 'pi pi-list',
-      url: '/specialties'
+      url: '/specialties',
+      template: itemTemplate
     },
     {
       label: 'Medicina Laboral',
       icon: 'pi pi-heart',
-      url: '/occupational-medicine'
+      url: '/occupational-medicine',
+      template: itemTemplate
     },
     {
       label: 'Club Salud',
       icon: 'pi pi-th-large',
-      url: '/clubsalud-info'
+      url: '/clubsalud-info',
+      template: itemTemplate
     },
     {
       label: 'Blog',
       icon: 'pi pi-book',
-      url: '/blog'
+      url: '/blog',
+      template: itemTemplate
     },
     {
       label: 'Contacto',
       icon: 'pi pi-address-book',
-      url: '/contact'
+      url: '/contact',
+      template: itemTemplate
     }
   ]
 

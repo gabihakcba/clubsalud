@@ -11,7 +11,7 @@ export default function Blog({
   const items = getAllFilesMetadata()
 
   return (
-    <div className='bg-gray-100 flex flex-column gap-4 justify-content-center align-items-center p-4'>
+    <div className='surface-section flex flex-column gap-4 justify-content-center align-items-center p-4'>
       <Span
         type='primary'
         className='text-2xl font-bold'
