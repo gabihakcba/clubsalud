@@ -1,7 +1,7 @@
 import { useState, useEffect, type ReactElement } from 'react'
 import { Chart } from 'primereact/chart'
 import { useQuery } from '@tanstack/react-query'
-import { type Member, type Subscription } from 'utils/ClubSalud/types'
+import { type Subscription } from 'utils/ClubSalud/types'
 import moment from 'moment'
 import 'moment/locale/es'
 import { FloatLabel } from 'primereact/floatlabel'
@@ -53,13 +53,6 @@ const subsciptionsNotPaid = (
   return current
 }
 
-const getDebtors = (subscriptionsNotPaid: Subscription[]): Member[] => {
-  const debtorsList = subscriptionsNotPaid
-    .filter((subscription) => !!subscription.member)
-    .map((subscription) => subscription.member)
-  return debtorsList
-}
-
 export default function ChartOSSubscriptionsReport(): ReactElement {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
@@ -73,7 +66,6 @@ export default function ChartOSSubscriptionsReport(): ReactElement {
   const [labels, setLabels] = useState<any[]>([])
 
   const [debtorsList, openDebtorsList, closeDebtorsList] = useModal(false)
-  const [debtors, setDebtors] = useState<Member[]>([])
 
   const { data: subscriptions } = useQuery({
     queryKey: ['subscriptions'],
@@ -190,17 +182,13 @@ export default function ChartOSSubscriptionsReport(): ReactElement {
     setNotpaid(notpaid.reverse())
   }, [subscriptions, months, date])
 
-  useEffect(() => {
-    setDebtors(getDebtors(notpaid.flat()))
-  }, [notpaid])
-
   return (
     <div className='card'>
       <Dialog
         onHide={closeDebtorsList}
         visible={debtorsList}
       >
-        <PendingOSBills debtors={debtors} />
+        <PendingOSBills />
       </Dialog>
       <div className='flex flex-row gap-4 align-items-center'>
         <h2>Suscripciones - Cobros Obras Sociales</h2>

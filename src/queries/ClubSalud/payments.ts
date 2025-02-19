@@ -35,6 +35,12 @@ export const setPlanPayment = async ({
   healthSubscribedPlanId,
   autorizationNumber,
   date
+}: {
+  amount: number
+  subscriptionId: number
+  healthSubscribedPlanId: number
+  autorizationNumber: string
+  date: Date
 }): Promise<Payment> => {
   const response = await axios.post(`${path()}/api/planPayments`, {
     subscriptionId: Number(subscriptionId),
