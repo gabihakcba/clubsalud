@@ -11,7 +11,12 @@ export async function GET(req: NextRequest, context: any): Promise<Response> {
   try {
     const acc: { id: number } | null = await db.member.findFirst({
       where: {
-        accountId: id
+        id
+      },
+      include: {
+        planSubscribed: {
+          include: { plan: true }
+        }
       }
     })
     return new Response(JSONbig.stringify(acc), {
