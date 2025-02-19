@@ -25,17 +25,6 @@ export default function PlansTable(): ReactElement {
 
   const query = useQueryClient()
 
-  // const { data: member } = useQuery({
-  //   queryKey: ['member'],
-  //   queryFn: async () => {
-  //     const userInfo = localStorage.getItem('user')
-  //     if (userInfo) {
-  //       const user = JSON.parse(userInfo) as Account
-  //       return await getMemberById(user.id)
-  //     }
-  //   }
-  // })
-
   const { data: promotions } = useQuery({
     queryKey: ['promotions'],
     queryFn: async () => {
@@ -57,30 +46,6 @@ export default function PlansTable(): ReactElement {
       })
     }
   })
-
-  //   const { mutate: subscribe, isPending: isPendingSubscription } = useMutation({
-  //     mutationFn: async ({
-  //       id,
-  //       promotion
-  //     }: {
-  //       id: string
-  //       promotion: FieldValues
-  //     }) => {
-  //       const memberId = Number(id)
-  //       try {
-  //         return await setSubscription({
-  //           memberId,
-  //           promotion: promotion as Promotion
-  //         })
-  //       } catch (error) {
-  //         console.log(error)
-  //         alert('No se pudo adherir a la suscripción')
-  //       }
-  //     },
-  //     onSuccess: () => {
-  //       alert('Inscipción hecha')
-  //     }
-  //   })
 
   return (
     <>

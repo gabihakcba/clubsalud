@@ -37,6 +37,14 @@ export const isSameDay = (dateA: Date, dateB: Date): boolean => {
   return moment(dateA).isSame(moment(dateB), 'day')
 }
 
+export const isSameMonth = (dateA: Date, dateB: Date): boolean => {
+  return moment(dateA).isSame(moment(dateB), 'month')
+}
+
+export const isSameYear = (dateA: Date, dateB: Date): boolean => {
+  return moment(dateA).isSame(moment(dateB), 'year')
+}
+
 export const diffDate = (dateA: Date, dateB: Date): number => {
   return moment(dateA).diff(moment(dateB))
 }
@@ -53,4 +61,12 @@ export const argAddMonths = (dateA: Date, months: number): Date => {
   return moment(dateA)
     .add(months as moment.DurationInputArg1, 'months')
     .toDate()
+}
+
+export const argIsBetween = (
+  dateA: Date,
+  dateB: Date,
+  dateC: Date
+): boolean => {
+  return moment(dateA).isBetween(dateB, dateC, 'day', '[]')
 }

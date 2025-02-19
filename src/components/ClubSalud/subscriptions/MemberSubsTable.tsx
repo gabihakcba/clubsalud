@@ -18,10 +18,12 @@ export default function MemberSubsTable({
   const [filters, setFilters] = useState({
     global: { value: '', matchMode: FilterMatchMode.STARTS_WITH }
   })
+
   return (
     <DataTable
       value={members}
       scrollable
+      loading={!members}
       scrollHeight='60dvh'
       onRowToggle={(e) => {
         setMemberSelected(e.data)

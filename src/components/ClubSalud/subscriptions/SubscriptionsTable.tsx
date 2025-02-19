@@ -5,7 +5,8 @@ import { DataTable } from 'primereact/datatable'
 import { Tag } from 'primereact/tag'
 import { deleteSubscription, updateSubscription } from 'queries/ClubSalud/subscriptions'
 import { type ReactElement, useState } from 'react'
-import { type Member } from 'utils/ClubSalud/types'
+import { argDate2Format } from 'utils/ClubSalud/dates'
+import { type Subscription, type Member } from 'utils/ClubSalud/types'
 
 export default function SubscriptionTable({
   member
@@ -39,10 +40,6 @@ export default function SubscriptionTable({
       scrollHeight='20dvh'
     >
       <Column
-        field='id'
-        header='ID'
-      />
-      <Column
         field='promotion.title'
         header='Promoción'
       />
@@ -51,8 +48,15 @@ export default function SubscriptionTable({
         header='Clases disponibles'
       />
       <Column
+        field='initialDate'
+        header='Inicio'
+        body={(subs: Subscription) => <span>{argDate2Format(subs.initialDate)}</span>}
+      />
+      <Column
         field='expirationDate'
         header='Vencimiento'
+        body={(subs: Subscription) => <span>{argDate2Format(subs.expirationDate)}</span>}
+
       />
       <Column
         header='Estado'
