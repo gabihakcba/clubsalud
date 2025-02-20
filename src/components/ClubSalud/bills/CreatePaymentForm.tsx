@@ -37,6 +37,18 @@ const hasSubs = (member: Member): boolean => {
   )
 }
 
+const memberWithDebts = (members: Member[]): Member[] => {
+  return members.filter((member: Member) =>
+    member.memberSubscription?.some((subscription: Subscription) => {
+      return (
+        !subscription.paid ||
+        subscription.plan.durationMonth * 2 <
+          (subscription.billedConsultation?.length ?? 0)
+      )
+    })
+  )
+}
+
 const selectMember = (members, id: number): Member => {
   const member = members?.find((member) => member.id === id)
   return member
@@ -169,17 +181,16 @@ export default function CreatePaymentForm(): ReactElement {
     >
       <div className='p-float-label'>
         <Dropdown
-          filterBy='dni,name'
-          options={members}
+          filterBy='dni,name,lastName,account.username'
+          options={memberWithDebts(members ?? [])}
           value={selectedMember}
           optionLabel='name'
-          optionValue='id'
           {...register('member', {
             required: { value: true, message: 'Campo requerido' }
           })}
           onChange={(e) => {
             setSelectedMember(e.value)
-            setValue('memberId', e.value)
+            setValue('memberId', e.value.id)
             setPlansMemberSelected(
               selectMember(members, Number(watch('memberId')))
                 ?.planSubscribed ?? []

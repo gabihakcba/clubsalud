@@ -27,8 +27,8 @@ const totalInstructorsPayments = (
 ): number => {
   const currentMonth = instructorPayments?.filter(
     (pay: InstructorPayment) =>
-      moment(pay.paymentDate).month() === moment(date).month() &&
-      moment(pay.paymentDate).year() === moment(date).year()
+      moment(pay.workedMonth).month() === moment(date).month() &&
+      moment(pay.workedMonth).year() === moment(date).year()
   )
   const total = currentMonth?.reduce(
     (acc: number, curr: InstructorPayment) => acc + curr.amount,
