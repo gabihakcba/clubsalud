@@ -1,4 +1,8 @@
-import { type CreateMember, type Member } from 'utils/ClubSalud/types'
+import {
+  MemberSate,
+  type CreateMember,
+  type Member
+} from 'utils/ClubSalud/types'
 import axios from 'axios'
 import { path } from 'utils/ClubSalud/path'
 
@@ -9,6 +13,22 @@ interface GetMemResponse {
 
 export const getMembers = async (page: number = 0): Promise<Member[]> => {
   const response = await axios.get(`${path()}/api/members?page=${page}`)
+  return response.data
+}
+
+export const getActiveMembers = async (page: number = 0): Promise<Member[]> => {
+  const response = await axios.get(
+    `${path()}/api/members?state=${MemberSate.ACTIVE}`
+  )
+  return response.data
+}
+
+export const getInactiveMembers = async (
+  page: number = 0
+): Promise<Member[]> => {
+  const response = await axios.get(
+    `${path()}/api/members?state=${MemberSate.INACTIVE}`
+  )
   return response.data
 }
 
@@ -41,5 +61,13 @@ export const updateMember = async (member: Member): Promise<Member> => {
   const response = await axios.patch(`${path()}/api/members`, {
     ...member
   })
+  return response.data
+}
+
+export const updateMembersState = async (): Promise<{
+  actives: Member[]
+  inactives: Member[]
+}> => {
+  const response = await axios.get(`${path()}/api/members/actives`)
   return response.data
 }
