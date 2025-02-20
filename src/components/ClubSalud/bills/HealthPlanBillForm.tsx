@@ -7,14 +7,15 @@ import { getMemberById } from 'queries/ClubSalud/members'
 import { setPlanPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
 import { argDate } from 'utils/ClubSalud/dates'
-import { type HealthPlanSubscribed, type Member } from 'utils/ClubSalud/types'
+import {
+  type Subscription,
+  type HealthPlanSubscribed
+} from 'utils/ClubSalud/types'
 
 export default function HealthPlanBillForm({
-  member,
-  subscriptionId
+  subscription
 }: {
-  member: Member | null
-  subscriptionId: number
+  subscription: Subscription
 }): ReactElement {
   const query = useQueryClient()
   const [selectedOS, setSelectedOS] = useState<
@@ -27,12 +28,12 @@ export default function HealthPlanBillForm({
   const { data: memberInfo, isFetching } = useQuery({
     queryKey: ['member'],
     queryFn: async () => {
-      if (member) {
-        return await getMemberById(member?.id)
+      if (subscription.member) {
+        return await getMemberById(subscription.member?.id)
       }
       return undefined
     },
-    enabled: !!member
+    enabled: !!subscription.member
   })
 
   const {
@@ -61,7 +62,7 @@ export default function HealthPlanBillForm({
         e.preventDefault()
         billOS({
           amount: selectedOS?.plan?.paymentPerConsultation ?? 0,
-          subscriptionId,
+          subscriptionId: subscription.id,
           healthSubscribedPlanId: selectedOS?.id ?? 0,
           date: argDate(),
           autorizationNumber: autorization ?? ''

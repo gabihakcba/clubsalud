@@ -1,76 +1,140 @@
 import { useState, useEffect, type ReactElement } from 'react'
 import { Chart } from 'primereact/chart'
 import { useQuery } from '@tanstack/react-query'
-import { type Subscription } from 'utils/ClubSalud/types'
+import {
+  type BilledConsultation,
+  type Subscription
+} from 'utils/ClubSalud/types'
 import moment from 'moment'
 import 'moment/locale/es'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Calendar } from 'primereact/calendar'
-import { SelectButton } from 'primereact/selectbutton'
 import { getSubscriptions } from 'queries/ClubSalud/subscriptions'
 import { Button } from 'primereact/button'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
-import PendingOSBills from './PendingOSBills'
+import ListSubscriptions from './ListSubscriptions'
+import { argIsBetween } from 'utils/ClubSalud/dates'
+import { getBilled } from 'queries/ClubSalud/payments'
+import ListBilledConsultations from './ListBilledConsultations'
 
 moment.locale('es')
 
-const subscriptionsTotal = (
-  subscriptions: Subscription[],
-  date: Date
-): Subscription[] => {
-  const current = subscriptions.filter(
-    (subs: Subscription) =>
-      moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month()
+const isInRange = (
+  subscription: Subscription,
+  initialDate: Date,
+  endDate: Date
+): boolean => {
+  return (
+    argIsBetween(subscription.initialDate, initialDate, endDate) ||
+    argIsBetween(subscription.expirationDate, initialDate, endDate) ||
+    argIsBetween(
+      initialDate,
+      subscription.initialDate,
+      subscription.expirationDate
+    )
   )
-  return current
 }
 
-const subscriptionsPaid = (
+const subscriptionsInRange = (
   subscriptions: Subscription[],
-  date: Date
+  initialDate: Date,
+  endDate: Date
 ): Subscription[] => {
-  const current = subscriptions.filter(
-    (subs: Subscription) =>
-      moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month() &&
-      (subs.billedConsultation?.length ?? 0) >= subs.plan.durationMonth * 2
+  return subscriptions.filter((subscription: Subscription) =>
+    isInRange(subscription, initialDate, endDate)
   )
-  return current
 }
 
-const subsciptionsNotPaid = (
-  subscriptions: Subscription[],
-  date: Date
-): Subscription[] => {
-  const current = subscriptions.filter(
-    (subs: Subscription) =>
-      moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month() &&
-      (subs.billedConsultation?.length ?? 0) < subs.plan.durationMonth * 2
+const subscriptionsPaid = (subscriptions: Subscription[]): Subscription[] => {
+  return subscriptions.filter(
+    (subscription: Subscription) =>
+      (subscription.billedConsultation?.length ?? 0) >=
+      subscription.plan.durationMonth * 2
   )
-  return current
+}
+
+const subscriptionsNotPaid = (
+  subscriptions: Subscription[]
+): Subscription[] => {
+  return subscriptions.filter(
+    (subscription: Subscription) =>
+      (subscription.billedConsultation?.length ?? 0) <
+      subscription.plan.durationMonth * 2
+  )
+}
+
+const subsciptionsOneRemaining = (
+  subscriptions: Subscription[],
+  initialDate: Date,
+  endDate: Date
+): Subscription[] => {
+  return subscriptions.filter((subscription: Subscription) => {
+    if (subscription.plan.durationMonth === 1) {
+      return subscription.billedConsultation?.length === 1
+    } else {
+      return (
+        subscription.billedConsultation?.filter(
+          (billedConsultation: BilledConsultation) =>
+            argIsBetween(billedConsultation.date, initialDate, endDate)
+        ).length === 1
+      )
+    }
+  })
+}
+
+const subsciptionsTwoRemaining = (
+  subscriptions: Subscription[],
+  initialDate: Date,
+  endDate: Date
+): Subscription[] => {
+  return subscriptions.filter((subscription: Subscription) => {
+    if (subscription.plan.durationMonth === 1) {
+      return subscription.billedConsultation?.length === 0
+    } else {
+      return (
+        subscription.billedConsultation?.filter(
+          (billedConsultation: BilledConsultation) =>
+            argIsBetween(billedConsultation.date, initialDate, endDate)
+        ).length === 0
+      )
+    }
+  })
 }
 
 export default function ChartOSSubscriptionsReport(): ReactElement {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
-  const [total, setTotal] = useState<Subscription[][]>([])
-  const [paid, setPaid] = useState<Subscription[][]>([])
-  const [notpaid, setNotpaid] = useState<Subscription[][]>([])
+  const [total, setTotal] = useState<Subscription[]>([])
+  const [paid, setPaid] = useState<Subscription[]>([])
+  const [notPaid, setNotPaid] = useState<Subscription[]>([])
+  const [oneRemaining, setOneRemaining] = useState<Subscription[]>([])
+  const [twoRemaining, setTwoRemaining] = useState<Subscription[]>([])
 
-  const [months, setMonths] = useState<number>(1)
-  const [date, setDate] = useState<Date>(moment().toDate())
-  const [labels, setLabels] = useState<any[]>([])
+  const [list, setList] = useState<Subscription[]>([])
 
-  const [debtorsList, openDebtorsList, closeDebtorsList] = useModal(false)
+  const [initialDate, setInitialDate] = useState<Date>(
+    moment().startOf('month').toDate()
+  )
+  const [endDate, setEndDate] = useState<Date>(moment().endOf('month').toDate())
+  const [label, setLabel] = useState<any[]>([])
+
+  const [subscriptionsList, openSubscriptionsList, closeSubscriptionsList] =
+    useModal(false)
+  const [billedList, openBilledList, closeBilledList] = useModal(false)
 
   const { data: subscriptions } = useQuery({
     queryKey: ['subscriptions'],
     queryFn: async () => {
       return await getSubscriptions()
+    }
+  })
+
+  const { data: billedConsultations } = useQuery({
+    queryKey: ['billedConsultations'],
+    queryFn: async () => {
+      return await getBilled()
     }
   })
 
@@ -82,25 +146,37 @@ export default function ChartOSSubscriptionsReport(): ReactElement {
     )
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border')
     const data = {
-      labels,
+      labels: [label],
       datasets: [
         {
           type: 'bar',
           label: 'Total',
           backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-          data: total.map((t) => t.length)
+          data: [total.length]
         },
         {
           type: 'bar',
           label: 'Pagos',
           backgroundColor: documentStyle.getPropertyValue('--green-500'),
-          data: paid.map((p) => p.length)
+          data: [paid.length]
         },
         {
           type: 'bar',
           label: 'No pagos',
           backgroundColor: documentStyle.getPropertyValue('--red-500'),
-          data: notpaid.map((n) => n.length)
+          data: [notPaid.length]
+        },
+        {
+          type: 'bar',
+          label: 'Con 1 pago',
+          backgroundColor: documentStyle.getPropertyValue('--yellow-500'),
+          data: [oneRemaining.length]
+        },
+        {
+          type: 'bar',
+          label: 'Sin pagos',
+          backgroundColor: documentStyle.getPropertyValue('--orange-500'),
+          data: [twoRemaining.length]
         }
       ]
     }
@@ -135,92 +211,96 @@ export default function ChartOSSubscriptionsReport(): ReactElement {
             color: surfaceBorder
           }
         }
+      },
+      onClick: (event, elements) => {
+        if (elements[0]?.datasetIndex !== undefined) {
+          const { datasetIndex } = elements[0]
+          if (datasetIndex === 0) {
+            setList(total)
+          } else if (datasetIndex === 1) {
+            setList(paid)
+          } else if (datasetIndex === 2) {
+            setList(notPaid)
+          } else if (datasetIndex === 3) {
+            setList(oneRemaining)
+          } else if (datasetIndex === 4) {
+            setList(twoRemaining)
+          }
+          openSubscriptionsList()
+        }
       }
     }
     setChartData(data)
     setChartOptions(options)
-  }, [total, paid, notpaid])
+  }, [total, paid, oneRemaining, twoRemaining])
 
   useEffect(() => {
-    const total: Subscription[][] = []
-    const paid: Subscription[][] = []
-    const notpaid: Subscription[][] = []
-    const labels: string[] = []
+    setLabel([
+      `${moment(initialDate).subtract('month').format('MMMM').toUpperCase()}`
+    ])
 
-    for (let i = 0; i < months; i++) {
-      /**
-       * Labels
-       */
-      const currentDate = moment(date).subtract(i, 'months')
-      labels.push(currentDate.format('MMMM').toUpperCase())
+    const total = subscriptionsInRange(
+      subscriptions ?? [],
+      initialDate,
+      endDate
+    )
+    setTotal(total)
 
-      /**
-       * In
-       */
-      const currentTotal = subscriptionsTotal(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
+    const paid = subscriptionsPaid(total)
+    setPaid(paid)
 
-      const currentPaid = subscriptionsPaid(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
+    const notPaid = subscriptionsNotPaid(total)
+    setNotPaid(notPaid)
 
-      const currentNotpaid = subsciptionsNotPaid(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
+    const one = subsciptionsOneRemaining(notPaid, initialDate, endDate)
+    setOneRemaining(one)
 
-      total.push(currentTotal)
-      paid.push(currentPaid)
-      notpaid.push(currentNotpaid)
-    }
-    setLabels(labels.reverse())
-    setTotal(total.reverse())
-    setPaid(paid.reverse())
-    setNotpaid(notpaid.reverse())
-  }, [subscriptions, months, date])
+    const two = subsciptionsTwoRemaining(notPaid, initialDate, endDate)
+    setTwoRemaining(two)
+  }, [subscriptions, initialDate, endDate])
 
   return (
     <div className='card'>
       <Dialog
-        onHide={closeDebtorsList}
-        visible={debtorsList}
+        onHide={closeBilledList}
+        visible={billedList}
       >
-        <PendingOSBills />
+        <ListBilledConsultations
+          billedConsultations={
+            billedConsultations?.filter((bill: BilledConsultation) =>
+              argIsBetween(bill.date, initialDate, endDate)
+            ) ?? []
+          }
+        />
+      </Dialog>
+      <Dialog
+        onHide={closeSubscriptionsList}
+        visible={subscriptionsList}
+      >
+        <ListSubscriptions
+          subscriptions={list}
+          header=''
+        />
       </Dialog>
       <div className='flex flex-row gap-4 align-items-center'>
         <h2>Suscripciones - Cobros Obras Sociales</h2>
         <FloatLabel>
           <Calendar
-            value={date}
+            value={initialDate}
             onChange={(e) => {
-              setDate(moment(e.value).toDate())
+              setInitialDate(moment(e.value).startOf('month').toDate())
+              setEndDate(moment(e.value).endOf('month').toDate())
             }}
             view='month'
             dateFormat='mm/yy'
           />
           <label htmlFor=''>Filtrar por mes</label>
         </FloatLabel>
-        <SelectButton
-          value={months}
-          onChange={(e) => {
-            setMonths(e.value as number)
-          }}
-          optionLabel='value'
-          options={[
-            { option: 'Mensual', value: 1 },
-            { option: 'Trimestral', value: 3 },
-            { option: 'Semestral', value: 6 },
-            { option: 'Anual', value: 12 }
-          ]}
-        />
         <Button
-          label='Lista OS faltantes'
+          label='OS Cobradas'
           size='small'
           outlined
-          onClick={openDebtorsList}
+          onClick={openBilledList}
         />
       </div>
       <Chart
