@@ -68,14 +68,16 @@ export default function Accounts(): ReactElement {
     <Card className='h-screen'>
       <ConfirmDialog />
       <DataTable
-        value={accounts?.map((acc: Account) => ({
-          ...acc,
-          dni:
-            acc.memberAccount?.dni ??
-            acc.instructorAccount?.dni ??
-            acc.employeeAccount?.dni ??
-            0
-        }))}
+        value={accounts
+          ?.map((acc: Account) => ({
+            ...acc,
+            dni:
+              acc.memberAccount?.dni ??
+              acc.instructorAccount?.dni ??
+              acc.employeeAccount?.dni ??
+              0,
+            date: acc.memberAccount ? acc.memberAccount.inscriptionDate : null
+          }))}
         tableStyle={{ minWidth: '5rem' }}
         header={() => <AccountTopbar />}
         scrollable
