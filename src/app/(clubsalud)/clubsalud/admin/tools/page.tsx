@@ -15,7 +15,7 @@ export default function Tools(): ReactElement {
   const [derivationList, openDerivationList, closeDerivationList] =
     useModal(false)
 
-  const { mutate: createExcel } = useMutation({
+  const { mutate: createExcel, isPending } = useMutation({
     mutationFn: async () => {
       return await getExcel()
     },
@@ -49,13 +49,12 @@ export default function Tools(): ReactElement {
           icon='pi pi-file-excel'
           size='small'
           outlined
+          loading={isPending}
           className='w-max'
           iconPos='right'
           severity='success'
           onClick={() => {
-            console.log('asd')
             createExcel()
-            console.log('123')
           }}
         />
         <Button
