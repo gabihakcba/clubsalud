@@ -2,12 +2,13 @@ import { type PrismaClient, type Member, MemberState } from '@prisma/client'
 import prisma from 'utils/ClubSalud/prisma'
 import { type NextRequest } from 'next/server'
 import JSONbig from 'json-bigint'
-
 const db: PrismaClient = prisma
 
 export async function GET(req: NextRequest): Promise<Response> {
   const searchParams: URLSearchParams = req.nextUrl.searchParams
   const page: number = Number(searchParams.get('page'))
+  const state: MemberState = MemberState[searchParams.get('state') ?? 'OTHER']
+
   try {
     /**
      * page=-1 returns total pages number
@@ -17,10 +18,61 @@ export async function GET(req: NextRequest): Promise<Response> {
       return new Response(JSONbig.stringify({ total }), {
         status: 200
       })
+    } else if (state === MemberState.ACTIVE) {
+      const members: Member[] = await db.member.findMany({
+        where: {
+          state: MemberState.ACTIVE
+        },
+        include: {
+          account: true,
+          planSubscribed: { include: { plan: true } },
+          memberSubscription: {
+            include: {
+              promotion: true,
+              plan: true,
+              payment: true,
+              billedConsultation: true
+            }
+          },
+          memberAttendance: { include: { class: true } },
+          payment: true,
+          registrationForm: true,
+          followUpForm: true
+        }
+      })
+      return new Response(JSONbig.stringify(members), {
+        status: 200
+      })
+    } else if (state === MemberState.INACTIVE) {
+      const members: Member[] = await db.member.findMany({
+        where: {
+          state: MemberState.INACTIVE
+        },
+        include: {
+          account: true,
+          planSubscribed: { include: { plan: true } },
+          memberSubscription: {
+            include: {
+              promotion: true,
+              plan: true,
+              payment: true,
+              billedConsultation: true
+            }
+          },
+          memberAttendance: { include: { class: true } },
+          payment: true,
+          registrationForm: true,
+          followUpForm: true
+        }
+      })
+      return new Response(JSONbig.stringify(members), {
+        status: 200
+      })
     } else {
       /**
        * page=0 returns all accounts
        */
+
       const members: Member[] = await db.member.findMany({
         include: {
           account: true,

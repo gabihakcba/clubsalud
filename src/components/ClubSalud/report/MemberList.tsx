@@ -1,7 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
-import { getMembers } from 'queries/ClubSalud/members'
-import { useEffect, useState, type ReactElement } from 'react'
+import { useState, type ReactElement } from 'react'
 import { type Member } from 'utils/ClubSalud/types'
 
 import jsPDF from 'jspdf'
@@ -10,9 +8,6 @@ import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
-import moment from 'moment'
-import { Calendar } from 'primereact/calendar'
-import { argIsBetween } from 'utils/ClubSalud/dates'
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -28,7 +23,7 @@ function generatePdf(members: Member[], setPdf): void {
     { header: 'Apellido', dataKey: 'lastName' },
     { header: 'Nombre', dataKey: 'name' },
     { header: 'DNI', dataKey: 'dni' },
-    { header: 'Número', dataKey: 'phoneNumber' }
+    { header: 'Numero', dataKey: 'phoneNumber' }
   ]
 
   const maxPerPage = 30 // Número máximo de alumnos por página
@@ -61,39 +56,20 @@ function generatePdf(members: Member[], setPdf): void {
   // doc.save('Lista_de_usuarios.pdf')
 }
 
-export default function MembersList(): ReactElement {
+export default function MembersList({
+  members
+}: {
+  members: Member[]
+}): ReactElement {
   const [showPdf, openPdf, closePdf] = useModal(false)
   const [pdf, setPdf] = useState(null)
-  const [date, setDate] = useState<Date | null>(null)
-  const [filteredMembers, setFilteredMembers] = useState<Member[]>([])
-
-  const { data: members, isPending } = useQuery({
-    queryKey: ['members'],
-    queryFn: async () => {
-      return await getMembers()
-    }
-  })
-
-  useEffect(() => {
-    date
-      ? setFilteredMembers(
-        members?.filter((member: Member) =>
-          argIsBetween(
-            member.inscriptionDate,
-            moment(date).startOf('month').toDate(),
-            moment(date).endOf('month').toDate()
-          )
-        ) ?? []
-      )
-      : setFilteredMembers(members ?? [])
-  }, [date, members])
 
   return (
     <div className='flex flex-column gap-4'>
       <Dialog
         visible={showPdf}
         onHide={closePdf}
-        header={() => `Total: ${filteredMembers?.length}`}
+        header={() => `Total: ${members?.length}`}
       >
         {pdf && (
           <>
@@ -108,25 +84,9 @@ export default function MembersList(): ReactElement {
         )}
       </Dialog>
       <DataTable
-        value={filteredMembers}
+        value={members}
         scrollable
         scrollHeight='30rem'
-        loading={isPending}
-        header={() => (
-          <Calendar
-            value={date}
-            placeholder='Filtrar por fecha de inscripción'
-            view='month'
-            dateFormat='mm-yy'
-            onChange={(e) => {
-              setDate(moment(e.value).startOf('month').toDate())
-            }}
-            showButtonBar
-            onClearButtonClick={() => {
-              setDate(null)
-            }}
-          />
-        )}
       >
         <Column
           header='Apellido'
@@ -153,9 +113,8 @@ export default function MembersList(): ReactElement {
         outlined
         icon='pi pi-download'
         iconPos='right'
-        loading={isPending}
         onClick={() => {
-          generatePdf(filteredMembers, setPdf)
+          generatePdf(members, setPdf)
           openPdf()
         }}
       />
