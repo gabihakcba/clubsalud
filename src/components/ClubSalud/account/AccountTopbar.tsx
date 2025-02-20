@@ -9,12 +9,14 @@ import { Dialog } from 'primereact/dialog'
 import HasRole from 'components/ClubSalud/HasRole'
 import { Permissions } from 'utils/ClubSalud/types'
 import MembersList from 'components/ClubSalud/member/MembersList'
+import CreateEmployeeForm from '../employees/CreateEmployeeForm'
 
 export default function AccountTopbar(): ReactElement {
   const [membersList, openMembersList, closeMembersList] = useModal(false)
   const [createAcc, openAcc, closeAcc] = useModal(false)
   const [createMem, openMem, closeMem] = useModal(false)
   const [createIns, openIns, closeIns] = useModal(false)
+  const [createEmp, openEmp, closeEmp] = useModal(false)
 
   return (
     <div className='flex flex-row gap-2'>
@@ -29,25 +31,29 @@ export default function AccountTopbar(): ReactElement {
         <HasRole required={[Permissions.OWN]}>
           <Button
             label='Cuenta'
+            size='small'
             icon='pi pi-plus'
-            onClick={() => {
-              openAcc()
-            }}
+            onClick={openAcc}
           />
         </HasRole>
         <Button
           label='Profesor'
+          size='small'
           icon='pi pi-plus'
-          onClick={() => {
-            openIns()
-          }}
+          onClick={openIns}
         />
         <Button
           label='Alumno'
+          size='small'
           icon='pi pi-plus'
-          onClick={() => {
-            openMem()
-          }}
+          onClick={openMem}
+        />
+        <Button
+          onClick={openEmp}
+          label='Empleado'
+          size='small'
+          icon='pi pi-plus'
+          iconPos='right'
         />
       </ButtonGroup>
       <Button
@@ -79,6 +85,13 @@ export default function AccountTopbar(): ReactElement {
         onHide={closeMem}
       >
         <CreateMemberForm />
+      </Dialog>
+      <Dialog
+        header='Crear Perfil Empleado'
+        visible={createEmp}
+        onHide={closeEmp}
+      >
+        <CreateEmployeeForm />
       </Dialog>
     </div>
   )

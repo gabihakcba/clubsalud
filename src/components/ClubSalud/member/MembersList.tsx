@@ -1,18 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
-import { classNames } from 'primereact/utils'
-import {
-  VirtualScroller,
-  type VirtualScrollerTemplateOptions
-} from 'primereact/virtualscroller'
 import { getMembers } from 'queries/ClubSalud/members'
-import { useState, type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { type Member } from 'utils/ClubSalud/types'
 
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
+import moment from 'moment'
+import { Calendar } from 'primereact/calendar'
+import { argIsBetween } from 'utils/ClubSalud/dates'
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -63,6 +63,8 @@ function generatePdf(members: Member[], setPdf): void {
 export default function MembersList(): ReactElement {
   const [showPdf, openPdf, closePdf] = useModal(false)
   const [pdf, setPdf] = useState(null)
+  const [date, setDate] = useState<Date | null>(null)
+  const [filteredMembers, setFilteredMembers] = useState<Member[]>([])
 
   const { data: members, isPending } = useQuery({
     queryKey: ['members'],
@@ -71,32 +73,26 @@ export default function MembersList(): ReactElement {
     }
   })
 
-  const itemTemplate = (
-    item: Member,
-    options: VirtualScrollerTemplateOptions
-  ): ReactElement => {
-    const className = classNames('flex align-items-center p-2', {
-      'surface-hover': options.odd
-    })
-
-    return (
-      <div
-        className={className}
-        style={{ height: options.props.itemSize?.toString() + 'px' }}
-      >
-        {item.lastName.toUpperCase() + ' '}
-        {item.name.toUpperCase() + ' '}
-        {item.dni.toString()}
-      </div>
-    )
-  }
+  useEffect(() => {
+    date
+      ? setFilteredMembers(
+        members?.filter((member: Member) =>
+          argIsBetween(
+            member.inscriptionDate,
+            moment(date).startOf('month').toDate(),
+            moment(date).endOf('month').toDate()
+          )
+        ) ?? []
+      )
+      : setFilteredMembers(members ?? [])
+  }, [date, members])
 
   return (
     <div className='flex flex-column gap-4'>
       <Dialog
         visible={showPdf}
         onHide={closePdf}
-        header={() => `Total: ${members?.length}`}
+        header={() => `Total: ${filteredMembers?.length}`}
       >
         {pdf && (
           <>
@@ -110,14 +106,40 @@ export default function MembersList(): ReactElement {
           </>
         )}
       </Dialog>
-      <VirtualScroller
-        itemSize={50}
-        items={members}
-        itemTemplate={itemTemplate}
+      <DataTable
+        value={filteredMembers}
+        scrollable
+        scrollHeight='30rem'
         loading={isPending}
-        className='border-1 surface-border border-round'
-        style={{ width: '15rem', height: '20rem' }}
-      />
+        header={() => (
+          <Calendar
+            value={date}
+            placeholder='Filtrar por fecha de inscripción'
+            view='month'
+            dateFormat='mm-yy'
+            onChange={(e) => {
+              setDate(moment(e.value).startOf('month').toDate())
+            }}
+            showButtonBar
+            onClearButtonClick={() => {
+              setDate(null)
+            }}
+          />
+        )}
+      >
+        <Column
+          header='Apellido'
+          field='lastName'
+        />
+        <Column
+          header='Nombre'
+          field='name'
+        />
+        <Column
+          header='DNI'
+          field='dni'
+        />
+      </DataTable>
       <Button
         type='button'
         label='Obtener PDF'
@@ -128,7 +150,7 @@ export default function MembersList(): ReactElement {
         iconPos='right'
         loading={isPending}
         onClick={() => {
-          generatePdf(members ?? [], setPdf)
+          generatePdf(filteredMembers, setPdf)
           openPdf()
         }}
       />
