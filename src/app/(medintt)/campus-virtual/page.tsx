@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react'
 
 export default function CampusVirtual(): ReactElement {
-  return <div>CampusVirtual</div>
+  return <div className='h-full w-full flex justify-content-center align-items-center text-6xl text-center text-primary'>Campus Virtual en construcción</div>
 }
