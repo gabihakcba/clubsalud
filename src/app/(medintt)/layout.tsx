@@ -5,6 +5,7 @@ import 'primeicons/primeicons.css'
 import './theme/theme.css'
 import './theme/medintt.css'
 import { type ReactElement } from 'react'
+import Footer from 'components/Medintt/Footer'
 
 export const metadata = {
   title: 'Medintt - Tu salud nuestra especialidad',
@@ -19,9 +20,10 @@ export default function RootLayout({
   return (
     <PrimeReactProvider>
       <html lang='en'>
-        <body className='m-0 p-0'>
+        <body className='m-0 p-0 flex flex-column justify-content-between h-screen'>
           <NavBar />
           {children}
+          <Footer/>
         </body>
       </html>
     </PrimeReactProvider>
