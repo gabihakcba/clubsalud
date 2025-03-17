@@ -3,17 +3,14 @@ import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Button } from 'primereact/button'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
-import Span from '../Span'
 
 export default function AccordionClubSalud(): ReactElement {
   const router: AppRouterInstance = useRouter()
 
   return (
-    <Accordion activeIndex={0}>
+    <Accordion activeIndex={0} className='w-25rem'>
       <AccordionTab
-        header={() => (
-          <Span type='primary'>Beneficios de ser socios</Span>
-        )}
+        header={() => <span>Beneficios de ser socios</span>}
       >
         <ul className='m-0'>
           <li>Seguimiento médico sin demora</li>
@@ -23,11 +20,7 @@ export default function AccordionClubSalud(): ReactElement {
           <li>Turnos diferenciados con especialistas de Medintt.</li>
         </ul>
       </AccordionTab>
-      <AccordionTab
-        header={() => (
-          <Span type='primary'>Club Salud en tu empresa</Span>
-        )}
-      >
+      <AccordionTab header={() => <span>Club Salud en tu empresa</span>}>
         <p className='m-0'>
           El activo más importante de las empresas son las personas que trabajan
           en ellas. Para que tu equipo de lo mejor, tiene que estar en las
@@ -39,11 +32,7 @@ export default function AccordionClubSalud(): ReactElement {
         </p>
       </AccordionTab>
       <AccordionTab
-        header={() => (
-          <Span type='primary'>
-            Asistencia, docencia e investigación
-          </Span>
-        )}
+        header={() => <span>Asistencia, docencia e investigación</span>}
       >
         <p className='m-0'>
           Combinamos estos tres elementos para demostrar científicamente cómo el
@@ -53,11 +42,7 @@ export default function AccordionClubSalud(): ReactElement {
           sus conocimientos desde una nueva perspectiva profesional.
         </p>
       </AccordionTab>
-      <AccordionTab
-        header={() => (
-          <Span type='primary'>Objetivos Club Salud</Span>
-        )}
-      >
+      <AccordionTab header={() => <span>Objetivos Club Salud</span>}>
         <ul className='m-0'>
           <li>
             Mejorar la calidad de vida y por ende el bienestar de la población
@@ -78,15 +63,13 @@ export default function AccordionClubSalud(): ReactElement {
           </li>
         </ul>
       </AccordionTab>
-      <AccordionTab
-        header={() => <Span type='primary'>Valores Club Salud</Span>}
-      >
+      <AccordionTab header={() => <span>Valores Club Salud</span>}>
         <ul
           className='m-0'
           style={{ listStyle: 'none' }}
         >
           <li>
-            <Span type='' className='font-bold'>SALUD INTEGRAL</Span>
+            <span className='font-bold'>SALUD INTEGRAL</span>
             <p>
               En Club Salud medicina y deporte se interrelacionan
               constantemente. Sostenemos que la actividad física es salud. De
@@ -97,7 +80,7 @@ export default function AccordionClubSalud(): ReactElement {
             </p>
           </li>
           <li>
-            <Span type='' className='font-bold'>SALUD INCLUSIVA</Span>
+            <span className='font-bold'>SALUD INCLUSIVA</span>
             <p>
               La salud inclusiva abarca una gama de enfoques que incluyen el
               abordaje y la disminución del estigma y de las actitudes de
@@ -106,7 +89,7 @@ export default function AccordionClubSalud(): ReactElement {
             </p>
           </li>
           <li>
-            <Span type='' className='font-bold'>ÉTICA Y CALIDAD PROFESIONAL</Span>
+            <span className='font-bold'>ÉTICA Y CALIDAD PROFESIONAL</span>
             <p>
               Club Salud surge de una formación constante en un equipo
               multidisciplinario, que se encarga de dar respaldo y seguimiento
@@ -117,16 +100,13 @@ export default function AccordionClubSalud(): ReactElement {
           </li>
         </ul>
       </AccordionTab>
-      <AccordionTab
-        header={() => (
-          <Span type='primary'>¡Quiero unirme a Club Salud!</Span>
-        )}
-      >
+      <AccordionTab header={() => <span>¡Quiero unirme a Club Salud!</span>}>
         <Button
           label='CONTACTANOS AHORA'
           onClick={() => {
             router.push('/contact')
           }}
+          className='border-round-3xl'
         />
       </AccordionTab>
     </Accordion>

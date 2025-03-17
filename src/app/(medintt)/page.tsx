@@ -1,18 +1,18 @@
 import { type ReactElement } from 'react'
-import CarouselMedintt from 'components/Medintt/Carousel'
-import Appointment from 'components/Medintt/Appointment'
-import Management from 'components/Medintt/Management'
-import Blog from 'components/Medintt/Blog'
-import Trust from 'components/Medintt/Trust'
+import CarouselMedintt from 'components/Home/Carousel'
+import DoctorImage from 'components/Home/DoctorImage'
+import WhyMedintt from 'components/Home/WhyMedintt'
+import Services from 'components/Home/Services'
+import ClubSalud from 'components/Home/ClubSalud'
 
 export default function Home(): ReactElement {
   return (
-    <div>
+    <div className='shadow-4'>
+      <DoctorImage />
       <CarouselMedintt />
-      <Appointment />
-      <Management />
-      <Blog preview />
-      <Trust />
+      <WhyMedintt />
+      <Services />
+      <ClubSalud />
     </div>
   )
 }

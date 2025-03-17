@@ -1,38 +1,31 @@
 import { type ReactElement } from 'react'
 import { Carousel } from 'primereact/carousel'
-import Image from 'next/image'
-import img1 from '../../../../public/images/cscarousel/gimnasio_01.jpg'
-import img2 from '../../../../public/images/cscarousel/gimnasio_02.jpg'
-import img3 from '../../../../public/images/cscarousel/gimnasio_03.jpg'
-import img4 from '../../../../public/images/cscarousel/gimnasio_04.jpg'
-import img5 from '../../../../public/images/cscarousel/gimnasio_05.jpg'
-import img6 from '../../../../public/images/cscarousel/gimnasio_06.jpg'
 
 export default function CarouselClubSalud(): ReactElement {
   const products = [
     {
       name: 'Alt',
-      image: img1
+      src: 'images/cscarousel/gimnasio_01.jpg'
     },
     {
       name: 'Alt2',
-      image: img2
+      src: 'images/cscarousel/gimnasio_02.jpg'
     },
     {
       name: 'Alt3',
-      image: img3
+      src: 'images/cscarousel/gimnasio_03.jpg'
     },
     {
       name: 'Alt4',
-      image: img4
+      src: 'images/cscarousel/gimnasio_04.jpg'
     },
     {
       name: 'Alt5',
-      image: img5
+      src: 'images/cscarousel/gimnasio_05.jpg'
     },
     {
       name: 'Alt6',
-      image: img6
+      src: 'images/cscarousel/gimnasio_06.jpg'
     }
   ]
 
@@ -60,13 +53,8 @@ export default function CarouselClubSalud(): ReactElement {
   ]
 
   const productTemplate = (product): ReactElement => (
-    <div className='relative h-30rem'>
-      <Image
-        src={product.image}
-        alt=''
-        fill
-        style={{ objectFit: 'contain' }} // Opciones: 'cover', 'contain', etc.
-      />
+    <div className='flex h-full justify-content-center align-items-center'>
+      <img src={`${product.src}`} alt="" className='max-h-10rem max-w-14rem'/>
     </div>
   )
 
@@ -76,7 +64,7 @@ export default function CarouselClubSalud(): ReactElement {
       numVisible={1}
       numScroll={1}
       responsiveOptions={responsiveOptions}
-      className='custom-carousel'
+      className='w-20rem'
       circular
       autoplayInterval={3000}
       itemTemplate={productTemplate}

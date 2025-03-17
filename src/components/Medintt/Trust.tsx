@@ -2,7 +2,6 @@
 
 import { Carousel } from 'primereact/carousel'
 import { type ReactElement } from 'react'
-import Span from './Span'
 
 export default function Trust(): ReactElement {
   const products = [
@@ -91,7 +90,7 @@ export default function Trust(): ReactElement {
 
   return (
     <div className='flex flex-column justify-content-center align-items-center gap-4 p-4'>
-      <Span type='primary' className='font-bold text-2xl'>Ya confían en nosotros</Span>
+      <span className='font-bold text-2xl'>Ya confían en nosotros</span>
       <Carousel
         value={products}
         numVisible={1}
