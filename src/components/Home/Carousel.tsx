@@ -64,6 +64,12 @@ export default function CarouselMedintt(): ReactElement {
             <Button
               label='‍👨‍⚕️ Solicitar turno'
               className='w-max align-self-center border-round-xl px-4'
+              onClick={() => {
+                window.open(
+                  'https://api.whatsapp.com/send/?phone=%2B5492994587079&text&type=phone_number&app_absent=0',
+                  '_blank'
+                )
+              }}
             />
           </div>
         </div>
@@ -96,6 +102,12 @@ export default function CarouselMedintt(): ReactElement {
             <Button
               label='‍💼 Solicitar una consultoría'
               className='w-max align-self-center border-round-xl px-4'
+              onClick={() => {
+                window.open(
+                  'https://api.whatsapp.com/send/?phone=%2B5492994587079&text&type=phone_number&app_absent=0',
+                  '_blank'
+                )
+              }}
             />
           </div>
         </div>
