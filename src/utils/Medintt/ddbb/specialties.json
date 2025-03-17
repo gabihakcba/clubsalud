@@ -4,63 +4,64 @@
     "drs": ["Dra. Chacón Cecilia", "Dra. Villegas Cristina"]
   },
   {
-    "title": "Traumatología",
-    "drs": ["Dr. Franchi Oscar", "Dr. Luscher Sergio", "Dra. Álvarez Claudia"]
-  },
-  {
-    "title": "Cirugía General",
-    "drs": ["Dr. Briñón Miguel"]
-  },
-  {
     "title": "Deportología",
     "drs": ["Dr. Luscher Sergio"]
-  },
-  {
-    "title": "Cardiología",
-    "drs": ["Dr. Pero Bellido Simón"]
-  },
-  {
-    "title": "Gastroenterología",
-    "drs": ["Dra. Lloves Adriana"]
-  },
-  {
-    "title": "Otorrinolaringología",
-    "drs": ["Dra. Fernández Olga"]
-  },
-  {
-    "title": "Nutrición",
-    "drs": ["Lic. Martínez Claudio"]
-  },
-  {
-    "title": "Neurología",
-    "drs": ["Dra. Constantini Pablo"]
   },
   {
     "title": "Enfermería",
     "drs": ["Morales Romina"]
   },
   {
-    "title": "Psicología",
-    "drs": ["Lic. Grassi Luciana", "Lic. Rossi Stefanía"]
-  },
-  {
-    "title": "Clínica Quirúrgica",
-    "drs": ["Dr. Filipelli Fernando"]
-  },
-  {
     "title": "Diagnóstico por Imágenes",
     "drs": ["Dr. Pereyra Werfil"]
+  },
+  {
+    "title": "Terapias biológicas y medicina regenerativa",
+    "drs": ["Dr. Franchi Oscar", "Dra. Álavarez Claudia"]
+  },
+  {
+    "title": "Otorrinolaringología",
+    "drs": ["Dra. Fernández Olga"]
+  },
+  {
+    "title": "Traumatología",
+    "drs": ["Dr. Franchi Oscar", "Dr. Luscher Sergio", "Dra. Álvarez Claudia"]
+  },
+  {
+    "title": "Cardiología",
+    "drs": ["Dr. Pero Bellido Simón"]
+  },
+  {
+    "title": "Nutrición",
+    "drs": ["Lic. Martínez Claudio"]
+  },
+  {
+    "title": "Psicología",
+    "drs": ["Lic. Grassi Luciana", "Lic. Rossi Stefanía"]
   },
   {
     "title": "Ecografía",
     "drs": ["Dra. Pereyra Paula"]
   },
   {
+    "title": "Cirugía General",
+    "drs": ["Dr. Briñón Miguel"]
+  },
+  {
+    "title": "Gastroenterología",
+    "drs": ["Dra. Lloves Adriana"]
+  },
+
+  {
+    "title": "Clínica Quirúrgica",
+    "drs": ["Dr. Filipelli Fernando"]
+  },
+  {
     "title": "Kinesiología",
     "drs": ["Lic. Gatica Edgar", "Lic. Cobos Esteban"]
   },
   {
-    "title": "Terapias biológicas y medicina regenerativa",
-    "drs": ["Dr. Franchi Oscar", "Dra. Álavarez Claudia"]
+    "title": "Neurología",
+    "drs": ["Dra. Constantini Pablo"]
   }
 ]

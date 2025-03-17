@@ -8,7 +8,7 @@
   --surface-e: #ffffff;
   --surface-f: #ffffff;
   --text-color: #495057;
-  --text-color-secondary: #6c757d;
+  --text-color-secondary: #41464b;
   --primary-color: #29296c;
   --primary-color-text: #ffffff;
   --surface-0: #ffffff;
@@ -180,7 +180,8 @@ p {
   --bluegray-900: rgb(38.4, 50, 55.6);
   --purple-50: rgb(250.05, 244.2, 251.05);
   --purple-100: rgb(231.24, 203.16, 236.04);
-  --purple-200: rgb(212.43, 162.12, 221.03);
+  --purple-250: rgb(212.43, 162.12, 221.03);
+  --purple-200: rgb(204, 158, 255);
   --purple-300: rgb(193.62, 121.08, 206.02);
   --purple-400: rgb(174.81, 80.04, 191.01);
   --purple-500: #9c27b0;

@@ -1,7 +1,5 @@
 import { type ReactElement } from 'react'
-import Image from 'next/image'
 import { Button } from 'primereact/button'
-import Span from './Span'
 
 export default function ManagementProfile({
   src,
@@ -15,27 +13,36 @@ export default function ManagementProfile({
   socialmedia: Array<{ url: string; icon: string }>
 }): ReactElement {
   return (
-    <div className='flex flex-column gap-4 justify-content-center align-items-center white-space-normal w-20rem text-center'>
-      <Image
-        src={src}
-        height={200}
-        alt=''
-        className='border-circle'
-      />
-      <Span type='primary' className='text-lg'>{name}</Span>
-      <Span type='secondary' className='text-sm'>{description}</Span>
-      <section className='flex'>
-        {socialmedia.map((item, index) => (
-          <Button
-            key={index}
-            link
-            onClick={() => {
-              window.open(`${item.url}`, '_blank')
-            }}
-            icon={item.icon}
-          />
-        ))}
-      </section>
+    <div
+      className='flex flex-column justify-content-center align-items-center w-19rem overflow-hidden text-primary border-round-3xl'
+    >
+      <img src={`${src}`} alt="" className='w-full border-round-top-3xl'/>
+      <div
+        className='border-round-bottom-3xl p-3 shadow-4'
+        style={{
+          backdropFilter: 'blur(5px)',
+          background:
+            'linear-gradient(to bottom, rgba(177, 177, 177, 0.57), rgb(58, 58, 58))'
+        }}
+      >
+        <div className='flex flex-column xl:flex-row align-items-center justify-content-between'>
+          <span className='font-bold'>{name}</span>
+          <div>
+            {socialmedia.map((item, index) => (
+              <Button
+                key={index}
+                link
+                onClick={() => {
+                  window.open(`${item.url}`, '_blank')
+                }}
+                icon={item.icon}
+                style={{ color: 'var(--primary-500)' }}
+              />
+            ))}
+          </div>
+        </div>
+        <span className='text-sm text-white'>{description}</span>
+      </div>
     </div>
   )
 }
