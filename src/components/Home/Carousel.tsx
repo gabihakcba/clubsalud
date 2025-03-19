@@ -40,7 +40,7 @@ export default function CarouselMedintt(): ReactElement {
   const productTemplate = (product): ReactElement => {
     if (product.name === 'pacientes') {
       return (
-        <div className='font-secondary flex flex-row gap-7 h-full w-full justify-content-center align-items-center'>
+        <div className='font-secondary flex flex-column md:flex-row gap-7 h-full w-full justify-content-center align-items-center'>
           <img
             src={`/medintt/${product.name}.png`}
             alt='Empresas'
@@ -76,7 +76,7 @@ export default function CarouselMedintt(): ReactElement {
       )
     } else if (product.name === 'empresas') {
       return (
-        <div className='flex flex-row gap-7 h-full w-full justify-content-center align-items-center'>
+        <div className='flex flex-column md:flex-row gap-7 h-full w-full justify-content-center align-items-center'>
           <img
             src={`/medintt/${product.name}.png`}
             alt='Empresas'
