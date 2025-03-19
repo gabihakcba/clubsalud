@@ -2,7 +2,7 @@ import { type ReactElement } from 'react'
 
 export default function ClubSalud(): ReactElement {
   return (
-    <div className='grid w-full mt-7 justify-content-center bg-purple-200 max-h-25rem p-0 m-0'>
+    <div className='grid w-full mt-7 justify-content-center align-items-center bg-purple-200 max-h-25rem p-0 mt-8'>
       <div className='col-7'>
         <div className='h-full text-primary flex flex-column gap-2 lg:gap-4 px-0 sm:px-2 lg:p-4 xl:px-8'>
           <span className='font-bold text-xl sm:text-2xl lg:text-3xl'>Club salud</span>
