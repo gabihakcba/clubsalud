@@ -15,14 +15,16 @@ export async function GET(): Promise<Response> {
               include: {
                 plan: true,
                 promotion: true,
-                billedConsultation: true
+                billedConsultation: true,
+                payment: true
               }
             }
           }
         },
         promotion: true,
         plan: true,
-        billedConsultation: true
+        billedConsultation: true,
+        payment: true
       }
     })
     return new Response(JSONbig.stringify(subscriptions), {

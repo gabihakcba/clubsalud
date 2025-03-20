@@ -1,17 +1,23 @@
 import { useState, useEffect, type ReactElement } from 'react'
 import { Chart } from 'primereact/chart'
 import { useQuery } from '@tanstack/react-query'
-import { type Member, type Subscription } from 'utils/ClubSalud/types'
+import { type Subscription } from 'utils/ClubSalud/types'
 import moment from 'moment'
 import 'moment/locale/es'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Calendar } from 'primereact/calendar'
-import { SelectButton } from 'primereact/selectbutton'
 import { getSubscriptions } from 'queries/ClubSalud/subscriptions'
 import { Button } from 'primereact/button'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import Debtors from './Debtors'
+import {
+  arg2Date,
+  argDate,
+  isSameMonth,
+  isSameYear
+} from 'utils/ClubSalud/dates'
+import SubscriptionList from './SubscriptionsList'
 
 moment.locale('es')
 
@@ -21,8 +27,7 @@ const subscriptionsTotal = (
 ): Subscription[] => {
   const current = subscriptions.filter(
     (subs: Subscription) =>
-      moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month()
+      isSameYear(subs.initialDate, date) && isSameMonth(subs.initialDate, date)
   )
   return current
 }
@@ -33,8 +38,8 @@ const subscriptionsPaid = (
 ): Subscription[] => {
   const current = subscriptions.filter(
     (subs: Subscription) =>
-      moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month() &&
+      isSameYear(subs.initialDate, date) &&
+      isSameMonth(subs.initialDate, date) &&
       subs.paid
   )
   return current
@@ -47,31 +52,27 @@ const subsciptionsNotPaid = (
   const current = subscriptions.filter(
     (subs: Subscription) =>
       moment(subs.initialDate).year() === moment(date).year() &&
-      moment(subs.initialDate).month() <= moment(date).month() &&
+      moment(subs.initialDate).month() === moment(date).month() &&
       !subs.paid
   )
   return current
-}
-
-const getDebtors = (subscriptionsNotPaid: Subscription[]): Member[] => {
-  const debtorsList = subscriptionsNotPaid.filter((subscription) => !!subscription.member).map((subscription) => subscription.member)
-  return debtorsList
 }
 
 export default function ChartSubscriptionsReport(): ReactElement {
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
-  const [total, setTotal] = useState<Subscription[][]>([])
-  const [paid, setPaid] = useState<Subscription[][]>([])
-  const [notpaid, setNotpaid] = useState<Subscription[][]>([])
+  const [total, setTotal] = useState<Subscription[]>([])
+  const [paid, setPaid] = useState<Subscription[]>([])
+  const [notpaid, setNotpaid] = useState<Subscription[]>([])
 
-  const [months, setMonths] = useState<number>(1)
-  const [date, setDate] = useState<Date>(moment().toDate())
-  const [labels, setLabels] = useState<any[]>([])
+  const [date, setDate] = useState<Date>(argDate())
+  const [label, setLabel] = useState<string>('')
 
   const [debtorsList, openDebtorsList, closeDebtorsList] = useModal(false)
-  const [debtors, setDebtors] = useState<Member[]>([])
+
+  const [subscriptionList, openSubscriptionList, closeSubscriptionList] = useModal()
+  const [subscriptionsList, setSubscriptionsList] = useState<Subscription[]>([])
 
   const { data: subscriptions } = useQuery({
     queryKey: ['subscriptions'],
@@ -88,25 +89,25 @@ export default function ChartSubscriptionsReport(): ReactElement {
     )
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border')
     const data = {
-      labels,
+      labels: [label],
       datasets: [
         {
           type: 'bar',
           label: 'Total',
           backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-          data: total.map((t) => t.length)
+          data: [total.length]
         },
         {
           type: 'bar',
           label: 'Pagos',
           backgroundColor: documentStyle.getPropertyValue('--green-500'),
-          data: paid.map((p) => p.length)
+          data: [paid.length]
         },
         {
           type: 'bar',
           label: 'No pagos',
           backgroundColor: documentStyle.getPropertyValue('--red-500'),
-          data: notpaid.map((n) => n.length)
+          data: [notpaid.length]
         }
       ]
     }
@@ -141,6 +142,19 @@ export default function ChartSubscriptionsReport(): ReactElement {
             color: surfaceBorder
           }
         }
+      },
+      onClick: (event, elements) => {
+        if (elements[0]?.datasetIndex !== undefined) {
+          const { datasetIndex } = elements[0]
+          if (datasetIndex === 0) {
+            setSubscriptionsList(total)
+          } else if (datasetIndex === 1) {
+            setSubscriptionsList(paid)
+          } else if (datasetIndex === 2) {
+            setSubscriptionsList(notpaid)
+          }
+          openSubscriptionList()
+        }
       }
     }
     setChartData(data)
@@ -148,49 +162,14 @@ export default function ChartSubscriptionsReport(): ReactElement {
   }, [total, paid, notpaid])
 
   useEffect(() => {
-    const total: Subscription[][] = []
-    const paid: Subscription[][] = []
-    const notpaid: Subscription[][] = []
-    const labels: string[] = []
+    setLabel(moment(date).format('MMMM').toUpperCase())
 
-    for (let i = 0; i < months; i++) {
-      /**
-       * Labels
-       */
-      const currentDate = moment(date).subtract(i, 'months')
-      labels.push(currentDate.format('MMMM').toUpperCase())
+    setTotal(subscriptionsTotal(subscriptions ?? [], date))
 
-      /**
-       * In
-       */
-      const currentTotal = subscriptionsTotal(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
+    setPaid(subscriptionsPaid(subscriptions ?? [], date))
 
-      const currentPaid = subscriptionsPaid(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
-
-      const currentNotpaid = subsciptionsNotPaid(
-        subscriptions ?? [],
-        moment(date).subtract(i, 'months').toDate()
-      )
-
-      total.push(currentTotal)
-      paid.push(currentPaid)
-      notpaid.push(currentNotpaid)
-    }
-    setLabels(labels.reverse())
-    setTotal(total.reverse())
-    setPaid(paid.reverse())
-    setNotpaid(notpaid.reverse())
-  }, [subscriptions, months, date])
-
-  useEffect(() => {
-    setDebtors(getDebtors(notpaid.flat()))
-  }, [notpaid])
+    setNotpaid(subsciptionsNotPaid(subscriptions ?? [], date))
+  }, [subscriptions, date])
 
   return (
     <div className='card'>
@@ -198,7 +177,13 @@ export default function ChartSubscriptionsReport(): ReactElement {
         onHide={closeDebtorsList}
         visible={debtorsList}
       >
-        <Debtors debtors={debtors} />
+        <Debtors date={date} />
+      </Dialog>
+      <Dialog
+        onHide={closeSubscriptionList}
+        visible={subscriptionList}
+      >
+        <SubscriptionList subscriptionList={subscriptionsList} />
       </Dialog>
       <div className='flex flex-row gap-4 align-items-center'>
         <h2>Suscripciones - Cobros Particulares</h2>
@@ -206,26 +191,13 @@ export default function ChartSubscriptionsReport(): ReactElement {
           <Calendar
             value={date}
             onChange={(e) => {
-              setDate(moment(e.value).toDate())
+              setDate(arg2Date(new Date(e.value ?? '')))
             }}
             view='month'
             dateFormat='mm/yy'
           />
           <label htmlFor=''>Filtrar por mes</label>
         </FloatLabel>
-        <SelectButton
-          value={months}
-          onChange={(e) => {
-            setMonths(e.value as number)
-          }}
-          optionLabel='value'
-          options={[
-            { option: 'Mensual', value: 1 },
-            { option: 'Trimestral', value: 3 },
-            { option: 'Semestral', value: 6 },
-            { option: 'Anual', value: 12 }
-          ]}
-        />
         <Button
           label='Lista de deudores'
           size='small'
