@@ -17,6 +17,10 @@ export default function SubscriptionList({
       scrollHeight='35rem'
     >
       <Column
+        header='ID'
+        field='id'
+      />
+      <Column
         header='Oferta'
         field='plan.title'
       />

@@ -17,6 +17,7 @@ import {
   type CreateSubscription,
   type Member
 } from 'utils/ClubSalud/types'
+import { Checkbox } from 'primereact/checkbox'
 
 const calculateFinalPriceMonth = (price, plan: Plan): number => {
   return price - (price * plan?.discountPercent) / 100
@@ -30,6 +31,7 @@ export default function SubscriptionForm(): ReactElement {
   const [selectedMember, setSelectedMember] = useState<any>(null)
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
   const [selectedType, setSelectedType] = useState<any>(null)
+  const [isByOS, setIsByOS] = useState<boolean>(true)
 
   const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['memS'],
@@ -109,7 +111,8 @@ export default function SubscriptionForm(): ReactElement {
           promotionId: data.promotion.id,
           memberId: data.memberId,
           active: true,
-          planId: selectedType.id
+          planId: selectedType.id,
+          isByOS
         }
         subscribe(subscription)
       })}
@@ -179,6 +182,15 @@ export default function SubscriptionForm(): ReactElement {
         />
         <label htmlFor=''>Oferta</label>
       </FloatLabel>
+      <div className='flex gap-2'>
+        <label htmlFor=''>Agregar cobros de Obra Social</label>
+        <Checkbox
+          checked={isByOS}
+          onChange={(e) => {
+            setIsByOS((prevValue) => !prevValue)
+          }}
+        />
+      </div>
       <Tag severity='warning'>
         Por mes $
         {calculateFinalPriceMonth(
