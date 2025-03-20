@@ -42,7 +42,7 @@ const subscriptionsInRange = (
   endDate: Date
 ): Subscription[] => {
   return subscriptions.filter((subscription: Subscription) =>
-    isInRange(subscription, initialDate, endDate)
+    isInRange(subscription, initialDate, endDate) && subscription.isByOS
   )
 }
 

@@ -3,7 +3,10 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Tag } from 'primereact/tag'
-import { deleteSubscription, updateSubscription } from 'queries/ClubSalud/subscriptions'
+import {
+  deleteSubscription,
+  updateSubscription
+} from 'queries/ClubSalud/subscriptions'
 import { type ReactElement, useState } from 'react'
 import { argDate2Format } from 'utils/ClubSalud/dates'
 import { type Subscription, type Member } from 'utils/ClubSalud/types'
@@ -25,6 +28,16 @@ export default function SubscriptionTable({
     }
   })
 
+  const { mutate: changeIsByOs, isPending: loadingChangeIsByOs } = useMutation({
+    mutationFn: async (id: number) => {
+      await updateSubscription(id, 'isByOS')
+    },
+    onSuccess: async () => {
+      setSelectedSubs(null)
+      await query.resetQueries({ queryKey: ['members'] })
+    }
+  })
+
   const { mutate: delete_, isPending: loadingDelete } = useMutation({
     mutationFn: deleteSubscription,
     onSuccess: async () => {
@@ -40,6 +53,10 @@ export default function SubscriptionTable({
       scrollHeight='20dvh'
     >
       <Column
+        header='ID'
+        field='id'
+      />
+      <Column
         field='promotion.title'
         header='Promoción'
       />
@@ -50,13 +67,16 @@ export default function SubscriptionTable({
       <Column
         field='initialDate'
         header='Inicio'
-        body={(subs: Subscription) => <span>{argDate2Format(subs.initialDate)}</span>}
+        body={(subs: Subscription) => (
+          <span>{argDate2Format(subs.initialDate)}</span>
+        )}
       />
       <Column
         field='expirationDate'
         header='Vencimiento'
-        body={(subs: Subscription) => <span>{argDate2Format(subs.expirationDate)}</span>}
-
+        body={(subs: Subscription) => (
+          <span>{argDate2Format(subs.expirationDate)}</span>
+        )}
       />
       <Column
         header='Estado'
@@ -73,7 +93,20 @@ export default function SubscriptionTable({
         field='plan.title'
         header='Oferta'
       />
-
+      <Column
+        header='Cobro de Obra Social'
+        body={(subscription) => {
+          const status = subscription.isByOS
+          return (
+            <Tag
+              className='w-full'
+              severity={status ? 'success' : 'danger'}
+            >
+              {status ? 'SI' : 'NO'}
+            </Tag>
+          )
+        }}
+      />
       <Column
         body={(e) => {
           return (
@@ -91,7 +124,23 @@ export default function SubscriptionTable({
           )
         }}
       />
-
+      <Column
+        body={(e) => {
+          return (
+            <Button
+              label={e.isByOS ? 'Quitar cobros de OS' : 'Agregar cobros de OS'}
+              size='small'
+              outlined
+              severity={e.isByOS ? 'danger' : 'success'}
+              onClick={() => {
+                setSelectedSubs(e)
+                changeIsByOs(e.id as number)
+              }}
+              loading={loadingChangeIsByOs && e.id === selectedSubs?.id}
+            />
+          )
+        }}
+      />
       <Column
         body={(e) => {
           return (

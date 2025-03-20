@@ -229,6 +229,7 @@ export interface CreateSubscription {
   promotionId: number
   memberId: number
   planId: number
+  isByOS: boolean
 }
 
 export interface Payment extends CreatePayment {

@@ -42,6 +42,8 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     const data = await req.json()
     const id = data.id as number
 
+    const action = req.nextUrl.searchParams.get('action')
+
     const subscription: Subscription | null = await db.subscription.findUnique({
       where: { id }
     })
@@ -49,28 +51,42 @@ export async function PATCH(req: NextRequest): Promise<Response> {
     /**
      * If new subs is true, others must be false
      */
-    if (!subscription?.active) {
-      const memberId = subscription?.memberId
-      const member: any = await db.member.findUnique({
-        where: { id: memberId },
-        include: { memberSubscription: true }
-      })
-      member?.memberSubscription.forEach(async (subs: Subscription) => {
-        await db.subscription.update({
-          where: { id: subs.id },
-          data: { active: false }
+    if (action === 'active') {
+      if (!subscription?.active) {
+        const memberId = subscription?.memberId
+        const member: any = await db.member.findUnique({
+          where: { id: memberId },
+          include: { memberSubscription: true }
         })
+        member?.memberSubscription.forEach(async (subs: Subscription) => {
+          await db.subscription.update({
+            where: { id: subs.id },
+            data: { active: false }
+          })
+        })
+      }
+
+      const updatedSubs = await db.subscription.update({
+        where: { id },
+        data: { active: !subscription?.active }
+      })
+      return new Response(JSON.stringify(updatedSubs), {
+        status: 200
+      })
+    } else if (action === 'isByOS') {
+      const oldIsByOS = subscription?.isByOS
+      const updatedSubs = await db.subscription.update({
+        where: { id },
+        data: { isByOS: !oldIsByOS }
+      })
+      return new Response(JSON.stringify(updatedSubs), {
+        status: 200
+      })
+    } else {
+      return new Response('Invalid action', {
+        status: 300
       })
     }
-
-    const updatedSubs = await db.subscription.update({
-      where: { id },
-      data: { active: !subscription?.active }
-    })
-
-    return new Response(JSON.stringify(updatedSubs), {
-      status: 200
-    })
   } catch (error) {
     return new Response(JSON.stringify('Server error'), {
       status: 500
@@ -90,7 +106,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       initialDate: data.initialDate,
       expirationDate: data.expirationDate,
       remainingClasses: data.remainingClasses,
-      active: true
+      active: true,
+      isByOS: data.isByOS
     }
 
     await db.subscription.updateMany({

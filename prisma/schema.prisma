@@ -370,6 +370,7 @@ model Subscription {
   expirationDate     DateTime             @default(now())
   remainingClasses   Int                  @default(0)
   active             Boolean              @default(false)
+  isByOS             Boolean              @default(true)
   // ForeignKeys
   planId             Int?
   promotionId        Int
