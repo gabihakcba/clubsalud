@@ -211,7 +211,7 @@ export default function CreatePaymentForm(): ReactElement {
           )?.memberSubscription?.filter((subs: Subscription) => {
             if (ishealth) {
               const bills = subs.billedConsultation?.length
-              return bills !== undefined && bills < subs.plan.durationMonth * 2
+              return bills !== undefined && bills < subs.plan.durationMonth * 2 && subs.isByOS
             } else {
               return !subs.paid
             }

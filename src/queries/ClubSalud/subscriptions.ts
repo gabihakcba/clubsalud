@@ -25,10 +25,16 @@ export const deleteSubscription = async (id: number): Promise<Subscription> => {
   return response.data
 }
 
-export const updateSubscription = async (id: number): Promise<Subscription> => {
-  const response = await axios.patch(`${path()}/api/subscriptions`, {
-    id
-  })
+export const updateSubscription = async (
+  id: number,
+  type: 'active' | 'isByOS' = 'active'
+): Promise<Subscription> => {
+  const response = await axios.patch(
+    `${path()}/api/subscriptions?action=${type}`,
+    {
+      id
+    }
+  )
   return response.data
 }
 
