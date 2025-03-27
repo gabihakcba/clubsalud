@@ -76,6 +76,8 @@ model Account {
   instructorAccount    Instructor?          @relation(name: "instructorAccount")
   memberAccount        Member?              @relation(name: "memberAccount")
   employeeAccount      Employee?            @relation(name: "employeeAccount")
+
+  notes Notes[] @relation(name: "accountNotes")
 }
 
 model Doctor {
@@ -508,4 +510,17 @@ model SixMinuteWalkTest {
   // ForeignKeys
   followUpFormId Int           @unique
   followUpForm   FollowUpForm? @relation(fields: [followUpFormId], references: [id], name: "sixMinuteWalkTestFollowUpForm")
+}
+
+model Notes {
+  // Fields
+  id        Int      @id @default(autoincrement())
+  date      DateTime @default(now())
+  title     String
+  body      String
+  readed    Boolean  @default(false)
+  // ForeignKeys
+  accountId Int
+  // Relations
+  account   Account  @relation(fields: [accountId], references: [id], name: "accountNotes")
 }

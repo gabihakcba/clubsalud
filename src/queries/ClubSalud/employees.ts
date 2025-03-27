@@ -8,10 +8,14 @@ export const getEmployees = async (): Promise<Employee[]> => {
   return response.data
 }
 
+export const getEmployeeById = async (employeeId: number): Promise<Employee> => {
+  const response = await axios.get(`${path()}/api/employees/${employeeId}`)
+  return response.data
+}
+
 export const createEmployee = async (
   employee: CreateEmployee
 ): Promise<Employee> => {
-  console.log('creating')
   const response = await axios.post(
     `${path()}/api/employees`,
     JSONbig.stringify(employee)
