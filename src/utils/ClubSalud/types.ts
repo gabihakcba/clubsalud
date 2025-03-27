@@ -506,4 +506,16 @@ export interface dateType {
   year: number
 }
 
+export interface Notes extends CreateNotes {
+  id: number
+  readed: boolean
+  date: Date
+}
+
+export interface CreateNotes {
+  accountId: number
+  title: string
+  body: string
+}
+
 export type Setter = React.Dispatch<React.SetStateAction<any>>

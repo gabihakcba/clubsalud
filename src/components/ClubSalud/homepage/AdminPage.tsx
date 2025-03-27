@@ -14,6 +14,7 @@ import CreateInstructorPaymentForm from 'components/ClubSalud/payments/CreateIns
 import { Card } from 'primereact/card'
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
 import AttendanceDaily from '../attendance/AttendanceDaily'
+import Notes from './Notes'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -25,8 +26,17 @@ export default function AdminPage(): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [createEmployeePayment, openEmployeePayment, closeEmployeePayment] =
     useModal(false)
+  const [notes, openNotes, closeNotes] = useModal(false)
+
   return (
     <Card className='flex flex-column'>
+      <Dialog
+        visible={notes}
+        onHide={closeNotes}
+        header='Notas'
+      >
+        <Notes/>
+      </Dialog>
       <Dialog
         visible={showAssignHealthPlan}
         onHide={closeAssignHealthPlan}
@@ -80,6 +90,17 @@ export default function AdminPage(): ReactElement {
               window.open(
                 `${process.env.NEXT_PUBLIC_NODE_PATH}/clubsalud/admin/direct-attendance`
               )
+            }}
+          />
+          <Button
+            label='Notas'
+            severity='warning'
+            outlined
+            link
+            icon='pi pi-book'
+            iconPos='right'
+            onClick={() => {
+              openNotes()
             }}
           />
         </div>
