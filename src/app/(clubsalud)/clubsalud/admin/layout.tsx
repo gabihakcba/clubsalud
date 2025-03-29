@@ -25,7 +25,6 @@ const logOut = async (router: AppRouterInstance): Promise<void> => {
     localStorage.removeItem('user')
     router.push('/clubsalud')
   } catch (error) {
-    console.log(error)
   }
 }
 
@@ -80,7 +79,7 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       show: await hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
-      label: 'Suscripciones',
+      label: 'Inscripciones',
       icon: 'pi pi-list-check',
       template: itemRenderer,
       url: '/clubsalud/admin/subscriptions',
@@ -154,7 +153,7 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       show: await hasPermission([Permissions.OWN, Permissions.ADM])
     },
     {
-      label: 'Perfil',
+      label: 'Inicio',
       icon: 'pi pi-id-card',
       template: itemRenderer,
       url: '/clubsalud/admin',

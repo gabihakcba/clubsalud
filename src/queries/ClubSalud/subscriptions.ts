@@ -42,3 +42,8 @@ export const getOrderedSubscriptions = async (): Promise<Member[]> => {
   const response = await axios.get(`${path()}/api/subscriptions/expired`)
   return response.data
 }
+
+export const getSubscriptionsToBill = async (): Promise<Subscription[]> => {
+  const response = await axios.get(`${path()}/api/subscriptionstobill`)
+  return response.data
+}

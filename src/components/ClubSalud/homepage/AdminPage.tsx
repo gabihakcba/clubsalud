@@ -15,6 +15,9 @@ import { Card } from 'primereact/card'
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
 import AttendanceDaily from '../attendance/AttendanceDaily'
 import Notes from './Notes'
+import { useQuery } from '@tanstack/react-query'
+import { getSubscriptionsToBill } from 'queries/ClubSalud/subscriptions'
+import SubscriptionsToBillTable from './SubscriptionsToBillTable'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -22,20 +25,39 @@ export default function AdminPage(): ReactElement {
   const [create, openCreate, closeCreate] = useModal(false)
   const [createSubscription, openCreateSubscription, closeCreateSubscription] =
     useModal(false)
+  const [
+    showSubscriptionToBill,
+    openSubscriptionToBill,
+    closeSubscriptionToBill
+  ] = useModal(false)
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [createEmployeePayment, openEmployeePayment, closeEmployeePayment] =
     useModal(false)
   const [notes, openNotes, closeNotes] = useModal(false)
 
+  const { data: subscriptionsToBill, isFetching } = useQuery({
+    queryKey: ['subscriptionsToBill'],
+    queryFn: async () => {
+      return await getSubscriptionsToBill()
+    }
+  })
+
   return (
     <Card className='flex flex-column'>
+      <Dialog
+        visible={showSubscriptionToBill}
+        onHide={closeSubscriptionToBill}
+        header='Suscripciones a cobrar'
+      >
+        <SubscriptionsToBillTable subscriptions={subscriptionsToBill ?? []} isLoading={isFetching}/>
+      </Dialog>
       <Dialog
         visible={notes}
         onHide={closeNotes}
         header='Notas'
       >
-        <Notes/>
+        <Notes />
       </Dialog>
       <Dialog
         visible={showAssignHealthPlan}
@@ -103,12 +125,23 @@ export default function AdminPage(): ReactElement {
               openNotes()
             }}
           />
+          <Button
+            label='Suscripciones a cobrar hoy'
+            severity='success'
+            outlined
+            link
+            icon='pi pi-receipt'
+            iconPos='right'
+            onClick={() => {
+              openSubscriptionToBill()
+            }}
+          />
         </div>
         <Fieldset legend='Asistencias'>
           <section className='flex gap-8'>
             <NewAttendanceMember />
             <AttendanceInstructorForm />
-            <AttendanceDaily/>
+            <AttendanceDaily />
           </section>
         </Fieldset>
         <Fieldset legend='Cobros y pagos'>
