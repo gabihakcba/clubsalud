@@ -55,3 +55,9 @@ export const getUserInfo = async (): Promise<Account | null> => {
   const userInfo = await verifyToken(token)
   return userInfo
 }
+
+export const getCurrentUser = async (): Promise<any> => {
+  const userInfo = localStorage.getItem('user')
+  const user: Account = JSON.parse(userInfo ?? '')
+  return user.id
+}

@@ -3,7 +3,7 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
-import { useRef, type ReactElement } from 'react'
+import { useEffect, useRef, type ReactElement } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import AttendanceInstructorForm from './AttendanceInstructorForm'
 import { getInstructors } from 'queries/ClubSalud/instructors'
@@ -13,6 +13,9 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { deleteAttendanceInstructor } from 'queries/ClubSalud/attendanceInstructor'
 import { Toast } from 'primereact/toast'
 import { type AxiosError } from 'axios'
+import { type Instructor } from 'utils/ClubSalud/types'
+import { FloatLabel } from 'primereact/floatlabel'
+import { InputText } from 'primereact/inputtext'
 
 export default function AttendanceAdmTable(): ReactElement {
   const toast = useRef<Toast>(null)
@@ -24,6 +27,11 @@ export default function AttendanceAdmTable(): ReactElement {
   number | undefined
   >(undefined)
 
+  const [instructorFiltered, setInstructorsFiltered] = useState<Instructor[]>(
+    []
+  )
+  const [filter, setFilter] = useState<string>('')
+
   const { data: instructors, isPending: loadingInstructors } = useQuery({
     queryKey: ['instructors'],
     queryFn: async () => {
@@ -31,6 +39,20 @@ export default function AttendanceAdmTable(): ReactElement {
     },
     staleTime: 0
   })
+
+  useEffect(() => {
+    if (filter !== '') {
+      const filtered = instructors?.filter(
+        (member) =>
+          member.name.toUpperCase().includes(filter.toUpperCase()) ||
+          String(member.dni).includes(filter) ||
+          member.lastName.toUpperCase().includes(filter.toUpperCase())
+      )
+      setInstructorsFiltered(filtered ?? instructors ?? [])
+    } else {
+      setInstructorsFiltered(instructors ?? [])
+    }
+  }, [filter, instructors])
 
   const allowExpansion = (rowData): boolean => {
     return rowData.attendanceInstructor.length > 0
@@ -131,12 +153,26 @@ export default function AttendanceAdmTable(): ReactElement {
 
   return (
     <>
-      <Toast ref={toast} position='top-left'/>
+      <Toast
+        ref={toast}
+        position='top-left'
+      />
       <DataTable
         header={() => {
           return (
             <div className='w-full flex align-items-center justify-content-between'>
-              <h2>Asistencias de profesor</h2>
+              <div className='flex flex-row gap-4 align-items-center'>
+                <h2>Asistencias de profesores</h2>
+                <FloatLabel>
+                  <InputText
+                    value={filter}
+                    onChange={(e) => {
+                      setFilter(e.target.value)
+                    }}
+                  />
+                  <label htmlFor=''>Filtro (Nombre, Apellido, DNI)</label>
+                </FloatLabel>
+              </div>
               <Button
                 label='Cargar asistencia'
                 size='small'
@@ -148,7 +184,7 @@ export default function AttendanceAdmTable(): ReactElement {
             </div>
           )
         }}
-        value={instructors}
+        value={instructorFiltered}
         loading={loadingInstructors}
         scrollable
         scrollHeight='35dvh'
