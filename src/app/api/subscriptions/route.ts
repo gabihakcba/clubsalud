@@ -2,6 +2,7 @@ import { type Subscription, type PrismaClient } from '@prisma/client'
 import prisma from 'utils/ClubSalud/prisma'
 import JSONbig from 'json-bigint'
 import { type NextRequest } from 'next/server'
+import moment from 'moment'
 
 const db: PrismaClient = prisma
 
@@ -108,6 +109,31 @@ export async function POST(req: NextRequest): Promise<Response> {
       remainingClasses: data.remainingClasses,
       active: true,
       isByOS: data.isByOS
+    }
+
+    const existingSubscription = await db.subscription.findFirst({
+      where: {
+        memberId: Number(data.memberId),
+        date: {
+          gte: moment(data.date as Date)
+            .startOf('day')
+            .toDate(),
+          lte: moment(data.date as Date)
+            .endOf('day')
+            .toDate()
+        }
+      }
+    })
+
+    if (existingSubscription) {
+      return new Response(
+        JSON.stringify({
+          message: 'Ya existe una suscripción para esta fecha'
+        }),
+        {
+          status: 302
+        }
+      )
     }
 
     await db.subscription.updateMany({

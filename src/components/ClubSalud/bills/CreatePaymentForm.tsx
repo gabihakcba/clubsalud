@@ -113,7 +113,7 @@ export default function CreatePaymentForm(): ReactElement {
     getValues
   } = useForm()
 
-  const { data: members, isPending: isPendingMembers } = useQuery({
+  const { data: members, isFetching: isPendingMembers, refetch } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       const res = await getMembers()
@@ -203,35 +203,53 @@ export default function CreatePaymentForm(): ReactElement {
         />
         <label htmlFor='member'>Alumno</label>
       </div>
-      <div className='p-float-label'>
-        <Dropdown
-          options={selectMember(
-            members,
-            Number(watch('memberId'))
-          )?.memberSubscription?.filter((subs: Subscription) => {
-            if (ishealth) {
-              const bills = subs.billedConsultation?.length
-              return bills !== undefined && bills < subs.plan.durationMonth * 2 && subs.isByOS
-            } else {
-              return !subs.paid
-            }
-          })}
-          value={selectedSubscription}
-          optionLabel='promotion.title'
-          optionValue='id'
-          itemTemplate={optionSubscriptionTemplate}
-          {...register('subscription', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          onChange={(e) => {
-            setSelectedSubscription(e.value)
-            setValue('subscriptionId', e.value)
+      <div className='flex flex-row gap-4 justify-content-between'>
+        <div className='p-float-label w-full'>
+          <Dropdown
+            options={selectMember(
+              members,
+              Number(watch('memberId'))
+            )?.memberSubscription?.filter((subs: Subscription) => {
+              if (ishealth) {
+                const bills = subs.billedConsultation?.length
+                return (
+                  bills !== undefined &&
+                  bills < subs.plan.durationMonth * 2 &&
+                  subs.isByOS
+                )
+              } else {
+                return !subs.paid
+              }
+            })}
+            value={selectedSubscription}
+            optionLabel='promotion.title'
+            optionValue='id'
+            itemTemplate={optionSubscriptionTemplate}
+            {...register('subscription', {
+              required: { value: true, message: 'Campo requerido' }
+            })}
+            onChange={(e) => {
+              setSelectedSubscription(e.value)
+              setValue('subscriptionId', e.value)
+            }}
+            loading={selectedMember === null}
+            className='w-full'
+            invalid={errors?.subscription !== undefined}
+          />
+          <label htmlFor='subscription'>Suscripción</label>
+        </div>
+        <Button
+          size='small'
+          severity='danger'
+          outlined
+          icon='pi pi-refresh'
+          type='button'
+          className='w-max'
+          onClick={async () => {
+            await refetch()
           }}
-          loading={selectedMember === null}
-          className='w-full'
-          invalid={errors?.subscription !== undefined}
+          loading={isPendingMembers}
         />
-        <label htmlFor='subscription'>Suscripción</label>
       </div>
       <div className='flex gap-4'>
         <label htmlFor='isbyhealth'>Pago con obra social</label>

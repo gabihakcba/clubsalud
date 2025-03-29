@@ -1,6 +1,6 @@
 'use client'
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
@@ -18,6 +18,7 @@ import {
   type Member
 } from 'utils/ClubSalud/types'
 import { Checkbox } from 'primereact/checkbox'
+import { type AxiosError } from 'axios'
 
 const calculateFinalPriceMonth = (price, plan: Plan): number => {
   return price - (price * plan?.discountPercent) / 100
@@ -32,6 +33,8 @@ export default function SubscriptionForm(): ReactElement {
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
   const [selectedType, setSelectedType] = useState<any>(null)
   const [isByOS, setIsByOS] = useState<boolean>(true)
+
+  const query = useQueryClient()
 
   const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['memS'],
@@ -59,11 +62,16 @@ export default function SubscriptionForm(): ReactElement {
       const subs = await setSubscription(subscription)
       return subs
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       alert('Inscipción hecha')
+      await query.refetchQueries({ queryKey: ['members'] })
     },
-    onError: () => {
-      alert('No se pudo adherir a la suscripción')
+    onError: (e: AxiosError) => {
+      if (e.status === 302) {
+        alert('Ya existe una suscripción para este alumno')
+      } else {
+        alert('No se pudo adherir a la suscripción')
+      }
     }
   })
 
