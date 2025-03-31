@@ -8,7 +8,7 @@ export default function AccordionClubSalud(): ReactElement {
   const router: AppRouterInstance = useRouter()
 
   return (
-    <Accordion activeIndex={0} className='w-25rem'>
+    <Accordion className='w-25rem'>
       <AccordionTab
         header={() => <span>Beneficios de ser socios</span>}
       >

@@ -10,19 +10,10 @@ import AccordionClubSalud from 'components/Medintt/ClubSalud/AccordionClubSalud'
 export default function ClubSaludInfo(): ReactElement {
   const router: AppRouterInstance = useRouter()
   return (
-    <div className='flex flex-column justify-content-center mt-6 text-primary'>
+    <div className='flex flex-column justify-content-center align-items-start m-6 ml-8 text-primary'>
       {/* Intro */}
-      <Button
-        label='Ingresar'
-        link
-        size='small'
-        className='w-max align-self-end'
-        onClick={() => {
-          router.push('/clubsalud')
-        }}
-      />
-      <div className='flex flex-row justify-content-center gap-8'>
-        <div className='flex flex-column gap-4 w-29rem'>
+      <div className='flex flex-row justify-content-center gap-8 ml-8 pl-7'>
+        <div className='flex flex-column gap-4 w-29rem mr-8'>
           <span className='text-3xl'>Club Salud</span>
           <span>
             Club Salud es un gimnasio dentro de Medintt dirigido a recuperar,
@@ -45,7 +36,7 @@ export default function ClubSaludInfo(): ReactElement {
       </div>
 
       {/* Sobre */}
-      <div className='flex flex-column gap-4 px-7 mx-7 mt-6'>
+      <div className='flex flex-column gap-4 px-7 mx-8 mt-6'>
         <span className='text-3xl'>Sobre nuestra empresa</span>
         <span>
           Club salud es un programa de ejercicio físico adaptado bajo
@@ -56,7 +47,7 @@ export default function ClubSaludInfo(): ReactElement {
       </div>
 
       {/* Accion */}
-      <div className='flex flex-column gap-4 px-7 mx-7 mt-6'>
+      <div className='flex flex-column gap-4 px-7 mx-8 mt-6'>
         <span className='text-3xl'>Club Salud en acción</span>
         <span>
           Club Salud surge de la necesidad de promover la salud a través de las
@@ -70,7 +61,7 @@ export default function ClubSaludInfo(): ReactElement {
       </div>
 
       {/* Sucursal */}
-      <div className='flex flex-column gap-4 px-7 mx-7 mt-6'>
+      <div className='flex flex-column gap-4 px-7 mx-8 mt-6'>
         <span className='text-3xl'>Nueva Sucursal</span>
         <span>
           Nuestro nuevo gimnasio se encuentra en Confluencia esquina Puerto
@@ -80,7 +71,7 @@ export default function ClubSaludInfo(): ReactElement {
       </div>
 
       {/* Contacto */}
-      <div className='flex flex-column gap-2 px-7 mx-7 mt-6'>
+      <div className='flex flex-column gap-2 px-7 mx-8 mt-6'>
         <Button
           icon='pi pi-whatsapp'
           link
@@ -122,6 +113,14 @@ export default function ClubSaludInfo(): ReactElement {
         <CarouselClubSalud />
         <AccordionClubSalud />
       </div>
+      <Button
+        label='Ingresar'
+        size='small'
+        className='w-max align-self-end'
+        onClick={() => {
+          router.push('/clubsalud')
+        }}
+      />
     </div>
   )
 }
