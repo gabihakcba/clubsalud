@@ -22,8 +22,10 @@ export default function RootLayout({
       <html lang='en'>
         <body className='m-0 p-0 flex flex-column justify-content-between h-screen'>
           <NavBar />
-          {children}
-          <Footer/>
+          <div className='mt-8 pt-3'>
+            {children}
+            <Footer />
+          </div>
         </body>
       </html>
     </PrimeReactProvider>

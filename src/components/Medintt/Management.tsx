@@ -8,7 +8,7 @@ import sergio from '../../../public/images/sergio.jpg'
 
 export default function Management(): ReactElement {
   return (
-    <div className='flex flex-column p-4 justify-content-center align-items-center gap-4'>
+    <div className='flex flex-column p-4 justify-content-center align-items-center gap-4 border-2 border-red-500'>
       <span className='text-2xl font-bold'>Nuestra Dirección</span>
       <div className='flex flex-wrap gap-6 justify-content-center align-items-start'>
         <ManagementProfile

@@ -14,19 +14,19 @@ export default function ManagementProfile({
 }): ReactElement {
   return (
     <div
-      className='flex flex-column justify-content-center align-items-center w-19rem overflow-hidden text-primary border-round-3xl'
+      className='flex flex-column justify-content-center align-items-center w-19rem overflow-hidden text-primary border-round-3xl h-full'
     >
       <img src={`${src}`} alt="" className='w-full border-round-top-3xl'/>
       <div
-        className='border-round-bottom-3xl p-3 shadow-4'
+        className='border-round-bottom-3xl p-3 shadow-4 h-full'
         style={{
           backdropFilter: 'blur(5px)',
           background:
-            'linear-gradient(to bottom, rgba(177, 177, 177, 0.57), rgb(58, 58, 58))'
+            'linear-gradient(to bottom, rgba(90, 90, 90, 0.57), rgb(58, 58, 58))'
         }}
       >
         <div className='flex flex-column xl:flex-row align-items-center justify-content-between'>
-          <span className='font-bold'>{name}</span>
+          <span className='font-bold text-white'>{name}</span>
           <div>
             {socialmedia.map((item, index) => (
               <Button
@@ -36,7 +36,7 @@ export default function ManagementProfile({
                   window.open(`${item.url}`, '_blank')
                 }}
                 icon={item.icon}
-                style={{ color: 'var(--primary-500)' }}
+                style={{ color: 'white' }}
               />
             ))}
           </div>

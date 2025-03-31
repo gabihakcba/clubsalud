@@ -39,7 +39,7 @@ export default function Whoweare(): ReactElement {
       </div>
 
       {/* Equipo */}
-      <div className='flex flex-column px-8 py-4 gap-1 sm:gap-2 md:gap-3 lg:gap-4'>
+      <div className='flex flex-column px-8 py-4 gap-1 sm:gap-2 md:gap-3 lg:gap-4 ml-8'>
         <span className='text-3xl font-bold'>Nuestro equipo</span>
         <span
           className=''
@@ -91,7 +91,7 @@ export default function Whoweare(): ReactElement {
       </div>
 
       {/* Especialistas */}
-      <div className='grid text-primary my-7'>
+      <div className='grid text-primary my-7 ml-8 pl-8'>
         <div className='col-3'>
           <div className='flex flex-column gap-4'>
             <span className='text-2xl font-bold px-4'>
