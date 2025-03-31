@@ -54,7 +54,7 @@ export default function CarouselClubSalud(): ReactElement {
 
   const productTemplate = (product): ReactElement => (
     <div className='flex h-full justify-content-center align-items-center'>
-      <img src={`${product.src}`} alt="" className='max-h-10rem max-w-14rem'/>
+      <img src={`${product.src}`} alt="" className='max-h-20rem max-w-14rem'/>
     </div>
   )
 
@@ -64,6 +64,7 @@ export default function CarouselClubSalud(): ReactElement {
       numVisible={1}
       numScroll={1}
       responsiveOptions={responsiveOptions}
+      showIndicators={false}
       className='w-20rem'
       circular
       autoplayInterval={3000}

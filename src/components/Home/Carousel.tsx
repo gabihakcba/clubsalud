@@ -126,16 +126,17 @@ export default function CarouselMedintt(): ReactElement {
       circular
       className='my-7'
       showIndicators={false}
+      containerClassName='mx-8 px-8'
       nextIcon={
         <img
           src='/medintt/next.png'
-          className='w-1rem lg:w-2rem'
+          className='w-1rem'
         />
       }
       prevIcon={
         <img
           src='/medintt/prev.png'
-          className='w-1rem lg:w-2rem'
+          className='w-1rem'
         />
       }
     />

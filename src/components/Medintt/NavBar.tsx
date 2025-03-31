@@ -48,14 +48,15 @@ export default function NavBar(): ReactElement {
     return (
       <div className='border-bottom-1 border-primary'>
         <Button
-          className='text-left text-primary'
+          className='text-left'
           text
           // link
-          label={item.label}
           onClick={() => {
             router.push(item.url)
           }}
-        />
+        >
+          <p className='p-0 m-0'>{item.label}</p>
+        </Button>
       </div>
     )
   }
@@ -155,7 +156,7 @@ export default function NavBar(): ReactElement {
     <MegaMenu
       model={items}
       start={itemRenderer}
-      className='m-0 sticky top-0 z-5 flex w-screen lg:justify-content-around filled shadow-2'
+      className='m-0 fixed top-0 z-5 flex w-screen lg:justify-content-around filled shadow-2'
       orientation='horizontal'
       breakpoint='1000px'
     />
