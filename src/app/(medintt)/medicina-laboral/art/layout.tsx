@@ -7,7 +7,7 @@ export default function LayoutART({
 }): ReactElement {
   return (
     <div className='flex flex-column h-full w-full gap-4 text-primary p-4'>
-      <span className='text-2xl'>Para ART</span>
+      {/* <span className='text-2xl'>Para ART</span> */}
       {children}
     </div>
   )
