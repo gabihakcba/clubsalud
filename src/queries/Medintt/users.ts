@@ -1,5 +1,7 @@
 import axios from 'axios'
 
-export const getUsers = async (): Promise<Response> => {
-  return await axios.get('http://45.71.106.68:70')
+export const getUsers = async (): Promise<any> => {
+  const response = await axios.get('http://medintt.store')
+  console.log(response)
+  return response.data
 }
