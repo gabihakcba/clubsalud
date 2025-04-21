@@ -5,7 +5,7 @@ import { Button } from 'primereact/button'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
-import { getUsers } from 'queries/Medintt/users'
+import { logInLaboral } from 'queries/Medintt/users'
 import { type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 
@@ -13,8 +13,8 @@ export default function Page(): ReactElement {
   const { register, handleSubmit, setValue } = useForm()
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
-      const response = await getUsers()
+    mutationFn: async (data: { username: string; password: string }) => {
+      const response = await logInLaboral(data)
       console.log(response)
       return response
     }
@@ -29,7 +29,7 @@ export default function Page(): ReactElement {
         className='flex flex-column align-items-start justify-content-center m-2 gap-4'
         onSubmit={handleSubmit(async (data, event) => {
           event?.preventDefault()
-          mutate()
+          mutate({ username: data.username, password: data.password })
         })}
       >
         <FloatLabel>

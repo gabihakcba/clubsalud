@@ -1,7 +1,10 @@
 import axios from 'axios'
 
-export const getUsers = async (): Promise<any> => {
-  const response = await axios.get('http://medintt.store')
+export const logInLaboral = async (data: {
+  username: string
+  password: string
+}): Promise<any> => {
+  const response = await axios.post('http://medintt.store', data)
   console.log(response)
   return response.data
 }
