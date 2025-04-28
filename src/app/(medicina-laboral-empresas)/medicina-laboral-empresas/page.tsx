@@ -34,22 +34,23 @@ export default function Page(): ReactElement {
       >
         <FloatLabel>
           <InputText
+            type='email'
             className='w-full'
             required
-            {...register('username')}
+            {...register('Email')}
             onChange={(e) => {
-              setValue('username', e.currentTarget.value)
+              setValue('Email', e.currentTarget.value)
             }}
           />
-          <label htmlFor=''>Usuario</label>
+          <label htmlFor=''>Email</label>
         </FloatLabel>
         <FloatLabel>
           <Password
             toggleMask
             required
-            {...register('password')}
+            {...register('PasswordWeb')}
             onChange={(e) => {
-              setValue('password', e.currentTarget.value)
+              setValue('PasswordWeb', e.currentTarget.value)
             }}
             feedback={false}
           />
