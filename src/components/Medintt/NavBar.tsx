@@ -30,10 +30,13 @@ export default function NavBar(): ReactElement {
       <Button
         className={'flex flex-align-center text-primary'}
         text
-        // link
         label={item.label}
-        onClick={() => {
-          item?.url && router.push(item.url)
+        onClick={(e) => {
+          if (item.url) {
+            e.preventDefault()
+            e.stopPropagation()
+            router.push(item.url)
+          }
         }}
         icon={!item?.url && 'pi pi-angle-down'}
         iconPos='right'
@@ -50,7 +53,6 @@ export default function NavBar(): ReactElement {
         <Button
           className='text-left'
           text
-          // link
           onClick={() => {
             router.push(item.url)
           }}
@@ -114,6 +116,11 @@ export default function NavBar(): ReactElement {
               label: 'Campañas de Vacunación',
               url: '/medicina-laboral/empresas/campanas-vacunacion',
               template: subitemTemplate
+            },
+            {
+              label: 'Ingresar al panel de administracion',
+              url: '/medicina-laboral-empresas',
+              template: itemTemplate
             }
           ]
         },
@@ -130,6 +137,11 @@ export default function NavBar(): ReactElement {
               label: 'Accidentología',
               url: '/medicina-laboral/art/accidentologia',
               template: subitemTemplate
+            },
+            {
+              label: 'Ingresar al panel de administracion',
+              url: '/medicina-laboral-art',
+              template: itemTemplate
             }
           ]
         }
