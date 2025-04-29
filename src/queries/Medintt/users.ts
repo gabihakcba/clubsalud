@@ -4,7 +4,6 @@ export const logInLaboral = async (data: {
   UsuarioWeb: string
   PasswordWeb: string
 }): Promise<{ ok: boolean; message: string; data?: any }> => {
-  console.log('logInLaboral', data)
   try {
     const response = await axios.post(
       'https://medintt.store/auth/login',

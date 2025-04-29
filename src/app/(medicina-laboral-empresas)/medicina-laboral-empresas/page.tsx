@@ -53,7 +53,6 @@ export default function Page(): ReactElement {
       >
         <FloatLabel>
           <InputText
-            type='email'
             className='w-full'
             required
             {...register('UsuarioWeb')}

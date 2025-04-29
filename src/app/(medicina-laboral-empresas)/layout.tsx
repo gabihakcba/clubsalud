@@ -25,7 +25,7 @@ export default function RootLayout({
             type='image/x-icon'
           ></link>
         </head>
-        <body className=''>{children}</body>
+        <body className='w-screen h-screen'>{children}</body>
       </html>
     </PrimeReactProvider>
   )

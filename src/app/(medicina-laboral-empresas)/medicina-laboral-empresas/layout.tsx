@@ -11,7 +11,7 @@ export default function Layout({
 }): ReactElement {
   return (
     <QueryClientProvider client={client}>
-      <div>{children}</div>
+      <div className='w-full h-full'>{children}</div>
     </QueryClientProvider>
   )
 }
