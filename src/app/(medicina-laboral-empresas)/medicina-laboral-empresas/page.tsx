@@ -6,16 +6,33 @@ import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { logInLaboral } from 'queries/Medintt/users'
-import { type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
+import { getDataSession, setDataSession } from 'utils/Medintt/session'
+import { useRouter } from 'next/navigation'
 
 export default function Page(): ReactElement {
   const { register, handleSubmit, setValue } = useForm()
+  const [errorSession, setErrorSession] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    const dataSession = getDataSession()
+    if (dataSession.user) {
+      router.push('/medicina-laboral-empresas/admin')
+    }
+  }, [router])
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (data: { username: string; password: string }) => {
+    mutationFn: async (data: { UsuarioWeb: string; PasswordWeb: string }) => {
       const response = await logInLaboral(data)
-      console.log(response)
+      if (response.ok) {
+        setErrorSession(false)
+        setDataSession(response.data.token, response.data.user)
+        router.push('/medicina-laboral-empresas/admin')
+      } else {
+        setErrorSession(true)
+      }
       return response
     }
   })
@@ -24,12 +41,14 @@ export default function Page(): ReactElement {
     <div className='flex flex-column align-items-center justify-content-center'>
       <h1 className='text-4xl'>Medicina Laboral Empresas</h1>
       <p className='text-2xl'>Iniciar Sesión</p>
+      {errorSession && <p className='text-red-500 py-4 text-xl'>Usuario y/o contraseña incorrectos</p>}
       <form
         action=''
         className='flex flex-column align-items-start justify-content-center m-2 gap-4'
         onSubmit={handleSubmit(async (data, event) => {
           event?.preventDefault()
-          mutate({ username: data.username, password: data.password })
+          const logInData = { UsuarioWeb: data.UsuarioWeb, PasswordWeb: data.PasswordWeb }
+          mutate(logInData)
         })}
       >
         <FloatLabel>
@@ -37,12 +56,12 @@ export default function Page(): ReactElement {
             type='email'
             className='w-full'
             required
-            {...register('Email')}
+            {...register('UsuarioWeb')}
             onChange={(e) => {
-              setValue('Email', e.currentTarget.value)
+              setValue('UsuarioWeb', e.currentTarget.value)
             }}
           />
-          <label htmlFor=''>Email</label>
+          <label htmlFor=''>Usuario</label>
         </FloatLabel>
         <FloatLabel>
           <Password
