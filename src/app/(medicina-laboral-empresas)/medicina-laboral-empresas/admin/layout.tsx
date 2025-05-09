@@ -21,10 +21,15 @@ export default function Layout({
             label: 'Ausentismo',
             icon: 'pi pi-list-check',
             url: '/medicina-laboral-empresas/admin/ausentismo'
+          },
+          {
+            label: 'Empleados',
+            icon: 'pi pi-users',
+            url: '/medicina-laboral-empresas/admin/empleados'
           }
         ]}
       />
-      <div className='w-full h-full'>{children}</div>
+      <div className='w-full h-full max-w-screen overflow-x-scroll px-2'>{children}</div>
     </div>
   )
 }

@@ -10,11 +10,13 @@ export const clearDataSession = (): void => {
 }
 
 export const getTokenSession = (): any => {
-  return localStorage.getItem('token')
+  const token = localStorage.getItem('token')
+  return token ? JSON.parse(token) : null
 }
 
 export const getUserSession = (): any => {
-  return localStorage.getItem('user')
+  const user = localStorage.getItem('user')
+  return user ? JSON.parse(user)[0] : null
 }
 
 export const getDataSession = (): { token: any; user: any } => {
