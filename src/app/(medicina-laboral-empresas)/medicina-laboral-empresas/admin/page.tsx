@@ -21,7 +21,7 @@ export default function AdminPage(): ReactElement {
   }, [router])
 
   useEffect(() => {
-    const userData = JSON.parse(getUserSession() as string)
+    const userData = getUserSession()
     setUser(userData)
   }, [])
 
@@ -29,7 +29,7 @@ export default function AdminPage(): ReactElement {
     <div className='flex flex-column align-items-center my-8'>
       <div className='flex flex-column align-items-start gap-4 text-xl m-4'>
         <div>Bienvenido {user?.Nombre}</div>
-        <div>Usuario: {user?.UsuarioWeb}</div>
+        <div>Empresa: {user?.Prestataria}</div>
         <div>Email: {user?.Email}</div>
         <div>Cargo: {user?.Cargo}</div>
       </div>
