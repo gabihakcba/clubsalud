@@ -19,7 +19,11 @@ export const logInLaboral = async (data: {
         }
       }
     )
-    return { data: response.data, message: 'ok', ok: true }
+    if (response.status === 403) {
+      return { ok: false, message: 'Usuario o contraseña incorrectos' }
+    } else {
+      return { data: response.data, message: 'ok', ok: true }
+    }
   } catch (error) {
     const status = error.response.status
     if (status === 403 || status === 404) {
@@ -64,6 +68,7 @@ export const createBorrowerEmployee = async (
     )
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
+    console.log(error)
     throw new Error(`Error en la solicitud ${error}`)
   }
 }
@@ -89,18 +94,13 @@ export const updateBorrowerEmployee = async (
   }
 }
 
-export const deleteBorrowerEmployee = async (
-  id: number
-): Promise<any> => {
+export const deleteBorrowerEmployee = async (id: number): Promise<any> => {
   try {
-    const response = await axios.delete(
-      `https://medintt.store/patient/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${getTokenSession()}`
-        }
+    const response = await axios.delete(`https://medintt.store/patient/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getTokenSession()}`
       }
-    )
+    })
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
