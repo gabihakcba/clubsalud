@@ -21,7 +21,7 @@ export const getTokenSession = (): any => {
 
 export const getUserSession = (): any => {
   const user = localStorage.getItem('user')
-  return user ? JSON.parse(user)[0] : null
+  return user ? JSON.parse(user) : null
 }
 
 export const getDataSession = (): { token: any; user: any } => {
