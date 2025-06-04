@@ -3,7 +3,6 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
-import AttendanceInstructorForm from 'components/ClubSalud/attendanceInstructor/AttendanceInstructorForm'
 import RegistrationFormSelector from 'components/ClubSalud/medicalReports/RegistrationFormSelector'
 import HealthAssignForm from 'components/ClubSalud/healthPlans/HealthAssignForm'
 import SubscriptionForm from 'components/ClubSalud/subscriptions/SubscriptionForm'
@@ -18,6 +17,7 @@ import Notes from './Notes'
 import { useQuery } from '@tanstack/react-query'
 import { getSubscriptionsToBill } from 'queries/ClubSalud/subscriptions'
 import SubscriptionsToBillTable from './SubscriptionsToBillTable'
+import NewAttendanceInstructorForm from '../attendanceInstructor/NewAttendanceInstructorForm'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -140,7 +140,7 @@ export default function AdminPage(): ReactElement {
         <Fieldset legend='Asistencias'>
           <section className='flex gap-8'>
             <NewAttendanceMember />
-            <AttendanceInstructorForm />
+            <NewAttendanceInstructorForm />
             <AttendanceDaily />
           </section>
         </Fieldset>

@@ -1,42 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
-import { Dropdown } from 'primereact/dropdown'
 import { createAttendance } from 'queries/ClubSalud/attendance'
-import { getClasses } from 'queries/ClubSalud/classes'
 import { getMembers } from 'queries/ClubSalud/members'
 import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type Member, type Class_, type Schedule } from '../../../utils/ClubSalud/types'
-import { Calendar } from 'primereact/calendar'
+import { type Member } from '../../../utils/ClubSalud/types'
 import { FloatLabel } from 'primereact/floatlabel'
-import moment from 'moment'
 import { InputNumber } from 'primereact/inputnumber'
-import { getSchedules } from 'queries/ClubSalud/schedules'
 import { type AxiosError } from 'axios'
 import { Toast } from 'primereact/toast'
-
-const days = [
-  'MONDAY',
-  'TUESDAY',
-  'WEDNESDAY',
-  'THURSDAY',
-  'FRIDAY',
-  'SATURDAY',
-  'SUNDAY'
-]
-
-const getClass = (schedules: Schedule[] | undefined): Class_ | undefined => {
-  const day = days[moment().day() - 1]
-  const hour = moment().hour()
-  const minute = moment().minute()
-  const schedule = schedules?.find(
-    (schedule) =>
-      schedule.start < Number(`${hour}${minute}`) &&
-      schedule.end > Number(`${hour}${minute}`) &&
-      schedule.day === day
-  )
-  return schedule?.class
-}
 
 const getMember = (dni: number, members: Member[]): Member | undefined =>
   members.find((member: Member) => member.dni.toString() === dni.toString())
@@ -49,28 +21,11 @@ export default function NewAttendanceMember(): ReactElement {
   const [selectedMember, setSelectedMember] = useState<Member | undefined>(
     undefined
   )
-  const [defaultClass, setDefaultClass] = useState<Class_ | undefined>(
-    undefined
-  )
-  const [selectedClass, setSelectedClass] = useState<Class_ | undefined>(
-    undefined
-  )
-  const [selectedDate, setSelectedDate] = useState<Date>(moment().toDate())
   const [label, setLabel] = useState('DNI')
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors }
+    handleSubmit
   } = useForm()
-
-  const { data: classes, isPending: loadingClasses } = useQuery({
-    queryKey: ['class'],
-    queryFn: async () => {
-      return await getClasses()
-    }
-  })
 
   const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['mem'],
@@ -79,19 +34,9 @@ export default function NewAttendanceMember(): ReactElement {
     }
   })
 
-  const { data: schedule } = useQuery({
-    queryKey: ['sche'],
-    queryFn: async () => {
-      const res = await getSchedules()
-      return res
-    }
-  })
-
   const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
     mutationFn: async (data: {
       memberId: number
-      classId: number
-      date: Date
     }) => {
       return await createAttendance(data)
     },
@@ -108,6 +53,7 @@ export default function NewAttendanceMember(): ReactElement {
       }
     },
     onError: (data: AxiosError) => {
+      console.log(data.response)
       if (toast.current) {
         toast.current.show({
           severity: 'error',
@@ -121,18 +67,6 @@ export default function NewAttendanceMember(): ReactElement {
   })
 
   useEffect(() => {
-    setValue('date', moment().toDate())
-    const class_ = getClass(schedule)
-    setDefaultClass(class_)
-  }, [schedule])
-
-  useEffect(() => {
-    setSelectedClass(defaultClass)
-    setValue('class', defaultClass?.name)
-    setValue('classId', defaultClass?.id)
-  }, [defaultClass])
-
-  useEffect(() => {
     setLabel(selectedMember?.name ?? 'DNI')
   }, [selectedMember])
 
@@ -143,9 +77,7 @@ export default function NewAttendanceMember(): ReactElement {
       onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
         const params = {
-          memberId: Number(selectedMember?.id),
-          classId: data.classId,
-          date: data.date
+          memberId: Number(selectedMember?.id)
         }
         createAtt(params)
       })}
@@ -163,36 +95,6 @@ export default function NewAttendanceMember(): ReactElement {
             }}
           />
           <label htmlFor=''>{label}</label>
-        </FloatLabel>
-
-        <Dropdown
-          {...register('class', { required: true })}
-          invalid={errors?.class !== undefined}
-          value={selectedClass}
-          options={classes}
-          optionLabel='name'
-          placeholder='Clase'
-          loading={loadingClasses}
-          onChange={(e) => {
-            setSelectedClass(e.value as Class_)
-            setValue('classId', e.value.id as number)
-          }}
-        />
-
-        <FloatLabel>
-          <Calendar
-            {...register('date', {
-              required: true
-            })}
-            invalid={errors?.date !== undefined}
-            value={selectedDate}
-            onChange={(e) => {
-              setValue('date', moment(e.value).toDate())
-              setSelectedDate(moment(e.value).toDate())
-            }}
-            dateFormat='dd/mm/yy'
-          />
-          <label htmlFor=''>Fecha</label>
         </FloatLabel>
       </div>
 
