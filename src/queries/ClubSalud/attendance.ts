@@ -1,15 +1,16 @@
 import axios from 'axios'
+import { argDate } from 'utils/ClubSalud/dates'
 import { path } from 'utils/ClubSalud/path'
 import { type Attendance } from 'utils/ClubSalud/types'
 
 export const createAttendance = async ({
   memberId,
-  classId,
-  date
+  classId = 10,
+  date = argDate()
 }: {
   memberId: number
-  classId: number
-  date: Date
+  classId?: number
+  date?: Date
 }): Promise<Attendance> => {
   const response = await axios.post(`${path()}/api/attendance`, {
     memberId,

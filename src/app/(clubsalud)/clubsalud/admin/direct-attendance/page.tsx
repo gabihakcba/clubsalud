@@ -1,7 +1,7 @@
 'use client'
 
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
-import AttendanceInstructorForm from 'components/ClubSalud/attendanceInstructor/AttendanceInstructorForm'
+import NewAttendanceInstructorForm from 'components/ClubSalud/attendanceInstructor/NewAttendanceInstructorForm'
 import QRInstructorAttendance from 'components/ClubSalud/QR/QRInstructorAttendance'
 import { Card } from 'primereact/card'
 import { Divider } from 'primereact/divider'
@@ -31,7 +31,7 @@ export default function DirectAttendance(): ReactElement {
         </div>
         <div className='w-full md:w-5 flex flex-column align-items-center gap-3 py-5'>
           <h2>Profesores</h2>
-          <AttendanceInstructorForm />
+          <NewAttendanceInstructorForm />
           <Divider
             layout='horizontal'
             className='flex'

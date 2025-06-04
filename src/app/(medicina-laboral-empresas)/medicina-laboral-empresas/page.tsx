@@ -28,7 +28,7 @@ export default function Page(): ReactElement {
       const response = await logInLaboral(data)
       if (response.ok) {
         setErrorSession(false)
-        setDataSession(response.data.token, response.data.user)
+        setDataSession(response.data.token as string, response.data.user)
         router.push('/medicina-laboral-empresas/admin')
       } else {
         setErrorSession(true)
