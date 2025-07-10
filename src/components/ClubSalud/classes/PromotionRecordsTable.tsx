@@ -5,6 +5,7 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import { DataTable } from 'primereact/datatable'
 import { deletePromotionRecord } from 'queries/ClubSalud/promotionRecords'
 import { useState, type ReactElement } from 'react'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type PromotionRecord, type Promotion } from 'utils/ClubSalud/types'
 
 export default function PromotionRecordsTable({
@@ -35,6 +36,9 @@ export default function PromotionRecordsTable({
       <Column
         field='date'
         header='Fecha'
+        body={(row: PromotionRecord) => (
+          <p>{DateUtils.formatToDDMMYY(row.date)}</p>
+        )}
       />
       <Column
         field='price'

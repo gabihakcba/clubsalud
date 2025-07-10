@@ -112,6 +112,7 @@ export default function CreateEmployeePaymentForm({
           })}
           inputId='monthPayment'
           invalid={errors?.monthPayment !== undefined}
+          view='month'
         />
         <label htmlFor='monthPayment'>Mes trabajado</label>
       </FloatLabel>

@@ -158,13 +158,6 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
-      label: 'Herramientas',
-      icon: 'pi pi-wrench',
-      template: itemRenderer,
-      url: '/clubsalud/admin/tools',
-      show: hasPermission([Permissions.OWN])
-    },
-    {
       label: 'Salir',
       icon: 'pi pi-sign-out',
       template: itemRenderer,

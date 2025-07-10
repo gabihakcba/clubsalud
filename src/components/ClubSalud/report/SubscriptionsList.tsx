@@ -22,11 +22,11 @@ export default function SubscriptionList({
       />
       <Column
         header='Oferta'
-        field='plan.title'
+        field='Plan.title'
       />
       <Column
         header='Plan'
-        field='promotion.title'
+        field='Promotion.title'
       />
       <Column
         header='Pagado'

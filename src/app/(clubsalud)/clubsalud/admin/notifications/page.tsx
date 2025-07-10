@@ -95,7 +95,7 @@ export default function NotificationsPage(): ReactElement {
               data.Sender?.Member?.name ??
               data.Sender?.Instructor?.name ??
               data.Sender?.Employee?.name ??
-              data.Sender.username
+              data.Sender?.username
             )
           }}
           header='De'
@@ -106,7 +106,7 @@ export default function NotificationsPage(): ReactElement {
               data.Receiver?.instructorAccount?.name ??
               data.Receiver?.memberAccount?.name ??
               data.Receiver?.employeeAccount?.name ??
-              data.Receiver.username
+              data.Receiver?.username
             )
           }}
           header='Para'

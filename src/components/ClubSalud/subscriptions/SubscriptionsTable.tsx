@@ -64,7 +64,7 @@ export default function SubscriptionTable({
         field='id'
       />
       <Column
-        field='promotion.title'
+        field='Promotion.title'
         header='Promoción'
       />
       <Column
@@ -104,7 +104,7 @@ export default function SubscriptionTable({
         }}
       />
       <Column
-        field='plan.title'
+        field='Plan.title'
         header='Oferta'
       />
       <Column

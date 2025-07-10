@@ -33,15 +33,20 @@ export default function MonthSubscriptions(): ReactElement {
       scrollHeight='30rem'
       header={() => {
         return (
-          <Calendar
-            view='month'
-            dateFormat='mm/yy'
-            onChange={(e) => {
-              if (e.value) {
-                setDate(e.value)
-              }
-            }}
-          />
+          <div className='flex gap-4 align-items-center'>
+            <h2>Suscripciones del mes - Total: {getByMonth(subscriptions ?? [], date)?.length}</h2>
+            <Calendar
+              view='month'
+              dateFormat='mm/yy'
+              placeholder='Filtrar por mes'
+              className='h-min'
+              onChange={(e) => {
+                if (e.value) {
+                  setDate(e.value)
+                }
+              }}
+            />
+          </div>
         )
       }}
     >
@@ -59,7 +64,9 @@ export default function MonthSubscriptions(): ReactElement {
       />
       <Column
         header='Fecha'
-        body={(sub: Subscription) => <div>{DateUtils.formatToDDMMYY(sub.date)}</div>}
+        body={(sub: Subscription) => (
+          <div>{DateUtils.formatToDDMMYY(sub.date)}</div>
+        )}
       />
       <Column
         header='Nombre'
