@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState, type ReactElement } from 'react'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Permissions } from 'utils/ClubSalud/types'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PanelMenu } from 'primereact/panelmenu'
 import logo from '../../../../../public/logos/logo_large.png'
 import { Button } from 'primereact/button'
@@ -14,8 +12,6 @@ import { Badge } from 'primereact/badge'
 import { ScrollPanel } from 'primereact/scrollpanel'
 import { hasPermission, hasValidClubSaludToken, removeDataSessionClubSalud } from 'utils/ClubSalud/auth'
 import { type MenuItem } from 'primereact/menuitem'
-
-const client = new QueryClient()
 
 const logOut = (router: AppRouterInstance): void => {
   try {
@@ -200,7 +196,6 @@ export default function AdminLayout({ children }: any): ReactElement {
   }, [router])
 
   return (
-    <QueryClientProvider client={client}>
       <div className='flex flex-row w-full'>
         <div className='flex-grow-1 h-screen z-0'>{children}</div>
         <div className='md:relative absolute'>
@@ -230,7 +225,5 @@ export default function AdminLayout({ children }: any): ReactElement {
           />
         </div>
       </div>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
   )
 }

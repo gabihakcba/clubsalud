@@ -13,7 +13,7 @@ export const signInAccount = async (
     })
     return response.data
   } catch (error) {
-    console.log(error)
-    throw new Error(JSON.stringify(error))
+    console.log(error.response.data.message)
+    throw new Error(JSON.stringify(error.response.data.message))
   }
 }

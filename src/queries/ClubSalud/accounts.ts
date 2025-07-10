@@ -30,7 +30,7 @@ export const updateAccount = async (data: UpdateAccount): Promise<Account> => {
   return response.data
 }
 
-export const getAccountById = async (id: string): Promise<Account> => {
+export const getAccountById = async (id: string | number): Promise<Account> => {
   const response = await apiClubSalud.get(`/account/${id}`)
   return response.data
 }

@@ -56,18 +56,15 @@ export default function PersonalAccount(): ReactElement {
     id: number
     username: string
     permissions: string[]
-  }>({
-    id: -1,
-    username: '',
-    permissions: [Permissions.OTHER]
-  })
+  } | null>(null)
   const [accountInfo, setAccountInfo] = useState<any>(null)
 
   const { data: account } = useQuery({
     queryKey: ['account'],
     queryFn: async () => {
-      return await getAccountById(String(user.id))
-    }
+      return await getAccountById(String(user?.id))
+    },
+    enabled: user !== null
   })
 
   useEffect(() => {
