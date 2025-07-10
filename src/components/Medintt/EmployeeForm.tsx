@@ -1,24 +1,65 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
-import { FloatLabel } from 'primereact/floatlabel'
-import { InputNumber } from 'primereact/inputnumber'
+import { Fieldset } from 'primereact/fieldset'
 import { InputText } from 'primereact/inputtext'
 import { createBorrowerEmployee } from 'queries/Medintt/users'
-import { type ReactElement } from 'react'
+import { useRef, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { getUserSession } from 'utils/Medintt/session'
 import { type CreateBorrowerEmployee } from 'utils/Medintt/types'
+import { Toast } from 'primereact/toast'
+import getLocalidades from 'queries/Medintt/localidades'
+import { Dropdown } from 'primereact/dropdown'
 
-export default function EmployeeForm(): ReactElement {
+export default function EmployeeForm({
+  employee
+}: {
+  employee: CreateBorrowerEmployee | null
+}): ReactElement {
   const query = useQueryClient()
 
-  const { register, handleSubmit, setValue } = useForm()
+  const toast = useRef<any>(null)
+
+  const [selectedGenero, setSelectedGenero] = useState<any>(null)
+  const [selectedProvincia, setSelectedProvincia] = useState<any>(null)
+  const [selectedLocalidad, setSelectedLocalidad] = useState<any>(null)
+  const [CP, setCP] = useState<string>('')
+  const [localidades, setLocalidades] = useState<any>(null)
+
+  const { register, handleSubmit, setValue, reset } = useForm()
+
+  const showSuccess = (): void => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Creación exitosa',
+      detail: 'Empleado creado exitosamente'
+    })
+  }
+
+  const showError = (): void => {
+    toast.current.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error al crear el empleado'
+    })
+  }
+
+  const { data: provincias, isLoading } = useQuery({
+    queryKey: ['provincias'],
+    queryFn: async () => {
+      const response = await getLocalidades()
+      return response.data
+    }
+  })
 
   const { mutate: createEmployee, isPending } = useMutation({
     mutationFn: async (data: FieldValues) => {
+      const { Id_Provincia: idP, ...empleado } = data
+      console.log(selectedLocalidad)
       const newEmployee = {
-        ...data,
+        ...empleado,
+        Id_Localidad: selectedLocalidad,
         Id_Prestataria: getUserSession().Id_Prestataria as number
       }
       const response = await createBorrowerEmployee(
@@ -26,152 +67,454 @@ export default function EmployeeForm(): ReactElement {
       )
       return response.data
     },
-    onSuccess: async () => {
+    onSuccess: async (e) => {
+      showSuccess()
       await query.refetchQueries({ queryKey: ['patients'] })
+      reset()
+    },
+    onError: () => {
+      showError()
     }
   })
 
   return (
     <form
       action=''
-      className='flex flex-column pt-4 gap-4'
+      id='employee-form'
+      className='flex flex-column gap-3 w-full'
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
         createEmployee(data)
       })}
+      key={employee ? employee?.Id : undefined}
     >
-      <FloatLabel>
+      <Toast ref={toast} />
+      <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+        <i
+          className='pi pi-circle-fill'
+          style={{ color: 'red', fontSize: '0.4rem' }}
+        />
+        <label
+          htmlFor=''
+          className='text-md font-bold'
+        >
+          Apellidos
+        </label>
         <InputText
+          defaultValue={employee ? employee?.Apellido : undefined}
+          className='w-full'
           required
           {...register('Apellido')}
         />
-        <label htmlFor=''>Apellido</label>
-      </FloatLabel>
-      <FloatLabel>
+      </div>
+      <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+        <i
+          className='pi pi-circle-fill'
+          style={{ color: 'red', fontSize: '0.4rem' }}
+        />
+        <label
+          htmlFor=''
+          className='text-md font-bold'
+        >
+          Nombres
+        </label>
         <InputText
+          className='w-full'
           required
+          defaultValue={employee ? employee?.Nombre : undefined}
           {...register('Nombre')}
         />
-        <label htmlFor=''>Nombre</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('NroDocumento')}
-        />
-        <label htmlFor=''>Numero de Documento</label>
-      </FloatLabel>
-      <FloatLabel>
-        <Calendar
-          required
-          {...register('FechaNacimiento')}
-        />
-        <label htmlFor=''>Fecha de Nacimiento</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Direccion')}
-        />
-        <label htmlFor=''>Direccion</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Barrio')}
-        />
-        <label htmlFor=''>Barrio</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputNumber
-          required
-          {...register('Id_Localidad')}
-          max={99999}
-          min={0}
-          onBlur={(e) => {}}
-          onChange={(e) => {
-            setValue('Id_Localidad', e.value)
-          }}
-        />
-        <label htmlFor=''>Id de localidad</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Telefono')}
-        />
-        <label htmlFor=''>Teléfono</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Celular1')}
-        />
-        <label htmlFor=''>Celular</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Email')}
-        />
-        <label htmlFor=''>Email</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Genero')}
-        />
-        <label htmlFor=''>Género</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Cargo')}
-        />
-        <label htmlFor=''>Cargo</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Puesto')}
-        />
-        <label htmlFor=''>Puesto</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText
-          required
-          {...register('Funcion')}
-        />
-        <label htmlFor=''>Funcion</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText {...register('FamRespo_Nombre')} />
-        <label htmlFor=''>Nombre de familiar responsable</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText {...register('FamRespo_Relacion')} />
-        <label htmlFor=''>Relacion de familiar responsable</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText {...register('FamRespo_Telefono')} />
-        <label htmlFor=''>Teléfono de familiar responsable</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText {...register('FamRespo_Celular')} />
-        <label htmlFor=''>Celular de familiar responsable</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText {...register('FamRespo_Email')} />
-        <label htmlFor=''>Email de familiar responsable</label>
-      </FloatLabel>
+      </div>
+      <div className='flex flex-row'>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Numero de Documento
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.NroDocumento : undefined}
+            {...register('NroDocumento')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Fecha de Nacimiento
+          </label>
+          <Calendar
+            required
+            value={employee ? employee?.FechaNacimiento : undefined}
+            {...register('FechaNacimiento')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Género
+          </label>
+          <Dropdown
+            required
+            options={[
+              { label: 'MASCULINO', value: 'MASCULINO' },
+              { label: 'FEMENINO', value: 'FEMENINO' }
+            ]}
+            value={selectedGenero}
+            placeholder='Seleccione un género'
+            defaultValue={employee ? employee?.Genero : undefined}
+            {...register('Genero')}
+            onChange={(e) => {
+              console.log(e.value)
+              setSelectedGenero(e.value)
+              setValue('Genero', e.value)
+            }}
+          />
+        </div>
+      </div>
+      <div className='flex flex-row'>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Direccion
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Direccion : undefined}
+            {...register('Direccion')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Barrio
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Barrio : undefined}
+            {...register('Barrio')}
+          />
+        </div>
+      </div>
+      <div className='flex flex-row'>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Provincia
+          </label>
+          <Dropdown
+            {...register('Id_Provincia')}
+            required
+            loading={isLoading}
+            options={provincias?.filter(
+              (provincia) => provincia.Localidades.length > 0
+            )}
+            value={selectedProvincia}
+            optionLabel='Provincia'
+            optionValue='Id'
+            placeholder='Seleccione una provincia'
+            onChange={(e) => {
+              setSelectedProvincia(e.value)
+              setLocalidades(
+                provincias?.filter((provincia) => provincia.Id === e.value)[0]
+                  .Localidades
+              )
+              setValue('Id_Provincia', e.target.value)
+            }}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Localidad
+          </label>
+          <Dropdown
+            {...register('Id_Localidad')}
+            required
+            loading={selectedProvincia === null}
+            options={localidades}
+            value={selectedLocalidad}
+            optionLabel='Localidad'
+            optionValue='Id'
+            placeholder='Seleccione una localidad'
+            onChange={(e) => {
+              setSelectedLocalidad(e.value)
+              setCP(
+                localidades?.filter((localidad) => localidad.Id === e.value)[0]
+                  .CP as string
+              )
+              setValue('Id_Localidad', e.value)
+            }}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Código Postal
+          </label>
+          <InputText
+            disabled
+            value={CP}
+          />
+        </div>
+      </div>
+      <div className='flex flex-row'>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Teléfono
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Telefono : undefined}
+            {...register('Telefono')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Celular
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Celular1 : undefined}
+            {...register('Celular1')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Email
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Email : undefined}
+            {...register('Email')}
+          />
+        </div>
+      </div>
+      <div className='flex flex-row'>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Cargo
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Cargo : undefined}
+            {...register('Cargo')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Puesto
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Puesto : undefined}
+            {...register('Puesto')}
+          />
+        </div>
+        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+          <i
+            className='pi pi-circle-fill'
+            style={{ color: 'red', fontSize: '0.4rem' }}
+          />
+          <label
+            htmlFor=''
+            className='text-md font-bold'
+          >
+            Funcion
+          </label>
+          <InputText
+            required
+            defaultValue={employee ? employee?.Funcion : undefined}
+            {...register('Funcion')}
+          />
+        </div>
+      </div>
+      <Fieldset legend='Datos de familiar responsable'>
+        <div className='flex flex-column gap-3'>
+          <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+            <label
+              htmlFor=''
+              className='text-md font-bold'
+            >
+              Nombre de familiar responsable
+            </label>
+            <InputText
+              defaultValue={
+                employee?.FamRespo_Nombre
+                  ? employee?.FamRespo_Nombre
+                  : undefined
+              }
+              {...register('FamRespo_Nombre')}
+              className='w-full'
+            />
+          </div>
+          <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+            <label
+              htmlFor=''
+              className='text-md font-bold'
+            >
+              Relacion de familiar responsable
+            </label>
+            <InputText
+              defaultValue={
+                employee?.FamRespo_Relacion
+                  ? employee?.FamRespo_Relacion
+                  : undefined
+              }
+              {...register('FamRespo_Relacion')}
+              className='w-full'
+            />
+          </div>
+          <div className='flex flex-row'>
+            <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+              <label
+                htmlFor=''
+                className='text-md font-bold'
+              >
+                Teléfono de familiar responsable
+              </label>
+              <InputText
+                defaultValue={
+                  employee?.FamRespo_Telefono
+                    ? employee?.FamRespo_Telefono
+                    : undefined
+                }
+                {...register('FamRespo_Telefono')}
+                className='w-full'
+              />
+            </div>
+            <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+              <label
+                htmlFor=''
+                className='text-md font-bold'
+              >
+                Celular de familiar responsable
+              </label>
+              <InputText
+                defaultValue={
+                  employee?.FamRespo_Celular
+                    ? employee?.FamRespo_Celular
+                    : undefined
+                }
+                {...register('FamRespo_Celular')}
+              />
+            </div>
+            <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
+              <label
+                htmlFor=''
+                className='text-md font-bold'
+              >
+                Email de familiar responsable
+              </label>
+              <InputText
+                defaultValue={
+                  employee?.FamRespo_Email
+                    ? employee?.FamRespo_Email
+                    : undefined
+                }
+                {...register('FamRespo_Email')}
+              />
+            </div>
+          </div>
+        </div>
+      </Fieldset>
       <Button
-        label='Guardar'
+        label={employee ? 'Actualizar' : 'Guardar'}
         icon='pi pi-save'
         outlined
         iconPos='right'
         type='submit'
         loading={isPending}
       />
+      <div className='flex flex-row align-items-center gap-2'>
+        <i
+          className='pi pi-circle-fill'
+          style={{ color: 'red', fontSize: '0.4rem' }}
+        />
+        <span>Datos obligatorios</span>
+      </div>
     </form>
   )
 }
