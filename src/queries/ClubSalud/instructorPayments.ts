@@ -1,4 +1,5 @@
 import { apiClubSalud } from 'utils/axios.service'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type InstructorPrice,
   type CreateInstructorPrice,
@@ -14,13 +15,12 @@ export const getInstructorPayments = async (): Promise<InstructorPayment[]> => {
 export const createInstructorPayment = async (
   instructorPayment: CreateInstructorPayment
 ): Promise<InstructorPayment> => {
-  console.log('to mmake request', instructorPayment)
   try {
-    const response = await apiClubSalud.post(
-      '/instructor-payment',
-      instructorPayment
-    )
-    console.log('the response was:', response)
+    const response = await apiClubSalud.post('/instructor-payment', {
+      ...instructorPayment,
+      workedMonth: DateUtils.toBackendFormat(instructorPayment.workedMonth),
+      paymentDate: DateUtils.toBackendFormat(instructorPayment.paymentDate)
+    })
     return response.data
   } catch (error) {
     console.log(error)

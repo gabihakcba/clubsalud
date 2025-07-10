@@ -11,20 +11,10 @@ import { Dialog } from 'primereact/dialog'
 import ExtraCostForm from './ExtraCostForm'
 import { Calendar } from 'primereact/calendar'
 import { confirmDialog } from 'primereact/confirmdialog'
-import { Tag } from 'primereact/tag'
 import { type dateType, type ExtraCost } from 'utils/ClubSalud/types'
 import { DateUtils } from 'utils/ClubSalud/dates'
 
-const getTotal = (payments: ExtraCost[], setTotal): void => {
-  const total = payments.reduce(
-    (acc: number, curr: ExtraCost) => acc + curr.amount,
-    0
-  )
-  setTotal(total)
-}
-
 export default function ExtraCostSection(): ReactElement {
-  const [total, setTotal] = useState<number | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
   const [filterExtraCost, setFilterExtraCost] = useState<ExtraCost[]>([])
   const [selectedDate, setSelectedDate] = useState<dateType | null>(null)
@@ -47,10 +37,6 @@ export default function ExtraCostSection(): ReactElement {
       await refetch()
     }
   })
-
-  useEffect(() => {
-    getTotal(filterExtraCost, setTotal)
-  }, [filterExtraCost])
 
   useEffect(() => {
     if (extracost && selectedDate) {
@@ -104,10 +90,6 @@ export default function ExtraCostSection(): ReactElement {
                 onClick={() => {
                   setSelectedDate(null)
                 }}
-              />
-              <Tag
-                value={`Pagado: ${total}`}
-                severity='success'
               />
             </div>
           </nav>

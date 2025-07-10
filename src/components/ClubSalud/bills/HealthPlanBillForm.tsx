@@ -75,9 +75,10 @@ export default function HealthPlanBillForm({
         loading={isFetching}
         placeholder='Obra Social'
         disabled={memberInfo?.HealthPlanSubscribed?.length === 0}
-        optionLabel='plan.name'
+        optionLabel='HealthPlan.name'
         required
         onChange={(e) => {
+          console.log(e)
           setSelectedOS(e.value as HealthPlanSubscribed)
         }}
       />

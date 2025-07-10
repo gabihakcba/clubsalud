@@ -23,11 +23,18 @@ export const createEmployee = async (data: {
   employee: CreateEmployee
   account: CreateAccount
 }): Promise<Employee> => {
-  const response = await apiClubSalud.post('/employee', {
-    employee: formatData(data.employee),
-    account: data.account
-  })
-  return response.data
+  try {
+    const response = await apiClubSalud.post('/employee', {
+      employee: formatData(data.employee),
+      account: data.account
+    })
+    return response.data
+  } catch (error) {
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
+  }
 }
 
 export const updateEmployee = async (employee: Employee): Promise<Employee> => {

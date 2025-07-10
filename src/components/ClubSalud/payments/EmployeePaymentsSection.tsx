@@ -3,7 +3,7 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
-import { Permissions, type dateType, type EmployeePayment } from 'utils/ClubSalud/types'
+import { type dateType, type EmployeePayment } from 'utils/ClubSalud/types'
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -15,18 +15,8 @@ import {
   getEmployeePayments
 } from 'queries/ClubSalud/employeePayments'
 import { FilterMatchMode } from 'primereact/api'
-import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
-import HasRole from 'components/ClubSalud/HasRole'
 import { DateUtils } from 'utils/ClubSalud/dates'
-
-const getAccounting = (payments: EmployeePayment[], setPaid): void => {
-  const paid = payments.reduce(
-    (acc: number, curr: EmployeePayment) => acc + curr.amount,
-    0
-  )
-  setPaid(paid)
-}
 
 export function EmployeePaymentsSection(): ReactElement {
   const [filterPayments, setFilterPayments] = useState<EmployeePayment[]>([])
@@ -36,7 +26,6 @@ export function EmployeePaymentsSection(): ReactElement {
   const filters = {
     'Employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
-  const [paid, setPaid] = useState<number | null>(null)
 
   const query = useQueryClient()
 
@@ -78,10 +67,6 @@ export function EmployeePaymentsSection(): ReactElement {
       setFilterPayments(employeePayments)
     }
   }, [employeePayments, selectedDate])
-
-  useEffect(() => {
-    getAccounting(filterPayments, setPaid)
-  }, [filterPayments])
 
   return (
     <div className='flex flex-column'>
@@ -125,12 +110,6 @@ export function EmployeePaymentsSection(): ReactElement {
                   setSelectedDate(null)
                 }}
               />
-              <HasRole required={[Permissions.OWN]}>
-                <Tag
-                  value={`Pagado: ${paid}`}
-                  severity='success'
-                />
-              </HasRole>
             </div>
           </nav>
         )}
@@ -165,11 +144,15 @@ export function EmployeePaymentsSection(): ReactElement {
           field='date'
           header='Fecha de pago'
           sortable
+          body={(row: EmployeePayment) => DateUtils.formatToDDMMYY(row.date)}
         />
         <Column
           field='monthPayment'
           header='Mes trabajado'
           sortable
+          body={(row: EmployeePayment) =>
+            DateUtils.formatToDDMMYY(row.monthPayment)
+          }
         />
         <Column
           field='hoursWorked'

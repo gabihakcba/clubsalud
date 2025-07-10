@@ -1,5 +1,10 @@
 import { apiClubSalud } from 'utils/axios.service'
-import { type BilledConsultation, type Payment } from 'utils/ClubSalud/types'
+import { DateUtils } from 'utils/ClubSalud/dates'
+import {
+  type CreatePayment,
+  type BilledConsultation,
+  type Payment
+} from 'utils/ClubSalud/types'
 
 export const getPayments = async (): Promise<Payment[]> => {
   const response = await apiClubSalud.get('/payment')
@@ -17,12 +22,12 @@ export const setParticularPayment = async ({
   amount,
   date,
   isCash
-}): Promise<Payment> => {
+}: CreatePayment): Promise<Payment> => {
   const response = await apiClubSalud.post('/payment', {
     memberId: Number(memberId),
     subscriptionId: Number(subscriptionId),
     amount: Number(amount),
-    date,
+    date: DateUtils.toBackendFormat(date),
     isCash
   })
   return response.data
@@ -47,7 +52,7 @@ export const setPlanPayment = async ({
       amount: Number(amount),
       healthSubscribedPlanId: Number(healthSubscribedPlanId),
       autorizationNumber: String(autorizationNumber),
-      date
+      date: DateUtils.toBackendFormat(date)
     })
     return response.data
   } catch (error) {

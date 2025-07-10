@@ -64,7 +64,7 @@ export default function SubscriptionTable({
         field='id'
       />
       <Column
-        field='promotion.title'
+        field='Promotion.title'
         header='Promoción'
       />
       <Column
@@ -91,7 +91,10 @@ export default function SubscriptionTable({
       />
       <Column
         header='Estado'
-        body={(subs) => {
+        body={(subs: Subscription) => {
+          if (Number(member.dni) === 40439867) {
+            console.log(subs)
+          }
           const state = subs.active
           return (
             <Tag severity={state ? 'success' : 'danger'}>
@@ -101,7 +104,7 @@ export default function SubscriptionTable({
         }}
       />
       <Column
-        field='plan.title'
+        field='Plan.title'
         header='Oferta'
       />
       <Column

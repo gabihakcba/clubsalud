@@ -26,7 +26,7 @@ export const DateUtils = {
   },
 
   // Formatear fecha a 'DD-MM-YY'
-  formatToDDMMYY: (date: moment.Moment | Date): string => {
+  formatToDDMMYY: (date: moment.Moment | Date | string): string => {
     return moment(date).tz(TIMEZONE).format('DD-MM-YY')
   },
 

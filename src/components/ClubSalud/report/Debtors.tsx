@@ -79,11 +79,11 @@ export default function Debtors({ date }: { date: Date }): ReactElement {
             />
             <Column
               header='Plan'
-              field='promotion.title'
+              field='Promotion.title'
             />
             <Column
               header='Oferta'
-              field='plan.title'
+              field='Plan.title'
             />
             <Column
               header='Total'

@@ -65,11 +65,11 @@ export default function ListSubscriptions({
         />
         <Column
           header='Oferta'
-          field='plan.title'
+          field='Plan.title'
         />
         <Column
           header='Plan'
-          field='promotion.title'
+          field='Promotion.title'
         />
         <Column
           header='Desde'
@@ -89,19 +89,19 @@ export default function ListSubscriptions({
         />
         <Column
           header='Nombre'
-          field='member.name'
+          field='Member.name'
         />
         <Column
           header='Apellido'
-          field='member.lastName'
+          field='Member.lastName'
         />
         <Column
           header='DNI'
-          field='member.dni'
+          field='Member.dni'
         />
         <Column
           header='Teléfono'
-          field='member.phoneNumber'
+          field='Member.phoneNumber'
         />
         <Column
           body={(subscription: Subscription) => (

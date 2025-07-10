@@ -10,17 +10,24 @@ export const createAttendance = async ({
   memberId: number
   classId?: number
   date?: Date
-}): Promise<Attendance> => {
+}): Promise<{ clases: number; vencimiento: string }> => {
   try {
     const response = await apiClubSalud.post('/member-attendance', {
       memberId,
       classId,
-      date
+      date: DateUtils.toBackendFormat(date)
     })
-    return response.data
+    return {
+      clases: response.data.subscription.remainingClasses,
+      vencimiento: DateUtils.formatToDDMMYY(
+        response.data.subscription.expirationDate as Date
+      )
+    }
   } catch (error) {
-    console.log(error)
-    throw new Error(JSON.stringify(error))
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
   }
 }
 
@@ -31,7 +38,9 @@ export const getDailyAttendance = async (date: Date): Promise<Attendance[]> => {
     )
     return response.data
   } catch (error) {
-    console.log(error)
-    throw new Error(JSON.stringify(error))
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
   }
 }

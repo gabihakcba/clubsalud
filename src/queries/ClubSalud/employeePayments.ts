@@ -1,10 +1,18 @@
 import { apiClubSalud } from 'utils/axios.service'
-import { type CreateEmployeePayment, type EmployeePayment } from 'utils/ClubSalud/types'
+import { DateUtils } from 'utils/ClubSalud/dates'
+import {
+  type CreateEmployeePayment,
+  type EmployeePayment
+} from 'utils/ClubSalud/types'
 
 export const createEmployeePayment = async (
   data: CreateEmployeePayment
 ): Promise<EmployeePayment> => {
-  const response = await apiClubSalud.post('/employee-payment', data)
+  const response = await apiClubSalud.post('/employee-payment', {
+    ...data,
+    monthPayment: DateUtils.toBackendFormat(data.monthPayment),
+    date: DateUtils.toBackendFormat(data.date)
+  })
   return response.data
 }
 

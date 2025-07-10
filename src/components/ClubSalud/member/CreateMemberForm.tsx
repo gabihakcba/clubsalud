@@ -2,11 +2,7 @@
 
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import {
-  type CreateMember,
-  MemberSate,
-  Permissions
-} from 'utils/ClubSalud/types'
+import { MemberSate, Permissions } from 'utils/ClubSalud/types'
 import { createMember } from 'queries/ClubSalud/members'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
@@ -16,8 +12,9 @@ import { Password } from 'primereact/password'
 import { getHealthPlans } from 'queries/ClubSalud/health'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Dropdown } from 'primereact/dropdown'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
-const formToMember = (data: FieldValues): CreateMember => {
+const formToMember = (data: FieldValues): any => {
   const dataParsed = {
     name: data.name,
     lastName: data.lastName,
@@ -25,13 +22,11 @@ const formToMember = (data: FieldValues): CreateMember => {
     cuit: data.cuit,
     phoneNumber: data.phoneNumber,
     address: data.address,
-    inscriptionDate: data.inscriptionDate,
+    inscriptionDate: DateUtils.toBackendFormat(data.inscriptionDate as string),
     derivedBy: data.derivedBy,
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
-    HealthPlanSubscribed: data.planID,
-    birthday: data.birthday,
-    afiliateNumberOS: data.afiliateNumberOS
+    birthday: DateUtils.toBackendFormat(data.birthday as string)
   }
 
   return dataParsed
@@ -59,11 +54,23 @@ export function CreateMemberForm(): ReactElement {
     isError: isErrorMember
   } = useMutation({
     mutationFn: async ({ newMember }: { newMember: FieldValues }) => {
-      const { username, password, permissions, ...member } = newMember
-      await createMember({
+      const {
+        username,
+        password,
+        permissions,
+        afiliateNumberOS,
+        planID,
+        ...member
+      } = newMember
+      const data = {
         account: { username, password, permissions },
-        member: formToMember(member)
-      })
+        member: formToMember(member),
+        healthPlanSubscribed: afiliateNumberOS && {
+          afiliateNumber: afiliateNumberOS,
+          planId: planID
+        }
+      }
+      await createMember(data)
     },
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['mem'] })
