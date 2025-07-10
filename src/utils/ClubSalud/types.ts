@@ -348,7 +348,7 @@ export interface CreateInstructorPrice {
   degree: boolean
   amount: number
   active: number
-  lastUpdate: Date
+  lastUpdate?: Date
 }
 
 export interface ExtraCost extends CreateExtraCost {
@@ -393,8 +393,8 @@ export interface CreateAttendance {
   date: Date
   classId: number
   memberId: number
-  member?: Member
-  class_?: Class_
+  Member?: Member
+  Class?: Class_
 }
 
 export interface ScheduleInscription extends CreateScheduleInscription {

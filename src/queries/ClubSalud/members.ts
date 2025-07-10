@@ -18,12 +18,19 @@ export const getMemberById = async (id: number): Promise<Member> => {
 export const createMember = async (data: {
   account: CreateAccount
   member: CreateMember
+  healthPlanSubscribed?: {
+    afiliateNumber: string
+    planId: number
+  }
 }): Promise<Member> => {
   try {
     const response = await apiClubSalud.post('/member', data)
     return response.data
   } catch (error) {
-    throw new Error(JSON.stringify(error))
+    const message = error?.resopnse
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
   }
 }
 
@@ -33,9 +40,16 @@ export const deleteMember = async (id: number): Promise<Member> => {
 }
 
 export const updateMember = async (member: Member): Promise<Member> => {
-  const { id, ...data } = member
-  const response = await apiClubSalud.patch(`/member/${id}`, data)
-  return response.data
+  try {
+    const { id, ...data } = member
+    const response = await apiClubSalud.patch(`/member/${id}`, data)
+    return response.data
+  } catch (error) {
+    const message = error?.resopnse
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
+  }
 }
 
 export const updateMembersState = async (): Promise<{

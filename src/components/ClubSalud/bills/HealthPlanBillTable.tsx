@@ -9,6 +9,7 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/ClubSalud/members'
 import { deletePlanPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   Permissions,
   type BilledConsultation,
@@ -79,6 +80,9 @@ export default function HealthPlanBillTable(): ReactElement {
           <Column
             field='date'
             header='Fecha'
+            body={(row: BilledConsultation) => (
+              <p>{DateUtils.formatToDDMMYY(row.date)}</p>
+            )}
           />
           <Column
             field='autorizationNumber'
@@ -139,14 +143,26 @@ export default function HealthPlanBillTable(): ReactElement {
           field='initialDate'
           header='Inicio'
           sortable
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.initialDate ?? '')}</p>
+          )}
         />
         <Column
           field='expirationDate'
           header='Vencimiento'
           sortable
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.expirationDate ?? '')}</p>
+          )}
         />
-        <Column header='Oferta' field='Plan.title'/>
-        <Column header='Plan' field='Promotion.title'/>
+        <Column
+          header='Oferta'
+          field='Plan.title'
+        />
+        <Column
+          header='Plan'
+          field='Promotion.title'
+        />
         <Column
           field='paid'
           header='Pagado'

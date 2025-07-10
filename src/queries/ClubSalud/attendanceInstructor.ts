@@ -12,7 +12,7 @@ AttendanceInstructor[]
 export const createAttendanceInstructor = async ({
   instructorId,
   classId = 10,
-  date = DateUtils.getCurrentDate(),
+  date = (DateUtils.getCurrentDate()),
   hours
 }: {
   instructorId: number
@@ -23,7 +23,7 @@ export const createAttendanceInstructor = async ({
   const response = await apiClubSalud.post('/instructor-attendance', {
     instructorId,
     classId,
-    date,
+    date: DateUtils.toBackendFormat(date),
     hours
   })
 

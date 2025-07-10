@@ -8,6 +8,7 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/ClubSalud/members'
 import { deleteParticularPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Payment,
   type Member,
@@ -74,6 +75,7 @@ export default function BillTable(): ReactElement {
           <Column
             field='date'
             header='Fecha'
+            body={(row: Payment) => <p>{DateUtils.formatToDDMMYY(row.date)}</p>}
           />
           <Column
             body={(e) => {
@@ -134,6 +136,9 @@ export default function BillTable(): ReactElement {
         <Column
           field='expirationDate'
           header='Vencimiento'
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.expirationDate ?? '')}</p>
+          )}
           sortable
         />
         <Column

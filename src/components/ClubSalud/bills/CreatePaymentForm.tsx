@@ -154,10 +154,6 @@ export default function CreatePaymentForm(): ReactElement {
     setValue('date', moment().toDate())
   }, [])
 
-  useEffect(() => {
-    console.log(selectedMember)
-  }, [selectedMember])
-
   return (
     <form
       action=''

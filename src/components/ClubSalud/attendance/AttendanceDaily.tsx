@@ -27,7 +27,7 @@ export default function AttendanceDaily(): ReactElement {
         value={attendances?.filter(
           (att) =>
             !dni ||
-            Number(att.member?.dni).toString().startsWith(dni.toString())
+            Number(att.Member?.dni).toString().startsWith(dni.toString())
         )}
         scrollable
         scrollHeight='20rem'
