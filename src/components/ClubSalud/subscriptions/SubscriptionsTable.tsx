@@ -91,7 +91,10 @@ export default function SubscriptionTable({
       />
       <Column
         header='Estado'
-        body={(subs) => {
+        body={(subs: Subscription) => {
+          if (Number(member.dni) === 40439867) {
+            console.log(subs)
+          }
           const state = subs.active
           return (
             <Tag severity={state ? 'success' : 'danger'}>

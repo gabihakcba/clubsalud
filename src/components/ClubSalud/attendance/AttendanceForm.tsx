@@ -50,18 +50,19 @@ export default function AttendanceForm(): ReactElement {
         toast.current.show({
           severity: 'success',
           summary: 'Asistencia marcada correctamente',
-          detail: JSON.stringify(data),
+          detail: `Quedan ${data.clases} clases y vence el ${data.vencimiento}`,
           life: 3000,
           sticky: true
         })
       }
     },
-    onError: (data: AxiosError) => {
+    onError: async (data: AxiosError) => {
+      await query.refetchQueries({ queryKey: ['members'] })
       if (toast.current) {
         toast.current.show({
           severity: 'error',
           summary: 'Error al crear asistencia',
-          detail: String(data.response?.data),
+          detail: String(data.message),
           life: 3000,
           sticky: true
         })
