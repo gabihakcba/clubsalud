@@ -2,7 +2,7 @@
 
 import { type ReactElement, useEffect, useState } from 'react'
 import { type Account, Permissions } from 'utils/ClubSalud/types'
-import { getUserToken, setNewUser } from 'utils/ClubSalud/auth'
+import { getDataSessionClubSalud } from 'utils/ClubSalud/auth'
 import { Card } from 'primereact/card'
 import { useQuery } from '@tanstack/react-query'
 import { getAccountById } from 'queries/ClubSalud/accounts'
@@ -33,9 +33,9 @@ const getTypeAccount = (
 
 const getName = (acc: Account | undefined): string => {
   if (acc) {
-    if (acc.memberAccount) return acc.memberAccount.name
-    else if (acc.employeeAccount) return acc.employeeAccount.name
-    else if (acc.instructorAccount) return acc.instructorAccount.name
+    if (acc.Member) return acc.Member.name
+    else if (acc.Employee) return acc.Employee.name
+    else if (acc.Instructor) return acc.Instructor.name
     else return acc.username
   }
   return ''
@@ -52,10 +52,13 @@ const setInfo = (acc: Account | undefined, setAccountInfo): void => {
 }
 
 export default function PersonalAccount(): ReactElement {
-  const [user, setUser] = useState<Account>({
+  const [user, setUser] = useState<{
+    id: number
+    username: string
+    permissions: string[]
+  }>({
     id: -1,
     username: '',
-    password: '',
     permissions: [Permissions.OTHER]
   })
   const [accountInfo, setAccountInfo] = useState<any>(null)
@@ -68,8 +71,7 @@ export default function PersonalAccount(): ReactElement {
   })
 
   useEffect(() => {
-    const token = getUserToken()
-    void setNewUser(token, setUser)
+    setUser(getDataSessionClubSalud().user)
   }, [])
 
   useEffect(() => {

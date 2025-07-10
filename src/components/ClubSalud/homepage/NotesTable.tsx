@@ -4,7 +4,7 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { changeStatusNotes } from 'queries/ClubSalud/notes'
 import { useState, type ReactElement } from 'react'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Notes } from 'utils/ClubSalud/types'
 
 export default function NotesTable({
@@ -47,7 +47,7 @@ export default function NotesTable({
       <Column
         header='Fecha'
         body={(note: Notes) => {
-          return <div>{argDate2Format(note.date)}</div>
+          return <div>{DateUtils.formatToDDMMYY(note.date)}</div>
         }}
       />
       <Column

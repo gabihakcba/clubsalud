@@ -1,63 +1,62 @@
-import { type JWTPayload, type JWTVerifyResult, jwtVerify } from 'jose'
-import { type Account, type Permissions } from './types'
-import { parse } from 'cookie'
+// utils/ClubSalud/auth.ts
 
-export const hasPermission = async (
-  required: Permissions[]
-): Promise<boolean> => {
-  const token = getUserToken()
-  const user = await verifyToken(token)
+// Función segura para SSR que obtiene un item de localStorage
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    if (typeof window === 'undefined') return null
+    return localStorage.getItem(key)
+  },
+  setItem: (key: string, value: string): void => {
+    if (typeof window === 'undefined') return
+    localStorage.setItem(key, value)
+  },
+  removeItem: (key: string): void => {
+    if (typeof window === 'undefined') return
+    localStorage.removeItem(key)
+  }
+}
+
+// Tipo para los datos del usuario
+interface UserData {
+  id: number
+  username: string
+  permissions: string[]
+}
+
+// Tipo para los datos de sesión
+interface SessionData {
+  access_token: string
+  user: UserData
+}
+
+export const setDataSessionClubSalud = (data: SessionData): void => {
+  safeLocalStorage.setItem('clubsalud_access_token', data.access_token)
+  safeLocalStorage.setItem('user', JSON.stringify(data.user))
+}
+
+export const removeDataSessionClubSalud = (): void => {
+  safeLocalStorage.removeItem('clubsalud_access_token')
+  safeLocalStorage.removeItem('user')
+}
+
+export const getDataSessionClubSalud = (): { user: UserData } => {
+  const user = safeLocalStorage.getItem('user')
+  return {
+    user: user ? JSON.parse(user) : { id: 0, username: '', permissions: [] }
+  }
+}
+
+export const hasPermission = (required: string[]): boolean => {
+  const user = getDataSessionClubSalud().user
   const role = user?.permissions
   return required.some((permission) => role?.includes(permission))
 }
 
-export const setNewUser = async (
-  token: Record<string, string | undefined>,
-  setUser
-): Promise<void> => {
-  const newUser = await verifyToken(token)
-  if (newUser) {
-    setUser(newUser)
-  }
+export const getClubSaludToken = (): string => {
+  return safeLocalStorage.getItem('clubsalud_access_token') ?? ''
 }
 
-export const getUserToken = (): Record<string, string | undefined> => {
-  const token: Record<string, string | undefined> = parse(document.cookie || '')
-  return token
-}
-
-export const verifyToken = async (
-  token: Record<string, string | undefined>
-): Promise<Account | null> => {
-  try {
-    const secret = Buffer.from('my_secret_key', 'utf-8').toString('base64')
-    const response: JWTVerifyResult<JWTPayload> = await jwtVerify(
-      token.auth ?? '',
-      new TextEncoder().encode(secret)
-    )
-    const payload = response.payload
-    const account: Account = {
-      id: payload.id as number,
-      username: payload.username as string,
-      password: payload.password as string,
-      permissions: [...(payload.permissions as Permissions[])]
-    }
-    // localStorage.removeItem('user')
-    localStorage.setItem('user', JSON.stringify(account))
-    return account
-  } catch (error) {
-    return null
-  }
-}
-
-export const getUserInfo = async (): Promise<Account | null> => {
-  const token = getUserToken()
-  const userInfo = await verifyToken(token)
-  return userInfo
-}
-
-export const getCurrentUser = async (): Promise<any> => {
-  const userInfo = localStorage.getItem('user')
-  const user: Account = JSON.parse(userInfo ?? '')
-  return user.id
+export const hasValidClubSaludToken = (): boolean => {
+  const token = getClubSaludToken()
+  return token !== '' && token !== 'undefined' && token !== null
 }

@@ -14,7 +14,7 @@ import { useState, type ReactElement } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import FormInstructorPrice from './FormInstructorPrice'
 import { type InstructorPrice } from 'utils/ClubSalud/types'
-import { arg2Date } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 export function InstructorPriceTable(): ReactElement {
   const [createPrice, openPrice, closePrice] = useModal(false)
@@ -39,8 +39,8 @@ export function InstructorPriceTable(): ReactElement {
   })
 
   const { mutate: changeStatePrice, isPending: changing } = useMutation({
-    mutationFn: async (id: number) => {
-      return await changeStateInstructorPrice(id)
+    mutationFn: async (data: { id: number; state: boolean }) => {
+      return await changeStateInstructorPrice(data.id, data.state)
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['prices'] })
@@ -119,7 +119,7 @@ export function InstructorPriceTable(): ReactElement {
           body={(e) => {
             return (
               <Calendar
-                value={arg2Date(e.lastUpdate as Date)}
+                value={DateUtils.newDate(e.lastUpdate as Date)}
                 disabled
               />
             )
@@ -159,7 +159,10 @@ export function InstructorPriceTable(): ReactElement {
                 outlined
                 onClick={() => {
                   setSelected(e.id as number)
-                  changeStatePrice(e.id as number)
+                  changeStatePrice({
+                    id: e.id as number,
+                    state: e.active as boolean
+                  })
                 }}
                 loading={changing && (e.id as number) === selected}
               />

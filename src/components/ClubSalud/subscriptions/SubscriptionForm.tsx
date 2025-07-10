@@ -10,7 +10,7 @@ import { getPromotions } from 'queries/ClubSalud/promotions'
 import { setSubscription } from 'queries/ClubSalud/subscriptions'
 import { useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { argAddMonths, argDate } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { getPlan } from 'queries/ClubSalud/plan'
 import {
   type Plan,
@@ -106,15 +106,13 @@ export default function SubscriptionForm(): ReactElement {
           selectedType as Plan
         )
         const total = remaining
-        const initialDate = argDate()
-        const expirationDate = argAddMonths(initialDate, data.months as number)
+        const initialDate = DateUtils.getCurrentDate()
         const subscription: CreateSubscription = {
-          date: argDate(),
+          date: DateUtils.getCurrentDate(),
           paid: false,
           remaining,
           total,
           initialDate,
-          expirationDate,
           remainingClasses,
           promotionId: data.promotion.id,
           memberId: data.memberId,

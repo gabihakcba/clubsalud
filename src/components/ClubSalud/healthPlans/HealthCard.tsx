@@ -10,12 +10,16 @@ import { updateHealthPlan } from 'queries/ClubSalud/health'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+import { InputNumber } from 'primereact/inputnumber'
 
 interface params {
   plan: HealthPlan
 }
 export default function HealthCard({ plan }: params): ReactElement {
   const [selectedHealthPlan, setSelectedHealthPlan] = useState<any>(null)
+  const [paymentPerConsultation, setPaymentPerConsultation] = useState<number>(
+    plan.paymentPerConsultation
+  )
 
   const plansOptions = (): any[] => {
     const op: any[] = []
@@ -40,20 +44,16 @@ export default function HealthCard({ plan }: params): ReactElement {
         ...(data as CreateHealthPlan)
       })
     },
-    onSuccess: (data) => {
-      query.setQueryData(['health'], (oldData: HealthPlan[]) => {
-        const newData = [...oldData]
-        const index = newData.findIndex((health) => health.id === data.id)
-        newData.splice(index, 1, data)
-        return newData
-      })
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['health'] })
     }
   })
 
   useEffect(() => {
+    setValue('paymentPerConsultation', plan.paymentPerConsultation)
     setSelectedHealthPlan(HealthPlanType[plan.type])
     setValue('type', HealthPlanType[plan.type])
-  }, [])
+  }, [plan])
 
   const {
     register,
@@ -113,6 +113,25 @@ export default function HealthCard({ plan }: params): ReactElement {
           }}
         />
         <label htmlFor='type'>Tipo</label>
+      </div>
+      <div className='p-float-label'>
+        <InputNumber
+          value={paymentPerConsultation}
+          {...register('paymentPerConsultation', {
+            required: {
+              value: true,
+              message: 'Campo requerido'
+            }
+          })}
+          min={0}
+          max={99999}
+          className='w-full'
+          onChange={(e) => {
+            setValue('paymentPerConsultation', e.value)
+            setPaymentPerConsultation(e.value ?? 0)
+          }}
+        />
+        <label htmlFor='type'>Pago por consulta</label>
       </div>
 
       <Button

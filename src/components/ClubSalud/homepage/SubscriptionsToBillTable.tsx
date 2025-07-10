@@ -12,9 +12,9 @@ export default function SubscriptionsToBillTable({
 }): ReactElement {
   return <DataTable value={subscriptions} scrollable scrollHeight='40dvh' loading={isLoading}>
     <Column header='id' field='id'/>
-    <Column header='Oferta' field='plan.title'/>
-    <Column header='Nombre' field='member.name'/>
-    <Column header='Apellido' field='member.lastName'/>
-    <Column header='DNI' field='member.dni'/>
+    <Column header='Oferta' field='Plan.title'/>
+    <Column header='Nombre' field='Member.name'/>
+    <Column header='Apellido' field='Member.lastName'/>
+    <Column header='DNI' field='Member.dni'/>
   </DataTable>
 }

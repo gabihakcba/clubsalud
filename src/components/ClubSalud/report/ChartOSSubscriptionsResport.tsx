@@ -14,7 +14,7 @@ import { Button } from 'primereact/button'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import ListSubscriptions from './ListSubscriptions'
-import { argIsBetween } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { getBilled } from 'queries/ClubSalud/payments'
 import ListBilledConsultations from './ListBilledConsultations'
 
@@ -26,12 +26,16 @@ const isInRange = (
   endDate: Date
 ): boolean => {
   return (
-    argIsBetween(subscription.initialDate, initialDate, endDate) ||
-    argIsBetween(subscription.expirationDate, initialDate, endDate) ||
-    argIsBetween(
+    DateUtils.isBetween(subscription.initialDate, initialDate, endDate) ||
+    DateUtils.isBetween(
+      DateUtils.newDate(subscription.expirationDate ?? ''),
+      initialDate,
+      endDate
+    ) ||
+    DateUtils.isBetween(
       initialDate,
       subscription.initialDate,
-      subscription.expirationDate
+      DateUtils.newDate(subscription.expirationDate ?? '')
     )
   )
 }
@@ -41,16 +45,17 @@ const subscriptionsInRange = (
   initialDate: Date,
   endDate: Date
 ): Subscription[] => {
-  return subscriptions.filter((subscription: Subscription) =>
-    isInRange(subscription, initialDate, endDate) && subscription.isByOS
+  return subscriptions.filter(
+    (subscription: Subscription) =>
+      isInRange(subscription, initialDate, endDate) && subscription.isByOS
   )
 }
 
 const subscriptionsPaid = (subscriptions: Subscription[]): Subscription[] => {
   return subscriptions.filter(
     (subscription: Subscription) =>
-      (subscription.billedConsultation?.length ?? 0) >=
-      subscription.plan.durationMonth * 2
+      (subscription.BilledConsultation?.length ?? 0) >=
+      subscription.Plan.durationMonth * 2
   )
 }
 
@@ -59,8 +64,8 @@ const subscriptionsNotPaid = (
 ): Subscription[] => {
   return subscriptions.filter(
     (subscription: Subscription) =>
-      (subscription.billedConsultation?.length ?? 0) <
-      subscription.plan.durationMonth * 2
+      (subscription.BilledConsultation?.length ?? 0) <
+      subscription.Plan.durationMonth * 2
   )
 }
 
@@ -70,13 +75,13 @@ const subsciptionsOneRemaining = (
   endDate: Date
 ): Subscription[] => {
   return subscriptions.filter((subscription: Subscription) => {
-    if (subscription.plan.durationMonth === 1) {
-      return subscription.billedConsultation?.length === 1
+    if (subscription.Plan.durationMonth === 1) {
+      return subscription.BilledConsultation?.length === 1
     } else {
       return (
-        subscription.billedConsultation?.filter(
-          (billedConsultation: BilledConsultation) =>
-            argIsBetween(billedConsultation.date, initialDate, endDate)
+        subscription.BilledConsultation?.filter(
+          (BilledConsultation: BilledConsultation) =>
+            DateUtils.isBetween(BilledConsultation.date, initialDate, endDate)
         ).length === 1
       )
     }
@@ -89,13 +94,13 @@ const subsciptionsTwoRemaining = (
   endDate: Date
 ): Subscription[] => {
   return subscriptions.filter((subscription: Subscription) => {
-    if (subscription.plan.durationMonth === 1) {
-      return subscription.billedConsultation?.length === 0
+    if (subscription.Plan.durationMonth === 1) {
+      return subscription.BilledConsultation?.length === 0
     } else {
       return (
-        subscription.billedConsultation?.filter(
-          (billedConsultation: BilledConsultation) =>
-            argIsBetween(billedConsultation.date, initialDate, endDate)
+        subscription.BilledConsultation?.filter(
+          (BilledConsultation: BilledConsultation) =>
+            DateUtils.isBetween(BilledConsultation.date, initialDate, endDate)
         ).length === 0
       )
     }
@@ -268,7 +273,7 @@ export default function ChartOSSubscriptionsReport(): ReactElement {
         <ListBilledConsultations
           billedConsultations={
             billedConsultations?.filter((bill: BilledConsultation) =>
-              argIsBetween(bill.date, initialDate, endDate)
+              DateUtils.isBetween(bill.date, initialDate, endDate)
             ) ?? []
           }
         />

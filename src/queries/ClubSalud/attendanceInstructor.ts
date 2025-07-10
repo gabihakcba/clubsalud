@@ -1,36 +1,26 @@
-import axios from 'axios'
-import { argDate } from 'utils/ClubSalud/dates'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type AttendanceInstructor } from 'utils/ClubSalud/types'
 
 export const getAttendancesInstructor = async (): Promise<
 AttendanceInstructor[]
 > => {
-  const response = await axios.get(`${path()}/api/attendanceInstructor`)
-  return response.data
-}
-
-export const getAttendancesInstructorById = async (
-  instructorId: number
-): Promise<AttendanceInstructor[]> => {
-  const response = await axios.get(
-    `${path()}/api/attendanceInstructor?instructorId=${instructorId}`
-  )
+  const response = await apiClubSalud.get('/instructor-attendance')
   return response.data
 }
 
 export const createAttendanceInstructor = async ({
   instructorId,
   classId = 10,
-  date = argDate(),
+  date = DateUtils.getCurrentDate(),
   hours
 }: {
   instructorId: number
-  classId?: number,
-  date?: Date,
+  classId?: number
+  date?: Date
   hours: number
 }): Promise<AttendanceInstructor> => {
-  const response = await axios.post(`${path()}/api/attendanceInstructor`, {
+  const response = await apiClubSalud.post('/instructor-attendance', {
     instructorId,
     classId,
     date,
@@ -43,8 +33,8 @@ export const createAttendanceInstructor = async ({
 export const deleteAttendanceInstructor = async (
   attendanceInstructorId: number
 ): Promise<AttendanceInstructor> => {
-  const response = await axios.delete(`${path()}/api/attendanceInstructor`, {
-    data: attendanceInstructorId
-  })
+  const response = await apiClubSalud.delete(
+    `/instructor-attendance/${attendanceInstructorId}`
+  )
   return response.data
 }

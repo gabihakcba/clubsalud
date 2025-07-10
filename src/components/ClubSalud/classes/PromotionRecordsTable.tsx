@@ -25,8 +25,9 @@ export default function PromotionRecordsTable({
       await query.refetchQueries({ queryKey: ['promotions'] })
     }
   })
+
   return (
-    <DataTable value={promotion.record}>
+    <DataTable value={promotion?.PromotionRecord}>
       <Column
         field='id'
         header='ID'

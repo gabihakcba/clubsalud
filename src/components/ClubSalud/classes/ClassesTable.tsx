@@ -33,7 +33,7 @@ export default function ClassesTable(): ReactElement {
     async onSuccess(variables) {
       await query.setQueryData(['classes'], (oldData: Class_[]) => {
         const index = oldData.findIndex((class_: Class_) => {
-          return class_.id === variables.data.id
+          return class_.id === variables.id
         })
         const newData = [...oldData]
         newData.splice(index, 1)

@@ -15,7 +15,7 @@ export default function CreateClassForm(): ReactElement {
       reset()
       await query.setQueryData(['classes'], (oldData: Class_[]) => [
         ...oldData,
-        data.data
+        data
       ])
     }
   })

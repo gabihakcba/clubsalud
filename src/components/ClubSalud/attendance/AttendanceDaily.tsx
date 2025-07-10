@@ -6,11 +6,11 @@ import { DataTable } from 'primereact/datatable'
 import { InputNumber } from 'primereact/inputnumber'
 import { getDailyAttendance } from 'queries/ClubSalud/attendance'
 import { useState, type ReactElement } from 'react'
-import { argDate, argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Attendance } from 'utils/ClubSalud/types'
 
 export default function AttendanceDaily(): ReactElement {
-  const [date, setDate] = useState<Date>(argDate())
+  const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
   const [dni, setDni] = useState<number | null>(null)
 
   const { data: attendances, isFetching } = useQuery({
@@ -57,23 +57,23 @@ export default function AttendanceDaily(): ReactElement {
       >
         <Column
           header='Fecha'
-          body={(att: Attendance) => argDate2Format(att.date)}
+          body={(att: Attendance) => DateUtils.formatToDDMMYY(att.date)}
         />
         <Column
           header='Nombre'
-          field='member.name'
+          field='Member.name'
         />
         <Column
           header='Apellido'
-          field='member.lastName'
+          field='Member.lastName'
         />
         <Column
           header='DNI'
-          field='member.dni'
+          field='Member.dni'
         />
         <Column
           header='Clase'
-          field='class.name'
+          field='Class.name'
         />
         <Column
           header=''

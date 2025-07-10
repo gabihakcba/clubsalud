@@ -16,7 +16,6 @@ import {
   type AttendanceInstructor,
   type Instructor,
   type CreateInstructorPayment,
-  type InstructorPayment,
   type InstructorPrice
 } from 'utils/ClubSalud/types'
 
@@ -37,15 +36,12 @@ const getInstructorPayment = (
   }
 ): void => {
   const attendances: AttendanceInstructor[] | undefined =
-    instructor.attendanceInstructor?.filter(
+    instructor.AttendanceInstructor?.filter(
       (att: AttendanceInstructor) =>
         moment(att.date).month() === moment(date as Date).month() &&
         moment(att.date).year() === moment(date as Date).year()
     )
-  const hours = attendances?.reduce(
-    (acc, curr) => (curr.hours) + acc,
-    0
-  )
+  const hours = attendances?.reduce((acc, curr) => curr.hours + acc, 0)
   setWorkedHours(hours)
   const payment = instructor.degree
     ? (hours ?? 0) * price.degree
@@ -92,11 +88,8 @@ export default function CreateInstructorPaymentForm(): ReactElement {
     isError
   } = useMutation({
     mutationFn: createInstructorPayment,
-    onSuccess: (data) => {
-      query.setQueryData(['payments'], (oldData: InstructorPayment[]) => [
-        ...oldData,
-        data
-      ])
+    onSuccess: async () => {
+      await query.refetchQueries({ queryKey: ['payments'] })
       reset()
     }
   })
@@ -145,10 +138,16 @@ export default function CreateInstructorPaymentForm(): ReactElement {
         event?.preventDefault()
         const parsed: CreateInstructorPayment = {
           amount: Number(data.amount),
-          workedMonth: data.workedMonth,
-          paymentDate: data.paymentDate,
+          workedMonth: new Date(data.workedMonth as string),
+          paymentDate: new Date(data.paymentDate as string),
           instructorId: Number(data.instructorId),
-          workedHours: Number(data.workedHours)
+          workedHours: Number(data.workedHours),
+          pricePerHoour: getInstructor(
+            selectedInstructor ?? 0,
+            instructors ?? []
+          ).degree
+            ? price.degree
+            : price.nodegree
         }
         create(parsed)
       })}

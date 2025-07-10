@@ -1,4 +1,3 @@
-import { type Member } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
@@ -8,25 +7,26 @@ import { getAccounts } from 'queries/ClubSalud/accounts'
 import { createNotification } from 'queries/ClubSalud/notifications'
 import { type ReactElement, useEffect, useState } from 'react'
 import { useForm, type FieldValues } from 'react-hook-form'
-import { getUserToken, setNewUser } from 'utils/ClubSalud/auth'
+import { getDataSessionClubSalud } from 'utils/ClubSalud/auth'
 
 export default function CreateNotificationForm(): ReactElement {
   const [acc, setAcc] = useState<any[]>([])
-  const [user, setUser] = useState<Member | undefined>(undefined)
+  const [user, setUser] = useState<
+  { id: number; username: string; permissions: string[] } | undefined
+  >(undefined)
   const [selectedAccount, setSelectedAccount] = useState<any>(null)
 
   const query = useQueryClient()
 
   useEffect(() => {
-    const token = getUserToken()
-    void setNewUser(token, setUser)
+    setUser(getDataSessionClubSalud().user)
   }, [])
 
   const { data: accounts, isPending: loadingAccounts } = useQuery({
     queryKey: ['acc'],
     queryFn: async () => {
-      const response = await getAccounts(0, 0)
-      return response.pages
+      const response = await getAccounts()
+      return response
     }
   })
 
@@ -58,14 +58,14 @@ export default function CreateNotificationForm(): ReactElement {
     const tmp = accounts?.map((account) => ({
       ...account,
       displayName:
-        account.memberAccount?.name ??
-        account.instructorAccount?.name ??
-        account.employeeAccount?.name ??
+        account.Member?.name ??
+        account.Instructor?.name ??
+        account.Employee?.name ??
         account.username,
       dni:
-        account.memberAccount?.dni ??
-        account.instructorAccount?.dni ??
-        account.employeeAccount?.dni ??
+        account.Member?.dni ??
+        account.Instructor?.dni ??
+        account.Employee?.dni ??
         999
     }))
     tmp && setAcc(tmp)

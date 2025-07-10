@@ -1,72 +1,107 @@
-// import moment, { type Moment } from 'moment'
-import moment, { type Moment } from 'moment-timezone'
+import moment from 'moment-timezone'
 
-moment.locale('es')
+// Configuración para Argentina (GMT-3)
+const TIMEZONE = 'America/Argentina/Buenos_Aires'
 
-export const argDate = (): Date => {
-  // Get the current date and time in Argentina
-  const argentineTime = moment.tz('America/Argentina/Buenos_Aires')
+export const DateUtils = {
+  toBackendFormat: (date: Date | moment.Moment | string): string => {
+    return moment(date)
+      .tz(TIMEZONE)
+      .format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+      .replace('-03:00', 'Z') // Asegura formato ISO válido
+  },
 
-  // Convert to JavaScript Date object
-  const argentineDate = argentineTime.toDate()
-  return argentineDate
-}
+  // Type date
+  newDate: (date: Date | moment.Moment | string) => {
+    return moment(date).tz(TIMEZONE).toDate()
+  },
+  // Obtener fecha/hora actual como objeto Moment
+  getCurrentMoment: (): moment.Moment => {
+    return moment().tz(TIMEZONE)
+  },
 
-export const arg2Date = (date: Date): Date => {
-  return moment(date).toDate()
-}
+  // Obtener fecha/hora actual como objeto Date
+  getCurrentDate: (): Date => {
+    return moment().tz(TIMEZONE).toDate()
+  },
 
-/**
- *
- * @param date (MM-DD-YY)
- * @returns
- */
-export const argString2Date = (date: string): Date => {
-  return moment(date).toDate()
-}
+  // Formatear fecha a 'DD-MM-YY'
+  formatToDDMMYY: (date: moment.Moment | Date): string => {
+    return moment(date).tz(TIMEZONE).format('DD-MM-YY')
+  },
 
-export const argDate2Format = (date: Date): string => {
-  return moment(date).format('DD-MM-YY')
-}
+  // Comparar si dos fechas son el mismo día
+  isSameDay: (
+    date1: moment.Moment | Date,
+    date2: moment.Moment | Date
+  ): boolean => {
+    return moment(date1).tz(TIMEZONE).isSame(moment(date2).tz(TIMEZONE), 'day')
+  },
 
-export const argMoment2Format = (date: Moment): string => {
-  return date.format('DD-MM-YY')
-}
+  // Comparar si dos fechas son el mismo mes
+  isSameMonth: (
+    date1: moment.Moment | Date,
+    date2: moment.Moment | Date
+  ): boolean => {
+    return moment(date1)
+      .tz(TIMEZONE)
+      .isSame(moment(date2).tz(TIMEZONE), 'month')
+  },
 
-export const isSameDay = (dateA: Date, dateB: Date): boolean => {
-  return moment(dateA).isSame(moment(dateB), 'day')
-}
+  // Comparar si dos fechas son el mismo año
+  isSameYear: (
+    date1: moment.Moment | Date,
+    date2: moment.Moment | Date
+  ): boolean => {
+    return moment(date1).tz(TIMEZONE).isSame(moment(date2).tz(TIMEZONE), 'year')
+  },
 
-export const isSameMonth = (dateA: Date, dateB: Date): boolean => {
-  return moment(dateA).isSame(moment(dateB), 'month')
-}
+  // Obtener el mes de una fecha (0-11)
+  getMonth: (date: moment.Moment | Date): number => {
+    return moment(date).tz(TIMEZONE).month()
+  },
 
-export const isSameYear = (dateA: Date, dateB: Date): boolean => {
-  return moment(dateA).isSame(moment(dateB), 'year')
-}
+  // Obtener el año de una fecha
+  getYear: (date: moment.Moment | Date): number => {
+    return moment(date).tz(TIMEZONE).year()
+  },
 
-export const diffDate = (dateA: Date, dateB: Date): number => {
-  return moment(dateA).diff(moment(dateB))
-}
+  // Obtener el día del mes de una fecha (1-31)
+  getDay: (date: moment.Moment | Date): number => {
+    return moment(date).tz(TIMEZONE).date()
+  },
 
-export const argGetMonth = (date: Date): number => {
-  return moment(date).month()
-}
+  // Sumar tiempo a una fecha
+  addTime: (
+    date: moment.Moment | Date,
+    amount: number,
+    unit: 'days' | 'months' | 'years' | 'hours' | 'minutes' | 'seconds'
+  ): moment.Moment => {
+    return moment(date).tz(TIMEZONE).add(amount, unit)
+  },
 
-export const argGetYear = (date: Date): number => {
-  return moment(date).year()
-}
+  // Verificar si una fecha está entre otras dos fechas
+  isBetween: (
+    dateToCheck: moment.Moment | Date,
+    startDate: moment.Moment | Date,
+    endDate: moment.Moment | Date,
+    inclusive: boolean = true
+  ): boolean => {
+    return moment(dateToCheck)
+      .tz(TIMEZONE)
+      .isBetween(
+        moment(startDate).tz(TIMEZONE),
+        moment(endDate).tz(TIMEZONE),
+        null,
+        inclusive ? '[]' : '()'
+      )
+  },
 
-export const argAddMonths = (dateA: Date, months: number): Date => {
-  return moment(dateA)
-    .add(months as moment.DurationInputArg1, 'months')
-    .toDate()
-}
-
-export const argIsBetween = (
-  dateA: Date,
-  dateB: Date,
-  dateC: Date
-): boolean => {
-  return moment(dateA).isBetween(dateB, dateC, 'day', '[]')
+  // Convertir string a Moment
+  parseString: (
+    dateString: string,
+    format: string = 'DD-MM-YYYY'
+  ): moment.Moment => {
+    return moment.tz(dateString, format, TIMEZONE)
+  }
 }

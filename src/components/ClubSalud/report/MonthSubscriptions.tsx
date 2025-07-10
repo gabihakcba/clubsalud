@@ -5,7 +5,7 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { getSubscriptions } from 'queries/ClubSalud/subscriptions'
 import { useState, type ReactElement } from 'react'
-import { argDate, argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Subscription } from 'utils/ClubSalud/types'
 
 const getByMonth = (
@@ -20,7 +20,7 @@ const getByMonth = (
 }
 
 export default function MonthSubscriptions(): ReactElement {
-  const [date, setDate] = useState<Date>(argDate())
+  const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
 
   const { data: subscriptions } = useQuery({
     queryKey: ['subscriptions'],
@@ -37,7 +37,6 @@ export default function MonthSubscriptions(): ReactElement {
             view='month'
             dateFormat='mm/yy'
             onChange={(e) => {
-              console.log(e.value)
               if (e.value) {
                 setDate(e.value)
               }
@@ -52,23 +51,23 @@ export default function MonthSubscriptions(): ReactElement {
       />
       <Column
         header='Plan'
-        field='promotion.title'
+        field='Promotion.title'
       />
       <Column
         header='Oferta'
-        field='plan.title'
+        field='Plan.title'
       />
       <Column
         header='Fecha'
-        body={(sub: Subscription) => <div>{argDate2Format(sub.date)}</div>}
+        body={(sub: Subscription) => <div>{DateUtils.formatToDDMMYY(sub.date)}</div>}
       />
       <Column
         header='Nombre'
-        field='member.name'
+        field='Member.name'
       />
       <Column
         header='Apellido'
-        field='member.lastName'
+        field='Member.lastName'
       />
     </DataTable>
   )

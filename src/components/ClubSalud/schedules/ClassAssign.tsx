@@ -46,7 +46,7 @@ export default function ClassAssign({ schedule }: params): ReactElement {
       className='flex flex-column gap-4 pt-4'
       onSubmit={handleSubmit((data) => {
         mutateClass_({
-          className: data.classId,
+          classId: data.classId,
           scheduleId: schedule.id
         })
       })}

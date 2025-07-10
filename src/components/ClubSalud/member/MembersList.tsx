@@ -12,7 +12,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import moment from 'moment'
 import { Calendar } from 'primereact/calendar'
-import { argIsBetween } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -78,7 +78,7 @@ export default function MembersList(): ReactElement {
     date
       ? setFilteredMembers(
         members?.filter((member: Member) =>
-          argIsBetween(
+          DateUtils.isBetween(
             member.inscriptionDate,
             moment(date).startOf('month').toDate(),
             moment(date).endOf('month').toDate()

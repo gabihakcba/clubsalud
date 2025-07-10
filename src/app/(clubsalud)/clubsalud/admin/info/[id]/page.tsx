@@ -16,7 +16,8 @@ export default function AccountPage({ params }: params): ReactElement {
   const { data: account } = useQuery({
     queryKey: ['account', params.id],
     queryFn: async () => {
-      return await getAccountById(params.id)
+      const res = await getAccountById(params.id)
+      return res
     }
   })
 
@@ -26,9 +27,11 @@ export default function AccountPage({ params }: params): ReactElement {
       className='p-0 m-0'
     >
       <Card className='min-h-full w-full'>
-        {account && <>
-          <AccountInfo account={account}></AccountInfo>
-        </>}
+        {account && (
+          <>
+            <AccountInfo account={account}></AccountInfo>
+          </>
+        )}
       </Card>
     </ScrollPanel>
   )

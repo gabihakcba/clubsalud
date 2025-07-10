@@ -13,7 +13,7 @@ import { Calendar } from 'primereact/calendar'
 import { confirmDialog } from 'primereact/confirmdialog'
 import { Tag } from 'primereact/tag'
 import { type dateType, type ExtraCost } from 'utils/ClubSalud/types'
-import { arg2Date, argGetMonth, argGetYear, argString2Date } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 const getTotal = (payments: ExtraCost[], setTotal): void => {
   const total = payments.reduce(
@@ -57,8 +57,8 @@ export default function ExtraCostSection(): ReactElement {
       setFilterExtraCost(
         extracost.filter(
           (extra: ExtraCost) =>
-            argGetMonth(extra.date) === selectedDate.month &&
-            argGetYear(extra.date) === selectedDate.year
+            DateUtils.getMonth(extra.date) === selectedDate.month &&
+            DateUtils.getYear(extra.date) === selectedDate.year
         )
       )
     } else if (extracost) {
@@ -93,8 +93,8 @@ export default function ExtraCostSection(): ReactElement {
                 onChange={(e) => {
                   if (e.value) {
                     setSelectedDate({
-                      month: argGetMonth(arg2Date(e.value)),
-                      year: argGetYear(arg2Date(e.value))
+                      month: DateUtils.getMonth(e.value),
+                      year: DateUtils.getYear(e.value)
                     })
                   }
                 }}
@@ -130,7 +130,7 @@ export default function ExtraCostSection(): ReactElement {
           header='Fecha'
           body={(e) => (
             <Calendar
-              value={argString2Date(e.date as string)}
+              value={DateUtils.newDate(e.date as string)}
               disabled
               dateFormat='dd/mm/yy'
             />

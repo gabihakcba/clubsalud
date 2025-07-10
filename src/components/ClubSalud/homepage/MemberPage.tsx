@@ -1,21 +1,23 @@
 import { Card } from 'primereact/card'
 import { Tag } from 'primereact/tag'
 import { type ReactElement } from 'react'
-import { arg2Date, argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Account } from 'utils/ClubSalud/types'
 
 const classesAndInstructors = (acc: Account | undefined): ReactElement => {
   return (
     <div>
-      {acc?.memberAccount?.scheduleInscription?.map((sch) => (
+      {acc?.Member?.scheduleInscription?.map((sch) => (
         <div
           key={sch.id}
           className='flex gap-2'
         >
           <p>
-            Clase: <Tag severity='success'>{sch.schedule.class?.name}</Tag>
+            Clase: <Tag severity='success'>{sch.schedule.Class?.name}</Tag>
           </p>
-          <p>Profesor/a: <Tag severity='info'>{sch.schedule.charge?.name}</Tag></p>
+          <p>
+            Profesor/a: <Tag severity='info'>{sch.schedule.Class?.name}</Tag>
+          </p>
         </div>
       ))}
     </div>
@@ -23,9 +25,7 @@ const classesAndInstructors = (acc: Account | undefined): ReactElement => {
 }
 
 const lastSubs = (acc: Account | undefined): ReactElement => {
-  const subs = acc?.memberAccount?.memberSubscription?.filter(
-    (sub) => sub.active
-  )
+  const subs = acc?.Member?.Subscription?.filter((sub) => sub.active)
 
   if (!subs || subs?.length < 1) {
     return <>No contas con una suscripción válida</>
@@ -34,9 +34,12 @@ const lastSubs = (acc: Account | undefined): ReactElement => {
   const sub = subs[0]
   return (
     <div className='flex flex-column'>
-      <p>Promoción: {sub?.promotion?.title}</p>
+      <p>Promoción: {sub?.Promotion?.title}</p>
       <p>Clases restantes: {sub?.remainingClasses}</p>
-      <p>Vencimiento: {argDate2Format(arg2Date(sub?.expirationDate))} </p>
+      <p>
+        Vencimiento:{' '}
+        {DateUtils.formatToDDMMYY(DateUtils.newDate(sub?.expirationDate ?? ''))}{' '}
+      </p>
     </div>
   )
 }

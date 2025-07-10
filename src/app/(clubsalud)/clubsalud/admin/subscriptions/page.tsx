@@ -13,8 +13,8 @@ export default function SubscriptionPage(): ReactElement {
       const members = await getMembers()
       return members.filter((member) => {
         return (
-          member.memberSubscription !== undefined &&
-          member.memberSubscription.length > 0
+          member.Subscription !== undefined &&
+          member.Subscription.length > 0
         )
       })
     }

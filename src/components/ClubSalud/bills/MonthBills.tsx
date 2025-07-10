@@ -8,7 +8,7 @@ import { Tag } from 'primereact/tag'
 import { type Nullable } from 'primereact/ts-helpers'
 import { changeMethod, getPayments } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
-import { argDate, argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Payment } from 'utils/ClubSalud/types'
 
 const filterByDate = (bills: Payment[], date: Nullable<Date>): Payment[] => {
@@ -20,7 +20,7 @@ const filterByDate = (bills: Payment[], date: Nullable<Date>): Payment[] => {
 }
 
 export default function MonthBills(): ReactElement {
-  const [date, setDate] = useState<Date>(argDate())
+  const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
   const [selectedBill, setSelectedBill] = useState<number | null>(null)
 
   const query = useQueryClient()
@@ -34,7 +34,10 @@ export default function MonthBills(): ReactElement {
 
   const { mutate: changePaymentMethod, isPending } = useMutation({
     mutationFn: async (id: number) => {
-      return await changeMethod(id)
+      return await changeMethod(
+        id,
+        !bills?.filter((b) => b.id === id)[0].isCash
+      )
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['bills'] })
@@ -52,15 +55,15 @@ export default function MonthBills(): ReactElement {
       />
       <Column
         header='Nombre'
-        field='member.name'
+        field='Member.name'
       />
       <Column
         header='Apellido'
-        field='member.lastName'
+        field='Member.lastName'
       />
       <Column
         header='DNI'
-        field='member.dni'
+        field='Member.dni'
       />
       <Column
         header='Total'
@@ -102,7 +105,7 @@ export default function MonthBills(): ReactElement {
                 dateFormat='mm/yy'
                 placeholder='Filtrar fecha'
                 onChange={(e) => {
-                  setDate(e.value ?? argDate())
+                  setDate(e.value ?? DateUtils.getCurrentDate())
                 }}
               />
             </div>
@@ -110,21 +113,21 @@ export default function MonthBills(): ReactElement {
         }}
         sortable
         body={(bill) => {
-          return <div>{argDate2Format(bill.date as Date)}</div>
+          return <div>{DateUtils.formatToDDMMYY(bill.date as Date)}</div>
         }}
       />
       <Column
         header='Plan'
-        field='subscription.promotion.title'
+        field='Subscription.Promotion.title'
       />
       <Column
         header='Oferta'
-        field='subscription.plan.title'
+        field='Subscription.Plan.title'
       />
       <Column
         header='Fecha de plan'
         body={(bill) => {
-          return <div>{argDate2Format(bill.subscription.date as Date)}</div>
+          return <div>{DateUtils.formatToDDMMYY(bill.Subscription.date as Date)}</div>
         }}
       />
     </DataTable>

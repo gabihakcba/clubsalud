@@ -12,7 +12,7 @@ import { deletePromotion, getPromotions } from 'queries/ClubSalud/promotions'
 import { type ReactElement, useState } from 'react'
 import { type Promotion, Permissions } from 'utils/ClubSalud/types'
 import { useModal } from 'utils/ClubSalud/useModal'
-import UpdatePromotionPrice from './UpdatePromotionPrice'
+import PromotionRecordsTable from './PromotionRecordsTable'
 
 export default function PlansTable(): ReactElement {
   const [selectedPromotion, setSelectedPromotion] = useState<any>(null)
@@ -21,7 +21,8 @@ export default function PlansTable(): ReactElement {
     useModal(false)
   const [createSubscription, openCreateSubscription, closeCreateSubscription] =
     useModal(false)
-  const [updatePrice, openUpdatePrice, closeUpdatePrice] = useModal(false)
+  const [promotionRecord, openPromotionRecord, closePromotionRecord] =
+    useModal(false)
 
   const query = useQueryClient()
 
@@ -50,11 +51,11 @@ export default function PlansTable(): ReactElement {
   return (
     <>
       <Dialog
-        header='Actualizar Precio'
-        visible={updatePrice}
-        onHide={closeUpdatePrice}
+        visible={promotionRecord}
+        onHide={closePromotionRecord}
+        header='Historial de Precios'
       >
-        <UpdatePromotionPrice promotion={selectedPromotion}/>
+        <PromotionRecordsTable promotion={selectedPromotion} />
       </Dialog>
 
       <Dialog
@@ -151,18 +152,19 @@ export default function PlansTable(): ReactElement {
           )}
         />
         <Column
-          body={(row) => (
+          body={(promotion) => (
             <HasRole required={[Permissions.ADM, Permissions.OWN]}>
               <Button
-                label='Actualizar Precio'
+                type='button'
+                label='Ver Histórico'
                 size='small'
-                severity='warning'
-                icon='pi pi-dollar'
+                severity='success'
+                icon='pi pi-info-circle'
                 iconPos='right'
                 outlined
                 onClick={() => {
-                  setSelectedPromotion(row)
-                  openUpdatePrice()
+                  setSelectedPromotion(promotion)
+                  openPromotionRecord()
                 }}
               />
             </HasRole>
@@ -197,28 +199,6 @@ export default function PlansTable(): ReactElement {
             </HasRole>
           )}
         />
-        {/* <Column
-          body={(promotion: FieldValues) => (
-            <HasRole required={[Permissions.MEM]}>
-              <Button
-                label='Inscribirme'
-                size='small'
-                icon='pi pi-check-square'
-                iconPos='right'
-                outlined
-                loading={
-                  isPendingSubscription && selectedPromotion.id === promotion.id
-                }
-                onClick={async () => {
-                  setSelectedPromotion(promotion)
-                  if (member) {
-                    subscribe({ id: String(member.id), promotion })
-                  }
-                }}
-              />
-            </HasRole>
-          )}
-        /> */}
       </DataTable>
     </>
   )

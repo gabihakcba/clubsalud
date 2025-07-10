@@ -1,6 +1,11 @@
 'use client'
 
-import { type CreateAccount, Permissions, type Account } from 'utils/ClubSalud/types'
+import {
+  type CreateAccount,
+  Permissions,
+  type Account,
+  type UpdateAccount
+} from 'utils/ClubSalud/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { createAccount, updateAccount } from 'queries/ClubSalud/accounts'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -80,7 +85,7 @@ export function CreateAccountForm({ account }: params): ReactElement {
     isError: isErrorU
   } = useMutation({
     mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
-      await updateAccount({ id, ...(data as CreateAccount) })
+      await updateAccount({ ...(data as UpdateAccount), id })
     },
     onSuccess: async () => {
       await query.refetchQueries({ queryKey: ['account'] })
