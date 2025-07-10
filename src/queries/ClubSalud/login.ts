@@ -7,8 +7,13 @@ export const signInAccount = async (
   access_token: string
   user: { id: number; username: string; permissions: string[] }
 }> => {
-  const response = await apiClubSalud.post('/auth/login', {
-    ...data
-  })
-  return response.data
+  try {
+    const response = await apiClubSalud.post('/auth/login', {
+      ...data
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
