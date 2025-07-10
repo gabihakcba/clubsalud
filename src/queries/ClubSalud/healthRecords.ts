@@ -1,4 +1,4 @@
-import { type HealthPlanRecord } from '@prisma/client'
+import { type HealthPlanRecord } from 'utils/ClubSalud/types'
 import { apiClubSalud } from 'utils/axios.service'
 
 export const deleteHealthRecord = async (

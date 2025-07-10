@@ -1,6 +1,6 @@
 'use client'
 
-import { ContractType } from '@prisma/client'
+import { ContractType } from 'utils/ClubSalud/types'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
