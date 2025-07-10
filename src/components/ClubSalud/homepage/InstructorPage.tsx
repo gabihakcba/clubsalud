@@ -3,10 +3,10 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { useEffect, type ReactElement, useState } from 'react'
 import { type Schedule, type Account } from 'utils/ClubSalud/types'
-import AttendanceInstructorForm from '../attendanceInstructor/AttendanceInstructorForm'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import { Button } from 'primereact/button'
+import NewAttendanceInstructorForm from '../attendanceInstructor/NewAttendanceInstructorForm'
 
 export default function InstructorPage({
   account
@@ -19,13 +19,13 @@ export default function InstructorPage({
 
   useEffect(() => {
     if (account) {
-      setCharges(account?.instructorAccount?.scheduleInCharge)
+      setCharges(account?.Instructor?.ScheduleInCharge)
     }
   }, [account])
 
   const membersInCharge = (data): ReactElement => {
     const schedule: Schedule = data as Schedule
-    const scheduleInscription = schedule?.scheduleInscription?.map((sch) => sch)
+    const scheduleInscription = schedule?.ScheduleInscription?.map((sch) => sch)
     const members = scheduleInscription?.map((sche) => sche.member)
     return (
       <DataTable
@@ -54,7 +54,7 @@ export default function InstructorPage({
           onHide={closeAttendace}
           visible={attendance}
         >
-          <AttendanceInstructorForm instructor={account?.instructorAccount} />
+          <NewAttendanceInstructorForm/>
         </Dialog>
       </nav>
       <DataTable
@@ -82,8 +82,8 @@ export default function InstructorPage({
       >
         <Column
           expander={(rowData: Schedule) =>
-            rowData.scheduleInscription?.length !== undefined &&
-            rowData.scheduleInscription?.length > 0
+            rowData.ScheduleInscription?.length !== undefined &&
+            rowData.ScheduleInscription?.length > 0
           }
           style={{ width: '5rem' }}
         />

@@ -1,5 +1,5 @@
 import { Card } from 'primereact/card'
-import { useState, type ReactElement } from 'react'
+import { useEffect, useState, type ReactElement } from 'react'
 import { type Subscription, type Member } from 'utils/ClubSalud/types'
 
 import { DataTable } from 'primereact/datatable'
@@ -7,22 +7,50 @@ import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { useModal } from 'utils/ClubSalud/useModal'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
+import { useQuery } from '@tanstack/react-query'
+import { getMembers } from 'queries/ClubSalud/members'
 
 const subsciptionsNotPaid = (member: Member | null): Subscription[] => {
-  const current = member?.memberSubscription?.filter(
+  const current = member?.Subscription?.filter(
     (subs: Subscription) => !subs.paid
   )
   return current ?? []
 }
 
-export default function Debtors({
-  debtors
-}: {
-  debtors: Member[]
-}): ReactElement {
+const hasSubscriptionNotPaid = (
+  subscriptions: Subscription[],
+  date: Date
+): boolean => {
+  return subscriptions.some(
+    (subscription) =>
+      !subscription.paid &&
+      DateUtils.isSameMonth(subscription.initialDate, date) &&
+      DateUtils.isSameYear(subscription.initialDate, date)
+  )
+}
+
+const getDebtors = (members: Member[], date: Date): Member[] => {
+  return members.filter((member: Member) =>
+    hasSubscriptionNotPaid(member.Subscription ?? [], date)
+  )
+}
+
+export default function Debtors({ date }: { date: Date }): ReactElement {
   const [debts, openDebts, closeDebts] = useModal(false)
   const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const [debtors, setDebtors] = useState<Member[]>([])
+
+  const { data: members, isFetching } = useQuery({
+    queryKey: ['members'],
+    queryFn: async () => {
+      return await getMembers()
+    }
+  })
+
+  useEffect(() => {
+    setDebtors(getDebtors(members ?? [], date))
+  }, [members, date])
 
   return (
     <>
@@ -46,7 +74,7 @@ export default function Debtors({
             <Column
               header='Fecha de inscripción'
               body={(data: Subscription) => (
-                <div>{argDate2Format(data.initialDate)}</div>
+                <div>{DateUtils.formatToDDMMYY(data.initialDate)}</div>
               )}
             />
             <Column
@@ -65,7 +93,11 @@ export default function Debtors({
         </Card>
       </Dialog>
       <Card>
-        <DataTable value={debtors}>
+        <DataTable
+          value={debtors}
+          loading={isFetching}
+          header={`Deudores totales ${debtors.length}`}
+        >
           <Column
             header='ID'
             field='id'
@@ -91,7 +123,9 @@ export default function Debtors({
             body={(member: Member) => {
               return (
                 <div className='flex gap-2 align-items-center justify-content-center'>
-                  <b className='bg-red-400 p-1 border-round'>${subsciptionsNotPaid(member)[0].remaining.toString()}</b>
+                  <b className='bg-red-400 p-1 border-round'>
+                    ${subsciptionsNotPaid(member)[0].remaining.toString()}
+                  </b>
                   <Button
                     label='Ver todas las deudas'
                     size='small'

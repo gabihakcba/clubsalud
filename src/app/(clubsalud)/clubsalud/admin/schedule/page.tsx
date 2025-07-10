@@ -30,7 +30,9 @@ interface scheduleType {
   classes: Schedule[]
 }
 
-const formatScheduler = (schedules: Schedule[]): any[] => {
+const formatScheduler = (
+  schedules: Schedule[]
+): Array<{ start: number; end: number; classes: Schedule[] }> => {
   const schedule: scheduleType[] = [
     { start: 800, end: 830, classes: [] },
     { start: 830, end: 900, classes: [] },
@@ -74,11 +76,8 @@ export default function Schelude(): ReactElement {
   const [assignInstructor, openAssignInstructor, closeAssignInstructor] =
     useModal(false)
   const [showOptions, openShowOptions, closeShowOptions] = useModal(false)
-  const [
-    membersInscripted,
-    openMembersInscripted,
-    closeMembersInscripted
-  ] = useModal(false)
+  const [membersInscripted, openMembersInscripted, closeMembersInscripted] =
+    useModal(false)
 
   const queryClient = useQueryClient()
   void queryClient.invalidateQueries({ queryKey: ['sch'] })
@@ -119,7 +118,7 @@ export default function Schelude(): ReactElement {
           onHide={closeMembersInscripted}
           header='Alumnos inscriptos'
         >
-          <ScheduleInscription schedule={selectedSchedule}/>
+          <ScheduleInscription schedule={selectedSchedule} />
         </Dialog>
         <Dialog
           visible={showOptions}
@@ -188,21 +187,21 @@ export default function Schelude(): ReactElement {
         onSelectionChange={async (e) => {
           const selected = e.value.rowData.classes[e.value.cellIndex - 1]
           setSelectedSchedule(selected)
-          if (await hasPermission([Permissions.ADM, Permissions.OWN])) {
+          if (hasPermission([Permissions.ADM, Permissions.OWN])) {
             openShowOptions()
           }
         }}
         header={() => <h2>Horarios</h2>}
       >
         <Column
-          body={(e) => (
+          body={(e: { start: number; end: number; classes: Schedule[] }) => (
             <div className='flex gap-4'>
               <Tag
-                value={formatHour(e.start as number)}
+                value={formatHour(e.start)}
                 severity='warning'
               />
               <Tag
-                value={formatHour(e.end as number)}
+                value={formatHour(e.end)}
                 severity='warning'
               />
             </div>
@@ -210,121 +209,105 @@ export default function Schelude(): ReactElement {
           header='Horario'
         />
         <Column
-          body={(sch) => {
+          body={(sch: { start: number; end: number; classes: Schedule[] }) => {
             return (
               <div className='flex align-items-center gap-2'>
-                {sch.classes[0]?.class?.name && (
+                {sch.classes[0]?.Class?.name && (
                   <Tag
-                    value={sch.classes[0]?.class?.name}
+                    value={sch.classes[0]?.Class?.name}
                     severity='success'
                   />
                 )}
-                {!sch.classes[0]?.class?.name && <p>{sch.classes[0]?.day}</p>}
-                {sch.classes[0]?.charge?.name && (
-                  <Tag value={sch.classes[0]?.charge?.name} />
+                {!sch.classes[0]?.Class?.name && <p>{sch.classes[0]?.day}</p>}
+                {sch.classes[0]?.InstructorInCharge?.name && (
+                  <Tag value={sch.classes[0]?.InstructorInCharge?.name} />
                 )}
-                {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
+                {!sch.classes[0]?.InstructorInCharge?.name && (
+                  <Chip label='Profesor' />
+                )}
               </div>
             )
           }}
           header='Lunes'
         />
         <Column
-          body={(sch) => (
+          body={(sch: { start: number; end: number; classes: Schedule[] }) => (
             <div className='flex align-items-center gap-2'>
-              {sch.classes[1]?.class?.name && (
+              {sch.classes[1]?.Class?.name && (
                 <Tag
-                  value={sch.classes[1]?.class?.name}
+                  value={sch.classes[1]?.Class?.name}
                   severity='success'
                 />
               )}
-              {!sch.classes[1]?.class?.name && <p>{sch.classes[1]?.day}</p>}
-              {sch.classes[1]?.charge?.name && (
-                <Tag value={sch.classes[1]?.charge?.name} />
+              {!sch.classes[1]?.Class?.name && <p>{sch.classes[1]?.day}</p>}
+              {sch.classes[1]?.InstructorInCharge?.name && (
+                <Tag value={sch.classes[1]?.InstructorInCharge?.name} />
               )}
-              {!sch.classes[1]?.charge?.name && <Chip label='Profesor' />}
+              {!sch.classes[1]?.InstructorInCharge?.name && (
+                <Chip label='Profesor' />
+              )}
             </div>
           )}
           header='Martes'
         />
         <Column
-          body={(sch) => (
+          body={(sch: { start: number; end: number; classes: Schedule[] }) => (
             <div className='flex align-items-center gap-2'>
-              {sch.classes[2]?.class?.name && (
+              {sch.classes[2]?.Class?.name && (
                 <Tag
-                  value={sch.classes[2]?.class?.name}
+                  value={sch.classes[2]?.Class?.name}
                   severity='success'
                 />
               )}
-              {!sch.classes[2]?.class?.name && <p>{sch.classes[2]?.day}</p>}
-              {sch.classes[2]?.charge?.name && (
-                <Tag value={sch.classes[2]?.charge?.name} />
+              {!sch.classes[2]?.Class?.name && <p>{sch.classes[2]?.day}</p>}
+              {sch.classes[2]?.InstructorInCharge?.name && (
+                <Tag value={sch.classes[2]?.InstructorInCharge?.name} />
               )}
-              {!sch.classes[2]?.charge?.name && <Chip label='Profesor' />}
+              {!sch.classes[2]?.InstructorInCharge?.name && (
+                <Chip label='Profesor' />
+              )}
             </div>
           )}
           header='Miércoles'
         />
         <Column
-          body={(sch) => (
+          body={(sch: { start: number; end: number; classes: Schedule[] }) => (
             <div className='flex align-items-center gap-2'>
-              {sch.classes[3]?.class?.name && (
+              {sch.classes[3]?.Class?.name && (
                 <Tag
-                  value={sch.classes[3]?.class?.name}
+                  value={sch.classes[3]?.Class?.name}
                   severity='success'
                 />
               )}
-              {!sch.classes[3]?.class?.name && <p>{sch.classes[3]?.day}</p>}
-              {sch.classes[3]?.charge?.name && (
-                <Tag value={sch.classes[3]?.charge?.name} />
+              {!sch.classes[3]?.Class?.name && <p>{sch.classes[3]?.day}</p>}
+              {sch.classes[3]?.InstructorInCharge?.name && (
+                <Tag value={sch.classes[3]?.InstructorInCharge?.name} />
               )}
-              {!sch.classes[3]?.charge?.name && <Chip label='Profesor' />}
+              {!sch.classes[3]?.InstructorInCharge?.name && (
+                <Chip label='Profesor' />
+              )}
             </div>
           )}
           header='Jueves'
         />
         <Column
-          body={(sch) => (
+          body={(sch: { start: number; end: number; classes: Schedule[] }) => (
             <div className='flex align-items-center gap-2'>
-              {sch.classes[4]?.class?.name && (
+              {sch.classes[4]?.Class?.name && (
                 <Tag
-                  value={sch.classes[4]?.class?.name}
+                  value={sch.classes[4]?.Class?.name}
                   severity='success'
                 />
               )}
-              {!sch.classes[4]?.class?.name && <p>{sch.classes[4]?.day}</p>}
-              {sch.classes[4]?.charge?.name && (
-                <Tag value={sch.classes[4]?.charge?.name} />
+              {!sch.classes[4]?.Class?.name && <p>{sch.classes[4]?.day}</p>}
+              {sch.classes[4]?.InstructorInCharge?.name && (
+                <Tag value={sch.classes[4]?.InstructorInCharge?.name} />
               )}
-              {!sch.classes[4]?.charge?.name && <Chip label='Profesor' />}
+              {!sch.classes[4]?.InstructorInCharge?.name && <Chip label='Profesor' />}
             </div>
           )}
           header='Viernes'
         />
-        {/* <Column
-          body={(sch) => (
-            <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[5]?.class?.name ?? sch.classes[5]?.day}</p>
-              {sch.classes[0]?.charge?.name && (
-                <Tag value={sch.classes[0]?.charge?.name} />
-              )}
-              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
-            </div>
-          )}
-          header='Sábado'
-        />
-        <Column
-          body={(sch) => (
-            <div className='flex align-items-center gap-2'>
-              <p>{sch.classes[6]?.class?.name ?? sch.classes[6]?.day}</p>
-              {sch.classes[0]?.charge?.name && (
-                <Tag value={sch.classes[0]?.charge?.name} />
-              )}
-              {!sch.classes[0]?.charge?.name && <Chip label='Profesor' />}
-            </div>
-          )}
-          header='Domingo'
-        /> */}
       </DataTable>
     </Card>
   )

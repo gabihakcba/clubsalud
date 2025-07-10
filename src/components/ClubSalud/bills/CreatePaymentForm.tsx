@@ -17,7 +17,7 @@ import {
 } from 'queries/ClubSalud/payments'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Subscription,
   type Member,
@@ -25,12 +25,12 @@ import {
 } from 'utils/ClubSalud/types'
 
 const hasSubs = (member: Member): boolean => {
-  const subs: Subscription[] | undefined = member?.memberSubscription
+  const subs: Subscription[] | undefined = member?.Subscription
 
   return (
     subs !== undefined &&
     (subs.some((sub) => {
-      const bills = sub.billedConsultation?.length
+      const bills = sub.BilledConsultation?.length
       return bills !== undefined && bills < 2
     }) ||
       subs.some((sub) => !sub.paid))
@@ -39,11 +39,11 @@ const hasSubs = (member: Member): boolean => {
 
 const memberWithDebts = (members: Member[]): Member[] => {
   return members.filter((member: Member) =>
-    member.memberSubscription?.some((subscription: Subscription) => {
+    member.Subscription?.some((subscription: Subscription) => {
       return (
         !subscription.paid ||
-        subscription.plan.durationMonth * 2 <
-          (subscription.billedConsultation?.length ?? 0)
+        subscription.Plan.durationMonth * 2 <
+          (subscription.BilledConsultation?.length ?? 0)
       )
     })
   )
@@ -56,16 +56,16 @@ const selectMember = (members, id: number): Member => {
 
 const amountByPlan = (members, memberId, planSubsId): number | undefined => {
   const member = selectMember(members, Number(memberId))
-  const planSubs = member?.planSubscribed?.find(
+  const planSubs = member?.HealthPlanSubscribed?.find(
     (planSubs) => Number(planSubsId) === planSubs.id
   )
-  const amount = planSubs?.plan?.paymentPerConsultation
+  const amount = planSubs?.HealthPlan?.paymentPerConsultation
   return amount
 }
 
 const getRemaining = (members, sId, mId): number => {
   const member = members?.find((member) => member.id === mId)
-  const subs = member?.memberSubscription?.find((subs) => subs.id === sId)
+  const subs = member?.Subscription?.find((subs) => subs.id === sId)
   return subs?.remaining
 }
 
@@ -75,19 +75,19 @@ const getRemainingBills = (
   mId: number
 ): number => {
   const member = members?.find((member: Member) => member.id === mId)
-  const subs = member?.memberSubscription?.find(
+  const subs = member?.Subscription?.find(
     (subs: Subscription) => subs.id === sId
   )
   return (
-    (subs?.plan?.durationMonth ?? 0) * 2 -
-    (subs?.billedConsultation?.length ?? 0)
+    (subs?.Plan?.durationMonth ?? 0) * 2 -
+    (subs?.BilledConsultation?.length ?? 0)
   )
 }
 
 const optionSubscriptionTemplate = (subs: Subscription): ReactElement => {
   return (
     <div className='flex align-items-center'>
-      <div>{`${subs?.promotion?.title} | ${argDate2Format(subs?.date)}`}</div>
+      <div>{`${subs?.Promotion?.title} | ${DateUtils.formatToDDMMYY(subs?.date)}`}</div>
     </div>
   )
 }
@@ -113,7 +113,7 @@ export default function CreatePaymentForm(): ReactElement {
     getValues
   } = useForm()
 
-  const { data: members, isPending: isPendingMembers } = useQuery({
+  const { data: members, isFetching: isPendingMembers, refetch } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       const res = await getMembers()
@@ -154,6 +154,10 @@ export default function CreatePaymentForm(): ReactElement {
     setValue('date', moment().toDate())
   }, [])
 
+  useEffect(() => {
+    console.log(selectedMember)
+  }, [selectedMember])
+
   return (
     <form
       action=''
@@ -193,7 +197,7 @@ export default function CreatePaymentForm(): ReactElement {
             setValue('memberId', e.value.id)
             setPlansMemberSelected(
               selectMember(members, Number(watch('memberId')))
-                ?.planSubscribed ?? []
+                ?.HealthPlanSubscribed ?? []
             )
           }}
           className='w-full'
@@ -203,35 +207,53 @@ export default function CreatePaymentForm(): ReactElement {
         />
         <label htmlFor='member'>Alumno</label>
       </div>
-      <div className='p-float-label'>
-        <Dropdown
-          options={selectMember(
-            members,
-            Number(watch('memberId'))
-          )?.memberSubscription?.filter((subs: Subscription) => {
-            if (ishealth) {
-              const bills = subs.billedConsultation?.length
-              return bills !== undefined && bills < subs.plan.durationMonth * 2
-            } else {
-              return !subs.paid
-            }
-          })}
-          value={selectedSubscription}
-          optionLabel='promotion.title'
-          optionValue='id'
-          itemTemplate={optionSubscriptionTemplate}
-          {...register('subscription', {
-            required: { value: true, message: 'Campo requerido' }
-          })}
-          onChange={(e) => {
-            setSelectedSubscription(e.value)
-            setValue('subscriptionId', e.value)
+      <div className='flex flex-row gap-4 justify-content-between'>
+        <div className='p-float-label w-full'>
+          <Dropdown
+            options={selectMember(
+              members,
+              Number(watch('memberId'))
+            )?.Subscription?.filter((subs: Subscription) => {
+              if (ishealth) {
+                const bills = subs.BilledConsultation?.length
+                return (
+                  bills !== undefined &&
+                  bills < subs.Plan.durationMonth * 2 &&
+                  subs.isByOS
+                )
+              } else {
+                return !subs.paid
+              }
+            })}
+            value={selectedSubscription}
+            optionLabel='Promotion.title'
+            optionValue='id'
+            itemTemplate={optionSubscriptionTemplate}
+            {...register('subscription', {
+              required: { value: true, message: 'Campo requerido' }
+            })}
+            onChange={(e) => {
+              setSelectedSubscription(e.value)
+              setValue('subscriptionId', e.value)
+            }}
+            loading={selectedMember === null}
+            className='w-full'
+            invalid={errors?.subscription !== undefined}
+          />
+          <label htmlFor='subscription'>Suscripción</label>
+        </div>
+        <Button
+          size='small'
+          severity='danger'
+          outlined
+          icon='pi pi-refresh'
+          type='button'
+          className='w-max'
+          onClick={async () => {
+            await refetch()
           }}
-          loading={selectedMember === null}
-          className='w-full'
-          invalid={errors?.subscription !== undefined}
+          loading={isPendingMembers}
         />
-        <label htmlFor='subscription'>Suscripción</label>
       </div>
       <div className='flex gap-4'>
         <label htmlFor='isbyhealth'>Pago con obra social</label>
@@ -300,7 +322,7 @@ export default function CreatePaymentForm(): ReactElement {
               className='w-full'
               value={selectedPlan}
               options={plansMemberSelected}
-              optionLabel='plan.name'
+              optionLabel='HealthPlan.name'
               optionValue='id'
               onChange={(e) => {
                 setSelectedPlan(e.value)

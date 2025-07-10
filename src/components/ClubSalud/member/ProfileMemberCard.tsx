@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext'
 import { deleteMember, updateMember } from 'queries/ClubSalud/members'
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { arg2Date } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Account,
   type CreateMember,
@@ -17,15 +17,18 @@ import {
 
 const update = async ({
   id,
-  data
+  data,
+  state
 }: {
   id: number
   data: FieldValues
+  state: MemberSate
 }): Promise<Member> => {
   const dataMember: CreateMember = data as CreateMember
   const newMember: Member = {
     id,
-    ...dataMember
+    ...dataMember,
+    state
   }
   return await updateMember(newMember)
 }
@@ -38,7 +41,7 @@ export default function ProfileMemberCard({
   const query = useQueryClient()
 
   const [editF, setEditF] = useState<boolean>(false)
-  const [selected, setSelected] = useState<MemberSate | null>(null)
+  const [selected, setSelected] = useState<MemberSate>(MemberSate[member.state])
 
   const {
     register,
@@ -57,10 +60,10 @@ export default function ProfileMemberCard({
     setValue('cuit', member.cuit ?? null)
     setValue('phoneNumber', member.phoneNumber)
     setValue('address', member.address)
-    setValue('inscriptionDate', arg2Date(member.inscriptionDate))
+    setValue('inscriptionDate', DateUtils.newDate(member.inscriptionDate))
     setValue(
       'cancelationDate',
-      member.cancelationDate ? arg2Date(member.cancelationDate) : null
+      member.cancelationDate ? DateUtils.newDate(member.cancelationDate) : null
     )
     setValue('cancelationReason', member.cancelationReason ?? null)
     setValue('derivedBy', member.derivedBy)
@@ -68,6 +71,7 @@ export default function ProfileMemberCard({
     setValue('state', MemberSate[member.state])
     setSelected(MemberSate[member.state])
     setValue('remainingClasses', member.remainingClasses ?? null)
+    setValue('birthday', DateUtils.newDate(member.birthday))
   }, [member])
 
   const {
@@ -108,7 +112,7 @@ export default function ProfileMemberCard({
       action=''
       id={`member${member?.id}`}
       onSubmit={handleSubmit((data) => {
-        mutateU({ id: member.id, data })
+        mutateU({ id: member.id, data, state: selected })
       })}
       className='flex flex-column max-w-max'
     >
@@ -207,9 +211,7 @@ export default function ProfileMemberCard({
           <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
             <Calendar
               id='birthday'
-              value={
-                watch('birthday') ?? arg2Date(member.birthday)
-              }
+              value={watch('birthday') ?? DateUtils.newDate(member.birthday)}
               {...register('birthday', {
                 required: {
                   value: true,
@@ -265,7 +267,7 @@ export default function ProfileMemberCard({
               id='inscriptionDate'
               // form={`member${member.id}`}
               value={
-                watch('inscriptionDate') ?? arg2Date(member.inscriptionDate)
+                watch('inscriptionDate') ?? DateUtils.newDate(member.inscriptionDate)
               }
               {...register('inscriptionDate', {
                 required: {
@@ -290,7 +292,7 @@ export default function ProfileMemberCard({
               id='cancelationDate'
               value={
                 watch('cancelationDate') ??
-                (member.cancelationDate && arg2Date(member.cancelationDate)) ??
+                (member.cancelationDate && DateUtils.newDate(member.cancelationDate)) ??
                 null
               }
               {...register('cancelationDate')}
@@ -347,7 +349,9 @@ export default function ProfileMemberCard({
               disabled={!editF}
               invalid={errors?.afiliateNumber !== undefined}
             />
-            <label className='font-semibold'>Número de historia clínica (ID)</label>
+            <label className='font-semibold'>
+              Número de historia clínica (ID)
+            </label>
           </li>
 
           <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
@@ -377,7 +381,7 @@ export default function ProfileMemberCard({
               optionValue='value'
               {...register('state')}
               onChange={(e) => {
-                setValue('state', e.value)
+                setValue('state', e.value as MemberSate)
                 setSelected(e.value as MemberSate)
               }}
               disabled={!editF}

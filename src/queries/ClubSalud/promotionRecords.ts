@@ -1,25 +1,21 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
 import { type PromotionRecord } from 'utils/ClubSalud/types'
 
 export const createPromotionRecord = async (data: {
   id: number
   price: number
 }): Promise<PromotionRecord> => {
-  const response = await axios.post(`${path()}/api/promotionRecords`, data)
-  return response.data.record
+  const promotionRecord = {
+    promotionId: data.id,
+    price: data.price
+  }
+  const response = await apiClubSalud.post('/promotion-record', promotionRecord)
+  return response.data
 }
 
 export const deletePromotionRecord = async (
   id: number
 ): Promise<PromotionRecord> => {
-  const response = await axios.delete(`${path()}/api/promotionRecords`, {
-    data: id
-  })
-  return response.data
-}
-
-export const getPromotionRecords = async (): Promise<PromotionRecord[]> => {
-  const response = await axios.get(`${path()}/api/promotionRecords`)
+  const response = await apiClubSalud.delete(`/promotion-record/${id}`)
   return response.data
 }

@@ -11,13 +11,12 @@ import { Button } from 'primereact/button'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
-import HealthUpdatePrice from './HealthUpdatePrice'
+import HealthRecordsTable from './HealthRecordsTable'
 
 export default function PromotionSection(): ReactElement {
   const [planSelected, setPlanSelected] = useState<any>(null)
   const [editPlan, openEditPlan, closeEditPlan] = useModal(false)
-  const [updatePrice, openUpdatePrice, closeUpdatePrice] = useModal(false)
-
+  const [records, openRecords, closeRecords] = useModal(false)
   const query = useQueryClient()
 
   const { mutate: deleteH, isPending: isDeleting } = useMutation({
@@ -82,15 +81,15 @@ export default function PromotionSection(): ReactElement {
         <Column
           body={(row) => (
             <Button
-              label='Actualizar Precio'
+              label='Ver Historico'
               size='small'
-              icon='pi pi-dollar'
+              icon='pi pi-eye'
               iconPos='right'
               outlined
-              severity='warning'
+              severity='success'
               onClick={() => {
                 setPlanSelected(row)
-                openUpdatePrice()
+                openRecords()
               }}
             />
           )}
@@ -123,18 +122,18 @@ export default function PromotionSection(): ReactElement {
         />
       </DataTable>
       <Dialog
+          visible={records}
+          onHide={closeRecords}
+          header='Precios Históricos'
+        >
+          <HealthRecordsTable healthPlan={planSelected} />
+        </Dialog>
+      <Dialog
         header='Editar Plan'
         visible={editPlan}
         onHide={closeEditPlan}
       >
         <HealthCard plan={planSelected} />
-      </Dialog>
-      <Dialog
-        header='Actualizar Precio'
-        visible={updatePrice}
-        onHide={closeUpdatePrice}
-      >
-        <HealthUpdatePrice healthPlan={planSelected}/>
       </Dialog>
     </>
   )

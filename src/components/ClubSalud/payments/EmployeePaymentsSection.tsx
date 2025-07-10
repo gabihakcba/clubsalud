@@ -18,7 +18,7 @@ import { FilterMatchMode } from 'primereact/api'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
 import HasRole from 'components/ClubSalud/HasRole'
-import { argGetMonth, argGetYear } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 const getAccounting = (payments: EmployeePayment[], setPaid): void => {
   const paid = payments.reduce(
@@ -34,7 +34,7 @@ export function EmployeePaymentsSection(): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
-    'employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    'Employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
   const [paid, setPaid] = useState<number | null>(null)
 
@@ -70,8 +70,8 @@ export function EmployeePaymentsSection(): ReactElement {
       setFilterPayments(
         employeePayments.filter(
           (pay: EmployeePayment) =>
-            argGetMonth(pay.date) === selectedDate.month &&
-            argGetYear(pay.date) === selectedDate.year
+            DateUtils.getMonth(pay.date) === selectedDate.month &&
+            DateUtils.getYear(pay.date) === selectedDate.year
         )
       )
     } else if (employeePayments) {
@@ -113,8 +113,8 @@ export function EmployeePaymentsSection(): ReactElement {
                 onChange={(e) => {
                   if (e.value) {
                     setSelectedDate({
-                      month: argGetMonth(e.value),
-                      year: argGetYear(e.value)
+                      month: DateUtils.getMonth(e.value),
+                      year: DateUtils.getYear(e.value)
                     })
                   }
                 }}
@@ -145,12 +145,12 @@ export function EmployeePaymentsSection(): ReactElement {
           sortable
         />
         <Column
-          field='employee.name'
+          field='Employee.name'
           header='Empleado'
           sortable
         />
         <Column
-          field='employee.dni'
+          field='Employee.dni'
           header='DNI'
           filter
           filterPlaceholder='DNI'

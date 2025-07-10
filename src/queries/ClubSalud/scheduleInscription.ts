@@ -1,5 +1,4 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
 import { type ScheduleInscription } from 'utils/ClubSalud/types'
 
 export const createScheduleInscription = async ({
@@ -10,7 +9,7 @@ export const createScheduleInscription = async ({
   scheduleId: number
 }): Promise<ScheduleInscription> => {
   try {
-    const response = await axios.post(`${path()}/api/scheduleInscription`, {
+    const response = await apiClubSalud.post('/schedule-inscription', {
       memberId,
       scheduleId
     })
@@ -25,7 +24,7 @@ export const getScheduleInscription = async (): Promise<
 ScheduleInscription[]
 > => {
   try {
-    const response = await axios.get(`${path()}/api/scheduleInscription`)
+    const response = await apiClubSalud.get('/schedule-inscription')
     return response.data
   } catch (error) {
     console.log(error)
@@ -37,8 +36,8 @@ export const getScheduleInscriptionByScheduleId = async (
   scheduleId: number
 ): Promise<ScheduleInscription[]> => {
   try {
-    const response = await axios.get(
-      `${path()}/api/scheduleInscription?id=${scheduleId}`
+    const response = await apiClubSalud.get(
+      `/schedule-inscription/search?scheduleId=${scheduleId}`
     )
     return response.data
   } catch (error) {
@@ -50,8 +49,8 @@ export const getScheduleInscriptionByScheduleId = async (
 export const deleteScheduleInscription = async (
   inscriptionId: number
 ): Promise<ScheduleInscription> => {
-  const response = await axios.delete(`${path()}/api/scheduleInscription`, {
-    data: inscriptionId
-  })
+  const response = await apiClubSalud.delete(
+    `/schedule-inscription/${inscriptionId}`
+  )
   return response.data
 }

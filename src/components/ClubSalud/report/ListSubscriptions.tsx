@@ -3,7 +3,7 @@ import { type Subscription } from 'utils/ClubSalud/types'
 
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import ListBilledConsultations from './ListBilledConsultations'
 import { Dialog } from 'primereact/dialog'
 import HealthPlanBillForm from '../bills/HealthPlanBillForm'
@@ -24,7 +24,7 @@ export default function ListSubscriptions({
   const [bill, openBill, closeBill] = useModal(false)
 
   const allowExpansion = (subscription: Subscription): boolean => {
-    return (subscription.billedConsultation?.length ?? 0) > 0
+    return (subscription.BilledConsultation?.length ?? 0) > 0
   }
 
   return (
@@ -49,7 +49,9 @@ export default function ListSubscriptions({
           setExpandedRows(e.data as Subscription[])
         }}
         rowExpansionTemplate={(subscription) => (
-          <ListBilledConsultations billedConsultations={subscription.billedConsultation ?? []} />
+          <ListBilledConsultations
+            billedConsultations={subscription.BilledConsultation ?? []}
+          />
         )}
       >
         <Column
@@ -72,13 +74,17 @@ export default function ListSubscriptions({
         <Column
           header='Desde'
           body={(subscription: Subscription) => (
-            <span>{argDate2Format(subscription.initialDate)}</span>
+            <span>{DateUtils.formatToDDMMYY(subscription.initialDate)}</span>
           )}
         />
         <Column
           header='Hasta'
           body={(subscription: Subscription) => (
-            <span>{argDate2Format(subscription.expirationDate)}</span>
+            <span>
+              {DateUtils.formatToDDMMYY(
+                DateUtils.newDate(subscription.expirationDate ?? '')
+              )}
+            </span>
           )}
         />
         <Column

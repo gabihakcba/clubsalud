@@ -13,7 +13,7 @@ import {
 } from 'queries/Medintt/users'
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues } from 'react-hook-form'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { getUserSession } from 'utils/Medintt/session'
 import { type UpdateBorrowerEmployee } from 'utils/Medintt/types'
@@ -113,8 +113,8 @@ export default function Empleados(): ReactElement {
           field='FechaNacimiento'
           header='Fecha Nacimiento'
           body={(rowData) => {
-            const date = argDate2Format(rowData.FechaNacimiento as Date)
-            return <div key={rowData.id}>{date}</div>
+            const date = DateUtils.formatToDDMMYY(rowData.FechaNacimiento as Date)
+            return <>{date}</>
           }}
         />
         <Column

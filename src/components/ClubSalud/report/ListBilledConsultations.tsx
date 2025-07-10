@@ -3,7 +3,7 @@ import { type BilledConsultation } from 'utils/ClubSalud/types'
 
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 export default function ListBilledConsultations({
   billedConsultations
@@ -20,8 +20,8 @@ export default function ListBilledConsultations({
       >
         <Column
           header='Fecha'
-          body={(billedConsultation: BilledConsultation) => {
-            return <span>{argDate2Format(billedConsultation.date)}</span>
+          body={(BilledConsultation: BilledConsultation) => {
+            return <span>{DateUtils.formatToDDMMYY(BilledConsultation.date)}</span>
           }}
         />
         <Column

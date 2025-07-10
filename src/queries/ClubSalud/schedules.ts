@@ -1,36 +1,27 @@
-import axios from 'axios'
-import { type Class_, type Schedule, type Instructor } from 'utils/ClubSalud/types'
-import { getClassesByName } from './classes'
-import { path } from 'utils/ClubSalud/path'
+import { type Schedule, type Instructor } from 'utils/ClubSalud/types'
+import { apiClubSalud } from 'utils/axios.service'
 
 export const getSchedules = async (): Promise<Schedule[]> => {
-  const response = await axios.get(`${path()}/api/schedules`, {
-    headers: {
-      'Cache-Control': 'no-cache',
-      Pragma: 'no-cache',
-      Expires: '0',
-      cache: 'no-store'
-    }
-  })
+  const response = await apiClubSalud.get('/schedule')
   return response.data
 }
 
 export const assignClass = async ({
-  className,
+  classId,
   scheduleId
 }: {
-  className: string
+  classId: string | number
   scheduleId: number
-}): Promise<Class_> => {
-  const classInfo = await getClassesByName(className)
-  const classId = classInfo.data.id
-  await axios.patch(`${path()}/api/schedules/setClass`, {
-    data: {
-      classId,
-      scheduleId
-    }
-  })
-  return classInfo.data
+}): Promise<Schedule> => {
+  try {
+    const response = await apiClubSalud.patch(`/schedule/${scheduleId}`, {
+      classId
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
 
 export const assignInstructor = async ({
@@ -40,16 +31,18 @@ export const assignInstructor = async ({
   instructorId: number
   scheduleId: number
 }): Promise<Instructor> => {
-  const response = await axios.patch(`${path()}/api/schedules/setInstructor`, {
-    data: {
-      instructorId,
-      scheduleId
-    }
-  })
-  return response.data
+  try {
+    const response = await apiClubSalud.patch(`/schedule/${scheduleId}`, {
+      instructorInCharge: instructorId
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
 
 export const clearSchedule = async (id: number): Promise<Schedule> => {
-  const response = await axios.patch(`${path()}/api/schedules`, id)
+  const response = await apiClubSalud.delete(`/schedule/clear/${id}`)
   return response.data
 }

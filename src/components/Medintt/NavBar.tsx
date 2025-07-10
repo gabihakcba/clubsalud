@@ -116,12 +116,12 @@ export default function NavBar(): ReactElement {
               label: 'Campañas de Vacunación',
               url: '/medicina-laboral/empresas/campanas-vacunacion',
               template: subitemTemplate
-            },
-            {
-              label: 'Ingresar al panel de administracion',
-              url: '/medicina-laboral-empresas',
-              template: itemTemplate
             }
+            // {
+            //   label: 'Ingresar al panel de administracion',
+            //   url: '/medicina-laboral-empresas',
+            //   template: itemTemplate
+            // }
           ]
         },
         {
@@ -137,12 +137,12 @@ export default function NavBar(): ReactElement {
               label: 'Accidentología',
               url: '/medicina-laboral/art/accidentologia',
               template: subitemTemplate
-            },
-            {
-              label: 'Ingresar al panel de administracion',
-              url: '/medicina-laboral-art',
-              template: itemTemplate
             }
+            // {
+            //   label: 'Ingresar al panel de administracion',
+            //   url: '/medicina-laboral-art',
+            //   template: itemTemplate
+            // }
           ]
         }
       ]

@@ -7,7 +7,7 @@ import { createEmployeePayment } from 'queries/ClubSalud/employeePayments'
 import { getEmployees } from 'queries/ClubSalud/employees'
 import { useRef, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { type EmployeePayment, type CreateEmployeePayment } from 'utils/ClubSalud/types'
+import { type CreateEmployeePayment } from 'utils/ClubSalud/types'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Toast } from 'primereact/toast'
 import { type AxiosError } from 'axios'
@@ -37,11 +37,8 @@ export default function CreateEmployeePaymentForm({
     isError
   } = useMutation({
     mutationFn: createEmployeePayment,
-    onSuccess: (data) => {
-      query.setQueryData(['employeePayments'], (oldData: EmployeePayment[]) => [
-        ...oldData,
-        data
-      ])
+    onSuccess: async (data) => {
+      await query.refetchQueries({ queryKey: ['employeePayments'] })
       if (toast.current) {
         toast.current.show({
           severity: 'success',
@@ -54,6 +51,7 @@ export default function CreateEmployeePaymentForm({
       setTimeout(closeModal, 250)
     },
     onError: (data: AxiosError) => {
+      console.log('Error creating payment:', data)
       if (toast.current) {
         toast.current.show({
           severity: 'error',

@@ -3,9 +3,13 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Tag } from 'primereact/tag'
-import { deleteSubscription, updateSubscription } from 'queries/ClubSalud/subscriptions'
+import {
+  deleteSubscription,
+  updateIsByOS,
+  updateState
+} from 'queries/ClubSalud/subscriptions'
 import { type ReactElement, useState } from 'react'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Subscription, type Member } from 'utils/ClubSalud/types'
 
 export default function SubscriptionTable({
@@ -15,10 +19,26 @@ export default function SubscriptionTable({
 }): ReactElement {
   const query = useQueryClient()
 
-  const [selectedSubs, setSelectedSubs] = useState<any>(null)
+  const [selectedSubs, setSelectedSubs] = useState<Subscription | null>(null)
 
   const { mutate: change, isPending: loadingChange } = useMutation({
-    mutationFn: updateSubscription,
+    mutationFn: async (id: number) => {
+      if (selectedSubs !== null) {
+        await updateState(id, !selectedSubs.active)
+      }
+    },
+    onSuccess: async () => {
+      setSelectedSubs(null)
+      await query.resetQueries({ queryKey: ['members'] })
+    }
+  })
+
+  const { mutate: changeIsByOs, isPending: loadingChangeIsByOs } = useMutation({
+    mutationFn: async (id: number) => {
+      if (selectedSubs !== null) {
+        await updateIsByOS(id, !selectedSubs.isByOS)
+      }
+    },
     onSuccess: async () => {
       setSelectedSubs(null)
       await query.resetQueries({ queryKey: ['members'] })
@@ -35,10 +55,14 @@ export default function SubscriptionTable({
 
   return (
     <DataTable
-      value={member.memberSubscription}
+      value={member.Subscription}
       scrollable
       scrollHeight='20dvh'
     >
+      <Column
+        header='ID'
+        field='id'
+      />
       <Column
         field='promotion.title'
         header='Promoción'
@@ -50,13 +74,20 @@ export default function SubscriptionTable({
       <Column
         field='initialDate'
         header='Inicio'
-        body={(subs: Subscription) => <span>{argDate2Format(subs.initialDate)}</span>}
+        body={(subs: Subscription) => (
+          <span>{DateUtils.formatToDDMMYY(subs.initialDate)}</span>
+        )}
       />
       <Column
         field='expirationDate'
         header='Vencimiento'
-        body={(subs: Subscription) => <span>{argDate2Format(subs.expirationDate)}</span>}
-
+        body={(subs: Subscription) => (
+          <span>
+            {DateUtils.formatToDDMMYY(
+              DateUtils.newDate(subs.expirationDate ?? '')
+            )}
+          </span>
+        )}
       />
       <Column
         header='Estado'
@@ -73,7 +104,20 @@ export default function SubscriptionTable({
         field='plan.title'
         header='Oferta'
       />
-
+      <Column
+        header='Cobro de Obra Social'
+        body={(subscription) => {
+          const status = subscription.isByOS
+          return (
+            <Tag
+              className='w-full'
+              severity={status ? 'success' : 'danger'}
+            >
+              {status ? 'SI' : 'NO'}
+            </Tag>
+          )
+        }}
+      />
       <Column
         body={(e) => {
           return (
@@ -83,7 +127,7 @@ export default function SubscriptionTable({
               outlined
               severity='warning'
               onClick={() => {
-                setSelectedSubs(e)
+                setSelectedSubs(e as Subscription)
                 change(e.id as number)
               }}
               loading={loadingChange && e.id === selectedSubs?.id}
@@ -91,7 +135,23 @@ export default function SubscriptionTable({
           )
         }}
       />
-
+      <Column
+        body={(e) => {
+          return (
+            <Button
+              label={e.isByOS ? 'Quitar cobros de OS' : 'Agregar cobros de OS'}
+              size='small'
+              outlined
+              severity={e.isByOS ? 'danger' : 'success'}
+              onClick={() => {
+                setSelectedSubs(e as Subscription)
+                changeIsByOs(e.id as number)
+              }}
+              loading={loadingChangeIsByOs && e.id === selectedSubs?.id}
+            />
+          )
+        }}
+      />
       <Column
         body={(e) => {
           return (
@@ -101,7 +161,7 @@ export default function SubscriptionTable({
               outlined
               severity='danger'
               onClick={() => {
-                setSelectedSubs(e)
+                setSelectedSubs(e as Subscription)
                 delete_(e.id as number)
               }}
               loading={loadingDelete && e.id === selectedSubs?.id}

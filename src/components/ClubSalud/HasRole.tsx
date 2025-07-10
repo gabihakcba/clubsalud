@@ -1,17 +1,14 @@
 'use client'
 
 import { type ReactElement, useEffect, useState, type ReactNode } from 'react'
-import { getUserToken, verifyToken } from 'utils/ClubSalud/auth'
+import { hasPermission } from 'utils/ClubSalud/auth'
 import { type Setter, type Permissions } from 'utils/ClubSalud/types'
 
 const hasRole = async (
   required: Permissions[],
   setIsAble: Setter
 ): Promise<void> => {
-  const token = getUserToken()
-  const user = await verifyToken(token)
-  const role = user?.permissions
-  setIsAble(required.some((permission) => role?.includes(permission)))
+  setIsAble(hasPermission(required))
 }
 
 interface params {

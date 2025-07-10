@@ -3,7 +3,6 @@ import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { type ReactElement } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
-import AttendanceInstructorForm from 'components/ClubSalud/attendanceInstructor/AttendanceInstructorForm'
 import RegistrationFormSelector from 'components/ClubSalud/medicalReports/RegistrationFormSelector'
 import HealthAssignForm from 'components/ClubSalud/healthPlans/HealthAssignForm'
 import SubscriptionForm from 'components/ClubSalud/subscriptions/SubscriptionForm'
@@ -14,6 +13,11 @@ import CreateInstructorPaymentForm from 'components/ClubSalud/payments/CreateIns
 import { Card } from 'primereact/card'
 import NewAttendanceMember from 'components/ClubSalud/attendance/NewAttendanceMember'
 import AttendanceDaily from '../attendance/AttendanceDaily'
+import Notes from './Notes'
+import { useQuery } from '@tanstack/react-query'
+import { getSubscriptionsToBill } from 'queries/ClubSalud/subscriptions'
+import SubscriptionsToBillTable from './SubscriptionsToBillTable'
+import NewAttendanceInstructorForm from '../attendanceInstructor/NewAttendanceInstructorForm'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -21,12 +25,40 @@ export default function AdminPage(): ReactElement {
   const [create, openCreate, closeCreate] = useModal(false)
   const [createSubscription, openCreateSubscription, closeCreateSubscription] =
     useModal(false)
+  const [
+    showSubscriptionToBill,
+    openSubscriptionToBill,
+    closeSubscriptionToBill
+  ] = useModal(false)
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [createEmployeePayment, openEmployeePayment, closeEmployeePayment] =
     useModal(false)
+  const [notes, openNotes, closeNotes] = useModal(false)
+
+  const { data: subscriptionsToBill, isFetching } = useQuery({
+    queryKey: ['subscriptionsToBill'],
+    queryFn: async () => {
+      return await getSubscriptionsToBill()
+    }
+  })
+
   return (
     <Card className='flex flex-column'>
+      <Dialog
+        visible={showSubscriptionToBill}
+        onHide={closeSubscriptionToBill}
+        header='Suscripciones a cobrar'
+      >
+        <SubscriptionsToBillTable subscriptions={subscriptionsToBill ?? []} isLoading={isFetching}/>
+      </Dialog>
+      <Dialog
+        visible={notes}
+        onHide={closeNotes}
+        header='Notas'
+      >
+        <Notes />
+      </Dialog>
       <Dialog
         visible={showAssignHealthPlan}
         onHide={closeAssignHealthPlan}
@@ -82,12 +114,34 @@ export default function AdminPage(): ReactElement {
               )
             }}
           />
+          <Button
+            label='Notas'
+            severity='warning'
+            outlined
+            link
+            icon='pi pi-book'
+            iconPos='right'
+            onClick={() => {
+              openNotes()
+            }}
+          />
+          <Button
+            label='Suscripciones a cobrar hoy'
+            severity='success'
+            outlined
+            link
+            icon='pi pi-receipt'
+            iconPos='right'
+            onClick={() => {
+              openSubscriptionToBill()
+            }}
+          />
         </div>
         <Fieldset legend='Asistencias'>
           <section className='flex gap-8'>
             <NewAttendanceMember />
-            <AttendanceInstructorForm />
-            <AttendanceDaily/>
+            <NewAttendanceInstructorForm />
+            <AttendanceDaily />
           </section>
         </Fieldset>
         <Fieldset legend='Cobros y pagos'>
