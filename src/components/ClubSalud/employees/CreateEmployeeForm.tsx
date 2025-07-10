@@ -4,9 +4,9 @@ import { ContractType } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
+import { InputNumber } from 'primereact/inputnumber'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
-import { createAccount, deleteAccount } from 'queries/ClubSalud/accounts'
 import { createEmployee } from 'queries/ClubSalud/employees'
 import { useEffect, type ReactElement, useState } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
@@ -14,32 +14,8 @@ import {
   JobPosition,
   type CreateEmployee,
   type Employee,
-  Permissions,
-  type CreateAccount
+  Permissions
 } from 'utils/ClubSalud/types'
-
-const parseData = ({
-  data,
-  id
-}: {
-  data: FieldValues
-  id: number
-}): CreateEmployee => {
-  return {
-    name: String(data.name),
-    lastName: String(data.lastName),
-    dni: BigInt(Number(data.dni)),
-    cuit: data.cuit !== '' ? BigInt(Number(data.cuit)) : undefined,
-    phoneNumber: BigInt(Number(data.phoneNumber)),
-    email: String(data.email),
-    position: data.position,
-    contractType: data.contractType,
-    salary: Number(data.salary),
-    cbu: data.cbu,
-    alias: data.alias !== '' ? String(data.alias) : undefined,
-    accountId: id
-  }
-}
 
 export default function CreateEmployeeForm(): ReactElement {
   const [selectedJobPosition, setSelectedJobPosition] = useState<any>(null)
@@ -54,7 +30,17 @@ export default function CreateEmployeeForm(): ReactElement {
     isError
   } = useMutation({
     mutationFn: async (data: FieldValues) => {
-      return await createEmployee(data as CreateEmployee)
+      const {
+        username,
+        password,
+        repeatpassword,
+        permissions,
+        ...employeeData
+      } = data
+      return await createEmployee({
+        account: { username, password, permissions },
+        employee: employeeData as CreateEmployee
+      })
     },
     onSuccess: (data) => {
       query.setQueryData(['employees'], (oldData: Employee[]) => [
@@ -62,27 +48,8 @@ export default function CreateEmployeeForm(): ReactElement {
         data
       ])
     },
-    onError: async () => {
-      if (newAccount) {
-        await deleteAccount(newAccount.id)
-      }
-    }
-  })
-
-  const {
-    mutate: mutateCreateAccoount,
-    isError: isErrorCreateAccount,
-    isPending: isPendingAccount,
-    data: newAccount
-  } = useMutation({
-    mutationFn: async (data: FieldValues) => {
-      const res = await createAccount(data as CreateAccount)
-      return res
-    },
-    onSuccess: async (data) => {
-      const dataForm = getValues()
-      const newAccountParsed = parseData({ data: dataForm, id: data.id })
-      create(newAccountParsed)
+    onError: (error) => {
+      console.error('Error creating employee:', error)
     }
   })
 
@@ -96,20 +63,14 @@ export default function CreateEmployeeForm(): ReactElement {
     handleSubmit,
     formState: { errors },
     watch,
-    getValues,
     setValue
   } = useForm()
 
   return (
     <form
-      onSubmit={handleSubmit(async (data, event) => {
+      onSubmit={handleSubmit((data, event) => {
         event?.preventDefault()
-        mutateCreateAccoount({
-          username: data.username,
-          password: data.password,
-          repeatpassword: data.repeatpassword,
-          permissions: [Permissions[data.permissions]]
-        })
+        create(data)
       })}
       className='flex flex-column gap-4 pt-4'
     >
@@ -282,18 +243,19 @@ export default function CreateEmployeeForm(): ReactElement {
       </div>
 
       <div className='p-float-label'>
-        <InputText
-          type='number'
-          {...register('salary', {
-            required: {
-              value: true,
-              message: 'Campo requerido'
-            }
-          })}
+        <InputNumber
+          inputId='salary'
+          value={watch('salary') ?? ''}
+          onValueChange={(e) => {
+            setValue('salary', e.value)
+          }}
+          min={1}
+          max={9999999}
+          onBlur={() => {}}
           invalid={errors?.salary !== undefined}
           className='w-full'
         />
-        <label>Salario</label>
+        <label htmlFor='salary'>Salario</label>
       </div>
 
       <div className='p-float-label'>
@@ -368,7 +330,7 @@ export default function CreateEmployeeForm(): ReactElement {
         icon='pi pi-upload'
         iconPos='right'
         size='small'
-        loading={isPending || isPendingAccount}
+        loading={isPending}
         className='w-full'
       />
       {isPending && (
@@ -376,9 +338,6 @@ export default function CreateEmployeeForm(): ReactElement {
       )}
       {isSuccess && <small className='text-sm text-green-500'>Listo!</small>}
       {isError && <small className='text-sm text-red-500'>Error!</small>}
-      {isErrorCreateAccount && (
-        <small className='text-sm text-red-500'>Error creating account!</small>
-      )}
     </form>
   )
 }

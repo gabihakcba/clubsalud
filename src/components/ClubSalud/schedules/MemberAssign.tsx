@@ -3,7 +3,10 @@ import { Button } from 'primereact/button'
 import { Dropdown } from 'primereact/dropdown'
 import { FloatLabel } from 'primereact/floatlabel'
 import { getMembers } from 'queries/ClubSalud/members'
-import { createScheduleInscription, getScheduleInscriptionByScheduleId } from 'queries/ClubSalud/scheduleInscription'
+import {
+  createScheduleInscription,
+  getScheduleInscriptionByScheduleId
+} from 'queries/ClubSalud/scheduleInscription'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type Schedule } from 'utils/ClubSalud/types'
@@ -11,7 +14,7 @@ import { type Schedule } from 'utils/ClubSalud/types'
 interface params {
   schedule: Schedule
 }
-export default function InstructorAssign({ schedule }: params): ReactElement {
+export default function MemberAssign({ schedule }: params): ReactElement {
   const query = useQueryClient()
 
   const [membersFitlers, setMembersFilters] = useState<any>(null)
@@ -56,7 +59,9 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
   useEffect(() => {
     if (members && inscriptions) {
       const filters = members?.filter((member) => {
-        return inscriptions.every((inscription) => inscription.memberId !== member.id)
+        return inscriptions.every(
+          (inscription) => inscription.memberId !== member.id
+        )
       })
       setMembersFilters(filters)
     }
@@ -94,7 +99,9 @@ export default function InstructorAssign({ schedule }: params): ReactElement {
             setValue('memberId', e.value)
           }}
           className='w-full'
-          loading={loadingMembers || loadingInscriptions || membersFitlers === null}
+          loading={
+            loadingMembers || loadingInscriptions || membersFitlers === null
+          }
           invalid={errors?.member !== undefined}
         />
 

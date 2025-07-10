@@ -29,7 +29,7 @@ import { getSchedules } from 'queries/ClubSalud/schedules'
 import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
 import HasRole from 'components/ClubSalud/HasRole'
-import { argGetMonth, argGetYear } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 const paidAndRemaining = (
   payments: InstructorPayment[],
@@ -50,13 +50,13 @@ const currentReport = (
   price: priceType,
   setTotal
 ): void => {
-  const activeSchedules = schedules.filter((sche: Schedule) => sche.charge)
+  const activeSchedules = schedules.filter((sche: Schedule) => sche.InstructorInCharge)
 
   const totalHoursPerWeek = activeSchedules.length / 2
   const hoursTitlePerWeek =
-    activeSchedules.filter((sche: Schedule) => sche.charge?.degree).length / 2
+    activeSchedules.filter((sche: Schedule) => sche.InstructorInCharge?.degree).length / 2
   const hoursNoTitlePerWeek =
-    activeSchedules.filter((sche: Schedule) => !sche.charge?.degree).length / 2
+    activeSchedules.filter((sche: Schedule) => !sche.InstructorInCharge?.degree).length / 2
 
   const amountTitlePerWeek = hoursTitlePerWeek * price.title
   const amountNoTitlePerWeek = hoursNoTitlePerWeek * price.notitle
@@ -99,7 +99,7 @@ export function InstructorPaymentsSection(): ReactElement {
     useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
-    'instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    'Instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
 
   const [price, setPrice] = useState<priceType | null>(null)
@@ -157,8 +157,8 @@ export function InstructorPaymentsSection(): ReactElement {
       setFilterPayments(
         instructorPayments.filter(
           (pay: InstructorPayment) =>
-            argGetMonth(pay.paymentDate) === selectedDate.month &&
-            argGetYear(pay.paymentDate) === selectedDate.year
+            DateUtils.getMonth(pay.paymentDate) === selectedDate.month &&
+            DateUtils.getYear(pay.paymentDate) === selectedDate.year
         )
       )
     } else if (instructorPayments) {
@@ -231,8 +231,8 @@ export function InstructorPaymentsSection(): ReactElement {
                 onChange={(e) => {
                   if (e.value) {
                     setSelectedDate({
-                      month: argGetMonth(e.value),
-                      year: argGetYear(e.value)
+                      month: DateUtils.getMonth(e.value),
+                      year: DateUtils.getYear(e.value)
                     })
                   }
                 }}
@@ -270,11 +270,11 @@ export function InstructorPaymentsSection(): ReactElement {
           header='ID'
         />
         <Column
-          field='instructor.name'
+          field='Instructor.name'
           header='Profesor'
         />
         <Column
-          field='instructor.dni'
+          field='Instructor.dni'
           header='DNI'
           filter
           filterPlaceholder='DNI'

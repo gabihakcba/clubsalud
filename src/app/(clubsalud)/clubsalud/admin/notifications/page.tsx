@@ -62,13 +62,11 @@ export default function NotificationsPage(): ReactElement {
           header='ID'
         />
         <Column
-          body={(data) => {
-            return <div>{JSON.stringify(data)}</div>
-          }}
+          field='Sender.username'
           header='De'
         />
         <Column
-          field='receiver.username'
+          field='Receiver.username'
           header='Para'
         />
         <Column
@@ -94,10 +92,10 @@ export default function NotificationsPage(): ReactElement {
         <Column
           body={(data: Notification) => {
             return (
-              data.sender?.memberAccount?.name ??
-              data.sender?.instructorAccount?.name ??
-              data.sender?.employeeAccount?.name ??
-              data.sender.username
+              data.Sender?.Member?.name ??
+              data.Sender?.Instructor?.name ??
+              data.Sender?.Employee?.name ??
+              data.Sender.username
             )
           }}
           header='De'
@@ -105,10 +103,10 @@ export default function NotificationsPage(): ReactElement {
         <Column
           body={(data) => {
             return (
-              data.receiver?.instructorAccount?.name ??
-              data.receiver?.memberAccount?.name ??
-              data.receiver?.employeeAccount?.name ??
-              data.receiver.username
+              data.Receiver?.instructorAccount?.name ??
+              data.Receiver?.memberAccount?.name ??
+              data.Receiver?.employeeAccount?.name ??
+              data.Receiver.username
             )
           }}
           header='Para'

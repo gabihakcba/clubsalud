@@ -2,7 +2,7 @@ import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Tag } from 'primereact/tag'
 import { type ReactElement } from 'react'
-import { argDate2Format } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Subscription } from 'utils/ClubSalud/types'
 
 export default function SubscriptionList({
@@ -40,22 +40,26 @@ export default function SubscriptionList({
         header='Fecha de inicio'
         field='initialDate'
         body={(subscription: Subscription) => (
-          <div>{argDate2Format(subscription.initialDate)}</div>
+          <div>{DateUtils.formatToDDMMYY(subscription.initialDate)}</div>
         )}
       />
       <Column
         header='Fecha de vencimiento'
         field='expirationDate'
         body={(subscription: Subscription) => (
-          <div>{argDate2Format(subscription.expirationDate)}</div>
+          <div>
+            {DateUtils.formatToDDMMYY(
+              DateUtils.newDate(subscription.expirationDate ?? '')
+            )}
+          </div>
         )}
       />
       <Column
         header='Alumno'
         body={(subscription: Subscription) => (
           <div>
-            {subscription.member.lastName} {subscription.member.name}{' '}
-            {subscription.member.dni}
+            {subscription.Member.lastName} {subscription.Member.name}{' '}
+            {subscription.Member.dni}
           </div>
         )}
       />

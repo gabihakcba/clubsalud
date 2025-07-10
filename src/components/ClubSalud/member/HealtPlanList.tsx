@@ -46,7 +46,7 @@ export default function HealthPlanList({
       <Dialog
         visible={isEditing}
         onShow={() => {
-          const ps = member.planSubscribed?.find(
+          const ps = member.HealthPlanSubscribed?.find(
             (elem) => elem.id === selectedHealth
           )
           const an = ps?.afiliateNumber
@@ -85,7 +85,7 @@ export default function HealthPlanList({
         </form>
       </Dialog>
       <DataTable
-        value={member.planSubscribed}
+        value={member.HealthPlanSubscribed}
         stripedRows
       >
         <Column

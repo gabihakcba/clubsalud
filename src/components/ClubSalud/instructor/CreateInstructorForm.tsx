@@ -1,33 +1,12 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import {
-  Permissions,
-  type CreateInstructor,
-  type CreateAccount
-} from 'utils/ClubSalud/types'
-import { createAccount, deleteAccount } from 'queries/ClubSalud/accounts'
+import { Permissions, type CreateInstructor } from 'utils/ClubSalud/types'
 import { createInstructor } from 'queries/ClubSalud/instructors'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
 import { ToggleButton } from 'primereact/togglebutton'
 import { Button } from 'primereact/button'
 import { Password } from 'primereact/password'
-
-const formToInstructor = (data: FieldValues, id: number): CreateInstructor => {
-  return {
-    name: data.name,
-    lastName: data.lastName,
-    dni: data.dni,
-    cuit: data?.cuit ? data.cuit : null,
-    phoneNumber: data.phoneNumber,
-    address: data.address,
-    email: data.email,
-    degree: data.degree,
-    cbu: data?.cbu,
-    alias: data?.alias ? data.alias : null,
-    accountId: id
-  }
-}
 
 export function CreateInstructorForm(): ReactElement {
   const [selectedDegree, setSelectedDegree] = useState<boolean>(false)
@@ -38,8 +17,7 @@ export function CreateInstructorForm(): ReactElement {
     handleSubmit,
     formState: { errors },
     setValue,
-    watch,
-    getValues
+    watch
   } = useForm()
 
   const {
@@ -48,33 +26,18 @@ export function CreateInstructorForm(): ReactElement {
     isSuccess: isSuccessC,
     isError: isErrorC
   } = useMutation({
-    mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
-      const newInstructor = formToInstructor(data, id)
-      return await createInstructor(newInstructor)
+    mutationFn: async (data: FieldValues) => {
+      const { username, password, permissions, repeatpassword, ...instructor } =
+        data
+
+      return await createInstructor({
+        account: { username, password, permissions },
+        instructor: instructor as CreateInstructor
+      })
     },
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['ins'] })
       await query.refetchQueries({ queryKey: ['acc'] })
-    },
-    onError: async () => {
-      if (newAccount) {
-        await deleteAccount(newAccount.id)
-      }
-    }
-  })
-
-  const {
-    mutate: mutateCreateAccoount,
-    isError: isErrorCreateAccount,
-    isPending: isPendingAccount,
-    data: newAccount
-  } = useMutation({
-    mutationFn: async (data: FieldValues) => {
-      return await createAccount(data as CreateAccount)
-    },
-    onSuccess: async (data) => {
-      const dataForm = getValues()
-      mutateC({ data: dataForm, id: data.id })
     }
   })
 
@@ -86,17 +49,7 @@ export function CreateInstructorForm(): ReactElement {
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        mutateCreateAccoount({
-          username: data.username,
-          password: data.password,
-          permissions: [Permissions[data.permissions]]
-        })
-        if (isErrorCreateAccount) {
-          alert('No se pudo crear la cuenta')
-        }
-        if (isErrorC) {
-          alert('No se pudo crear el perfil de profesor')
-        }
+        mutateC(data)
       })}
       className='relative rounded h-max w-max flex flex-column gap-4 pt-4'
       id='createFormIns'
@@ -354,7 +307,7 @@ export function CreateInstructorForm(): ReactElement {
           label='Crear'
           icon='pi pi-upload'
           iconPos='right'
-          loading={isPendingC || isPendingAccount}
+          loading={isPendingC}
           className='w-full'
         />
         <small className='w-full flex flex-row align-items-center justify-content-center'>

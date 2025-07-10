@@ -8,7 +8,7 @@ import { useModal } from 'utils/ClubSalud/useModal'
 import AttendanceInstructorForm from './AttendanceInstructorForm'
 import { getInstructors } from 'queries/ClubSalud/instructors'
 import { useState } from 'react'
-import { argDate2Format } from '../../../utils/ClubSalud/dates'
+import { DateUtils } from '../../../utils/ClubSalud/dates'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { deleteAttendanceInstructor } from 'queries/ClubSalud/attendanceInstructor'
 import { Toast } from 'primereact/toast'
@@ -55,7 +55,7 @@ export default function AttendanceAdmTable(): ReactElement {
   }, [filter, instructors])
 
   const allowExpansion = (rowData): boolean => {
-    return rowData.attendanceInstructor.length > 0
+    return rowData.AttendanceInstructor.length > 0
   }
 
   const confirm = (data): void => {
@@ -108,18 +108,18 @@ export default function AttendanceAdmTable(): ReactElement {
         <ConfirmDialog />
 
         <DataTable
-          value={data.attendanceInstructor}
+          value={data.AttendanceInstructor}
           scrollable
           scrollHeight='20dvh'
         >
           <Column
             field='date'
             header='Fecha'
-            body={(data) => <div>{argDate2Format(data.date as Date)}</div>}
+            body={(data) => <div>{DateUtils.formatToDDMMYY(data.date as Date)}</div>}
             sortable
           />
           <Column
-            field='class.name'
+            field='Class.name'
             header='Clase'
             sortable
           />

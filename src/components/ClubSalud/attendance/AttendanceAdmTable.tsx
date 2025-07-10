@@ -8,7 +8,7 @@ import { useEffect, type ReactElement } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import AttendanceForm from './AttendanceForm'
 import { useState } from 'react'
-import { argDate2Format } from '../../../utils/ClubSalud/dates'
+import { DateUtils } from '../../../utils/ClubSalud/dates'
 import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { type Member } from 'utils/ClubSalud/types'
@@ -41,24 +41,24 @@ export default function AttendanceAdmTable(): ReactElement {
   }, [filter, members])
 
   const allowExpansion = (rowData): boolean => {
-    return rowData.memberAttendance.length > 0
+    return rowData.Attendance.length > 0
   }
 
   const rowExpansionTemplate = (data): ReactElement => {
     return (
       <DataTable
-        value={data.memberAttendance}
+        value={data.Attendance}
         scrollable
         scrollHeight='20dvh'
       >
         <Column
           field='date'
           header='Fecha'
-          body={(data) => <div>{argDate2Format(data.date as Date)}</div>}
+          body={(data) => <div>{DateUtils.formatToDDMMYY(data.date as Date)}</div>}
           sortable
         />
         <Column
-          field='class.name'
+          field='Class.name'
           header='Clase'
           sortable
         />

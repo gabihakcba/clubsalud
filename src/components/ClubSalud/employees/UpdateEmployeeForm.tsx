@@ -9,7 +9,7 @@ import { Dropdown } from 'primereact/dropdown'
 import { Calendar } from 'primereact/calendar'
 import { Button } from 'primereact/button'
 import { updateEmployee } from 'queries/ClubSalud/employees'
-import { arg2Date, argDate } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 interface param {
   employee: Employee
@@ -37,6 +37,9 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
     onSuccess: async (data) => {
       await query.refetchQueries({ queryKey: ['employees'] })
       reset()
+    },
+    onError: (error) => {
+      console.error('Error updating employee:', error)
     }
   })
 
@@ -68,7 +71,7 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
         }
 
         if (Number(data.salary) !== Number(employee.salary)) {
-          parsed.lastSalaryUpdate = argDate()
+          parsed.lastSalaryUpdate = DateUtils.getCurrentDate()
         }
         mutateU(parsed)
       })}
@@ -270,7 +273,7 @@ export default function UpdateEmployeeForm({ employee }: param): ReactElement {
         <Calendar
           value={
             employee.lastSalaryUpdate
-              ? arg2Date(employee.lastSalaryUpdate)
+              ? DateUtils.newDate(employee.lastSalaryUpdate)
               : undefined
           }
           disabled

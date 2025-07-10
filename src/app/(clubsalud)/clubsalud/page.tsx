@@ -10,8 +10,7 @@ import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import Image from 'next/image'
 import logo from '../../../../public/logos/logo_large.png'
-import { getUserToken, verifyToken } from 'utils/ClubSalud/auth'
-import { parse } from 'cookie'
+import { hasValidClubSaludToken, setDataSessionClubSalud } from 'utils/ClubSalud/auth'
 
 interface params {
   data: FieldValues
@@ -23,14 +22,10 @@ const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
   const user: LogIn = data as LogIn
   setLoading('loading')
   try {
-    await signInAccount(user)
-    const token = getUserToken()
-    const userLoged = await verifyToken(token)
-    if (userLoged) {
-      localStorage.setItem('user', JSON.stringify(userLoged))
-      setLoading('success')
-      router.push('clubsalud/admin')
-    }
+    const data = await signInAccount(user)
+    setDataSessionClubSalud(data)
+    setLoading('success')
+    router.push('clubsalud/admin')
   } catch (error) {
     setLoading('error')
   }
@@ -47,10 +42,7 @@ export default function ClubSaludLogin(): ReactElement {
   } = useForm()
 
   useEffect(() => {
-    const cookies: Record<string, string | undefined> = parse(
-      document.cookie || ''
-    )
-    if (cookies.auth) {
+    if (hasValidClubSaludToken()) {
       router.push('/clubsalud/admin')
     }
   }, [router])

@@ -23,6 +23,7 @@ export default function CreateNote({
       await query.refetchQueries({ queryKey: ['unreadednotes'] })
     }
   })
+
   return (
     <form
       action=''

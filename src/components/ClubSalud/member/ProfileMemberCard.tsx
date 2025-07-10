@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext'
 import { deleteMember, updateMember } from 'queries/ClubSalud/members'
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { arg2Date } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Account,
   type CreateMember,
@@ -60,10 +60,10 @@ export default function ProfileMemberCard({
     setValue('cuit', member.cuit ?? null)
     setValue('phoneNumber', member.phoneNumber)
     setValue('address', member.address)
-    setValue('inscriptionDate', arg2Date(member.inscriptionDate))
+    setValue('inscriptionDate', DateUtils.newDate(member.inscriptionDate))
     setValue(
       'cancelationDate',
-      member.cancelationDate ? arg2Date(member.cancelationDate) : null
+      member.cancelationDate ? DateUtils.newDate(member.cancelationDate) : null
     )
     setValue('cancelationReason', member.cancelationReason ?? null)
     setValue('derivedBy', member.derivedBy)
@@ -71,7 +71,7 @@ export default function ProfileMemberCard({
     setValue('state', MemberSate[member.state])
     setSelected(MemberSate[member.state])
     setValue('remainingClasses', member.remainingClasses ?? null)
-    setValue('birthday', arg2Date(member.birthday))
+    setValue('birthday', DateUtils.newDate(member.birthday))
   }, [member])
 
   const {
@@ -211,7 +211,7 @@ export default function ProfileMemberCard({
           <li className='p-float-label flex flex-row align-items-center justify-content-between w-full mb-2'>
             <Calendar
               id='birthday'
-              value={watch('birthday') ?? arg2Date(member.birthday)}
+              value={watch('birthday') ?? DateUtils.newDate(member.birthday)}
               {...register('birthday', {
                 required: {
                   value: true,
@@ -267,7 +267,7 @@ export default function ProfileMemberCard({
               id='inscriptionDate'
               // form={`member${member.id}`}
               value={
-                watch('inscriptionDate') ?? arg2Date(member.inscriptionDate)
+                watch('inscriptionDate') ?? DateUtils.newDate(member.inscriptionDate)
               }
               {...register('inscriptionDate', {
                 required: {
@@ -292,7 +292,7 @@ export default function ProfileMemberCard({
               id='cancelationDate'
               value={
                 watch('cancelationDate') ??
-                (member.cancelationDate && arg2Date(member.cancelationDate)) ??
+                (member.cancelationDate && DateUtils.newDate(member.cancelationDate)) ??
                 null
               }
               {...register('cancelationDate')}

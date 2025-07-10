@@ -91,6 +91,22 @@ export default function UpdatePromotionForm({
         />
         <label>Cantidad de veces por semana</label>
       </li>
+      <li className='p-float-label'>
+        <InputText
+          type='number'
+          id='amountPrice'
+          form={'promotion'}
+          defaultValue={promotion.amountPrice}
+          {...register('amountPrice', {
+            required: {
+              value: true,
+              message: 'El campo es requerido'
+            }
+          })}
+          invalid={errors?.amountPrice !== undefined}
+        />
+        <label>Precio</label>
+      </li>
       <Button
         type='submit'
         label='Enviar'
