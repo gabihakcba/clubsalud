@@ -13,7 +13,6 @@ import { type FieldValues, useForm } from 'react-hook-form'
 import {
   JobPosition,
   type CreateEmployee,
-  type Employee,
   Permissions
 } from 'utils/ClubSalud/types'
 
@@ -42,11 +41,8 @@ export default function CreateEmployeeForm(): ReactElement {
         employee: employeeData as CreateEmployee
       })
     },
-    onSuccess: (data) => {
-      query.setQueryData(['employees'], (oldData: Employee[]) => [
-        ...oldData,
-        data
-      ])
+    onSuccess: async (data) => {
+      await query.refetchQueries({ queryKey: ['employees'] })
     },
     onError: (error) => {
       console.error('Error creating employee:', error)

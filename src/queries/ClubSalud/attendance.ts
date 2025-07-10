@@ -24,7 +24,9 @@ export const createAttendance = async ({
       )
     }
   } catch (error) {
-    const message = error?.response ? error.response.data.message as string : 'Problemas con el servidor'
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
     throw new Error(message)
   }
 }
@@ -36,7 +38,9 @@ export const getDailyAttendance = async (date: Date): Promise<Attendance[]> => {
     )
     return response.data
   } catch (error) {
-    const message = error?.response ? error.response.data.message as string : 'Problemas con el servidor'
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
     throw new Error(message)
   }
 }
