@@ -7,7 +7,7 @@ import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { deleteHealthSubscribed, editHealthSubscribed } from 'queries/ClubSalud/healthSus'
 import { type ReactElement, useState } from 'react'
-import { type Member } from 'utils/ClubSalud/types'
+import { type HealthPlanSubscribed, type Member } from 'utils/ClubSalud/types'
 import { useModal } from 'utils/ClubSalud/useModal'
 
 export default function HealthPlanList({
@@ -46,7 +46,7 @@ export default function HealthPlanList({
       <Dialog
         visible={isEditing}
         onShow={() => {
-          const ps = member.planSubscribed?.find(
+          const ps = member.HealthPlanSubscribed?.find(
             (elem) => elem.id === selectedHealth
           )
           const an = ps?.afiliateNumber
@@ -85,7 +85,7 @@ export default function HealthPlanList({
         </form>
       </Dialog>
       <DataTable
-        value={member.planSubscribed}
+        value={member.HealthPlanSubscribed}
         stripedRows
       >
         <Column
@@ -94,7 +94,8 @@ export default function HealthPlanList({
         />
         <Column
           header='Nombre'
-          field='plan.name'
+          field='HealthPlan.name'
+          body={(row: HealthPlanSubscribed) => <p>{row.HealthPlan?.name}</p>}
         />
         <Column
           className='border-1'

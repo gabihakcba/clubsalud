@@ -1,24 +1,32 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
-import { type RegistrationForm, type CreateRegistrationForm } from 'utils/ClubSalud/types'
+import { apiClubSalud } from 'utils/axios.service'
+import {
+  type RegistrationForm,
+  type CreateRegistrationForm
+} from 'utils/ClubSalud/types'
 
 export const createRegistrationForm = async (
   form: CreateRegistrationForm
 ): Promise<RegistrationForm> => {
-  const response = await axios.post(`${path()}/api/registrationForm`, form)
-  return response.data
+  try {
+    const response = await apiClubSalud.post('/registration-form', form)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
 
 export const updateRegistrationForm = async (
   form: RegistrationForm
 ): Promise<RegistrationForm> => {
-  const response = await axios.patch(`${path()}/api/registrationForm`, form)
+  const { id, ...reg } = form
+  const response = await apiClubSalud.patch(`/registration-form/${id}`, reg)
   return response.data
 }
 
 export const deleteRegistrationForm = async (
   id: number
 ): Promise<RegistrationForm> => {
-  const response = await axios.delete(`${path()}/api/registrationForm`, { data: id })
+  const response = await apiClubSalud.delete(`/registration-form/${id}`)
   return response.data
 }

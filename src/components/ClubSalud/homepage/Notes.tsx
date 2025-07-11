@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { type ReactElement } from 'react'
-import { getCurrentUser } from 'utils/ClubSalud/auth'
 import CreateNote from './CreateNote'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { getNotesReaded, getNotesUnreaded } from 'queries/ClubSalud/notes'
 import NotesTable from './NotesTable'
+import { getDataSession } from 'utils/Medintt/session'
 
 export default function NotesPage(): ReactElement {
   const [create, openCreate, closeCreate] = useModal(false)
@@ -14,8 +14,8 @@ export default function NotesPage(): ReactElement {
 
   const { data: userId, isLoading: isLoadingUser } = useQuery({
     queryKey: ['user'],
-    queryFn: async () => {
-      const user = await getCurrentUser()
+    queryFn: () => {
+      const user = getDataSession().user.id
       return user
     }
   })

@@ -1,7 +1,6 @@
 'use client'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-// import MemberCard from 'components/member/MemberCard'
 import { useRouter } from 'next/navigation'
 import { deleteAccount } from 'queries/ClubSalud/accounts'
 import { type Account } from 'utils/ClubSalud/types'
@@ -91,19 +90,19 @@ export default function AccountInfo({ account }: params): ReactElement {
       <Divider />
       <h3>Perfiles Asociados</h3>
       <div className='flex flex-column md:flex-row w-full'>
-        {account?.instructorAccount && (
+        {account?.Instructor && (
           <Accordion className='w-full h-full'>
             <AccordionTab header='Perfil de Profesor'>
               <InstructorCard
-                instructor={account.instructorAccount}
+                instructor={account.Instructor}
               ></InstructorCard>
             </AccordionTab>
           </Accordion>
         )}
-        {account?.memberAccount && (
+        {account?.Member && (
           <Accordion className='w-full h-full'>
             <AccordionTab header='Perfil de Alumno'>
-              <MemberCard member={account.memberAccount}></MemberCard>
+              <MemberCard member={account.Member}></MemberCard>
             </AccordionTab>
           </Accordion>
         )}

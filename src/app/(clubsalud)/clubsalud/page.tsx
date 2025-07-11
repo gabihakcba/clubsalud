@@ -3,42 +3,22 @@
 import { useRouter } from 'next/navigation'
 import { type ReactElement, useEffect, useState } from 'react'
 import { signInAccount } from 'queries/ClubSalud/login'
-import { type Setter, type LogIn } from 'utils/ClubSalud/types'
+import { type LogIn } from 'utils/ClubSalud/types'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import Image from 'next/image'
 import logo from '../../../../public/logos/logo_large.png'
-import { getUserToken, verifyToken } from 'utils/ClubSalud/auth'
-import { parse } from 'cookie'
-
-interface params {
-  data: FieldValues
-  router: AppRouterInstance
-  setLoading: Setter
-}
-
-const logIn = async ({ data, router, setLoading }: params): Promise<void> => {
-  const user: LogIn = data as LogIn
-  setLoading('loading')
-  try {
-    await signInAccount(user)
-    const token = getUserToken()
-    const userLoged = await verifyToken(token)
-    if (userLoged) {
-      localStorage.setItem('user', JSON.stringify(userLoged))
-      setLoading('success')
-      router.push('clubsalud/admin')
-    }
-  } catch (error) {
-    setLoading('error')
-  }
-}
+import {
+  hasValidClubSaludToken,
+  setDataSessionClubSalud
+} from 'utils/ClubSalud/auth'
+import { useMutation } from '@tanstack/react-query'
 
 export default function ClubSaludLogin(): ReactElement {
   const router: AppRouterInstance = useRouter()
-  const [loading, setLoading] = useState('false')
+  const [loading, setLoading] = useState<string>('')
 
   const {
     register,
@@ -46,11 +26,25 @@ export default function ClubSaludLogin(): ReactElement {
     formState: { errors }
   } = useForm()
 
+  const { mutate: login } = useMutation({
+    mutationKey: ['login'],
+    mutationFn: async (data: FieldValues) => {
+      setLoading('Cargando')
+      const response = await signInAccount(data as LogIn)
+      return response
+    },
+    onSuccess: (data) => {
+      setDataSessionClubSalud(data)
+      router.push('clubsalud/admin')
+    },
+    onError: (e) => {
+      console.log(e.message)
+      setLoading(e.message)
+    }
+  })
+
   useEffect(() => {
-    const cookies: Record<string, string | undefined> = parse(
-      document.cookie || ''
-    )
-    if (cookies.auth) {
+    if (hasValidClubSaludToken()) {
       router.push('/clubsalud/admin')
     }
   }, [router])
@@ -62,7 +56,7 @@ export default function ClubSaludLogin(): ReactElement {
         className='flex flex-column gap-4 align-items-center'
         onSubmit={handleSubmit((data, event) => {
           event?.preventDefault()
-          void logIn({ data, router, setLoading })
+          login(data)
         })}
       >
         <Image
@@ -117,11 +111,9 @@ export default function ClubSaludLogin(): ReactElement {
               className='px-2'
             ></Button>
           </div>
-          {loading === 'error' && (
-            <span className='text-red-500'>
-              Contraseña y/o usuario incorrecto
-            </span>
-          )}
+          <span className='w-full text-red-500 text-center'>
+            {loading}
+          </span>
         </div>
       </form>
     </div>

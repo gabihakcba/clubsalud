@@ -8,6 +8,7 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/ClubSalud/members'
 import { deleteParticularPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Payment,
   type Member,
@@ -49,12 +50,12 @@ export default function BillTable(): ReactElement {
   })
 
   const allowExpansion = (rowData: Member): boolean => {
-    const subs = rowData.memberSubscription?.length
+    const subs = rowData.Subscription?.length
     return subs !== undefined && subs > 0
   }
 
   const allowExpansionPayments = (rowData: Subscription): boolean => {
-    const pays = rowData.payment?.length
+    const pays = rowData.Payment?.length
     return pays !== undefined && pays > 0
   }
 
@@ -62,7 +63,7 @@ export default function BillTable(): ReactElement {
     return (
       <>
         <ConfirmDialog />
-        <DataTable value={data.payment}>
+        <DataTable value={data.Payment}>
           <Column
             field='id'
             header='ID'
@@ -74,6 +75,7 @@ export default function BillTable(): ReactElement {
           <Column
             field='date'
             header='Fecha'
+            body={(row: Payment) => <p>{DateUtils.formatToDDMMYY(row.date)}</p>}
           />
           <Column
             body={(e) => {
@@ -109,7 +111,7 @@ export default function BillTable(): ReactElement {
   const rowExpansionTemplate = (data: Member): ReactElement => {
     return (
       <DataTable
-        value={data.memberSubscription}
+        value={data.Subscription}
         header='Suscripciones'
         expandedRows={expandedRowsPayments}
         onRowToggle={(e) => {
@@ -134,15 +136,18 @@ export default function BillTable(): ReactElement {
         <Column
           field='expirationDate'
           header='Vencimiento'
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.expirationDate ?? '')}</p>
+          )}
           sortable
         />
         <Column
           header='Oferta'
-          field='plan.title'
+          field='Plan.title'
         />
         <Column
           header='Plan'
-          field='promotion.title'
+          field='Promotion.title'
         />
         <Column
           field='paid'

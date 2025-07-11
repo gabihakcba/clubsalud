@@ -9,6 +9,7 @@ import { Tag } from 'primereact/tag'
 import { getMembers } from 'queries/ClubSalud/members'
 import { deletePlanPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   Permissions,
   type BilledConsultation,
@@ -29,7 +30,7 @@ export default function HealthPlanBillTable(): ReactElement {
     dni: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
     lastName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
-    'subscription.member.dni': {
+    'Subscription.Member.dni': {
       value: null,
       matchMode: FilterMatchMode.STARTS_WITH
     }
@@ -52,12 +53,12 @@ export default function HealthPlanBillTable(): ReactElement {
   })
 
   const allowExpansion = (rowData: Member): boolean => {
-    const subs = rowData.memberSubscription?.length
+    const subs = rowData.Subscription?.length
     return subs !== undefined && subs > 0
   }
 
   const allowExpansionPayments = (rowData: Subscription): boolean => {
-    const pays = rowData.billedConsultation?.length
+    const pays = rowData.BilledConsultation?.length
     return pays !== undefined && pays > 0
   }
 
@@ -65,7 +66,7 @@ export default function HealthPlanBillTable(): ReactElement {
     return (
       <>
         <ConfirmDialog />
-        <DataTable value={data.billedConsultation}>
+        <DataTable value={data.BilledConsultation}>
           <Column
             field='id'
             header='ID'
@@ -79,6 +80,9 @@ export default function HealthPlanBillTable(): ReactElement {
           <Column
             field='date'
             header='Fecha'
+            body={(row: BilledConsultation) => (
+              <p>{DateUtils.formatToDDMMYY(row.date)}</p>
+            )}
           />
           <Column
             field='autorizationNumber'
@@ -118,7 +122,7 @@ export default function HealthPlanBillTable(): ReactElement {
   const rowExpansionTemplate = (data: Member): ReactElement => {
     return (
       <DataTable
-        value={data.memberSubscription}
+        value={data.Subscription}
         header='Suscripciones'
         expandedRows={expandedRowsPayments}
         onRowToggle={(e) => {
@@ -139,14 +143,26 @@ export default function HealthPlanBillTable(): ReactElement {
           field='initialDate'
           header='Inicio'
           sortable
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.initialDate ?? '')}</p>
+          )}
         />
         <Column
           field='expirationDate'
           header='Vencimiento'
           sortable
+          body={(row: Subscription) => (
+            <p>{DateUtils.formatToDDMMYY(row.expirationDate ?? '')}</p>
+          )}
         />
-        <Column header='Oferta' field='plan.title'/>
-        <Column header='Plan' field='promotion.title'/>
+        <Column
+          header='Oferta'
+          field='Plan.title'
+        />
+        <Column
+          header='Plan'
+          field='Promotion.title'
+        />
         <Column
           field='paid'
           header='Pagado'

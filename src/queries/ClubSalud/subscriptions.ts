@@ -1,49 +1,57 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Subscription,
-  type CreateSubscription,
-  type Member
+  type CreateSubscription
 } from 'utils/ClubSalud/types'
 
 export const setSubscription = async (
   subscription: CreateSubscription
 ): Promise<Subscription> => {
-  const response = await axios.post(`${path()}/api/subscriptions`, subscription)
-  return response.data
+  try {
+    // const format = moment(DateUtils.newDate(subscription.initialDate)).format()
+    const initialDate = DateUtils.toBackendFormat(subscription.initialDate)
+    const date = DateUtils.toBackendFormat(subscription.date)
+
+    const response = await apiClubSalud.post('/subscription', {
+      ...subscription,
+      initialDate,
+      date
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
 
 export const getSubscriptions = async (): Promise<Subscription[]> => {
-  const response = await axios.get(`${path()}/api/subscriptions`)
+  const response = await apiClubSalud.get('/subscription')
   return response.data
 }
 
 export const deleteSubscription = async (id: number): Promise<Subscription> => {
-  const response = await axios.delete(`${path()}/api/subscriptions`, {
-    data: { id }
-  })
+  const response = await apiClubSalud.delete(`/subscription/${id}`)
   return response.data
 }
 
-export const updateSubscription = async (
+export const updateIsByOS = async (
   id: number,
-  type: 'active' | 'isByOS' = 'active'
+  isByOS: boolean
 ): Promise<Subscription> => {
-  const response = await axios.patch(
-    `${path()}/api/subscriptions?action=${type}`,
-    {
-      id
-    }
-  )
+  const response = await apiClubSalud.patch(`/subscription/${id}`, { isByOS })
   return response.data
 }
 
-export const getOrderedSubscriptions = async (): Promise<Member[]> => {
-  const response = await axios.get(`${path()}/api/subscriptions/expired`)
+export const updateState = async (
+  id: number,
+  active: boolean
+): Promise<Subscription> => {
+  const response = await apiClubSalud.patch(`/subscription/${id}`, { active })
   return response.data
 }
 
 export const getSubscriptionsToBill = async (): Promise<Subscription[]> => {
-  const response = await axios.get(`${path()}/api/subscriptionstobill`)
+  const response = await apiClubSalud.get('/subscription/to-bill')
   return response.data
 }

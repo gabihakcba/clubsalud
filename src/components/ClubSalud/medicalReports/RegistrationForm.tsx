@@ -33,90 +33,90 @@ export default function RegistrationMemberForm({
   const [editForm, setEditForm] = useState<boolean>(true)
   // Form fields
   const [memberId, setMemberId] = useState<number | null>(
-    member?.registrationForm?.memberId ?? null
+    member?.RegistrationForm?.memberId ?? null
   )
   const [instructorId, setInstructorId] = useState<number | null>(
-    member?.registrationForm?.instructorId ?? null
+    member?.RegistrationForm?.instructorId ?? null
   )
   const [evaluationDate, setEvaluationDate] = useState<Date>(
-    moment(member?.registrationForm?.evaluationDate).toDate() ??
+    moment(member?.RegistrationForm?.evaluationDate).toDate() ??
       moment().toDate()
   )
   const [hasHypertension, setHasHypertension] = useState<boolean>(
-    member?.registrationForm?.hasHypertension ?? false
+    member?.RegistrationForm?.hasHypertension ?? false
   )
   const [hasDiabetes, setHasDiabetes] = useState<boolean>(
-    member?.registrationForm?.hasDiabetes ?? false
+    member?.RegistrationForm?.hasDiabetes ?? false
   )
   const [hasHypercholesterolemia, setHasHypercholesterolemia] =
     useState<boolean>(
-      member?.registrationForm?.hasHypercholesterolemia ?? false
+      member?.RegistrationForm?.hasHypercholesterolemia ?? false
     )
   const [hasHypertriglyceridemia, setHasHypertriglyceridemia] =
     useState<boolean>(
-      member?.registrationForm?.hasHypertriglyceridemia ?? false
+      member?.RegistrationForm?.hasHypertriglyceridemia ?? false
     )
   const [hasStableHeartFailure, setHasStableHeartFailure] = useState<boolean>(
-    member?.registrationForm?.hasStableHeartFailure ?? false
+    member?.RegistrationForm?.hasStableHeartFailure ?? false
   )
   const [hasStableIschemicHeartDisease, setHasStableIschemicHeartDisease] =
     useState<boolean>(
-      member?.registrationForm?.hasStableIschemicHeartDisease ?? false
+      member?.RegistrationForm?.hasStableIschemicHeartDisease ?? false
     )
   const [
     hasChronicObstructivePulmonaryDisease,
     setHasChronicObstructivePulmonaryDisease
   ] = useState<boolean>(
-    member?.registrationForm?.hasChronicObstructivePulmonaryDisease ?? false
+    member?.RegistrationForm?.hasChronicObstructivePulmonaryDisease ?? false
   )
   const [hasAsthma, setHasAsthma] = useState<boolean>(
-    member?.registrationForm?.hasAsthma ?? false
+    member?.RegistrationForm?.hasAsthma ?? false
   )
   const [hasOncologicalDisease, setHasOncologicalDisease] = useState<boolean>(
-    member?.registrationForm?.hasOncologicalDisease ?? false
+    member?.RegistrationForm?.hasOncologicalDisease ?? false
   )
   const [oncologicalDiseaseStatus, setOncologicalDiseaseStatus] = useState<
   OncologicalDiseaseStatus | undefined
-  >(member?.registrationForm?.oncologicalDiseaseStatus ?? undefined)
+  >(member?.RegistrationForm?.oncologicalDiseaseStatus ?? undefined)
   const [hasChronicKidneyFailure, setHasChronicKidneyFailure] =
     useState<boolean>(
-      member?.registrationForm?.hasChronicKidneyFailure ?? false
+      member?.RegistrationForm?.hasChronicKidneyFailure ?? false
     )
   const [hasObesity, setHasObesity] = useState<boolean>(
-    member?.registrationForm?.hasObesity ?? false
+    member?.RegistrationForm?.hasObesity ?? false
   )
   const [hasRecentTrauma, setHasRecentTrauma] = useState<boolean>(
-    member?.registrationForm?.hasRecentTrauma ?? false
+    member?.RegistrationForm?.hasRecentTrauma ?? false
   )
   const [traumaLocation, setTraumaLocation] = useState<string | undefined>(
-    member?.registrationForm?.traumaLocation ?? undefined
+    member?.RegistrationForm?.traumaLocation ?? undefined
   )
   const [traumaDate, setTraumaDate] = useState<Date | undefined>(
-    moment(member?.registrationForm?.traumaDate).toDate() ?? undefined
+    moment(member?.RegistrationForm?.traumaDate).toDate() ?? undefined
   )
   const [hasRecentSurgery, setHasRecentSurgery] = useState<boolean>(
-    member?.registrationForm?.hasRecentSurgery ?? false
+    member?.RegistrationForm?.hasRecentSurgery ?? false
   )
   const [surgeryLocation, setSurgeryLocation] = useState<string | undefined>(
-    member?.registrationForm?.surgeryLocation ?? undefined
+    member?.RegistrationForm?.surgeryLocation ?? undefined
   )
   const [surgeryDate, setSurgeryDate] = useState<Date | undefined>(
-    moment(member?.registrationForm?.surgeryDate).toDate() ?? undefined
+    moment(member?.RegistrationForm?.surgeryDate).toDate() ?? undefined
   )
   const [hasSarcopenia, setHasSarcopenia] = useState<boolean>(
-    member?.registrationForm?.hasSarcopenia ?? false
+    member?.RegistrationForm?.hasSarcopenia ?? false
   )
   const [isUnderweight, setIsUnderweight] = useState<boolean>(
-    member?.registrationForm?.isUnderweight ?? false
+    member?.RegistrationForm?.isUnderweight ?? false
   )
   const [hasFallsLastSixMonths, setHasFallsLastSixMonths] = useState<boolean>(
-    member?.registrationForm?.hasFallsLastSixMonths ?? false
+    member?.RegistrationForm?.hasFallsLastSixMonths ?? false
   )
   const [fallsPerMonth, setFallsPerMonth] = useState<number | undefined>(
-    member?.registrationForm?.fallsPerMonth ?? undefined
+    member?.RegistrationForm?.fallsPerMonth ?? undefined
   )
   const [otherConditions, setOtherConditions] = useState<string | undefined>(
-    member?.registrationForm?.otherConditions ?? undefined
+    member?.RegistrationForm?.otherConditions ?? undefined
   )
 
   const { data: instructors, isLoading: isLoadingInstructors } = useQuery({
@@ -174,7 +174,7 @@ export default function RegistrationMemberForm({
 
   useMountEffect(() => {
     msgs.current?.clear()
-    if (member?.registrationForm) {
+    if (member?.RegistrationForm) {
       msgs.current?.show({
         id: '1',
         sticky: true,
@@ -197,7 +197,7 @@ export default function RegistrationMemberForm({
 
   useEffect(() => {
     setMemberId(member?.id ?? null)
-    setEditForm(member?.registrationForm === null)
+    setEditForm(member?.RegistrationForm === null)
   }, [member])
 
   return (
@@ -238,10 +238,10 @@ export default function RegistrationMemberForm({
               fallsPerMonth,
               otherConditions
             }
-            if (member?.registrationForm) {
+            if (member?.RegistrationForm) {
               updateForm({
-                id: member.registrationForm.id,
-                evaluationNumber: member.registrationForm.evaluationNumber,
+                id: member.RegistrationForm.id,
+                evaluationNumber: member.RegistrationForm.evaluationNumber,
                 ...data
               })
             } else {
@@ -727,7 +727,7 @@ export default function RegistrationMemberForm({
 
           <div className='w-full flex flex-row justify-content-between align-items-center'>
             <Button
-              label={member?.registrationForm ? 'Actualizar' : 'Guardar'}
+              label={member?.RegistrationForm ? 'Actualizar' : 'Guardar'}
               type='submit'
               size='small'
               icon={

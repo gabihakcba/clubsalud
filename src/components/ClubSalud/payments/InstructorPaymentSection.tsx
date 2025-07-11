@@ -2,15 +2,7 @@
 
 import { type ReactElement, useState, useEffect } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
-import {
-  type priceType,
-  type InstructorPayment,
-  type InstructorPrice,
-  type Schedule,
-  type reportType,
-  type dateType,
-  Permissions
-} from 'utils/ClubSalud/types'
+import { type InstructorPayment, type dateType } from 'utils/ClubSalud/types'
 import CreateInstructorPaymentForm from './CreateInstructorPaymentForm'
 import { DataTable } from 'primereact/datatable'
 import { Button } from 'primereact/button'
@@ -20,74 +12,12 @@ import { confirmDialog } from 'primereact/confirmdialog'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   deleteInstructorPayment,
-  getInstructorPayments,
-  getInstructorPrice
+  getInstructorPayments
 } from 'queries/ClubSalud/instructorPayments'
 import { FilterMatchMode } from 'primereact/api'
 import { InstructorPriceTable } from './InstructorPriceTable'
-import { getSchedules } from 'queries/ClubSalud/schedules'
-import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
-import HasRole from 'components/ClubSalud/HasRole'
-import { argGetMonth, argGetYear } from 'utils/ClubSalud/dates'
-
-const paidAndRemaining = (
-  payments: InstructorPayment[],
-  total: number,
-  setPaid,
-  setRemaining
-): void => {
-  const paid = payments.reduce(
-    (acc: number, current: InstructorPayment) => acc + current.amount,
-    0
-  )
-  setPaid(paid)
-  setRemaining(total - paid)
-}
-
-const currentReport = (
-  schedules: Schedule[],
-  price: priceType,
-  setTotal
-): void => {
-  const activeSchedules = schedules.filter((sche: Schedule) => sche.charge)
-
-  const totalHoursPerWeek = activeSchedules.length / 2
-  const hoursTitlePerWeek =
-    activeSchedules.filter((sche: Schedule) => sche.charge?.degree).length / 2
-  const hoursNoTitlePerWeek =
-    activeSchedules.filter((sche: Schedule) => !sche.charge?.degree).length / 2
-
-  const amountTitlePerWeek = hoursTitlePerWeek * price.title
-  const amountNoTitlePerWeek = hoursNoTitlePerWeek * price.notitle
-  const amountPerWeek = amountTitlePerWeek + amountNoTitlePerWeek
-
-  const totalHoursPerMonth = totalHoursPerWeek * 4
-  const hoursTitlePerMonth = hoursTitlePerWeek * 4
-  const hoursNoTitlePerMonth = hoursNoTitlePerWeek * 4
-  const amountTitlePerMonth = hoursTitlePerMonth * price.title
-  const amountNoTitlePerMonth = hoursNoTitlePerMonth * price.notitle
-  const amountPerMonth = amountTitlePerMonth + amountNoTitlePerMonth
-
-  const report: reportType = {
-    title: 'Horarios actuales',
-
-    totalHoursPerWeek,
-    hoursTitlePerWeek,
-    hoursNoTitlePerWeek,
-    amountTitlePerWeek,
-    amountNoTitlePerWeek,
-    amountPerWeek,
-
-    totalHoursPerMonth,
-    hoursTitlePerMonth,
-    hoursNoTitlePerMonth,
-    amountTitlePerMonth,
-    amountNoTitlePerMonth,
-    amountPerMonth
-  }
-  setTotal(report.amountPerMonth)
-}
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 export function InstructorPaymentsSection(): ReactElement {
   const query = useQueryClient()
@@ -99,27 +29,8 @@ export function InstructorPaymentsSection(): ReactElement {
     useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
-    'instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    'Instructor.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
-
-  const [price, setPrice] = useState<priceType | null>(null)
-  const [total, setTotal] = useState<number | null>(null)
-  const [paid, setPaid] = useState<number | null>(null)
-  const [remaining, setRemaining] = useState<number | null>(null)
-
-  const { data: schedules } = useQuery({
-    queryKey: ['sche'],
-    queryFn: async () => {
-      return await getSchedules()
-    }
-  })
-
-  const { data: prices } = useQuery({
-    queryKey: ['ins'],
-    queryFn: async () => {
-      return await getInstructorPrice()
-    }
-  })
 
   const { data: instructorPayments } = useQuery({
     queryKey: ['payments'],
@@ -147,45 +58,18 @@ export function InstructorPaymentsSection(): ReactElement {
   })
 
   useEffect(() => {
-    if (price && schedules) {
-      currentReport(schedules, price, setTotal)
-    }
-  }, [price, schedules])
-
-  useEffect(() => {
     if (instructorPayments && selectedDate) {
       setFilterPayments(
         instructorPayments.filter(
           (pay: InstructorPayment) =>
-            argGetMonth(pay.paymentDate) === selectedDate.month &&
-            argGetYear(pay.paymentDate) === selectedDate.year
+            DateUtils.getMonth(pay.paymentDate) === selectedDate.month &&
+            DateUtils.getYear(pay.paymentDate) === selectedDate.year
         )
       )
     } else if (instructorPayments) {
       setFilterPayments(instructorPayments)
     }
   }, [instructorPayments, selectedDate])
-
-  useEffect(() => {
-    if (total && fitlerPayments) {
-      paidAndRemaining(fitlerPayments, total, setPaid, setRemaining)
-    }
-  }, [total, fitlerPayments])
-
-  useEffect(() => {
-    if (prices) {
-      const lastIndexWithTitle = prices.findIndex(
-        (price: InstructorPrice) => price.degree
-      )
-      const lastIndexWithNoTitle = prices.findIndex(
-        (price: InstructorPrice) => !price.degree
-      )
-      setPrice({
-        title: Number(prices[lastIndexWithTitle]?.amount),
-        notitle: Number(prices[lastIndexWithNoTitle]?.amount)
-      })
-    }
-  }, [prices])
 
   return (
     <div className='flex flex-column'>
@@ -231,8 +115,8 @@ export function InstructorPaymentsSection(): ReactElement {
                 onChange={(e) => {
                   if (e.value) {
                     setSelectedDate({
-                      month: argGetMonth(e.value),
-                      year: argGetYear(e.value)
+                      month: DateUtils.getMonth(e.value),
+                      year: DateUtils.getYear(e.value)
                     })
                   }
                 }}
@@ -243,20 +127,6 @@ export function InstructorPaymentsSection(): ReactElement {
                   setSelectedDate(null)
                 }}
               />
-              <HasRole required={[Permissions.OWN]}>
-                <Tag
-                  value={`Total: ${total}`}
-                  severity='info'
-                />
-                <Tag
-                  value={`Pagado: ${paid}`}
-                  severity='success'
-                />
-                <Tag
-                  value={`Faltante: ${remaining}`}
-                  severity='danger'
-                />
-              </HasRole>
             </div>
           </nav>
         )}
@@ -270,11 +140,11 @@ export function InstructorPaymentsSection(): ReactElement {
           header='ID'
         />
         <Column
-          field='instructor.name'
+          field='Instructor.name'
           header='Profesor'
         />
         <Column
-          field='instructor.dni'
+          field='Instructor.dni'
           header='DNI'
           filter
           filterPlaceholder='DNI'
@@ -286,10 +156,16 @@ export function InstructorPaymentsSection(): ReactElement {
         <Column
           field='paymentDate'
           header='Fecha de pago'
+          body={(row: InstructorPayment) =>
+            DateUtils.formatToDDMMYY(row.paymentDate)
+          }
         />
         <Column
           field='workedMonth'
           header='Mes trabajado'
+          body={(row: InstructorPayment) =>
+            DateUtils.formatToDDMMYY(row.workedMonth)
+          }
         />
         <Column
           field='workedHours'

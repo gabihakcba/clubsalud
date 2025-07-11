@@ -3,7 +3,7 @@
 import { useState, type ReactElement, useEffect } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
-import { Permissions, type dateType, type EmployeePayment } from 'utils/ClubSalud/types'
+import { type dateType, type EmployeePayment } from 'utils/ClubSalud/types'
 import { Button } from 'primereact/button'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
@@ -15,18 +15,8 @@ import {
   getEmployeePayments
 } from 'queries/ClubSalud/employeePayments'
 import { FilterMatchMode } from 'primereact/api'
-import { Tag } from 'primereact/tag'
 import { Calendar } from 'primereact/calendar'
-import HasRole from 'components/ClubSalud/HasRole'
-import { argGetMonth, argGetYear } from 'utils/ClubSalud/dates'
-
-const getAccounting = (payments: EmployeePayment[], setPaid): void => {
-  const paid = payments.reduce(
-    (acc: number, curr: EmployeePayment) => acc + curr.amount,
-    0
-  )
-  setPaid(paid)
-}
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 export function EmployeePaymentsSection(): ReactElement {
   const [filterPayments, setFilterPayments] = useState<EmployeePayment[]>([])
@@ -34,9 +24,8 @@ export function EmployeePaymentsSection(): ReactElement {
   const [createPayment, openPayment, closePayment] = useModal(false)
   const [selectedPayment, setSelectedPayment] = useState<any>(null)
   const filters = {
-    'employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
+    'Employee.dni': { value: null, matchMode: FilterMatchMode.STARTS_WITH }
   }
-  const [paid, setPaid] = useState<number | null>(null)
 
   const query = useQueryClient()
 
@@ -70,18 +59,14 @@ export function EmployeePaymentsSection(): ReactElement {
       setFilterPayments(
         employeePayments.filter(
           (pay: EmployeePayment) =>
-            argGetMonth(pay.date) === selectedDate.month &&
-            argGetYear(pay.date) === selectedDate.year
+            DateUtils.getMonth(pay.date) === selectedDate.month &&
+            DateUtils.getYear(pay.date) === selectedDate.year
         )
       )
     } else if (employeePayments) {
       setFilterPayments(employeePayments)
     }
   }, [employeePayments, selectedDate])
-
-  useEffect(() => {
-    getAccounting(filterPayments, setPaid)
-  }, [filterPayments])
 
   return (
     <div className='flex flex-column'>
@@ -113,8 +98,8 @@ export function EmployeePaymentsSection(): ReactElement {
                 onChange={(e) => {
                   if (e.value) {
                     setSelectedDate({
-                      month: argGetMonth(e.value),
-                      year: argGetYear(e.value)
+                      month: DateUtils.getMonth(e.value),
+                      year: DateUtils.getYear(e.value)
                     })
                   }
                 }}
@@ -125,12 +110,6 @@ export function EmployeePaymentsSection(): ReactElement {
                   setSelectedDate(null)
                 }}
               />
-              <HasRole required={[Permissions.OWN]}>
-                <Tag
-                  value={`Pagado: ${paid}`}
-                  severity='success'
-                />
-              </HasRole>
             </div>
           </nav>
         )}
@@ -145,12 +124,12 @@ export function EmployeePaymentsSection(): ReactElement {
           sortable
         />
         <Column
-          field='employee.name'
+          field='Employee.name'
           header='Empleado'
           sortable
         />
         <Column
-          field='employee.dni'
+          field='Employee.dni'
           header='DNI'
           filter
           filterPlaceholder='DNI'
@@ -165,11 +144,15 @@ export function EmployeePaymentsSection(): ReactElement {
           field='date'
           header='Fecha de pago'
           sortable
+          body={(row: EmployeePayment) => DateUtils.formatToDDMMYY(row.date)}
         />
         <Column
           field='monthPayment'
           header='Mes trabajado'
           sortable
+          body={(row: EmployeePayment) =>
+            DateUtils.formatToDDMMYY(row.monthPayment)
+          }
         />
         <Column
           field='hoursWorked'

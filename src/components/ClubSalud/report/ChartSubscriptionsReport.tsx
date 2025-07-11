@@ -12,10 +12,7 @@ import { useModal } from 'utils/ClubSalud/useModal'
 import { Dialog } from 'primereact/dialog'
 import Debtors from './Debtors'
 import {
-  arg2Date,
-  argDate,
-  isSameMonth,
-  isSameYear
+  DateUtils
 } from 'utils/ClubSalud/dates'
 import SubscriptionList from './SubscriptionsList'
 
@@ -27,7 +24,7 @@ const subscriptionsTotal = (
 ): Subscription[] => {
   const current = subscriptions.filter(
     (subs: Subscription) =>
-      isSameYear(subs.initialDate, date) && isSameMonth(subs.initialDate, date)
+      DateUtils.isSameYear(subs.initialDate, date) && DateUtils.isSameMonth(subs.initialDate, date)
   )
   return current
 }
@@ -38,8 +35,8 @@ const subscriptionsPaid = (
 ): Subscription[] => {
   const current = subscriptions.filter(
     (subs: Subscription) =>
-      isSameYear(subs.initialDate, date) &&
-      isSameMonth(subs.initialDate, date) &&
+      DateUtils.isSameYear(subs.initialDate, date) &&
+      DateUtils.isSameMonth(subs.initialDate, date) &&
       subs.paid
   )
   return current
@@ -66,7 +63,7 @@ export default function ChartSubscriptionsReport(): ReactElement {
   const [paid, setPaid] = useState<Subscription[]>([])
   const [notpaid, setNotpaid] = useState<Subscription[]>([])
 
-  const [date, setDate] = useState<Date>(argDate())
+  const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
   const [label, setLabel] = useState<string>('')
 
   const [debtorsList, openDebtorsList, closeDebtorsList] = useModal(false)
@@ -191,7 +188,7 @@ export default function ChartSubscriptionsReport(): ReactElement {
           <Calendar
             value={date}
             onChange={(e) => {
-              setDate(arg2Date(new Date(e.value ?? '')))
+              setDate(DateUtils.newDate(e.value ?? ''))
             }}
             view='month'
             dateFormat='mm/yy'

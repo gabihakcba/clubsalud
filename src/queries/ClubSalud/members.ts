@@ -1,73 +1,61 @@
 import {
-  MemberSate,
+  type CreateAccount,
   type CreateMember,
   type Member
 } from 'utils/ClubSalud/types'
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
 
-interface GetMemResponse {
-  _: Response
-  data: Member
-}
-
-export const getMembers = async (page: number = 0): Promise<Member[]> => {
-  const response = await axios.get(`${path()}/api/members?page=${page}`)
-  return response.data
-}
-
-export const getActiveMembers = async (page: number = 0): Promise<Member[]> => {
-  const response = await axios.get(
-    `${path()}/api/members?state=${MemberSate.ACTIVE}`
-  )
-  return response.data
-}
-
-export const getInactiveMembers = async (
-  page: number = 0
-): Promise<Member[]> => {
-  const response = await axios.get(
-    `${path()}/api/members?state=${MemberSate.INACTIVE}`
-  )
+export const getMembers = async (): Promise<Member[]> => {
+  const response = await apiClubSalud.get('/member')
   return response.data
 }
 
 export const getMemberById = async (id: number): Promise<Member> => {
-  const response = await axios.get(`${path()}/api/members/${id}`)
+  const response = await apiClubSalud.get(`/member/${id}`)
   return response.data
 }
 
-export const getTotalPagesM = async (): Promise<GetMemResponse> => {
-  return await axios.get(`${path()}/api/members?page=-1`)
-}
-
-export const createMember = async (
-  newMember: CreateMember
-): Promise<Member> => {
-  const response = await axios.post(`${path()}/api/members`, newMember)
-  return response.data
+export const createMember = async (data: {
+  account: CreateAccount
+  member: CreateMember
+  healthPlanSubscribed?: {
+    afiliateNumber: string
+    planId: number
+  }
+}): Promise<Member> => {
+  try {
+    const response = await apiClubSalud.post('/member', data)
+    return response.data
+  } catch (error) {
+    const message = error?.resopnse
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
+  }
 }
 
 export const deleteMember = async (id: number): Promise<Member> => {
-  const response = await axios.delete(`${path()}/api/members`, {
-    data: {
-      id
-    }
-  })
+  const response = await apiClubSalud.delete(`/member/${id}`)
   return response.data
 }
 
 export const updateMember = async (member: Member): Promise<Member> => {
-  const response = await axios.patch(`${path()}/api/members`, {
-    ...member
-  })
-  return response.data
+  try {
+    const { id, ...data } = member
+    const response = await apiClubSalud.patch(`/member/${id}`, data)
+    return response.data
+  } catch (error) {
+    const message = error?.resopnse
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
+  }
 }
 
 export const updateMembersState = async (): Promise<{
   actives: Member[]
   inactives: Member[]
 }> => {
-  const response = await axios.get(`${path()}/api/members/actives`)
+  const response = await apiClubSalud.get('/member/actives')
   return response.data
 }

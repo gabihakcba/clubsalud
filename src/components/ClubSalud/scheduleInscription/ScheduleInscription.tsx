@@ -73,7 +73,7 @@ export default function ScheduleInscription({
         }}
       >
         <Column
-          field='member.name'
+          field='Member.name'
           header='Nombre'
         />
         <Column

@@ -23,9 +23,7 @@ export default function NewAttendanceMember(): ReactElement {
   )
   const [label, setLabel] = useState('DNI')
 
-  const {
-    handleSubmit
-  } = useForm()
+  const { handleSubmit } = useForm()
 
   const { data: members, isPending: loadingMembers } = useQuery({
     queryKey: ['mem'],
@@ -35,9 +33,7 @@ export default function NewAttendanceMember(): ReactElement {
   })
 
   const { mutate: createAtt, isPending: isPendingAtt } = useMutation({
-    mutationFn: async (data: {
-      memberId: number
-    }) => {
+    mutationFn: async (data: { memberId: number }) => {
       return await createAttendance(data)
     },
     onSuccess: async (data) => {
@@ -46,19 +42,19 @@ export default function NewAttendanceMember(): ReactElement {
         toast.current.show({
           severity: 'success',
           summary: 'Asistencia marcada correctamente',
-          detail: JSON.stringify(data),
+          detail: `Quedan ${data.clases} clases y vence el ${data.vencimiento}`,
           life: 3000,
           sticky: true
         })
       }
     },
-    onError: (data: AxiosError) => {
-      console.log(data.response)
+    onError: async (data: AxiosError) => {
+      await query.refetchQueries({ queryKey: ['members'] })
       if (toast.current) {
         toast.current.show({
           severity: 'error',
           summary: 'Error al crear asistencia',
-          detail: String(data.response?.data),
+          detail: String(data.message),
           life: 3000,
           sticky: true
         })
@@ -82,7 +78,10 @@ export default function NewAttendanceMember(): ReactElement {
         createAtt(params)
       })}
     >
-      <Toast ref={toast} position='top-left'/>
+      <Toast
+        ref={toast}
+        position='top-left'
+      />
       <div className='flex flex-column gap-4'>
         <FloatLabel>
           <InputNumber

@@ -7,12 +7,12 @@ import { Column } from 'primereact/column'
 import { Button } from 'primereact/button'
 import { Dialog } from 'primereact/dialog'
 import { useModal } from 'utils/ClubSalud/useModal'
-import { argDate2Format, isSameMonth, isSameYear } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { useQuery } from '@tanstack/react-query'
 import { getMembers } from 'queries/ClubSalud/members'
 
 const subsciptionsNotPaid = (member: Member | null): Subscription[] => {
-  const current = member?.memberSubscription?.filter(
+  const current = member?.Subscription?.filter(
     (subs: Subscription) => !subs.paid
   )
   return current ?? []
@@ -25,14 +25,14 @@ const hasSubscriptionNotPaid = (
   return subscriptions.some(
     (subscription) =>
       !subscription.paid &&
-      isSameMonth(subscription.initialDate, date) &&
-      isSameYear(subscription.initialDate, date)
+      DateUtils.isSameMonth(subscription.initialDate, date) &&
+      DateUtils.isSameYear(subscription.initialDate, date)
   )
 }
 
 const getDebtors = (members: Member[], date: Date): Member[] => {
   return members.filter((member: Member) =>
-    hasSubscriptionNotPaid(member.memberSubscription ?? [], date)
+    hasSubscriptionNotPaid(member.Subscription ?? [], date)
   )
 }
 
@@ -74,16 +74,16 @@ export default function Debtors({ date }: { date: Date }): ReactElement {
             <Column
               header='Fecha de inscripción'
               body={(data: Subscription) => (
-                <div>{argDate2Format(data.initialDate)}</div>
+                <div>{DateUtils.formatToDDMMYY(data.initialDate)}</div>
               )}
             />
             <Column
               header='Plan'
-              field='promotion.title'
+              field='Promotion.title'
             />
             <Column
               header='Oferta'
-              field='plan.title'
+              field='Plan.title'
             />
             <Column
               header='Total'

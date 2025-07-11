@@ -57,19 +57,18 @@ export enum OncologicalDiseaseStatus {
 export interface Account {
   id: number
   username: string
-  password: string
   permissions: Permissions[]
-  notificationSender?: Notification[]
-  notifiactionReceiver?: Notification[]
-  instructorAccount?: Instructor
-  memberAccount?: Member
-  employeeAccount?: Employee
+  password?: string
+  Sender?: Notification[]
+  Receiver?: Notification[]
+  Instructor?: Instructor
+  Member?: Member
+  Employee?: Employee
 }
 
 export interface CreateAccount {
   username: string
   password: string
-  repeatpassword: string
   permissions: Permissions[]
 }
 
@@ -89,11 +88,12 @@ export interface LogIn {
 export interface Member extends CreateMember {
   id: number
   scheduleInscription?: ScheduleInscription[]
-  memberSubscription?: Subscription[]
-  payment?: Payment[]
-  memberAttendance?: Attendance[]
-  registrationForm?: RegistrationForm
-  followUpForm?: FollowUpForm[]
+  Subscription?: Subscription[]
+  Payment?: Payment[]
+  Attendance?: Attendance[]
+  RegistrationForm?: RegistrationForm
+  FollowUpForm?: FollowUpForm[]
+  accountId?: number
 }
 
 export interface CreateMember {
@@ -110,14 +110,13 @@ export interface CreateMember {
   afiliateNumber: bigint
   state: MemberSate
   remainingClasses?: bigint | null
-  accountId: number
-  planSubscribed?: HealthPlanSubscribed[]
+  HealthPlanSubscribed?: HealthPlanSubscribed[]
   birthday: Date
 }
 
 export interface InstructorPayment extends CreateInstructorPayment {
   id: number
-  instructor?: Instructor
+  Instructor?: Instructor
 }
 
 export interface CreateInstructorPayment {
@@ -126,16 +125,16 @@ export interface CreateInstructorPayment {
   workedHours: number
   workedMonth: Date
   paymentDate: Date
-  pricePerHour?: number
+  pricePerHoour?: number
   instructorId: number
 }
 
 export interface Instructor extends CreateInstructor {
   id: number
   instructorPayment?: InstructorPayment[]
-  scheduleInCharge?: Schedule[]
-  scheduleSubstitute?: Schedule[]
-  attendanceInstructor?: AttendanceInstructor[]
+  ScheduleInCharge?: Schedule[]
+  ScheduleSubstitute?: Schedule[]
+  AttendanceInstructor?: AttendanceInstructor[]
 }
 
 export interface CreateInstructor {
@@ -169,15 +168,15 @@ export interface Schedule {
   instructorInCharge?: number
   instructorSubstitute?: number
   classId?: number
-  charge?: Instructor
-  class?: Class_
+  InstructorInCharge?: Instructor
+  Class?: Class_
   attendance?: Attendance
-  scheduleInscription?: ScheduleInscription[]
+  ScheduleInscription?: ScheduleInscription[]
 }
 
 export interface Promotion extends CreatePromotion {
   id: number
-  record?: PromotionRecord[]
+  PromotionRecord?: PromotionRecord[]
 }
 
 export interface CreatePromotion {
@@ -210,11 +209,11 @@ export interface CreatePlan {
 
 export interface Subscription extends CreateSubscription {
   id: number
-  promotion?: Promotion
-  plan: Plan
-  payment?: Payment[]
-  billedConsultation?: BilledConsultation[]
-  member: Member
+  Promotion?: Promotion
+  Plan: Plan
+  Payment?: Payment[]
+  BilledConsultation?: BilledConsultation[]
+  Member: Member
 }
 
 export interface CreateSubscription {
@@ -223,7 +222,7 @@ export interface CreateSubscription {
   remaining: number
   total: number
   initialDate: Date
-  expirationDate: Date
+  expirationDate?: Date
   remainingClasses: number
   active: boolean
   promotionId: number
@@ -234,8 +233,8 @@ export interface CreateSubscription {
 
 export interface Payment extends CreatePayment {
   id: number
-  member?: Member
-  subscription?: Subscription
+  Member?: Member
+  Subscription?: Subscription
 }
 
 export interface CreatePayment {
@@ -248,8 +247,8 @@ export interface CreatePayment {
 
 export interface HealthPlanSubscribed extends CreateHealthPlanSubscribed {
   id: number
-  member?: Member
-  plan?: HealthPlan
+  Member?: Member
+  HealthPlan?: HealthPlan
 }
 
 export interface CreateHealthPlanSubscribed {
@@ -260,8 +259,8 @@ export interface CreateHealthPlanSubscribed {
 
 export interface HealthPlan extends CreateHealthPlan {
   id: number
-  planSubscription?: HealthPlanSubscribed[]
-  record?: HealthPlanRecord[]
+  HealthPlanSubscribed?: HealthPlanSubscribed[]
+  HealthPlanRecord?: HealthPlanRecord[]
 }
 
 export interface CreateHealthPlan {
@@ -281,8 +280,8 @@ export interface HealthPlanRecord {
 
 export interface Notification extends CreateNotification {
   id: number
-  sender: Account
-  receiver: Account
+  Sender: Account
+  Receiver: Account
 }
 
 export interface CreateNotification {
@@ -316,7 +315,7 @@ export interface CreateEmployee {
 
 export interface EmployeePayment extends CreateEmployeePayment {
   id: number
-  employee?: Employee
+  Employee?: Employee
 }
 
 export interface CreateEmployeePayment {
@@ -329,8 +328,8 @@ export interface CreateEmployeePayment {
 
 export interface BilledConsultation extends CreateBilledConsultation {
   id: number
-  subscription: Subscription
-  plan: HealthPlanSubscribed
+  Subscription: Subscription
+  HealthPlanSubscribed: HealthPlanSubscribed
 }
 
 export interface CreateBilledConsultation {
@@ -338,7 +337,7 @@ export interface CreateBilledConsultation {
   date: Date
   subscriptionId: number
   autorizationNumber: string
-  healthSubscribedPlanId: number
+  HealthSubscribedPlanId: number
 }
 
 export interface InstructorPrice extends CreateInstructorPrice {
@@ -349,7 +348,7 @@ export interface CreateInstructorPrice {
   degree: boolean
   amount: number
   active: number
-  lastUpdate: Date
+  lastUpdate?: Date
 }
 
 export interface ExtraCost extends CreateExtraCost {
@@ -394,8 +393,8 @@ export interface CreateAttendance {
   date: Date
   classId: number
   memberId: number
-  member?: Member
-  class_?: Class_
+  Member?: Member
+  Class?: Class_
 }
 
 export interface ScheduleInscription extends CreateScheduleInscription {

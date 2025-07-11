@@ -10,12 +10,20 @@ export const metadata = {
   description: 'Gimnasio con seguimiento médico'
 }
 
-export default function RootLayout({ children }: { children: any }): ReactElement {
+export default function RootLayout({
+  children
+}: {
+  children: any
+}): ReactElement {
   return (
     <PrimeReactProvider>
       <html lang='en'>
         <head>
-          <link rel="icon" href="/logos/medintt_positivo_square.png" type="image/x-icon"></link>
+          <link
+            rel='icon'
+            href='/logos/medintt_positivo_square.png'
+            type='image/x-icon'
+          ></link>
         </head>
         <body className=''>{children}</body>
       </html>

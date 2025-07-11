@@ -1,7 +1,9 @@
-export const setDataSession = (token: any, user: any): void => {
+export const setDataSession = (token: string, user: any): void => {
   clearDataSession()
-  localStorage.setItem('token', JSON.stringify(token))
-  localStorage.setItem('user', JSON.stringify(user))
+  if (token && token !== 'undefined' && token !== 'null') {
+    localStorage.setItem('token', JSON.stringify(token))
+    localStorage.setItem('user', JSON.stringify(user))
+  }
 }
 
 export const clearDataSession = (): void => {
@@ -11,12 +13,15 @@ export const clearDataSession = (): void => {
 
 export const getTokenSession = (): any => {
   const token = localStorage.getItem('token')
-  return token ? JSON.parse(token) : null
+  if (!token || token === 'undefined' || token === 'null') {
+    return null
+  }
+  return JSON.parse(token)
 }
 
 export const getUserSession = (): any => {
   const user = localStorage.getItem('user')
-  return user ? JSON.parse(user)[0] : null
+  return user ? JSON.parse(user) : null
 }
 
 export const getDataSession = (): { token: any; user: any } => {

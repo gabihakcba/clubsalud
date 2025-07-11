@@ -1,5 +1,5 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import { apiClubSalud } from 'utils/axios.service'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type InstructorPrice,
   type CreateInstructorPrice,
@@ -8,53 +8,58 @@ import {
 } from 'utils/ClubSalud/types'
 
 export const getInstructorPayments = async (): Promise<InstructorPayment[]> => {
-  const response = await axios.get(`${path()}/api/instructorPayments`)
+  const response = await apiClubSalud.get('/instructor-payment')
   return response.data
 }
 
 export const createInstructorPayment = async (
   instructorPayment: CreateInstructorPayment
 ): Promise<InstructorPayment> => {
-  const response = await axios.post(
-    `${path()}/api/instructorPayments`,
-    instructorPayment
-  )
-  return response.data
+  try {
+    const response = await apiClubSalud.post('/instructor-payment', {
+      ...instructorPayment,
+      workedMonth: DateUtils.toBackendFormat(instructorPayment.workedMonth),
+      paymentDate: DateUtils.toBackendFormat(instructorPayment.paymentDate)
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    throw new Error(JSON.stringify(error))
+  }
 }
 
 export const deleteInstructorPayment = async (
   id: number
 ): Promise<InstructorPayment> => {
-  const response = await axios.delete(`${path()}/api/instructorPayments`, {
-    data: id
-  })
+  const response = await apiClubSalud.delete(`/instructor-payment/${id}`)
   return response.data
 }
 
 export const getInstructorPrice = async (): Promise<InstructorPrice[]> => {
-  const response = await axios.get(`${path()}/api/instructorPrice`)
+  const response = await apiClubSalud.get('/instructor-price')
   return response.data
 }
 
 export const createInstructorPrice = async (
   data: CreateInstructorPrice
 ): Promise<InstructorPrice> => {
-  const response = await axios.post(`${path()}/api/instructorPrice`, data)
+  const response = await apiClubSalud.post('/instructor-price', data)
   return response.data
 }
 
 export const deleteInstructorPrice = async (
   id: number
 ): Promise<InstructorPrice> => {
-  const response = await axios.delete(`${path()}/api/instructorPrice`, {
-    data: id
-  })
+  const response = await apiClubSalud.delete(`/instructor-price/${id}`)
   return response.data
 }
 
 export const changeStateInstructorPrice = async (
-  id: number
+  id: number,
+  state: boolean
 ): Promise<InstructorPrice> => {
-  const response = await axios.patch(`${path()}/api/instructorPrice`, id)
+  const response = await apiClubSalud.patch(`instructor-price/${id}`, {
+    active: !state
+  })
   return response.data
 }

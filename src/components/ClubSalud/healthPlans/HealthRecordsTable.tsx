@@ -30,7 +30,7 @@ export default function healthRecordsTable({
   }, [])
 
   return (
-    <DataTable value={plan.record}>
+    <DataTable value={plan.HealthPlanRecord}>
       <Column
         field='id'
         header='ID'

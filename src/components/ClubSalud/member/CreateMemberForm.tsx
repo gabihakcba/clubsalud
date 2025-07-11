@@ -2,13 +2,7 @@
 
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import {
-  type CreateMember,
-  MemberSate,
-  Permissions,
-  type CreateAccount
-} from 'utils/ClubSalud/types'
-import { createAccount, deleteAccount } from 'queries/ClubSalud/accounts'
+import { MemberSate, Permissions } from 'utils/ClubSalud/types'
 import { createMember } from 'queries/ClubSalud/members'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
@@ -18,8 +12,9 @@ import { Password } from 'primereact/password'
 import { getHealthPlans } from 'queries/ClubSalud/health'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Dropdown } from 'primereact/dropdown'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
-const formToMember = (data: FieldValues, id: number): CreateMember => {
+const formToMember = (data: FieldValues): any => {
   const dataParsed = {
     name: data.name,
     lastName: data.lastName,
@@ -27,14 +22,11 @@ const formToMember = (data: FieldValues, id: number): CreateMember => {
     cuit: data.cuit,
     phoneNumber: data.phoneNumber,
     address: data.address,
-    inscriptionDate: data.inscriptionDate,
+    inscriptionDate: DateUtils.toBackendFormat(data.inscriptionDate as string),
     derivedBy: data.derivedBy,
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
-    accountId: id,
-    planSubscribed: data.planID,
-    birthday: data.birthday,
-    afiliateNumberOS: data.afiliateNumberOS
+    birthday: DateUtils.toBackendFormat(data.birthday as string)
   }
 
   return dataParsed
@@ -52,24 +44,8 @@ export function CreateMemberForm(): ReactElement {
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
-    getValues
+    setValue
   } = useForm()
-
-  const {
-    mutate: createAcc,
-    isPending: isPendingAccount,
-    data: newAccount
-  } = useMutation({
-    mutationFn: async (data: FieldValues) => {
-      return await createAccount(data as CreateAccount)
-    },
-    onSuccess: async (data) => {
-      const dataForm = getValues()
-      mutateC({ data: dataForm, id: data.id })
-      return data
-    }
-  })
 
   const {
     mutate: mutateC,
@@ -77,18 +53,28 @@ export function CreateMemberForm(): ReactElement {
     isSuccess: isSuccessMember,
     isError: isErrorMember
   } = useMutation({
-    mutationFn: async ({ data, id }: { data: FieldValues; id: number }) => {
-      const newMember = formToMember(data, id)
-      await createMember(newMember)
+    mutationFn: async ({ newMember }: { newMember: FieldValues }) => {
+      const {
+        username,
+        password,
+        permissions,
+        afiliateNumberOS,
+        planID,
+        ...member
+      } = newMember
+      const data = {
+        account: { username, password, permissions },
+        member: formToMember(member),
+        healthPlanSubscribed: afiliateNumberOS && {
+          afiliateNumber: afiliateNumberOS,
+          planId: planID
+        }
+      }
+      await createMember(data)
     },
     onSuccess: async () => {
       await query.resetQueries({ queryKey: ['mem'] })
       await query.refetchQueries({ queryKey: ['acc'] })
-    },
-    onError: async () => {
-      if (newAccount) {
-        await deleteAccount(newAccount.id)
-      }
     }
   })
 
@@ -107,11 +93,7 @@ export function CreateMemberForm(): ReactElement {
   return (
     <form
       onSubmit={handleSubmit((data) => {
-        createAcc({
-          username: data.username,
-          password: data.password,
-          permissions: [Permissions[data.permissions]]
-        })
+        mutateC({ newMember: data })
       })}
       className='relative rounded h-max w-max flex flex-column pt-4 gap-4'
       id='createForm'
@@ -375,21 +357,23 @@ export function CreateMemberForm(): ReactElement {
         <label htmlFor='plans'>Obra Social</label>
       </div>
 
-      {watch('plans') && <div className='p-float-label'>
-        <InputText
-          {...register('afiliateNumberOS', {
-            required: {
-              value: true,
-              message: 'Número de afiliado requerido'
-            }
-          })}
-          form='createForm'
-          autoComplete='off'
-          invalid={errors?.afiliateNumberOS !== undefined}
-          className='w-full'
-        />
-        <label htmlFor='afiliateNumberOS'>Número de afiliado de OS</label>
-      </div>}
+      {watch('plans') && (
+        <div className='p-float-label'>
+          <InputText
+            {...register('afiliateNumberOS', {
+              required: {
+                value: true,
+                message: 'Número de afiliado requerido'
+              }
+            })}
+            form='createForm'
+            autoComplete='off'
+            invalid={errors?.afiliateNumberOS !== undefined}
+            className='w-full'
+          />
+          <label htmlFor='afiliateNumberOS'>Número de afiliado de OS</label>
+        </div>
+      )}
 
       <div className='flex flex-column gap-0'>
         <Button
@@ -398,7 +382,7 @@ export function CreateMemberForm(): ReactElement {
           label='Crear'
           icon='pi pi-upload'
           iconPos='right'
-          loading={isPendingMember || isPendingAccount}
+          loading={isPendingMember}
           className='w-full'
         />
         <small>

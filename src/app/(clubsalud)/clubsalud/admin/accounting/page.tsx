@@ -1,42 +1,61 @@
 'use client'
 
 import { Card } from 'primereact/card'
-import { TabView, TabPanel } from 'primereact/tabview'
-import { type ReactElement } from 'react'
-import BillsTable from 'components/ClubSalud/accounting/BillsTable'
+import { useState, type ReactElement } from 'react'
 import { ConfirmDialog } from 'primereact/confirmdialog'
-import { InstructorPaymentsSection } from 'components/ClubSalud/payments/InstructorPaymentSection'
-import { EmployeePaymentsSection } from 'components/ClubSalud/payments/EmployeePaymentsSection'
-import ExtraCostSection from 'components/ClubSalud/extraCost/ExtraCostSection'
-import ChartAccounting from 'components/ClubSalud/accounting/ChartAccounting'
-import OldTable from 'components/ClubSalud/accounting/OldTable'
+import CobrosParticularesChart from 'components/ClubSalud/accounting/CobrosParticularesChart'
+import { Calendar } from 'primereact/calendar'
+import { DateUtils } from 'utils/ClubSalud/dates'
+import { TabMenu } from 'primereact/tabmenu'
+import CobrosChart from 'components/ClubSalud/accounting/CobrosChart'
+import PagosChart from 'components/ClubSalud/accounting/PagosChart'
+import BalanceChart from 'components/ClubSalud/accounting/BlanceChart'
 
 export default function Accounting(): ReactElement {
+  const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
+  const [activeIndex, setActiveIndex] = useState(0)
+  const items = [
+    { label: 'Balance', icon: 'pi pi-list' },
+    { label: 'Cobros', icon: 'pi pi-home' },
+    { label: 'Cobros particulares', icon: 'pi pi-chart-line' },
+    { label: 'Pagos', icon: 'pi pi-chart-line' }
+  ]
+
+  const renderComponent = (index: number): ReactElement => {
+    switch (index) {
+      case 0:
+        return <BalanceChart date={date} setActiveIndex={setActiveIndex}/>
+      case 1:
+        return <CobrosChart date={date}/>
+      case 2:
+        return <CobrosParticularesChart date={date} />
+      case 3:
+        return <PagosChart date={date} />
+      default:
+        return <h2>Elemento no seleccionado</h2>
+    }
+  }
+
   return (
     <Card className='h-screen overflow-scroll'>
       <ConfirmDialog />
-      <ChartAccounting />
-      <Card className='min-h-screen'>
-        <TabView className='min-h-full'>
-          <TabPanel header='Suscripciones'>
-            <BillsTable />
-          </TabPanel>
-          <TabPanel header='Pagos'>
-            <TabView>
-              <TabPanel header='Profesores'>
-                <InstructorPaymentsSection />
-              </TabPanel>
-              <TabPanel header='Empleados'>
-                <EmployeePaymentsSection />
-              </TabPanel>
-            </TabView>
-          </TabPanel>
-          <TabPanel header='Gastos Extra'>
-            <ExtraCostSection />
-          </TabPanel>
-        </TabView>
-      </Card>
-      <OldTable />
+      <Calendar
+        value={date}
+        placeholder='Filtrar por mes'
+        dateFormat='mm/yy'
+        view='month'
+        onChange={(e) => {
+          setDate(DateUtils.newDate(e.value ?? ''))
+        }}
+      />
+      <TabMenu
+        model={items}
+        activeIndex={activeIndex}
+        onTabChange={(e) => {
+          setActiveIndex(e.index)
+        }}
+      />
+      {renderComponent(activeIndex)}
     </Card>
   )
 }

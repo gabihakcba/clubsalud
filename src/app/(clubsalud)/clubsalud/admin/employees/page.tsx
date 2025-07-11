@@ -12,6 +12,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import UpdateEmployeeForm from 'components/ClubSalud/employees/UpdateEmployeeForm'
 import { FilterMatchMode } from 'primereact/api'
+import { DateUtils } from 'utils/ClubSalud/dates'
 
 export default function Employees(): ReactElement {
   const [createEmployee, openCreateEmployee, closeCreateEmployee] =
@@ -108,6 +109,9 @@ export default function Employees(): ReactElement {
         />
         <Column
           field='lastSalaryUpdate'
+          body={(employee) => {
+            return DateUtils.formatToDDMMYY(employee?.lastSalaryUpdate as Date)
+          }}
           header='Actualización de sueldo'
           sortable
         />

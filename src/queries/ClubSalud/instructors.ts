@@ -1,53 +1,42 @@
-import { type Instructor, type CreateInstructor } from 'utils/ClubSalud/types'
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
+import {
+  type Instructor,
+  type CreateInstructor,
+  type CreateAccount
+} from 'utils/ClubSalud/types'
+import { apiClubSalud } from 'utils/axios.service'
 
-interface GetInsInstructor {
-  _: Response | null
-  data: Instructor
-}
-
-export const getInstructorById = async (
-  id: number | undefined
-): Promise<Instructor> => {
-  const response = await axios.get(`${path()}/api/instructors/${id}`)
+export const getInstructorById = async (id: number): Promise<Instructor> => {
+  const response = await apiClubSalud.get(`/instructor/${id}`)
   return response.data
 }
 
-export const createInstructor = async (
-  newInstructor: CreateInstructor
-): Promise<Instructor> => {
-  const response = await axios.post(`${path()}/api/instructors`, {
-    ...newInstructor
+export const createInstructor = async ({
+  account,
+  instructor
+}: {
+  account: CreateAccount
+  instructor: CreateInstructor
+}): Promise<Instructor> => {
+  const response = await apiClubSalud.post('/instructor', {
+    account,
+    instructor
   })
   return response.data
 }
 
 export const deleteInstructor = async (id: number): Promise<Instructor> => {
-  const response = await axios.delete(`${path()}/api/instructors`, {
-    data: {
-      id
-    }
-  })
+  const response = await apiClubSalud.delete(`/instructor/${id}`)
   return response.data
 }
 
 export const updateInstructor = async (
   instructor: Instructor
 ): Promise<Instructor> => {
-  const response = await axios.patch(`${path()}/api/instructors`, {
-    ...instructor
-  })
+  const response = await apiClubSalud.patch('/instructor', instructor)
   return response.data
 }
 
-export const getInstructorByName = async (
-  name: string
-): Promise<GetInsInstructor> => {
-  return await axios.get(`${path()}/api/instructors/${name}`)
-}
-
 export const getInstructors = async (): Promise<Instructor[]> => {
-  const response = await axios.get(`${path()}/api/instructors`)
+  const response = await apiClubSalud.get('/instructor')
   return response.data
 }

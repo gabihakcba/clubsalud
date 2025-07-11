@@ -25,6 +25,7 @@ export default function Page(): ReactElement {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: { UsuarioWeb: string; PasswordWeb: string }) => {
+      setErrorSession(false)
       const response = await logInLaboral(data)
       if (response.ok) {
         setErrorSession(false)

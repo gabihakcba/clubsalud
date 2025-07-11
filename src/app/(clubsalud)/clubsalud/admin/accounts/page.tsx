@@ -4,7 +4,7 @@ import { type ReactElement, useState } from 'react'
 import { deleteAccount, getAccounts } from 'queries/ClubSalud/accounts'
 import AccountTopbar from 'components/ClubSalud/account/AccountTopbar'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { type Account, type Permissions } from 'utils/ClubSalud/types'
+import { type Account } from 'utils/ClubSalud/types'
 import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { FilterMatchMode } from 'primereact/api'
@@ -12,25 +12,6 @@ import { Button } from 'primereact/button'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { Card } from 'primereact/card'
 import { useRouter } from 'next/navigation'
-
-interface getAccountsType {
-  pages: Account[]
-  totalPages: number
-  perPage: number
-  nextPage: number
-  currentPage: number
-}
-const getAccountsElems = async (info): Promise<getAccountsType> => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, currentPage, elems, filterName, filterPermissions]: [
-    string,
-    number,
-    number,
-    string,
-    Permissions
-  ] = info.queryKey
-  return await getAccounts(0, elems, filterName, filterPermissions)
-}
 
 export default function Accounts(): ReactElement {
   const router = useRouter()
@@ -49,9 +30,9 @@ export default function Accounts(): ReactElement {
 
   const { data: accounts } = useQuery({
     queryKey: key,
-    queryFn: async (info) => {
-      const response = await getAccountsElems(info)
-      return response.pages
+    queryFn: async () => {
+      const response = await getAccounts()
+      return response
     }
   })
 
@@ -72,11 +53,11 @@ export default function Accounts(): ReactElement {
           ?.map((acc: Account) => ({
             ...acc,
             dni:
-              acc.memberAccount?.dni ??
-              acc.instructorAccount?.dni ??
-              acc.employeeAccount?.dni ??
+              acc.Member?.dni ??
+              acc.Instructor?.dni ??
+              acc.Employee?.dni ??
               0,
-            date: acc.memberAccount ? acc.memberAccount.inscriptionDate : null
+            date: acc.Member ? acc.Member.inscriptionDate : null
           }))}
         tableStyle={{ minWidth: '5rem' }}
         header={() => <AccountTopbar />}

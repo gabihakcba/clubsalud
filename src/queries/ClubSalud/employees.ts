@@ -1,39 +1,49 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
-import { type CreateEmployee, type Employee } from 'utils/ClubSalud/types'
-import JSONbig from 'json-bigint'
+import {
+  type CreateAccount,
+  type CreateEmployee,
+  type Employee
+} from 'utils/ClubSalud/types'
+import { apiClubSalud } from 'utils/axios.service'
+
+const formatData = (data: CreateEmployee): any => {
+  return {
+    ...data,
+    dni: String(data.dni),
+    cuit: data.cuit ? String(data.cuit) : null,
+    phoneNumber: String(data.phoneNumber)
+  }
+}
 
 export const getEmployees = async (): Promise<Employee[]> => {
-  const response = await axios.get(`${path()}/api/employees`)
+  const response = await apiClubSalud.get('/employee')
   return response.data
 }
 
-export const getEmployeeById = async (employeeId: number): Promise<Employee> => {
-  const response = await axios.get(`${path()}/api/employees/${employeeId}`)
-  return response.data
-}
-
-export const createEmployee = async (
+export const createEmployee = async (data: {
   employee: CreateEmployee
-): Promise<Employee> => {
-  const response = await axios.post(
-    `${path()}/api/employees`,
-    JSONbig.stringify(employee)
-  )
-  return response.data
+  account: CreateAccount
+}): Promise<Employee> => {
+  try {
+    const response = await apiClubSalud.post('/employee', {
+      employee: formatData(data.employee),
+      account: data.account
+    })
+    return response.data
+  } catch (error) {
+    const message = error?.response
+      ? (error.response.data.message as string)
+      : 'Problemas con el servidor'
+    throw new Error(message)
+  }
 }
 
 export const updateEmployee = async (employee: Employee): Promise<Employee> => {
-  const response = await axios.patch(
-    `${path()}/api/employees`,
-    JSONbig.stringify(employee)
-  )
+  const { id, ...data } = employee
+  const response = await apiClubSalud.patch(`/employee/${id}`, formatData(data))
   return response.data
 }
 
 export const deleteEmployee = async (employeeId: number): Promise<Employee> => {
-  const response = await axios.delete(`${path()}/api/employees`, {
-    data: employeeId
-  })
+  const response = await apiClubSalud.delete(`/employee/${employeeId}`)
   return response.data
 }

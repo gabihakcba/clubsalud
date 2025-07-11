@@ -3,29 +3,21 @@
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, type ReactElement } from 'react'
-import { parse } from 'cookie'
-import { logOutAccount } from 'queries/ClubSalud/accounts'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Permissions } from 'utils/ClubSalud/types'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PanelMenu } from 'primereact/panelmenu'
 import logo from '../../../../../public/logos/logo_large.png'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
 import { ScrollPanel } from 'primereact/scrollpanel'
-import { hasPermission } from 'utils/ClubSalud/auth'
+import { hasPermission, hasValidClubSaludToken, removeDataSessionClubSalud } from 'utils/ClubSalud/auth'
 import { type MenuItem } from 'primereact/menuitem'
 
-const client = new QueryClient()
-
-const logOut = async (router: AppRouterInstance): Promise<void> => {
+const logOut = (router: AppRouterInstance): void => {
   try {
-    await logOutAccount()
-    localStorage.removeItem('user')
+    removeDataSessionClubSalud()
     router.push('/clubsalud')
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 
 const itemRenderer = (item, options): ReactElement => {
@@ -58,14 +50,14 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-users',
       template: itemRenderer,
       url: '/clubsalud/admin/accounts',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
       label: 'Clases y Ofertas',
       icon: 'pi pi-megaphone',
       template: itemRenderer,
       url: '/clubsalud//admin/classes',
-      show: await hasPermission([
+      show: hasPermission([
         Permissions.ADM,
         Permissions.OWN,
         Permissions.MEM
@@ -76,35 +68,35 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-calendar',
       template: itemRenderer,
       url: '/clubsalud/admin/attendance',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
-      label: 'Inscripciones',
+      label: 'Suscripciones',
       icon: 'pi pi-list-check',
       template: itemRenderer,
       url: '/clubsalud/admin/subscriptions',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
       label: 'Cobros',
       icon: 'pi pi-dollar',
       template: itemRenderer,
       url: '/clubsalud/admin/bills',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
       label: 'Pagos',
       icon: 'pi pi-money-bill',
       template: itemRenderer,
       url: '/clubsalud/admin/payments',
-      show: await hasPermission([Permissions.ADM, Permissions.OWN])
+      show: hasPermission([Permissions.ADM, Permissions.OWN])
     },
     {
       label: 'Notificaciones',
       icon: 'pi pi-bell',
       template: itemRenderer,
       url: '/clubsalud/admin/notifications',
-      show: await hasPermission([
+      show: hasPermission([
         Permissions.ADM,
         Permissions.OWN,
         Permissions.INS,
@@ -117,14 +109,14 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-user',
       template: itemRenderer,
       url: '/clubsalud/admin/employees',
-      show: await hasPermission([Permissions.OWN])
+      show: hasPermission([Permissions.OWN])
     },
     {
       label: 'Horarios',
       icon: 'pi pi-clock',
       template: itemRenderer,
       url: '/clubsalud/admin/schedule',
-      show: await hasPermission([
+      show: hasPermission([
         Permissions.ADM,
         Permissions.OWN,
         Permissions.INS,
@@ -136,28 +128,28 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-heart',
       template: itemRenderer,
       url: '/clubsalud/admin/healthPlan',
-      show: await hasPermission([Permissions.OWN])
+      show: hasPermission([Permissions.OWN])
     },
     {
       label: 'Balances',
       icon: 'pi pi-chart-line',
       template: itemRenderer,
       url: '/clubsalud/admin/accounting',
-      show: await hasPermission([Permissions.OWN])
+      show: hasPermission([Permissions.OWN])
     },
     {
       label: 'Reportes',
       icon: 'pi pi-chart-bar',
       template: itemRenderer,
       url: '/clubsalud/admin/reports',
-      show: await hasPermission([Permissions.OWN, Permissions.ADM])
+      show: hasPermission([Permissions.OWN, Permissions.ADM])
     },
     {
       label: 'Inicio',
       icon: 'pi pi-id-card',
       template: itemRenderer,
       url: '/clubsalud/admin',
-      show: await hasPermission([
+      show: hasPermission([
         Permissions.ADM,
         Permissions.OWN,
         Permissions.INS,
@@ -166,20 +158,13 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
-      label: 'Herramientas',
-      icon: 'pi pi-wrench',
-      template: itemRenderer,
-      url: '/clubsalud/admin/tools',
-      show: await hasPermission([Permissions.OWN])
-    },
-    {
       label: 'Salir',
       icon: 'pi pi-sign-out',
       template: itemRenderer,
       command: () => {
-        void logOut(router)
+        logOut(router)
       },
-      show: await hasPermission([
+      show: hasPermission([
         Permissions.ADM,
         Permissions.OWN,
         Permissions.INS,
@@ -197,17 +182,13 @@ export default function AdminLayout({ children }: any): ReactElement {
   const [items, setItems] = useState<MenuItem[]>([])
 
   useEffect(() => {
-    const cookies: Record<string, string | undefined> = parse(
-      document.cookie || ''
-    )
-    if (!cookies.auth) {
+    if (!hasValidClubSaludToken()) {
       router.push('/clubsalud')
     }
     void getItems(setItems, router)
   }, [router])
 
   return (
-    <QueryClientProvider client={client}>
       <div className='flex flex-row w-full'>
         <div className='flex-grow-1 h-screen z-0'>{children}</div>
         <div className='md:relative absolute'>
@@ -237,7 +218,5 @@ export default function AdminLayout({ children }: any): ReactElement {
           />
         </div>
       </div>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
   )
 }

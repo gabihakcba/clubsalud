@@ -6,7 +6,7 @@ import { Tag } from 'primereact/tag'
 import { getMemberById } from 'queries/ClubSalud/members'
 import { setPlanPayment } from 'queries/ClubSalud/payments'
 import { useState, type ReactElement } from 'react'
-import { argDate } from 'utils/ClubSalud/dates'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import {
   type Subscription,
   type HealthPlanSubscribed
@@ -28,12 +28,12 @@ export default function HealthPlanBillForm({
   const { data: memberInfo, isFetching } = useQuery({
     queryKey: ['member'],
     queryFn: async () => {
-      if (subscription.member) {
-        return await getMemberById(subscription.member?.id)
+      if (subscription.Member) {
+        return await getMemberById(subscription.Member?.id)
       }
       return undefined
     },
-    enabled: !!subscription.member
+    enabled: !!subscription.Member
   })
 
   const {
@@ -61,23 +61,24 @@ export default function HealthPlanBillForm({
       onSubmit={(e) => {
         e.preventDefault()
         billOS({
-          amount: selectedOS?.plan?.paymentPerConsultation ?? 0,
+          amount: selectedOS?.HealthPlan?.paymentPerConsultation ?? 0,
           subscriptionId: subscription.id,
           healthSubscribedPlanId: selectedOS?.id ?? 0,
-          date: argDate(),
+          date: DateUtils.getCurrentDate(),
           autorizationNumber: autorization ?? ''
         })
       }}
     >
       <Dropdown
         value={selectedOS}
-        options={memberInfo?.planSubscribed}
+        options={memberInfo?.HealthPlanSubscribed}
         loading={isFetching}
         placeholder='Obra Social'
-        disabled={memberInfo?.planSubscribed?.length === 0}
-        optionLabel='plan.name'
+        disabled={memberInfo?.HealthPlanSubscribed?.length === 0}
+        optionLabel='HealthPlan.name'
         required
         onChange={(e) => {
+          console.log(e)
           setSelectedOS(e.value as HealthPlanSubscribed)
         }}
       />

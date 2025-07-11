@@ -1,31 +1,29 @@
-import axios from 'axios'
-import { path } from 'utils/ClubSalud/path'
-import { type CreateEmployeePayment, type EmployeePayment } from 'utils/ClubSalud/types'
+import { apiClubSalud } from 'utils/axios.service'
+import { DateUtils } from 'utils/ClubSalud/dates'
+import {
+  type CreateEmployeePayment,
+  type EmployeePayment
+} from 'utils/ClubSalud/types'
 
 export const createEmployeePayment = async (
   data: CreateEmployeePayment
 ): Promise<EmployeePayment> => {
-  const response = await axios.post(`${path()}/api/employeePayments`, data)
+  const response = await apiClubSalud.post('/employee-payment', {
+    ...data,
+    monthPayment: DateUtils.toBackendFormat(data.monthPayment),
+    date: DateUtils.toBackendFormat(data.date)
+  })
   return response.data
 }
 
 export const getEmployeePayments = async (): Promise<EmployeePayment[]> => {
-  const response = await axios.get(`${path()}/api/employeePayments`)
-  return response.data
-}
-
-export const getEmployeePaymentsById = async (
-  id: number | string
-): Promise<EmployeePayment[]> => {
-  const response = await axios.get(`${path()}/api/employeePayments/${id}`)
+  const response = await apiClubSalud.get('/employee-payment')
   return response.data
 }
 
 export const deleteEmployeePayment = async (
   id: number
 ): Promise<EmployeePayment> => {
-  const response = await axios.delete(`${path()}/api/employeePayments`, {
-    data: { id }
-  })
+  const response = await apiClubSalud.delete(`/employee-payment/${id}`)
   return response.data
 }
