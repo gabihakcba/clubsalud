@@ -518,3 +518,56 @@ export interface CreateNotes {
 }
 
 export type Setter = React.Dispatch<React.SetStateAction<any>>
+
+export interface CashMovement {
+  id: number
+  date: number
+  isIncome: boolean
+  amount: number
+  concept: string
+  category: CashCategory
+  deleted: boolean
+
+  accountId: number
+  paymentId?: number
+  extraCostId?: number
+
+  Account: Account
+  Payment?: Payment
+  ExtraCost?: ExtraCost
+
+  CashAudit: CashAudit[]
+
+  createdAt: Date
+  updatedAt: Date
+}
+
+enum CashCategory {
+  SUBSCRIPTION,
+  DEPOSIT,
+  EXTRA_COST,
+  OWNER_WITHDRAWAL,
+  OTHER
+}
+
+export interface CreateCashAudit {
+  realCash: number
+  realRemainder: number
+  withdrawal: number
+  comment?: string
+}
+
+export interface CashAudit extends CreateCashAudit {
+  id: number
+  date: Date
+  theoreticalCash: number
+  theoreticalRemainder: number
+
+  accountId: number
+  movementId?: number
+  Account: Account
+  Movement?: CashMovement
+
+  createdAt: Date
+  updatedAt: Date
+}
