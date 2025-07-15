@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { editClass } from 'queries/ClubSalud/classes'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
+import { showToast } from '../toastService'
 
 export default function ClassCard({
   class_
@@ -13,16 +14,15 @@ export default function ClassCard({
 }): ReactElement {
   const query = useQueryClient()
 
-  const {
-    mutate: edit,
-    isPending,
-    isSuccess,
-    isError
-  } = useMutation({
+  const { mutate: edit, isPending } = useMutation({
     mutationFn: editClass,
-    async onSuccess(data, variables, context) {
+    async onSuccess(data) {
+      showToast('success', 'Hecho', `Clase ${data.name} editada correctamente`)
       await query.refetchQueries({ queryKey: ['classes'] })
       reset()
+    },
+    onError: () => {
+      showToast('error', 'Error', 'Error al editar clase')
     }
   })
 
@@ -84,14 +84,9 @@ export default function ClassCard({
         icon='pi pi-upload'
         iconPos='right'
         className='w-full'
+        severity={isPending ? 'warning' : 'info'}
         loading={isPending}
       />
-      {isSuccess && (
-        <small className='text-green-400 align-self-center'>Listo!</small>
-      )}
-      {isError && (
-        <small className='text-red-400 align-self-center'>Error!</small>
-      )}
     </form>
   )
 }

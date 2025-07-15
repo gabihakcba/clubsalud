@@ -11,6 +11,7 @@ import { Permissions, type Class_ } from 'utils/ClubSalud/types'
 import { useModal } from 'utils/ClubSalud/useModal'
 import ClassForm from './ClassForm'
 import CreateClassForm from './CreateClassForm'
+import { showToast } from '../toastService'
 
 export default function ClassesTable(): ReactElement {
   const [selectedClass, setSelectedClass] = useState<any>(null)
@@ -31,6 +32,11 @@ export default function ClassesTable(): ReactElement {
       return await deleteClass(Number(selectedClass.id))
     },
     async onSuccess(variables) {
+      showToast(
+        'success',
+        'Hecho',
+        `Clase ${variables.name} eliminada correctamente`
+      )
       await query.setQueryData(['classes'], (oldData: Class_[]) => {
         const index = oldData.findIndex((class_: Class_) => {
           return class_.id === variables.id
@@ -39,6 +45,9 @@ export default function ClassesTable(): ReactElement {
         newData.splice(index, 1)
         return newData
       })
+    },
+    onError: () => {
+      showToast('error', 'Error', 'Error al eliminar la clase')
     }
   })
 

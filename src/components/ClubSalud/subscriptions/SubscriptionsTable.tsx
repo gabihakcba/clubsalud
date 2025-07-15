@@ -55,6 +55,13 @@ export default function SubscriptionTable({
       setSelectedSubs(null)
       showToast('success', 'Listo', 'Suscripcion actualizada correctamente')
       await query.resetQueries({ queryKey: ['subscriptions'] })
+    },
+    onError: () => {
+      showToast(
+        'error',
+        'Error',
+        'Se produjo un error al actualizar la suscripción'
+      )
     }
   })
 
@@ -63,7 +70,14 @@ export default function SubscriptionTable({
     onSuccess: async () => {
       showToast('success', 'Listo', 'Suscripcion eliminada correctamente')
       setSelectedSubs(null)
-      await query.resetQueries({ queryKey: ['members'] })
+      await query.resetQueries({ queryKey: ['subscriptions'] })
+    },
+    onError: () => {
+      showToast(
+        'error',
+        'Error',
+        'Se produjo un error al eliminar la suscripción'
+      )
     }
   })
 

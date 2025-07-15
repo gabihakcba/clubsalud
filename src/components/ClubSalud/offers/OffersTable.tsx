@@ -11,6 +11,7 @@ import { Permissions, type Plan } from 'utils/ClubSalud/types'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { CreateOfferForm } from './CreateOfferForm'
 import { EditOfferForm } from './EditOfferForm'
+import { showToast } from '../toastService'
 
 export default function OffersTable(): ReactElement {
   const [selectedOffer, setSelectedOffer] = useState<Plan | null>(null)
@@ -29,8 +30,16 @@ export default function OffersTable(): ReactElement {
     mutationFn: async (id: number) => {
       return await deletePlan(id)
     },
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      showToast(
+        'success',
+        'Hecho',
+        `Oferta ${data.title} eliminada correctamente`
+      )
       await refetch()
+    },
+    onError: () => {
+      showToast('error', 'Error', 'Error al eliminar la oferta')
     }
   })
 
@@ -41,7 +50,7 @@ export default function OffersTable(): ReactElement {
         visible={createOffer}
         onHide={closeCreateOffer}
       >
-        <CreateOfferForm/>
+        <CreateOfferForm />
       </Dialog>
 
       <Dialog
@@ -49,7 +58,7 @@ export default function OffersTable(): ReactElement {
         visible={editOffer}
         onHide={closeEditOffer}
       >
-        <EditOfferForm offer={selectedOffer}/>
+        <EditOfferForm offer={selectedOffer} />
       </Dialog>
 
       <DataTable
@@ -85,10 +94,10 @@ export default function OffersTable(): ReactElement {
           field='title'
           header='Nombre'
         />
-          <Column
-            field='description'
-            header='Descripción'
-          />
+        <Column
+          field='description'
+          header='Descripción'
+        />
         <Column
           field='durationMonth'
           header='Meses'
