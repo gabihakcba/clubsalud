@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
+import { InputText } from 'primereact/inputtext'
 import { Tag } from 'primereact/tag'
 import {
   deleteSubscription,
@@ -10,13 +11,16 @@ import {
 } from 'queries/ClubSalud/subscriptions'
 import { type ReactElement, useState } from 'react'
 import { DateUtils } from 'utils/ClubSalud/dates'
-import { type Subscription, type Member } from 'utils/ClubSalud/types'
+import { type Subscription } from 'utils/ClubSalud/types'
+import { showToast } from '../toastService'
 
 export default function SubscriptionTable({
-  member
+  subscriptions
 }: {
-  member: Member
+  subscriptions: Subscription[]
 }): ReactElement {
+  const [globalFilter, setGlobalFilter] = useState('')
+
   const query = useQueryClient()
 
   const [selectedSubs, setSelectedSubs] = useState<Subscription | null>(null)
@@ -29,7 +33,15 @@ export default function SubscriptionTable({
     },
     onSuccess: async () => {
       setSelectedSubs(null)
-      await query.resetQueries({ queryKey: ['members'] })
+      showToast('success', 'Listo', 'Suscripcion actualizada correctamente')
+      await query.resetQueries({ queryKey: ['subscriptions'] })
+    },
+    onError: () => {
+      showToast(
+        'error',
+        'Error',
+        'Se produjo un error al actualizar la suscripción'
+      )
     }
   })
 
@@ -41,13 +53,15 @@ export default function SubscriptionTable({
     },
     onSuccess: async () => {
       setSelectedSubs(null)
-      await query.resetQueries({ queryKey: ['members'] })
+      showToast('success', 'Listo', 'Suscripcion actualizada correctamente')
+      await query.resetQueries({ queryKey: ['subscriptions'] })
     }
   })
 
   const { mutate: delete_, isPending: loadingDelete } = useMutation({
     mutationFn: deleteSubscription,
     onSuccess: async () => {
+      showToast('success', 'Listo', 'Suscripcion eliminada correctamente')
       setSelectedSubs(null)
       await query.resetQueries({ queryKey: ['members'] })
     }
@@ -55,27 +69,52 @@ export default function SubscriptionTable({
 
   return (
     <DataTable
-      value={member.Subscription}
+      value={subscriptions}
       scrollable
-      scrollHeight='20dvh'
+      paginator
+      rows={20}
+      scrollHeight='82dvh'
+      size='small'
+      paginatorPosition='bottom'
+      alwaysShowPaginator
+      globalFilter={globalFilter}
+      globalFilterFields={['Member.name', 'Member.lastName', 'Member.dni']}
+      header={() => {
+        return (
+          <div className='flex flex-row gap-4 p-2 align-items-center'>
+            <p>Suscripciones</p>
+            <InputText
+              placeholder='Buscar...'
+              value={globalFilter}
+              onChange={(e) => {
+                setGlobalFilter(e.target.value)
+              }}
+            />
+          </div>
+        )
+      }}
     >
       <Column
         header='ID'
         field='id'
+        sortable
       />
       <Column
         field='Promotion.title'
         header='Promoción'
+        style={{ minWidth: '150px' }}
       />
       <Column
         field='remainingClasses'
-        header='Clases disponibles'
+        header='Clases'
       />
       <Column
         field='initialDate'
         header='Inicio'
         body={(subs: Subscription) => (
-          <span>{DateUtils.formatToDDMMYY(subs.initialDate)}</span>
+          <span style={{ minWidth: '200px' }}>
+            {DateUtils.formatToDDMMYY(subs.initialDate)}
+          </span>
         )}
       />
       <Column
@@ -92,9 +131,6 @@ export default function SubscriptionTable({
       <Column
         header='Estado'
         body={(subs: Subscription) => {
-          if (Number(member.dni) === 40439867) {
-            console.log(subs)
-          }
           const state = subs.active
           return (
             <Tag severity={state ? 'success' : 'danger'}>
@@ -108,7 +144,20 @@ export default function SubscriptionTable({
         header='Oferta'
       />
       <Column
-        header='Cobro de Obra Social'
+        field='Member.name'
+        header='Alumno'
+        body={(row: Subscription) => (
+          <p>
+            {row.Member.name} {row.Member.lastName}
+          </p>
+        )}
+      />
+      <Column
+        field='Member.dni'
+        header='DNI'
+      />
+      <Column
+        header='Obra Social'
         body={(subscription) => {
           const status = subscription.isByOS
           return (
@@ -129,6 +178,7 @@ export default function SubscriptionTable({
               size='small'
               outlined
               severity='warning'
+              className='w-full'
               onClick={() => {
                 setSelectedSubs(e as Subscription)
                 change(e.id as number)
