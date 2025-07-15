@@ -19,6 +19,7 @@ import {
 } from 'utils/ClubSalud/types'
 import { Checkbox } from 'primereact/checkbox'
 import { type AxiosError } from 'axios'
+import { showToast } from '../toastService'
 
 const calculateFinalPriceMonth = (price, plan: Plan): number => {
   return price - (price * plan?.discountPercent) / 100
@@ -62,16 +63,12 @@ export default function SubscriptionForm(): ReactElement {
       const subs = await setSubscription(subscription)
       return subs
     },
-    onSuccess: async (data) => {
-      alert('Inscipción hecha')
+    onSuccess: async () => {
+      showToast('success', 'Listo', 'Suscripcion realizada correctamente')
       await query.refetchQueries({ queryKey: ['members'] })
     },
-    onError: (e: AxiosError) => {
-      if (e.status === 302) {
-        alert('Ya existe una suscripción para este alumno')
-      } else {
-        alert('No se pudo adherir a la suscripción')
-      }
+    onError: (e: AxiosError<any>) => {
+      showToast('error', 'Error', `${e.response?.data?.message as string}`)
     }
   })
 

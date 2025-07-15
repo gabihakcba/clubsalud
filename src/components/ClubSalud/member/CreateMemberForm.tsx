@@ -22,11 +22,11 @@ const formToMember = (data: FieldValues): any => {
     cuit: data.cuit,
     phoneNumber: data.phoneNumber,
     address: data.address,
-    inscriptionDate: DateUtils.toBackendFormat(data.inscriptionDate as string),
+    inscriptionDate: DateUtils.newDate(data.inscriptionDate as string),
     derivedBy: data.derivedBy,
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
-    birthday: DateUtils.toBackendFormat(data.birthday as string)
+    birthday: DateUtils.newDate(data.birthday as string)
   }
 
   return dataParsed

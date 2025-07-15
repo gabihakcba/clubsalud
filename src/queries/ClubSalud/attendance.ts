@@ -15,11 +15,11 @@ export const createAttendance = async ({
     const response = await apiClubSalud.post('/member-attendance', {
       memberId,
       classId,
-      date: DateUtils.toBackendFormat(date)
+      date: DateUtils.newDate(date)
     })
     return {
       clases: response.data.subscription.remainingClasses,
-      vencimiento: DateUtils.toBackendFormat(
+      vencimiento: DateUtils.toLocalString(
         response.data.subscription.expirationDate as Date
       )
     }

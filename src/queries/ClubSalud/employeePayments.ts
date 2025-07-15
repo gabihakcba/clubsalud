@@ -10,8 +10,8 @@ export const createEmployeePayment = async (
 ): Promise<EmployeePayment> => {
   const response = await apiClubSalud.post('/employee-payment', {
     ...data,
-    monthPayment: DateUtils.toBackendFormat(data.monthPayment),
-    date: DateUtils.toBackendFormat(data.date)
+    monthPayment: DateUtils.newDate(data.monthPayment),
+    date: DateUtils.newDate(data.date)
   })
   return response.data
 }
