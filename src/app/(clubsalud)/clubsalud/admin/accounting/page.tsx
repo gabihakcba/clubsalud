@@ -10,27 +10,36 @@ import { TabMenu } from 'primereact/tabmenu'
 import CobrosChart from 'components/ClubSalud/accounting/CobrosChart'
 import PagosChart from 'components/ClubSalud/accounting/PagosChart'
 import BalanceChart from 'components/ClubSalud/accounting/BlanceChart'
+import Rendimiento from 'components/ClubSalud/accounting/Rendmiento'
 
 export default function Accounting(): ReactElement {
   const [date, setDate] = useState<Date>(DateUtils.getCurrentDate())
   const [activeIndex, setActiveIndex] = useState(0)
   const items = [
-    { label: 'Balance', icon: 'pi pi-list' },
-    { label: 'Cobros', icon: 'pi pi-home' },
-    { label: 'Cobros particulares', icon: 'pi pi-chart-line' },
-    { label: 'Pagos', icon: 'pi pi-chart-line' }
+    { label: 'Balance', icon: 'pi pi-dollar' },
+    { label: 'Cobros', icon: 'pi pi-receipt' },
+    { label: 'Cobros particulares', icon: 'pi pi-wallet' },
+    { label: 'Pagos', icon: 'pi pi-credit-card' },
+    { label: 'Rendimiento', icon: 'pi pi-chart-line' }
   ]
 
   const renderComponent = (index: number): ReactElement => {
     switch (index) {
       case 0:
-        return <BalanceChart date={date} setActiveIndex={setActiveIndex}/>
+        return (
+          <BalanceChart
+            date={date}
+            setActiveIndex={setActiveIndex}
+          />
+        )
       case 1:
-        return <CobrosChart date={date}/>
+        return <CobrosChart date={date} />
       case 2:
         return <CobrosParticularesChart date={date} />
       case 3:
         return <PagosChart date={date} />
+      case 4:
+        return <Rendimiento />
       default:
         return <h2>Elemento no seleccionado</h2>
     }
@@ -44,6 +53,7 @@ export default function Accounting(): ReactElement {
         placeholder='Filtrar por mes'
         dateFormat='mm/yy'
         view='month'
+        disabled={activeIndex === 4}
         onChange={(e) => {
           setDate(DateUtils.newDate(e.value ?? ''))
         }}

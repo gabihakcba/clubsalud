@@ -7,7 +7,7 @@ import { getCobrosParticulares } from 'queries/ClubSalud/balance'
 import { useEffect, useState, type ReactElement } from 'react'
 import { type Payment } from 'utils/ClubSalud/types'
 import { useModal } from 'utils/ClubSalud/useModal'
-import PagosParticularesTable from './CobrosParticularesTable'
+import CobrosParticularesTable from './CobrosParticularesTable'
 
 export default function CobrosParticularesChart({
   date
@@ -83,7 +83,7 @@ export default function CobrosParticularesChart({
         visible={showPayments}
         onHide={closeShowPayments}
       >
-        <PagosParticularesTable payments={payments} />
+        <CobrosParticularesTable payments={payments} />
       </Dialog>
       <h2>
         Cobros - Total:{' '}

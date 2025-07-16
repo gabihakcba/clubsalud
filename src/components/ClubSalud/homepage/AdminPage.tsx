@@ -18,6 +18,9 @@ import { useQuery } from '@tanstack/react-query'
 import { getSubscriptionsToBill } from 'queries/ClubSalud/subscriptions'
 import SubscriptionsToBillTable from './SubscriptionsToBillTable'
 import NewAttendanceInstructorForm from '../attendanceInstructor/NewAttendanceInstructorForm'
+import HasRole from '../HasRole'
+import { Permissions } from 'utils/ClubSalud/types'
+import AuditoriaPage from './AuditoriaPage'
 
 export default function AdminPage(): ReactElement {
   const [showAssignHealthPlan, openAssignHealthPlan, closeAssignHealthPlan] =
@@ -29,6 +32,11 @@ export default function AdminPage(): ReactElement {
     showSubscriptionToBill,
     openSubscriptionToBill,
     closeSubscriptionToBill
+  ] = useModal(false)
+  const [
+    showAuditoriaPage,
+    openAuditoriaPage,
+    closeAuditoriaPage
   ] = useModal(false)
   const [createBill, openCreateBill, closeCreateBill] = useModal(false)
   const [createPayment, openPayment, closePayment] = useModal(false)
@@ -50,7 +58,16 @@ export default function AdminPage(): ReactElement {
         onHide={closeSubscriptionToBill}
         header='Suscripciones a cobrar'
       >
-        <SubscriptionsToBillTable subscriptions={subscriptionsToBill ?? []} isLoading={isFetching}/>
+        <SubscriptionsToBillTable
+          subscriptions={subscriptionsToBill ?? []}
+          isLoading={isFetching}
+        />
+      </Dialog>
+      <Dialog
+        visible={showAuditoriaPage}
+        onHide={closeAuditoriaPage}
+      >
+        <AuditoriaPage/>
       </Dialog>
       <Dialog
         visible={notes}
@@ -136,6 +153,19 @@ export default function AdminPage(): ReactElement {
               openSubscriptionToBill()
             }}
           />
+          <HasRole required={[Permissions.OWN]}>
+            <Button
+              label='Auditoria de caja'
+              severity='help'
+              outlined
+              link
+              icon='pi pi-wallet'
+              iconPos='right'
+              onClick={() => {
+                openAuditoriaPage()
+              }}
+            />
+          </HasRole>
         </div>
         <Fieldset legend='Asistencias'>
           <section className='flex gap-8'>

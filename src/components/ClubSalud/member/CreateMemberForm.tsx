@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { MemberSate, Permissions } from 'utils/ClubSalud/types'
+import { type Member, MemberSate, Permissions } from 'utils/ClubSalud/types'
 import { createMember } from 'queries/ClubSalud/members'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { InputText } from 'primereact/inputtext'
@@ -13,6 +13,8 @@ import { getHealthPlans } from 'queries/ClubSalud/health'
 import { FloatLabel } from 'primereact/floatlabel'
 import { Dropdown } from 'primereact/dropdown'
 import { DateUtils } from 'utils/ClubSalud/dates'
+import { showToast } from '../toastService'
+import { type AxiosError } from 'axios'
 
 const formToMember = (data: FieldValues): any => {
   const dataParsed = {
@@ -22,11 +24,11 @@ const formToMember = (data: FieldValues): any => {
     cuit: data.cuit,
     phoneNumber: data.phoneNumber,
     address: data.address,
-    inscriptionDate: DateUtils.toBackendFormat(data.inscriptionDate as string),
+    inscriptionDate: DateUtils.newDate(data.inscriptionDate as string),
     derivedBy: data.derivedBy,
     afiliateNumber: data.afiliateNumber,
     state: MemberSate.ACTIVE,
-    birthday: DateUtils.toBackendFormat(data.birthday as string)
+    birthday: DateUtils.newDate(data.birthday as string)
   }
 
   return dataParsed
@@ -47,12 +49,7 @@ export function CreateMemberForm(): ReactElement {
     setValue
   } = useForm()
 
-  const {
-    mutate: mutateC,
-    isPending: isPendingMember,
-    isSuccess: isSuccessMember,
-    isError: isErrorMember
-  } = useMutation({
+  const { mutate: mutateC, isPending: isPendingMember } = useMutation({
     mutationFn: async ({ newMember }: { newMember: FieldValues }) => {
       const {
         username,
@@ -70,11 +67,20 @@ export function CreateMemberForm(): ReactElement {
           planId: planID
         }
       }
-      await createMember(data)
+      return await createMember(data)
     },
-    onSuccess: async () => {
+    onSuccess: async (data: Member) => {
+      showToast(
+        'success',
+        'Hecho',
+        `Alumno ${data.name} ${data.lastName} ${data.dni} creado correctamente`
+      )
       await query.resetQueries({ queryKey: ['mem'] })
       await query.refetchQueries({ queryKey: ['acc'] })
+    },
+    onError: (error: AxiosError<any>) => {
+      console.log(error.response?.data.message)
+      showToast('error', 'Error', `${error.response?.data.message}`)
     }
   })
 
@@ -385,10 +391,6 @@ export function CreateMemberForm(): ReactElement {
           loading={isPendingMember}
           className='w-full'
         />
-        <small>
-          {isSuccessMember && <p className='w-max text-green-400'>OK</p>}
-          {isErrorMember && <p className='w-max text-red-400'>Failed!</p>}
-        </small>
       </div>
     </form>
   )

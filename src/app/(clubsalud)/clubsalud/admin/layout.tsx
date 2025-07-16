@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState, type ReactElement } from 'react'
+import { useEffect, useState, useRef, type ReactElement } from 'react'
 import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { Permissions } from 'utils/ClubSalud/types'
 import { PanelMenu } from 'primereact/panelmenu'
@@ -10,8 +10,14 @@ import logo from '../../../../../public/logos/logo_large.png'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
 import { ScrollPanel } from 'primereact/scrollpanel'
-import { hasPermission, hasValidClubSaludToken, removeDataSessionClubSalud } from 'utils/ClubSalud/auth'
+import {
+  hasPermission,
+  hasValidClubSaludToken,
+  removeDataSessionClubSalud
+} from 'utils/ClubSalud/auth'
 import { type MenuItem } from 'primereact/menuitem'
+import { Toast } from 'primereact/toast'
+import { setToastRef } from 'components/ClubSalud/toastService'
 
 const logOut = (router: AppRouterInstance): void => {
   try {
@@ -57,11 +63,7 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       icon: 'pi pi-megaphone',
       template: itemRenderer,
       url: '/clubsalud//admin/classes',
-      show: hasPermission([
-        Permissions.ADM,
-        Permissions.OWN,
-        Permissions.MEM
-      ])
+      show: hasPermission([Permissions.ADM, Permissions.OWN, Permissions.MEM])
     },
     {
       label: 'Asistencia',
@@ -158,6 +160,13 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
+      label: 'LOGS',
+      icon: 'pi pi-align-justify',
+      template: itemRenderer,
+      url: '/clubsalud/admin/logs',
+      show: hasPermission([Permissions.OWN])
+    },
+    {
       label: 'Salir',
       icon: 'pi pi-sign-out',
       template: itemRenderer,
@@ -177,6 +186,12 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
 }
 
 export default function AdminLayout({ children }: any): ReactElement {
+  const toast = useRef(null)
+
+  useEffect(() => {
+    setToastRef(toast)
+  }, [])
+
   const router: AppRouterInstance = useRouter()
   const [drop, setDrop] = useState<boolean>(false)
   const [items, setItems] = useState<MenuItem[]>([])
@@ -189,34 +204,38 @@ export default function AdminLayout({ children }: any): ReactElement {
   }, [router])
 
   return (
-      <div className='flex flex-row w-full'>
-        <div className='flex-grow-1 h-screen z-0'>{children}</div>
-        <div className='md:relative absolute'>
-          {drop && (
-            <ScrollPanel className='max-h-screen h-screen'>
-              <div className='p-2 rounded flex flex-column'>
-                <Image
-                  src={logo}
-                  height={80}
-                  alt='Club Salud'
-                  className='align-self-center my-1 border-round-lg'
-                />
-                <PanelMenu
-                  model={items}
-                  className=''
-                  // pt={{ menuitem: { className: 'bg-black' } }}
-                />
-              </div>
-            </ScrollPanel>
-          )}
-          <Button
-            icon='pi pi-bars'
-            className='fixed md:absolute top-0 right-0 md:right-100 m-2 z-5'
-            onClick={() => {
-              setDrop((drop) => !drop)
-            }}
-          />
-        </div>
+    <div className='flex flex-row w-full'>
+      <Toast
+        ref={toast}
+        position='top-right'
+      />
+      <div className='flex-grow-1 h-screen z-0'>{children}</div>
+      <div className='md:relative absolute'>
+        {drop && (
+          <ScrollPanel className='max-h-screen h-screen'>
+            <div className='p-2 rounded flex flex-column'>
+              <Image
+                src={logo}
+                height={80}
+                alt='Club Salud'
+                className='align-self-center my-1 border-round-lg'
+              />
+              <PanelMenu
+                model={items}
+                className=''
+                // pt={{ menuitem: { className: 'bg-black' } }}
+              />
+            </div>
+          </ScrollPanel>
+        )}
+        <Button
+          icon='pi pi-bars'
+          className='fixed md:absolute top-0 right-0 md:right-100 m-2 z-5'
+          onClick={() => {
+            setDrop((drop) => !drop)
+          }}
+        />
       </div>
+    </div>
   )
 }

@@ -8,21 +8,15 @@ import {
 export const setSubscription = async (
   subscription: CreateSubscription
 ): Promise<Subscription> => {
-  try {
-    // const format = moment(DateUtils.newDate(subscription.initialDate)).format()
-    const initialDate = DateUtils.toBackendFormat(subscription.initialDate)
-    const date = DateUtils.toBackendFormat(subscription.date)
+  const initialDate = DateUtils.newDate(subscription.initialDate)
+  const date = DateUtils.newDate(subscription.date)
 
-    const response = await apiClubSalud.post('/subscription', {
-      ...subscription,
-      initialDate,
-      date
-    })
-    return response.data
-  } catch (error) {
-    console.log(error)
-    throw new Error(JSON.stringify(error))
-  }
+  const response = await apiClubSalud.post('/subscription', {
+    ...subscription,
+    initialDate,
+    date
+  })
+  return response.data
 }
 
 export const getSubscriptions = async (): Promise<Subscription[]> => {

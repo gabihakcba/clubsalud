@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Chart } from 'primereact/chart'
 import { getBalance } from 'queries/ClubSalud/balance'
-import {
-  type ReactElement,
-  useEffect,
-  useState
-} from 'react'
+import { type ReactElement, useEffect, useState } from 'react'
 
 export default function BalanceChart({
   date,
@@ -17,7 +13,7 @@ export default function BalanceChart({
   const [chartData, setChartData] = useState({})
   const [chartOptions, setChartOptions] = useState({})
 
-  const { data: balance } = useQuery({
+  const { data: balance, isFetching } = useQuery({
     queryKey: ['balance', date],
     queryFn: async () => {
       return await getBalance(date)
@@ -72,15 +68,21 @@ export default function BalanceChart({
 
   return (
     <div className='card flex flex-column justify-content-center align-items-center'>
-      <h2>
-        Balance: <span style={{ color: 'yellow' }}>${balance?.balance}</span>
-      </h2>
-      <Chart
-        type='pie'
-        data={chartData}
-        options={chartOptions}
-        className='w-full md:w-30rem'
-      />
+      {isFetching && <p>Cargando</p>}
+      {!isFetching && (
+        <>
+          <h2>
+            Balance:{' '}
+            <span style={{ color: 'yellow' }}>${balance?.balance}</span>
+          </h2>
+          <Chart
+            type='pie'
+            data={chartData}
+            options={chartOptions}
+            className='w-full md:w-30rem'
+          />
+        </>
+      )}
     </div>
   )
 }

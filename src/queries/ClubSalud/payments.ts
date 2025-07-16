@@ -27,7 +27,7 @@ export const setParticularPayment = async ({
     memberId: Number(memberId),
     subscriptionId: Number(subscriptionId),
     amount: Number(amount),
-    date: DateUtils.toBackendFormat(date),
+    date: DateUtils.newDate(date),
     isCash
   })
   return response.data
@@ -52,7 +52,7 @@ export const setPlanPayment = async ({
       amount: Number(amount),
       healthSubscribedPlanId: Number(healthSubscribedPlanId),
       autorizationNumber: String(autorizationNumber),
-      date: DateUtils.toBackendFormat(date)
+      date: DateUtils.newDate(date)
     })
     return response.data
   } catch (error) {
