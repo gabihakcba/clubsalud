@@ -1,7 +1,10 @@
 import moment from 'moment-timezone'
+import 'moment/locale/es'
 
 // Configuración para Argentina (GMT-3)
-const TIMEZONE = 'America/Argentina/Buenos_Aires'
+const TIMEZONE = 'America/Argentina/Buenos_Aires' // importa el locale español
+
+moment.locale('es') // establece el locale por defecto a español
 
 export const DateUtils = {
   // Type date
@@ -59,6 +62,10 @@ export const DateUtils = {
     return moment(date).tz(TIMEZONE).month()
   },
 
+  getNameMonth: (date: moment.Moment | Date): string => {
+    return moment(date).tz(TIMEZONE).format('MMMM')
+  },
+
   // Obtener el año de una fecha
   getYear: (date: moment.Moment | Date): number => {
     return moment(date).tz(TIMEZONE).year()
@@ -67,6 +74,10 @@ export const DateUtils = {
   // Obtener el día del mes de una fecha (1-31)
   getDay: (date: moment.Moment | Date): number => {
     return moment(date).tz(TIMEZONE).date()
+  },
+
+  getNameYear: (date: moment.Moment | Date): string => {
+    return moment(date).tz(TIMEZONE).format('YYYY')
   },
 
   // Sumar tiempo a una fecha
