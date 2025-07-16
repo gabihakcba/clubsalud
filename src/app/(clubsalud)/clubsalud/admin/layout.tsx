@@ -160,6 +160,13 @@ const getItems = async (setItems, router: AppRouterInstance): Promise<void> => {
       ])
     },
     {
+      label: 'LOGS',
+      icon: 'pi pi-align-justify',
+      template: itemRenderer,
+      url: '/clubsalud/admin/logs',
+      show: hasPermission([Permissions.OWN])
+    },
+    {
       label: 'Salir',
       icon: 'pi pi-sign-out',
       template: itemRenderer,

@@ -571,3 +571,52 @@ export interface CashAudit extends CreateCashAudit {
   createdAt: Date
   updatedAt: Date
 }
+
+enum VerbLog {
+  POST,
+  PATCH,
+  UPDATE,
+  CREATE,
+  DELETE,
+  OTHER
+}
+
+enum ActionLog {
+  ACCOUNT,
+  MEMBER,
+  INSTRUCTOR,
+  ADMIN,
+  EMPLOYEE,
+
+  CLASS,
+  PROMOTION,
+  PLAN,
+
+  HEALTH_PLAN,
+  HEALTH_PLAN_SUSCRIBED,
+
+  SUBSCRIPTION,
+
+  MEMBER_ATTENDANCE,
+  INSTRUCTOR_ATTENDANCE,
+
+  CASH_MOVEMENT,
+  CASH_AUDIT,
+
+  MEMBER_PAYMENT,
+  MEMBER_OS_PAYMENT,
+  INSTRUCTOR_PAYMENT,
+  EMPLOYEE_PAYMENT
+}
+
+export interface UserLog {
+  id: number
+  accountId: number
+  verb: VerbLog
+  action: ActionLog
+  detail?: string
+  comment?: string
+  createdAt: Date
+
+  Account: Account
+}
