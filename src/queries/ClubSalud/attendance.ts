@@ -19,7 +19,7 @@ export const createAttendance = async ({
     })
     return {
       clases: response.data.subscription.remainingClasses,
-      vencimiento: DateUtils.toLocalString(
+      vencimiento: DateUtils.formatToDDMMYY(
         response.data.subscription.expirationDate as Date
       )
     }
