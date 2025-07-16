@@ -41,7 +41,7 @@ export default function AttendanceAdmTable(): ReactElement {
   }, [filter, members])
 
   const allowExpansion = (rowData): boolean => {
-    return rowData.Attendance.length > 0
+    return rowData.Attendance?.length > 0
   }
 
   const rowExpansionTemplate = (data): ReactElement => {
