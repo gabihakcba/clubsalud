@@ -47,9 +47,13 @@ interface Balance {
   egresos: number
 }
 
-export const getCobrosParticulares = async (date: Date): Promise<CobroParticular> => {
+export const getCobrosParticulares = async (
+  date: Date
+): Promise<CobroParticular> => {
   try {
-    const response = await apiClubSalud.get(`/balance/cobros-particulares?date=${DateUtils.toBackendFormat(date)}`)
+    const response = await apiClubSalud.get(
+      `/balance/cobros-particulares?date=${DateUtils.toLocalString(date)}`
+    )
     return response.data
   } catch (error) {
     console.log(error)
@@ -57,9 +61,13 @@ export const getCobrosParticulares = async (date: Date): Promise<CobroParticular
   }
 }
 
-export const getCobrosObraSocial = async (date: Date): Promise<CobroObraSocial> => {
+export const getCobrosObraSocial = async (
+  date: Date
+): Promise<CobroObraSocial> => {
   try {
-    const response = await apiClubSalud.get(`/balance/cobros-obrasocial?date=${DateUtils.toBackendFormat(date)}`)
+    const response = await apiClubSalud.get(
+      `/balance/cobros-obrasocial?date=${DateUtils.toLocalString(date)}`
+    )
     return response.data
   } catch (error) {
     console.log(error)
@@ -69,7 +77,9 @@ export const getCobrosObraSocial = async (date: Date): Promise<CobroObraSocial> 
 
 export const getCobros = async (date: Date): Promise<Cobro> => {
   try {
-    const response = await apiClubSalud.get(`/balance/cobros?date=${DateUtils.toBackendFormat(date)}`)
+    const response = await apiClubSalud.get(
+      `/balance/cobros?date=${DateUtils.toLocalString(date)}`
+    )
     return response.data
   } catch (error) {
     console.log(error)
@@ -79,7 +89,9 @@ export const getCobros = async (date: Date): Promise<Cobro> => {
 
 export const getPagos = async (date: Date): Promise<Pagos> => {
   try {
-    const response = await apiClubSalud.get(`/balance/pagos?date=${DateUtils.toBackendFormat(date)}`)
+    const response = await apiClubSalud.get(
+      `/balance/pagos?date=${DateUtils.toLocalString(date)}`
+    )
     return response.data
   } catch (error) {
     console.log(error)
@@ -89,7 +101,9 @@ export const getPagos = async (date: Date): Promise<Pagos> => {
 
 export const getBalance = async (date: Date): Promise<Balance> => {
   try {
-    const response = await apiClubSalud.get(`/balance?date=${DateUtils.toBackendFormat(date)}`)
+    const response = await apiClubSalud.get(
+      `/balance?date=${DateUtils.toLocalString(date)}`
+    )
     return response.data
   } catch (error) {
     console.log(error)

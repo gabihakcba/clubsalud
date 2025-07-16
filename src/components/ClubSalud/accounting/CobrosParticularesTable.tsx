@@ -4,7 +4,7 @@ import { type ReactElement } from 'react'
 import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Payment } from 'utils/ClubSalud/types'
 
-export default function CobrosLista({
+export default function CobrosParticularesTable({
   payments
 }: {
   payments: Payment[]

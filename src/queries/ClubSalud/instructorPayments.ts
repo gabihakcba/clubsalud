@@ -18,8 +18,8 @@ export const createInstructorPayment = async (
   try {
     const response = await apiClubSalud.post('/instructor-payment', {
       ...instructorPayment,
-      workedMonth: DateUtils.toBackendFormat(instructorPayment.workedMonth),
-      paymentDate: DateUtils.toBackendFormat(instructorPayment.paymentDate)
+      workedMonth: DateUtils.newDate(instructorPayment.workedMonth),
+      paymentDate: DateUtils.newDate(instructorPayment.paymentDate)
     })
     return response.data
   } catch (error) {

@@ -4,17 +4,15 @@ import moment from 'moment-timezone'
 const TIMEZONE = 'America/Argentina/Buenos_Aires'
 
 export const DateUtils = {
-  toBackendFormat: (date: Date | moment.Moment | string): string => {
-    return moment(date)
-      .tz(TIMEZONE)
-      .format('YYYY-MM-DDTHH:mm:ss.SSSZ')
-      .replace('-03:00', 'Z') // Asegura formato ISO válido
-  },
-
   // Type date
   newDate: (date: Date | moment.Moment | string) => {
     return moment(date).tz(TIMEZONE).toDate()
   },
+
+  toLocalString: (date: Date): string => {
+    return moment(date).tz(TIMEZONE).toISOString()
+  },
+
   // Obtener fecha/hora actual como objeto Moment
   getCurrentMoment: (): moment.Moment => {
     return moment().tz(TIMEZONE)

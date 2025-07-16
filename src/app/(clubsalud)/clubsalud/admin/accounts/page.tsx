@@ -12,6 +12,7 @@ import { Button } from 'primereact/button'
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog'
 import { Card } from 'primereact/card'
 import { useRouter } from 'next/navigation'
+import { showToast } from 'components/ClubSalud/toastService'
 
 export default function Accounts(): ReactElement {
   const router = useRouter()
@@ -41,7 +42,11 @@ export default function Accounts(): ReactElement {
       return await deleteAccount(id)
     },
     onSuccess: async () => {
+      showToast('success', 'Hecho', 'Cuenta eliminada exitosamente')
       await query.refetchQueries({ queryKey: ['acc'] })
+    },
+    onError: () => {
+      showToast('error', 'Error', 'Error al eliminar cuenta')
     }
   })
 
@@ -49,16 +54,11 @@ export default function Accounts(): ReactElement {
     <Card className='h-screen'>
       <ConfirmDialog />
       <DataTable
-        value={accounts
-          ?.map((acc: Account) => ({
-            ...acc,
-            dni:
-              acc.Member?.dni ??
-              acc.Instructor?.dni ??
-              acc.Employee?.dni ??
-              0,
-            date: acc.Member ? acc.Member.inscriptionDate : null
-          }))}
+        value={accounts?.map((acc: Account) => ({
+          ...acc,
+          dni: acc.Member?.dni ?? acc.Instructor?.dni ?? acc.Employee?.dni ?? 0,
+          date: acc.Member ? acc.Member.inscriptionDate : null
+        }))}
         tableStyle={{ minWidth: '5rem' }}
         header={() => <AccountTopbar />}
         scrollable

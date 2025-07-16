@@ -7,6 +7,7 @@ import { updatePlan } from 'queries/ClubSalud/plan'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
 import { type CreatePlan, type Plan } from 'utils/ClubSalud/types'
+import { showToast } from '../toastService'
 
 export function EditOfferForm({ offer }: { offer: Plan | null }): ReactElement {
   const {
@@ -24,8 +25,16 @@ export function EditOfferForm({ offer }: { offer: Plan | null }): ReactElement {
     mutationFn: async (plan: Plan) => {
       return await updatePlan(plan)
     },
-    onSuccess: async () => {
+    onSuccess: async (plan) => {
+      showToast(
+        'success',
+        'Hecho',
+        `Oferta ${plan.title} editado correctamente`
+      )
       await query.refetchQueries({ queryKey: ['offers'] })
+    },
+    onError: () => {
+      showToast('error', 'Error', 'Error al editar la oferta')
     }
   })
 

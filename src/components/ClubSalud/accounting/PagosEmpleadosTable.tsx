@@ -15,7 +15,7 @@ export default function PagosEmpleadosTable({
             header='ID'
           />
           <Column
-            field='Instructor.name'
+            field='Employee.name'
             header='Nombre | Apellido'
             body={(row: EmployeePayment) => (
               <p>
@@ -24,7 +24,7 @@ export default function PagosEmpleadosTable({
             )}
           />
           <Column
-            field='Instructor.dni'
+            field='Employee.dni'
             header='DNI'
           />
           <Column

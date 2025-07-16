@@ -5,13 +5,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClass } from 'queries/ClubSalud/classes'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
+import { showToast } from '../toastService'
 
 export default function CreateClassForm(): ReactElement {
   const query = useQueryClient()
 
   const { mutate: create, isPending } = useMutation({
     mutationFn: createClass,
-    async onSuccess(data) {
+    async onSuccess(data: Class_) {
+      showToast('success', 'Hecho', `Clase ${data.name} creada correctamente`)
       reset()
       await query.setQueryData(['classes'], (oldData: Class_[]) => [
         ...oldData,
