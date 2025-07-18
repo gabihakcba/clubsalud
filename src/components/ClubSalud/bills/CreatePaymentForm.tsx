@@ -41,9 +41,9 @@ const memberWithDebts = (members: Member[]): Member[] => {
   return members.filter((member: Member) =>
     member.Subscription?.some((subscription: Subscription) => {
       return (
-        !subscription.paid ||
-        subscription.Plan.durationMonth * 2 <
-          (subscription.BilledConsultation?.length ?? 0)
+        !subscription?.paid ||
+        subscription?.Plan?.durationMonth * 2 <
+          (subscription?.BilledConsultation?.length ?? 0)
       )
     })
   )
@@ -113,7 +113,11 @@ export default function CreatePaymentForm(): ReactElement {
     getValues
   } = useForm()
 
-  const { data: members, isFetching: isPendingMembers, refetch } = useQuery({
+  const {
+    data: members,
+    isFetching: isPendingMembers,
+    refetch
+  } = useQuery({
     queryKey: ['members'],
     queryFn: async () => {
       const res = await getMembers()
