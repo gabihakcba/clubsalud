@@ -9,7 +9,7 @@ import {
   updateIsByOS,
   updateState
 } from 'queries/ClubSalud/subscriptions'
-import { type ReactElement, useState } from 'react'
+import { type ReactElement, useRef, useState } from 'react'
 import { DateUtils } from 'utils/ClubSalud/dates'
 import { type Subscription } from 'utils/ClubSalud/types'
 import { showToast } from '../toastService'
@@ -19,11 +19,15 @@ export default function SubscriptionTable({
 }: {
   subscriptions: Subscription[]
 }): ReactElement {
-  const [globalFilter, setGlobalFilter] = useState('')
-
   const query = useQueryClient()
 
   const [selectedSubs, setSelectedSubs] = useState<Subscription | null>(null)
+
+  const [globalFilter, setGlobalFilter] = useState('')
+  const dt = useRef<DataTable<any>>(null)
+  const exportCSV = (selectionOnly): void => {
+    dt.current?.exportCSV({ selectionOnly })
+  }
 
   const { mutate: change, isPending: loadingChange } = useMutation({
     mutationFn: async (id: number) => {
@@ -84,13 +88,14 @@ export default function SubscriptionTable({
   return (
     <DataTable
       value={subscriptions}
+      ref={dt}
       scrollable
-      paginator
-      rows={20}
       scrollHeight='82dvh'
       size='small'
+      paginator
       paginatorPosition='bottom'
       alwaysShowPaginator
+      rows={20}
       globalFilter={globalFilter}
       globalFilterFields={['Member.name', 'Member.lastName', 'Member.dni']}
       header={() => {
@@ -103,6 +108,15 @@ export default function SubscriptionTable({
               onChange={(e) => {
                 setGlobalFilter(e.target.value)
               }}
+            />
+            <Button
+              type='button'
+              icon='pi pi-file'
+              rounded
+              onClick={() => {
+                exportCSV(false)
+              }}
+              data-pr-tooltip='CSV'
             />
           </div>
         )
@@ -144,6 +158,7 @@ export default function SubscriptionTable({
       />
       <Column
         header='Estado'
+        field='Subscription.active'
         body={(subs: Subscription) => {
           const state = subs.active
           return (

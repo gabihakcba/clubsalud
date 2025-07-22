@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactElement, useState, useEffect } from 'react'
+import { type ReactElement, useState, useEffect, useRef } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { type InstructorPayment, type dateType } from 'utils/ClubSalud/types'
 import CreateInstructorPaymentForm from './CreateInstructorPaymentForm'
@@ -18,6 +18,7 @@ import { FilterMatchMode } from 'primereact/api'
 import { InstructorPriceTable } from './InstructorPriceTable'
 import { Calendar } from 'primereact/calendar'
 import { DateUtils } from 'utils/ClubSalud/dates'
+import { InputText } from 'primereact/inputtext'
 
 export function InstructorPaymentsSection(): ReactElement {
   const query = useQueryClient()
@@ -71,6 +72,12 @@ export function InstructorPaymentsSection(): ReactElement {
     }
   }, [instructorPayments, selectedDate])
 
+  const [globalFilter, setGlobalFilter] = useState('')
+  const dt = useRef<DataTable<any>>(null)
+  const exportCSV = (selectionOnly): void => {
+    dt.current?.exportCSV({ selectionOnly })
+  }
+
   return (
     <div className='flex flex-column'>
       <Dialog
@@ -89,10 +96,23 @@ export function InstructorPaymentsSection(): ReactElement {
       </Dialog>
       <DataTable
         value={fitlerPayments}
+        ref={dt}
+        scrollable
+        scrollHeight='75dvh'
+        size='small'
+        paginator
+        paginatorPosition='bottom'
+        alwaysShowPaginator
+        rows={20}
+        globalFilter={globalFilter}
+        globalFilterFields={[
+          'Instructor.name',
+          'Instructor.lastName',
+          'Instructor.dni'
+        ]}
         header={() => (
           <nav className='flex flex-row gap-2 justify-content-between'>
             <div className='flex align-items-center gap-4'>
-              <h3>Profesores</h3>
               <Button
                 onClick={openPayment}
                 label='Generar Pago'
@@ -107,33 +127,48 @@ export function InstructorPaymentsSection(): ReactElement {
                 icon='pi pi-search'
                 iconPos='right'
               />
-            </div>
-            <div className='flex align-items-center gap-4'>
-              <Calendar
-                view='month'
-                dateFormat='mm/yy'
+              <InputText
+                placeholder='Buscar...'
+                value={globalFilter}
                 onChange={(e) => {
-                  if (e.value) {
-                    setSelectedDate({
-                      month: DateUtils.getMonth(e.value),
-                      year: DateUtils.getYear(e.value)
-                    })
-                  }
+                  setGlobalFilter(e.target.value)
                 }}
               />
+              <div className='flex align-items-center gap-4'>
+                <Calendar
+                  view='month'
+                  placeholder='Filtrar por fecha...'
+                  dateFormat='mm/yy'
+                  onChange={(e) => {
+                    if (e.value) {
+                      setSelectedDate({
+                        month: DateUtils.getMonth(e.value),
+                        year: DateUtils.getYear(e.value)
+                      })
+                    }
+                  }}
+                />
+                <Button
+                  icon='pi pi-filter-slash'
+                  onClick={() => {
+                    setSelectedDate(null)
+                  }}
+                />
+              </div>
               <Button
-                icon='pi pi-filter-slash'
+                type='button'
+                icon='pi pi-file'
+                rounded
                 onClick={() => {
-                  setSelectedDate(null)
+                  exportCSV(false)
                 }}
+                data-pr-tooltip='CSV'
               />
             </div>
           </nav>
         )}
         filters={filters}
         filterDisplay='menu'
-        scrollable
-        scrollHeight='38dvh'
       >
         <Column
           field='id'

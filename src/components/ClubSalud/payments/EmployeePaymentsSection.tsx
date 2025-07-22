@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type ReactElement, useEffect } from 'react'
+import { useState, type ReactElement, useEffect, useRef } from 'react'
 import { useModal } from 'utils/ClubSalud/useModal'
 import CreateEmployeePaymentForm from './CreateEmployeePaymentForm'
 import { type dateType, type EmployeePayment } from 'utils/ClubSalud/types'
@@ -17,6 +17,7 @@ import {
 import { FilterMatchMode } from 'primereact/api'
 import { Calendar } from 'primereact/calendar'
 import { DateUtils } from 'utils/ClubSalud/dates'
+import { InputText } from 'primereact/inputtext'
 
 export function EmployeePaymentsSection(): ReactElement {
   const [filterPayments, setFilterPayments] = useState<EmployeePayment[]>([])
@@ -68,6 +69,12 @@ export function EmployeePaymentsSection(): ReactElement {
     }
   }, [employeePayments, selectedDate])
 
+  const [globalFilter, setGlobalFilter] = useState('')
+  const dt = useRef<DataTable<any>>(null)
+  const exportCSV = (selectionOnly): void => {
+    dt.current?.exportCSV({ selectionOnly })
+  }
+
   return (
     <div className='flex flex-column'>
       <Dialog
@@ -79,10 +86,23 @@ export function EmployeePaymentsSection(): ReactElement {
       </Dialog>
       <DataTable
         value={filterPayments}
+        ref={dt}
+        scrollable
+        scrollHeight='75dvh'
+        size='small'
+        paginator
+        paginatorPosition='bottom'
+        alwaysShowPaginator
+        rows={20}
+        globalFilter={globalFilter}
+        globalFilterFields={[
+          'Employee.name',
+          'Employee.lastName',
+          'Employee.dni'
+        ]}
         header={() => (
           <nav className='flex gap-4 align-items-center justify-content-between'>
             <div className='flex align-items-center gap-4'>
-              <h3>Empleados</h3>
               <Button
                 onClick={openPayment}
                 label='Generar Pago'
@@ -90,33 +110,48 @@ export function EmployeePaymentsSection(): ReactElement {
                 icon='pi pi-plus'
                 iconPos='right'
               />
-            </div>
-            <div className='flex gap-4'>
-              <Calendar
-                view='month'
-                dateFormat='mm/yy'
+              <InputText
+                placeholder='Buscar...'
+                value={globalFilter}
                 onChange={(e) => {
-                  if (e.value) {
-                    setSelectedDate({
-                      month: DateUtils.getMonth(e.value),
-                      year: DateUtils.getYear(e.value)
-                    })
-                  }
+                  setGlobalFilter(e.target.value)
                 }}
               />
+              <div className='flex gap-4'>
+                <Calendar
+                  view='month'
+                  dateFormat='mm/yy'
+                  placeholder='Filtrar por mes...'
+                  onChange={(e) => {
+                    if (e.value) {
+                      setSelectedDate({
+                        month: DateUtils.getMonth(e.value),
+                        year: DateUtils.getYear(e.value)
+                      })
+                    }
+                  }}
+                />
+                <Button
+                  icon='pi pi-filter-slash'
+                  onClick={() => {
+                    setSelectedDate(null)
+                  }}
+                />
+              </div>
               <Button
-                icon='pi pi-filter-slash'
+                type='button'
+                icon='pi pi-file'
+                rounded
                 onClick={() => {
-                  setSelectedDate(null)
+                  exportCSV(false)
                 }}
+                data-pr-tooltip='CSV'
               />
             </div>
           </nav>
         )}
         filters={filters}
         filterDisplay='menu'
-        scrollable
-        scrollHeight='38dvh'
       >
         <Column
           field='id'
