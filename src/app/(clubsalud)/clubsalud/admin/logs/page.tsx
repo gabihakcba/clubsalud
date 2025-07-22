@@ -14,9 +14,11 @@ export default function LogsPage(): ReactElement {
     <DataTable
       value={logs}
       scrollable
+      scrollHeight='92dvh'
       size='small'
-      scrollHeight='90dvh'
       paginator
+      paginatorPosition='bottom'
+      alwaysShowPaginator
       rows={20}
     >
       <Column
