@@ -30,7 +30,6 @@ export default function Page(): ReactElement {
     mutationFn: async (data: { UsuarioWeb: string; PasswordWeb: string }) => {
       setErrorSession(false)
       const response = await logInLaboral(data)
-      console.log('Respuesta del login:', response)
       if (response.ok) {
         setErrorSession(false)
         setDataSessionMedintt({
