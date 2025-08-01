@@ -6,7 +6,7 @@ import CreateNote from './CreateNote'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { getNotesReaded, getNotesUnreaded } from 'queries/ClubSalud/notes'
 import NotesTable from './NotesTable'
-import { getDataSession } from 'utils/Medintt/session'
+import { getDataSessionClubSalud } from 'utils/ClubSalud/auth'
 
 export default function NotesPage(): ReactElement {
   const [create, openCreate, closeCreate] = useModal(false)
@@ -15,15 +15,12 @@ export default function NotesPage(): ReactElement {
   const { data: userId, isLoading: isLoadingUser } = useQuery({
     queryKey: ['user'],
     queryFn: () => {
-      const user = getDataSession().user.id
+      const user = getDataSessionClubSalud().user.id
       return user
     }
   })
 
-  const {
-    data: notes,
-    isLoading: isLoadingNotes
-  } = useQuery({
+  const { data: notes, isLoading: isLoadingNotes } = useQuery({
     queryKey: ['unreadednotes'],
     queryFn: async () => {
       const response = await getNotesUnreaded()
@@ -31,10 +28,7 @@ export default function NotesPage(): ReactElement {
     }
   })
 
-  const {
-    data: readedNotes,
-    isLoading: isLoadingReadedNotes
-  } = useQuery({
+  const { data: readedNotes, isLoading: isLoadingReadedNotes } = useQuery({
     queryKey: ['readednotes'],
     queryFn: async () => {
       const response = await getNotesReaded()
@@ -55,9 +49,15 @@ export default function NotesPage(): ReactElement {
         onHide={closeReaded}
         visible={readed}
       >
-        <NotesTable notes={readedNotes ?? []} isLoading={isLoadingReadedNotes}></NotesTable>
+        <NotesTable
+          notes={readedNotes ?? []}
+          isLoading={isLoadingReadedNotes}
+        ></NotesTable>
       </Dialog>
-      <NotesTable notes={notes ?? []} isLoading={isLoadingNotes} />
+      <NotesTable
+        notes={notes ?? []}
+        isLoading={isLoadingNotes}
+      />
       <Button
         label='Crear nota'
         size='small'
