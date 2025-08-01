@@ -1,22 +1,15 @@
-import axios from 'axios'
-import { getTokenSession } from 'utils/Medintt/session'
+import { apiMedintt } from 'utils/axios.service'
 import {
   type UpdateBorrowerEmployee,
   type CreateBorrowerEmployee
 } from 'utils/Medintt/types'
-
-const BACK_URL = process.env.NEXT_PUBLIC_BACK_URL ?? ''
 
 export const logInLaboral = async (data: {
   UsuarioWeb: string
   PasswordWeb: string
 }): Promise<{ ok: boolean; message: string; data?: any }> => {
   try {
-    const response = await axios.post(`${BACK_URL}/auth/login`, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    const response = await apiMedintt.post('/auth/login', data)
     if (response.status === 403) {
       return { ok: false, message: 'Usuario o contraseña incorrectos' }
     } else {
@@ -35,9 +28,7 @@ export const getPatientsByBorrower = async (
   idBorrower: string | number
 ): Promise<{ ok: boolean; message: string; data?: any }> => {
   try {
-    const response = await axios.get(`${BACK_URL}/patient?id=${idBorrower}`, {
-      headers: { Authorization: `Bearer ${getTokenSession()}` }
-    })
+    const response = await apiMedintt.get(`/patient?id=${idBorrower}`)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     const status = error.response.status
@@ -52,11 +43,7 @@ export const createBorrowerEmployee = async (
   newEmployee: CreateBorrowerEmployee
 ): Promise<any> => {
   try {
-    const response = await axios.post(`${BACK_URL}/patient`, newEmployee, {
-      headers: {
-        Authorization: `Bearer ${getTokenSession()}`
-      }
-    })
+    const response = await apiMedintt.post('/patient', newEmployee)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
@@ -69,11 +56,7 @@ export const updateBorrowerEmployee = async (
 ): Promise<any> => {
   const { Id, DNI, ...data } = updateEmployee
   try {
-    const response = await axios.patch(`${BACK_URL}/patient/${Id}`, data, {
-      headers: {
-        Authorization: `Bearer ${getTokenSession()}`
-      }
-    })
+    const response = await apiMedintt.patch(`/patient/${Id}`, data)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
@@ -83,11 +66,7 @@ export const updateBorrowerEmployee = async (
 
 export const deleteBorrowerEmployee = async (id: number): Promise<any> => {
   try {
-    const response = await axios.delete(`${BACK_URL}/patient/${id}`, {
-      headers: {
-        Authorization: `Bearer ${getTokenSession()}`
-      }
-    })
+    const response = await apiMedintt.delete(`/patient/${id}`)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
