@@ -28,7 +28,7 @@ export default function AdminPage(): ReactElement {
     <div className='flex flex-column align-items-center my-8'>
       <div className='flex flex-column align-items-start gap-4 text-xl m-4'>
         <div>Bienvenido {user?.Nombre}</div>
-        <div>Empresa: {user?.Prestataria}</div>
+        <div>Empresa: {user?.Prestatarias.Nombre}</div>
         <div>Email: {user?.Email}</div>
         <div>Cargo: {user?.Cargo}</div>
       </div>
@@ -37,7 +37,6 @@ export default function AdminPage(): ReactElement {
         size='small'
         link
         onClick={() => {
-          console.log('Cerrando sesión')
           setUser(undefined)
           removeDataSessionMedintt()
           router.push('/medicina-laboral-empresas')
