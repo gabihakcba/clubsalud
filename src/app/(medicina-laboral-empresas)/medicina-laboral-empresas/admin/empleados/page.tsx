@@ -6,6 +6,7 @@ import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dialog } from 'primereact/dialog'
+import { InputText } from 'primereact/inputtext'
 import {
   deleteBorrowerEmployee,
   getPatientsByBorrower,
@@ -15,7 +16,7 @@ import { useEffect, useState, type ReactElement } from 'react'
 import { type FieldValues } from 'react-hook-form'
 import { DateUtils } from 'utils/ClubSalud/dates'
 import { useModal } from 'utils/ClubSalud/useModal'
-import { getUserSession } from 'utils/Medintt/session'
+import { getDataSessionMedintt } from 'utils/Medintt/session'
 import { type UpdateBorrowerEmployee } from 'utils/Medintt/types'
 
 export default function Empleados(): ReactElement {
@@ -23,15 +24,20 @@ export default function Empleados(): ReactElement {
   const [newEmployee, openNewEmployee, closeNewEmployee] = useModal(false)
   const [idDeleting, setIdDeleting] = useState<number | null>(null)
   const [user, setUser] = useState<any>(undefined)
+  const [globalFilter, setGlobalFilter] = useState('')
 
   useEffect(() => {
-    const userData = getUserSession()
-    setUser(userData)
+    const userData = getDataSessionMedintt()
+    setUser(userData.user)
   }, [])
 
   const { data: patients, refetch } = useQuery({
     queryKey: ['patients'],
     queryFn: async () => {
+      console.log(
+        'Obteniendo pacientes para el prestatario:',
+        user?.Id_Prestataria
+      )
       const response = await getPatientsByBorrower(
         user?.Id_Prestataria as number
       )
@@ -76,23 +82,40 @@ export default function Empleados(): ReactElement {
         <EmployeeForm employee={selectedEmployee} />
       </Dialog>
       <DataTable
+        scrollable
+        scrollHeight='90dvh'
+        size='small'
+        paginator
+        paginatorPosition='bottom'
+        alwaysShowPaginator
+        rows={13}
+        globalFilter={globalFilter}
+        globalFilterFields={['Nombre', 'Apellido', 'NroDocumento']}
         header={() => (
-          <Button
-            label='Agregar Empleado'
-            size='small'
-            outlined
-            severity='warning'
-            icon='pi pi-plus'
-            iconPos='right'
-            onClick={() => {
-              setSelectedEmployee(null)
-              openNewEmployee()
-            }}
-          />
+          <div className='flex flex-row gap-4 p-2 align-items-center'>
+            <Button
+              label='Agregar Empleado'
+              size='small'
+              outlined
+              severity='warning'
+              icon='pi pi-plus'
+              iconPos='right'
+              onClick={() => {
+                setSelectedEmployee(null)
+                openNewEmployee()
+              }}
+            />
+            <InputText
+              height='auto'
+              placeholder='Buscar...'
+              value={globalFilter}
+              onChange={(e) => {
+                setGlobalFilter(e.target.value)
+              }}
+            />
+          </div>
         )}
         value={patients}
-        scrollable
-        scrollHeight='100vh'
         editMode='row'
         onRowEditComplete={onRowEditComplete}
         dataKey='Id'
@@ -113,7 +136,9 @@ export default function Empleados(): ReactElement {
           field='FechaNacimiento'
           header='Fecha Nacimiento'
           body={(rowData) => {
-            const date = DateUtils.formatToDDMMYY(rowData.FechaNacimiento as Date)
+            const date = DateUtils.formatToDDMMYY(
+              rowData.FechaNacimiento as Date
+            )
             return <>{date}</>
           }}
         />

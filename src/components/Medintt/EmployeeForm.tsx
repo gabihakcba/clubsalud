@@ -6,7 +6,7 @@ import { InputText } from 'primereact/inputtext'
 import { createBorrowerEmployee } from 'queries/Medintt/users'
 import { useRef, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
-import { getUserSession } from 'utils/Medintt/session'
+import { getDataSessionMedintt } from 'utils/Medintt/session'
 import { type CreateBorrowerEmployee } from 'utils/Medintt/types'
 import { Toast } from 'primereact/toast'
 import getLocalidades from 'queries/Medintt/localidades'
@@ -56,11 +56,10 @@ export default function EmployeeForm({
   const { mutate: createEmployee, isPending } = useMutation({
     mutationFn: async (data: FieldValues) => {
       const { Id_Provincia: idP, ...empleado } = data
-      console.log(selectedLocalidad)
       const newEmployee = {
         ...empleado,
         Id_Localidad: selectedLocalidad,
-        Id_Prestataria: getUserSession().Id_Prestataria as number
+        Id_Prestataria: getDataSessionMedintt().user.Id_Prestataria
       }
       const response = await createBorrowerEmployee(
         newEmployee as CreateBorrowerEmployee
@@ -182,7 +181,6 @@ export default function EmployeeForm({
             defaultValue={employee ? employee?.Genero : undefined}
             {...register('Genero')}
             onChange={(e) => {
-              console.log(e.value)
               setSelectedGenero(e.value)
               setValue('Genero', e.value)
             }}
