@@ -4,9 +4,8 @@ import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
 import { useEffect, useState, type ReactElement } from 'react'
 import {
-  clearDataSession,
-  getDataSession,
-  getUserSession
+  removeDataSessionMedintt,
+  getDataSessionMedintt
 } from 'utils/Medintt/session'
 
 export default function AdminPage(): ReactElement {
@@ -14,15 +13,15 @@ export default function AdminPage(): ReactElement {
 
   const router = useRouter()
   useEffect(() => {
-    const dataSession = getDataSession()
+    const dataSession = getDataSessionMedintt()
     if (!dataSession.user) {
       router.push('/medicina-laboral-empresas')
     }
   }, [router])
 
   useEffect(() => {
-    const userData = getUserSession()
-    setUser(userData)
+    const userData = getDataSessionMedintt()
+    setUser(userData.user)
   }, [])
 
   return (
@@ -38,7 +37,9 @@ export default function AdminPage(): ReactElement {
         size='small'
         link
         onClick={() => {
-          clearDataSession()
+          console.log('Cerrando sesión')
+          setUser(undefined)
+          removeDataSessionMedintt()
           router.push('/medicina-laboral-empresas')
         }}
       />

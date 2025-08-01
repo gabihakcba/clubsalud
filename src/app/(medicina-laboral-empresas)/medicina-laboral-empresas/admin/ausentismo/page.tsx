@@ -7,15 +7,15 @@ import { FloatLabel } from 'primereact/floatlabel'
 import { InputText } from 'primereact/inputtext'
 import { getPatientsByBorrower } from 'queries/Medintt/users'
 import { useEffect, useState, type ReactElement } from 'react'
-import { getUserSession } from 'utils/Medintt/session'
+import { getDataSessionMedintt } from 'utils/Medintt/session'
 
 export default function Ausentimos(): ReactElement {
   const [user, setUser] = useState<any>(undefined)
   const [selectedPatient, setSelectedPatient] = useState<any>(null)
 
   useEffect(() => {
-    const userData = getUserSession()
-    setUser(userData)
+    const userData = getDataSessionMedintt()
+    setUser(userData.user)
   }, [])
 
   const { data: patients } = useQuery({

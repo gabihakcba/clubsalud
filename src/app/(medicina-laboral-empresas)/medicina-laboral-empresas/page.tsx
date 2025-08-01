@@ -8,7 +8,10 @@ import { Password } from 'primereact/password'
 import { logInLaboral } from 'queries/Medintt/users'
 import { useEffect, useState, type ReactElement } from 'react'
 import { useForm } from 'react-hook-form'
-import { getDataSession, setDataSession } from 'utils/Medintt/session'
+import {
+  getDataSessionMedintt,
+  setDataSessionMedintt
+} from 'utils/Medintt/session'
 import { useRouter } from 'next/navigation'
 
 export default function Page(): ReactElement {
@@ -17,7 +20,7 @@ export default function Page(): ReactElement {
   const router = useRouter()
 
   useEffect(() => {
-    const dataSession = getDataSession()
+    const dataSession = getDataSessionMedintt()
     if (dataSession.user) {
       router.push('/medicina-laboral-empresas/admin')
     }
@@ -27,9 +30,13 @@ export default function Page(): ReactElement {
     mutationFn: async (data: { UsuarioWeb: string; PasswordWeb: string }) => {
       setErrorSession(false)
       const response = await logInLaboral(data)
+      console.log('Respuesta del login:', response)
       if (response.ok) {
         setErrorSession(false)
-        setDataSession(response.data.token as string, response.data.user)
+        setDataSessionMedintt({
+          access_token: response.data.token as string,
+          user: response.data.user
+        })
         router.push('/medicina-laboral-empresas/admin')
       } else {
         setErrorSession(true)
@@ -42,13 +49,20 @@ export default function Page(): ReactElement {
     <div className='flex flex-column align-items-center justify-content-center'>
       <h1 className='text-4xl'>Medicina Laboral Empresas</h1>
       <p className='text-2xl'>Iniciar Sesión</p>
-      {errorSession && <p className='text-red-500 py-4 text-xl'>Usuario y/o contraseña incorrectos</p>}
+      {errorSession && (
+        <p className='text-red-500 py-4 text-xl'>
+          Usuario y/o contraseña incorrectos
+        </p>
+      )}
       <form
         action=''
         className='flex flex-column align-items-start justify-content-center m-2 gap-4'
         onSubmit={handleSubmit(async (data, event) => {
           event?.preventDefault()
-          const logInData = { UsuarioWeb: data.UsuarioWeb, PasswordWeb: data.PasswordWeb }
+          const logInData = {
+            UsuarioWeb: data.UsuarioWeb,
+            PasswordWeb: data.PasswordWeb
+          }
           mutate(logInData)
         })}
       >
