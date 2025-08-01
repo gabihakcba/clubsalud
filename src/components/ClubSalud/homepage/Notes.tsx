@@ -43,7 +43,7 @@ export default function NotesPage(): ReactElement {
         visible={create}
         header='Crear Nota'
       >
-        <CreateNote accountId={userId} />
+        <CreateNote accountId={userId ?? 0} />
       </Dialog>
       <Dialog
         onHide={closeReaded}
