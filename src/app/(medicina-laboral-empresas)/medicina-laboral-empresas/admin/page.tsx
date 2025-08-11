@@ -21,7 +21,12 @@ export default function AdminPage(): ReactElement {
 
   useEffect(() => {
     const userData = getDataSessionMedintt()
-    setUser(userData.user)
+    if (userData.user) {
+      setUser(userData.user)
+    } else {
+      getDataSessionMedintt()
+      router.push('/medicina-laboral-empresas')
+    }
   }, [])
 
   return (
