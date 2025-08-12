@@ -22,10 +22,9 @@ export default function AdminPage(): ReactElement {
   useEffect(() => {
     const userData = getDataSessionMedintt()
     if (userData.user) {
-      removeDataSessionMedintt()
       setUser(userData.user)
     } else {
-      getDataSessionMedintt()
+      removeDataSessionMedintt()
       router.push('/medicina-laboral-empresas')
     }
   }, [])
