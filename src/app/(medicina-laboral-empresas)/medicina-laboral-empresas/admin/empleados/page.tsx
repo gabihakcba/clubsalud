@@ -34,10 +34,6 @@ export default function Empleados(): ReactElement {
   const { data: patients, refetch } = useQuery({
     queryKey: ['patients'],
     queryFn: async () => {
-      console.log(
-        'Obteniendo pacientes para el prestatario:',
-        user?.Id_Prestataria
-      )
       const response = await getPatientsByBorrower(
         user?.Id_Prestataria as number
       )
