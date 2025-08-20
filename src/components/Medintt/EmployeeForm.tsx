@@ -61,6 +61,7 @@ export default function EmployeeForm({
         Id_Localidad: selectedLocalidad,
         Id_Prestataria: getDataSessionMedintt().user.Id_Prestataria
       }
+      console.log(newEmployee)
       const response = await createBorrowerEmployee(
         newEmployee as CreateBorrowerEmployee
       )

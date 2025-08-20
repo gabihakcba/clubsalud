@@ -17,11 +17,11 @@ export default function Layout({
             icon: 'pi pi-home',
             url: '/medicina-laboral-empresas/admin'
           },
-          // {
-          //   label: 'Ausentismo',
-          //   icon: 'pi pi-list-check',
-          //   url: '/medicina-laboral-empresas/admin/ausentismo'
-          // },
+          {
+            label: 'Ausentismo',
+            icon: 'pi pi-list-check',
+            url: '/medicina-laboral-empresas/admin/ausentismo'
+          },
           {
             label: 'Empleados',
             icon: 'pi pi-users',

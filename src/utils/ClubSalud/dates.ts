@@ -8,8 +8,8 @@ moment.locale('es') // establece el locale por defecto a español
 
 export const DateUtils = {
   // Type date
-  newDate: (date: Date | moment.Moment | string) => {
-    return moment(date).tz(TIMEZONE).toDate()
+  newDate: (date: Date | null | undefined | moment.Moment | string) => {
+    return moment(date).utc().toDate()
   },
 
   toLocalString: (date: Date): string => {
@@ -29,6 +29,10 @@ export const DateUtils = {
   // Formatear fecha a 'DD-MM-YY'
   formatToDDMMYY: (date: moment.Moment | Date | string): string => {
     return moment(date).tz(TIMEZONE).format('DD-MM-YY')
+  },
+
+  formatToDDMMYYutc: (date: moment.Moment | Date | string): string => {
+    return moment(date).utc().format('DD-MM-YY')
   },
 
   // Comparar si dos fechas son el mismo día
