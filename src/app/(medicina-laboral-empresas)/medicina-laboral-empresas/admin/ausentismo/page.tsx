@@ -1,66 +1,133 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { Button } from 'primereact/button'
-import { Dropdown } from 'primereact/dropdown'
-import { FloatLabel } from 'primereact/floatlabel'
-import { InputText } from 'primereact/inputtext'
-import { getPatientsByBorrower } from 'queries/Medintt/users'
+import { Calendar } from 'primereact/calendar'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { getAusentismos } from 'queries/Medintt/users'
 import { useEffect, useState, type ReactElement } from 'react'
+import { useForm } from 'react-hook-form'
+import { DateUtils } from 'utils/ClubSalud/dates'
 import { getDataSessionMedintt } from 'utils/Medintt/session'
 
 export default function Ausentimos(): ReactElement {
   const [user, setUser] = useState<any>(undefined)
-  const [selectedPatient, setSelectedPatient] = useState<any>(null)
+  const [desde, setDesde] = useState<Date | null>(null)
+  const [hasta, setHasta] = useState<Date | null>(null)
+  const [mesReferencia, setMesReferencia] = useState<Date | null>(null)
 
   useEffect(() => {
     const userData = getDataSessionMedintt()
     setUser(userData.user)
   }, [])
 
-  const { data: patients } = useQuery({
-    queryKey: ['patients'],
+  const { register } = useForm()
+
+  const { data: ausentimos } = useQuery({
+    queryKey: ['ausentimos', user?.Id_Prestataria, desde, hasta, mesReferencia],
     queryFn: async () => {
-      const response = await getPatientsByBorrower(
-        user?.Id_Prestataria as number
-      )
+      const data = {
+        idPrestataria: Number(user?.Id_Prestataria),
+        desde,
+        hasta,
+        mesReferencia
+      }
+      console.log(data)
+      const response = await getAusentismos(data)
       if (response.ok) {
         return response.data
       }
       return []
     },
-    enabled: !!user?.Id_Prestataria
+    enabled: user !== undefined && desde !== null && hasta !== null
   })
 
   return (
-    <form className='flex flex-column gap-4 m-6'>
-      <FloatLabel>
-        <Dropdown
-          value={selectedPatient}
-          options={patients ?? []}
-          optionLabel='Nombre'
-          optionValue='DNI'
+    <div className='flex flex-column'>
+      <form className='flex flex-row'>
+        <Calendar
+          required
+          {...register('desde')}
           onChange={(e) => {
-            setSelectedPatient(e.value)
+            if (e.value !== undefined) {
+              setDesde(e.value)
+            }
           }}
         />
-        <label htmlFor=''>Persona</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText />
-        <label htmlFor=''>Fecha</label>
-      </FloatLabel>
-      <FloatLabel>
-        <InputText />
-        <label htmlFor=''>Documento</label>
-      </FloatLabel>
-      <Button
-        label='Cargar'
-        className='w-max'
-        icon='pi pi-upload'
-        iconPos='right'
-        outlined
-      />
-    </form>
+        <Calendar
+          required
+          {...register('hasta')}
+          onChange={(e) => {
+            if (e.value !== undefined) {
+              setHasta(e.value)
+            }
+          }}
+        />
+        <Calendar
+          required
+          {...register('mesReferencia')}
+          onChange={(e) => {
+            if (e.value !== undefined) {
+              setMesReferencia(e.value)
+            }
+          }}
+        />
+      </form>
+      <DataTable value={ausentimos} size='small'>
+        <Column
+          field='Paciente'
+          header='Empleado'
+        />
+        <Column
+          field='DNI'
+          header='DNI'
+        />
+        <Column
+          field='Cargo'
+          header='Cargo'
+        />
+        <Column
+          field='Funcion'
+          header='Funcion'
+        />
+        <Column
+          field='Del'
+          header='Del'
+          body={(rowData) => (
+            <p>{DateUtils.formatToDDMMYYutc(rowData.Del as Date)}</p>
+          )}
+        />
+        <Column
+          field='Al'
+          header='Al'
+          body={(rowData) => (
+            <p>{DateUtils.formatToDDMMYYutc(rowData.Al as Date)}</p>
+          )}
+        />
+        <Column
+          field='Notificacion'
+          header='Notificacion'
+          body={(rowData) => (
+            <p>{DateUtils.formatToDDMMYYutc(rowData.Notificacion as Date)}</p>
+          )}
+        />
+        <Column
+          field='Dias'
+          header='Dias'
+        />
+        <Column
+          field='Categoria'
+          header='Categoria'
+        />
+        <Column
+          field='Diagnostico'
+          header='Diagnostico'
+        />
+        <Column
+          field='Evolucion'
+          header='Evolucion'
+        />
+      </DataTable>
+    </div>
   )
 }

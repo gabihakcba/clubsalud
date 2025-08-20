@@ -73,3 +73,16 @@ export const deleteBorrowerEmployee = async (id: number): Promise<any> => {
     throw new Error(`Error en la solicitud ${error}`)
   }
 }
+
+export const getAusentismos = async (data): Promise<any> => {
+  try {
+    const response = await apiMedintt.get(
+      `/ausentismo?desde=${data.desde}&hasta=${data.hasta}&mesReferencia=${data.mesReferencia}&idEmpresa=${data.idPrestataria}`
+    )
+    console.log(response)
+    return { data: response.data, message: 'ok', ok: true }
+  } catch (error) {
+    console.log(error)
+    throw new Error(`Error en la solicitud ${error}`)
+  }
+}
