@@ -16,6 +16,14 @@ export const DateUtils = {
     return moment(date).tz(TIMEZONE).toISOString()
   },
 
+  startOfMonth: (date: Date): Date => {
+    return moment(date).startOf('month').toDate()
+  },
+
+  endOfMonth: (date: Date): Date => {
+    return moment(date).endOf('month').toDate()
+  },
+
   // Obtener fecha/hora actual como objeto Moment
   getCurrentMoment: (): moment.Moment => {
     return moment().tz(TIMEZONE)
