@@ -18,6 +18,9 @@ export default function Ausentimos(): ReactElement {
 
   useEffect(() => {
     const userData = getDataSessionMedintt()
+    setDesde(DateUtils.startOfMonth(DateUtils.getCurrentDate()))
+    setHasta(DateUtils.endOfMonth(DateUtils.getCurrentDate()))
+    setMesReferencia(DateUtils.getCurrentDate())
     setUser(userData.user)
   }, [])
 
@@ -45,35 +48,52 @@ export default function Ausentimos(): ReactElement {
   return (
     <div className='flex flex-column'>
       <form className='flex flex-row'>
-        <Calendar
-          required
-          {...register('desde')}
-          onChange={(e) => {
-            if (e.value !== undefined) {
-              setDesde(e.value)
-            }
-          }}
-        />
-        <Calendar
-          required
-          {...register('hasta')}
-          onChange={(e) => {
-            if (e.value !== undefined) {
-              setHasta(e.value)
-            }
-          }}
-        />
-        <Calendar
-          required
-          {...register('mesReferencia')}
-          onChange={(e) => {
-            if (e.value !== undefined) {
-              setMesReferencia(e.value)
-            }
-          }}
-        />
+        <div className='flex flex-row gap-2'>
+          <p>Desde</p>
+          <Calendar
+            required
+            value={desde}
+            {...register('desde')}
+            onChange={(e) => {
+              if (e.value !== undefined) {
+                setDesde(e.value)
+              }
+            }}
+          />
+        </div>
+        <div className='flex flex-row gap-2'>
+          <p>Hasta</p>
+          <Calendar
+            required
+            value={hasta}
+            {...register('hasta')}
+            onChange={(e) => {
+              if (e.value !== undefined) {
+                setHasta(e.value)
+              }
+            }}
+          />
+        </div>
+        <div className='flex flex-row gap-2'>
+          <p>Mes de Referencia</p>
+          <Calendar
+            required
+            value={mesReferencia}
+            {...register('mesReferencia')}
+            onChange={(e) => {
+              if (e.value !== undefined) {
+                setMesReferencia(e.value)
+              }
+            }}
+          />
+        </div>
       </form>
-      <DataTable value={ausentimos} size='small'>
+      <DataTable
+        value={ausentimos}
+        size='small'
+        scrollHeight='87dvh'
+        scrollable
+      >
         <Column
           field='Paciente'
           header='Empleado'
