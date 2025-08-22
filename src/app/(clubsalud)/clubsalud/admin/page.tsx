@@ -2,7 +2,10 @@
 
 import { type ReactElement, useEffect, useState } from 'react'
 import { type Account, Permissions } from 'utils/ClubSalud/types'
-import { getDataSessionClubSalud } from 'utils/ClubSalud/auth'
+import {
+  getDataSessionClubSalud,
+  removeDataSessionClubSalud
+} from 'utils/ClubSalud/auth'
 import { Card } from 'primereact/card'
 import { useQuery } from '@tanstack/react-query'
 import { getAccountById } from 'queries/ClubSalud/accounts'
@@ -13,6 +16,7 @@ import HasRole from 'components/ClubSalud/HasRole'
 import MemberPage from 'components/ClubSalud/homepage/MemberPage'
 import AdminPage from 'components/ClubSalud/homepage/AdminPage'
 import InstructorPage from 'components/ClubSalud/homepage/InstructorPage'
+import { useRouter } from 'next/navigation'
 
 const getTypeAccount = (
   acc: Account | undefined
@@ -59,10 +63,17 @@ export default function PersonalAccount(): ReactElement {
   } | null>(null)
   const [accountInfo, setAccountInfo] = useState<any>(null)
 
+  const router = useRouter()
+
   const { data: account } = useQuery({
     queryKey: ['account'],
     queryFn: async () => {
-      return await getAccountById(String(user?.id))
+      try {
+        return await getAccountById(String(user?.id))
+      } catch (error) {
+        removeDataSessionClubSalud()
+        router.push('/clubsalud')
+      }
     },
     enabled: user !== null
   })
