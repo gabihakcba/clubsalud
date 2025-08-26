@@ -3,14 +3,26 @@ import { Button } from 'primereact/button'
 import { Calendar } from 'primereact/calendar'
 import { Fieldset } from 'primereact/fieldset'
 import { InputText } from 'primereact/inputtext'
-import { createBorrowerEmployee } from 'queries/Medintt/users'
-import { useRef, useState, type ReactElement } from 'react'
+import {
+  createBorrowerEmployee,
+  updateBorrowerEmployee
+} from 'queries/Medintt/users'
+import { useEffect, useRef, useState, type ReactElement } from 'react'
 import { type FieldValues, useForm } from 'react-hook-form'
 import { getDataSessionMedintt } from 'utils/Medintt/session'
-import { type CreateBorrowerEmployee } from 'utils/Medintt/types'
+import {
+  type UpdateBorrowerEmployee,
+  type CreateBorrowerEmployee
+} from 'utils/Medintt/types'
 import { Toast } from 'primereact/toast'
 import getLocalidades from 'queries/Medintt/localidades'
 import { Dropdown } from 'primereact/dropdown'
+import moment from 'moment'
+
+const Genero = [
+  { label: 'MASCULINO', value: 'MASCULINO' },
+  { label: 'FEMENINO', value: 'FEMENINO' }
+]
 
 export default function EmployeeForm({
   employee
@@ -22,12 +34,27 @@ export default function EmployeeForm({
   const toast = useRef<any>(null)
 
   const [selectedGenero, setSelectedGenero] = useState<any>(null)
-  const [selectedProvincia, setSelectedProvincia] = useState<any>(null)
   const [selectedLocalidad, setSelectedLocalidad] = useState<any>(null)
   const [CP, setCP] = useState<string>('')
   const [localidades, setLocalidades] = useState<any>(null)
 
   const { register, handleSubmit, setValue, reset } = useForm()
+
+  const showSuccessUpdate = (): void => {
+    toast.current.show({
+      severity: 'success',
+      summary: 'Actualización exitosa',
+      detail: 'Empleado actualizado exitosamente'
+    })
+  }
+
+  const showErrorUpdate = (): void => {
+    toast.current.show({
+      severity: 'error',
+      summary: 'Error',
+      detail: 'Error al actualizar el empleado'
+    })
+  }
 
   const showSuccess = (): void => {
     toast.current.show({
@@ -45,23 +72,49 @@ export default function EmployeeForm({
     })
   }
 
-  const { data: provincias, isLoading } = useQuery({
+  const { data: provincias, isLoading: isLoadingProvincia } = useQuery({
     queryKey: ['provincias'],
     queryFn: async () => {
       const response = await getLocalidades()
+      const localidades = response.data.flatMap(
+        (provincia) => provincia.Localidades
+      )
+      setLocalidades(localidades)
       return response.data
+    }
+  })
+
+  const { mutate: updateEmployee, isPending: isPendingUpdate } = useMutation({
+    mutationFn: async (data: FieldValues) => {
+      const { id, ...empleado } = data
+      const newEmployee = {
+        ...empleado,
+        Id_Localidad: selectedLocalidad
+      }
+      const response = await updateBorrowerEmployee(
+        id as number,
+        newEmployee as UpdateBorrowerEmployee
+      )
+      return response.data
+    },
+    onSuccess: async (e) => {
+      showSuccessUpdate()
+      await query.refetchQueries({ queryKey: ['patients'] })
+      reset()
+    },
+    onError: () => {
+      showErrorUpdate()
     }
   })
 
   const { mutate: createEmployee, isPending } = useMutation({
     mutationFn: async (data: FieldValues) => {
-      const { Id_Provincia: idP, ...empleado } = data
+      const { ...empleado } = data
       const newEmployee = {
         ...empleado,
         Id_Localidad: selectedLocalidad,
         Id_Prestataria: getDataSessionMedintt().user.Id_Prestataria
       }
-      console.log(newEmployee)
       const response = await createBorrowerEmployee(
         newEmployee as CreateBorrowerEmployee
       )
@@ -77,6 +130,20 @@ export default function EmployeeForm({
     }
   })
 
+  useEffect(() => {
+    if (employee) {
+      setValue('Genero', employee?.Genero)
+      setSelectedGenero(employee?.Genero)
+
+      setValue('Id_Localidad', employee?.Id_Localidad)
+      setSelectedLocalidad(employee?.Id_Localidad)
+      const cp = localidades?.find(
+        (localidad) => localidad?.Id === employee?.Id_Localidad
+      )?.CP
+      setCP(cp as string)
+    }
+  }, [employee, provincias, localidades])
+
   return (
     <form
       action=''
@@ -84,7 +151,11 @@ export default function EmployeeForm({
       className='flex flex-column gap-3 w-full'
       onSubmit={handleSubmit(async (data, event) => {
         event?.preventDefault()
-        createEmployee(data)
+        if (employee) {
+          updateEmployee({ id: employee.Id, ...data })
+        } else {
+          createEmployee(data)
+        }
       })}
       key={employee ? employee?.Id : undefined}
     >
@@ -156,7 +227,12 @@ export default function EmployeeForm({
           </label>
           <Calendar
             required
-            value={employee ? employee?.FechaNacimiento : undefined}
+            value={
+              employee
+                ? moment.utc(employee?.FechaNacimiento).toDate()
+                : undefined
+            }
+            dateFormat='dd/mm/yy'
             {...register('FechaNacimiento')}
           />
         </div>
@@ -173,13 +249,9 @@ export default function EmployeeForm({
           </label>
           <Dropdown
             required
-            options={[
-              { label: 'MASCULINO', value: 'MASCULINO' },
-              { label: 'FEMENINO', value: 'FEMENINO' }
-            ]}
+            options={Genero}
             value={selectedGenero}
             placeholder='Seleccione un género'
-            defaultValue={employee ? employee?.Genero : undefined}
             {...register('Genero')}
             onChange={(e) => {
               setSelectedGenero(e.value)
@@ -234,44 +306,13 @@ export default function EmployeeForm({
             htmlFor=''
             className='text-md font-bold'
           >
-            Provincia
-          </label>
-          <Dropdown
-            {...register('Id_Provincia')}
-            required
-            loading={isLoading}
-            options={provincias?.filter(
-              (provincia) => provincia.Localidades.length > 0
-            )}
-            value={selectedProvincia}
-            optionLabel='Provincia'
-            optionValue='Id'
-            placeholder='Seleccione una provincia'
-            onChange={(e) => {
-              setSelectedProvincia(e.value)
-              setLocalidades(
-                provincias?.filter((provincia) => provincia.Id === e.value)[0]
-                  .Localidades
-              )
-              setValue('Id_Provincia', e.target.value)
-            }}
-          />
-        </div>
-        <div className='w-full px-4 flex flex-row gap-2 align-items-center'>
-          <i
-            className='pi pi-circle-fill'
-            style={{ color: 'red', fontSize: '0.4rem' }}
-          />
-          <label
-            htmlFor=''
-            className='text-md font-bold'
-          >
             Localidad
           </label>
           <Dropdown
             {...register('Id_Localidad')}
             required
-            loading={selectedProvincia === null}
+            filter
+            loading={localidades === null || isLoadingProvincia}
             options={localidades}
             value={selectedLocalidad}
             optionLabel='Localidad'
@@ -505,7 +546,7 @@ export default function EmployeeForm({
         outlined
         iconPos='right'
         type='submit'
-        loading={isPending}
+        loading={isPending || isPendingUpdate}
       />
       <div className='flex flex-row align-items-center gap-2'>
         <i
