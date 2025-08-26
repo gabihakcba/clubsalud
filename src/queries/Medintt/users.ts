@@ -52,11 +52,12 @@ export const createBorrowerEmployee = async (
 }
 
 export const updateBorrowerEmployee = async (
+  id: number,
   updateEmployee: UpdateBorrowerEmployee
 ): Promise<any> => {
-  const { Id, DNI, ...data } = updateEmployee
+  const { ...data } = updateEmployee
   try {
-    const response = await apiMedintt.patch(`/patient/${Id}`, data)
+    const response = await apiMedintt.patch(`/patient/${id}`, data)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
@@ -79,7 +80,6 @@ export const getAusentismos = async (data): Promise<any> => {
     const response = await apiMedintt.get(
       `/ausentismo?desde=${data.desde}&hasta=${data.hasta}&mesReferencia=${data.mesReferencia}&idEmpresa=${data.idPrestataria}`
     )
-    console.log(response)
     return { data: response.data, message: 'ok', ok: true }
   } catch (error) {
     console.log(error)
