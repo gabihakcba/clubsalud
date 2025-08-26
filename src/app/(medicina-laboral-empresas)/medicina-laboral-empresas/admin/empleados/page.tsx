@@ -9,15 +9,12 @@ import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import {
   deleteBorrowerEmployee,
-  getPatientsByBorrower,
-  updateBorrowerEmployee
+  getPatientsByBorrower
 } from 'queries/Medintt/users'
 import { useEffect, useState, type ReactElement } from 'react'
-import { type FieldValues } from 'react-hook-form'
 import { DateUtils } from 'utils/ClubSalud/dates'
 import { useModal } from 'utils/ClubSalud/useModal'
 import { getDataSessionMedintt } from 'utils/Medintt/session'
-import { type UpdateBorrowerEmployee } from 'utils/Medintt/types'
 
 export default function Empleados(): ReactElement {
   const [selectedEmployee, setSelectedEmployee] = useState<any>(null)
@@ -45,15 +42,6 @@ export default function Empleados(): ReactElement {
     enabled: !!user?.Id_Prestataria
   })
 
-  const { mutate: update } = useMutation({
-    mutationFn: async (data: FieldValues) => {
-      return await updateBorrowerEmployee(data as UpdateBorrowerEmployee)
-    },
-    onSuccess: async () => {
-      await refetch()
-    }
-  })
-
   const { mutate: delete_, isPending } = useMutation({
     mutationFn: async (id: number) => {
       return await deleteBorrowerEmployee(id)
@@ -62,10 +50,6 @@ export default function Empleados(): ReactElement {
       await refetch()
     }
   })
-
-  const onRowEditComplete = (e): void => {
-    update(e.newData as FieldValues)
-  }
 
   return (
     <>
@@ -112,8 +96,6 @@ export default function Empleados(): ReactElement {
           </div>
         )}
         value={patients}
-        editMode='row'
-        onRowEditComplete={onRowEditComplete}
         dataKey='Id'
       >
         <Column
@@ -141,6 +123,10 @@ export default function Empleados(): ReactElement {
         <Column
           header='Cargo'
           field='Cargo'
+        />
+        <Column
+          header='Puesto'
+          field='Puesto'
         />
         <Column
           header='Funcion'
